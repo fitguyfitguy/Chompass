@@ -46,7 +46,6 @@ import app.chompass.models.LocaleFormat
 import app.chompass.ui.components.ChompassDialog
 import app.chompass.ui.components.ChompassDialogActions
 import app.chompass.ui.home.EditFavoriteSheet
-import app.chompass.ui.theme.AppTextOpacity
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -181,7 +180,7 @@ fun SavedFoodsScreen(container: AppContainer, onBack: () -> Unit) {
                                     )
                                 },
                                 style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         }
                     }
@@ -193,7 +192,7 @@ fun SavedFoodsScreen(container: AppContainer, onBack: () -> Unit) {
             Text(
                 stringResource(R.string.library_empty),
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(vertical = 24.dp),
             )
         }
@@ -320,7 +319,7 @@ fun SavedFoodsScreen(container: AppContainer, onBack: () -> Unit) {
                     count,
                     template.name,
                 ),
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             ChompassDialogActions(
                 primaryText = stringResource(R.string.action_delete),
@@ -351,7 +350,7 @@ fun SavedFoodsScreen(container: AppContainer, onBack: () -> Unit) {
             )
             Text(
                 stringResource(R.string.library_merge_intro),
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             group.forEach { member ->
                 val key = member.template.favoriteKey
@@ -384,14 +383,14 @@ fun SavedFoodsScreen(container: AppContainer, onBack: () -> Unit) {
                                 )
                             },
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 }
             }
             Text(
                 stringResource(R.string.library_merge_rows_message, movedRows, keep.template.name),
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             ChompassDialogActions(
                 primaryText = stringResource(R.string.library_merge_action),
@@ -453,7 +452,7 @@ private fun LibraryRow(
                     )
                 },
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
         if (isHidden) {
@@ -466,7 +465,7 @@ private fun LibraryRow(
                 Icon(
                     Icons.Outlined.MoreVert,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
             DropdownMenu(expanded = menuExpanded, onDismissRequest = onMenuDismiss) {

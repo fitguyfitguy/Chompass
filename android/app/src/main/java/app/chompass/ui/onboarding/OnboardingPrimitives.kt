@@ -39,10 +39,8 @@ import app.chompass.ui.components.ChompassIconBubble
 import app.chompass.ui.components.NumericWheelPicker
 import app.chompass.ui.components.SplitDecimalWheelPicker
 import app.chompass.ui.theme.AppColors
-import app.chompass.ui.theme.AppTextOpacity
 import androidx.compose.material3.Icon
 import app.chompass.models.UnitFormat
-import app.chompass.ui.theme.AppRadii
 
 @Composable
 internal fun StepHeader(title: String, subtitle: String? = null) {
@@ -57,7 +55,7 @@ internal fun StepHeader(title: String, subtitle: String? = null) {
             Text(
                 it,
                 style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted)
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
         Spacer(Modifier.height(32.dp))
@@ -78,9 +76,9 @@ internal fun SelectionCard(
     selected: Boolean,
     onClick: () -> Unit
 ) {
-    val accent = if (selected) AppColors.Calorie else MaterialTheme.colorScheme.onBackground
+    val accent = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground
     val selectedBorder = if (selected) {
-        Modifier.border(BorderStroke(1.4.dp, AppColors.Calorie.copy(alpha = 0.55f)), RoundedCornerShape(AppRadii.Pill))
+        Modifier.border(BorderStroke(1.4.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.55f)), RoundedCornerShape(percent = 50))
     } else {
         Modifier
     }
@@ -111,7 +109,7 @@ internal fun SelectionCard(
                         it,
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.Bold,
-                        color = AppColors.Calorie
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
                 subtitle?.let {
@@ -119,14 +117,14 @@ internal fun SelectionCard(
                     Text(
                         it,
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted)
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
             Icon(
                 imageVector = if (selected) Icons.Filled.CheckCircle else Icons.Outlined.RadioButtonUnchecked,
                 contentDescription = null,
-                tint = if (selected) AppColors.Calorie else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f),
+                tint = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f),
                 modifier = Modifier.size(22.dp)
             )
         }
@@ -136,14 +134,14 @@ internal fun SelectionCard(
 @Composable
 internal fun ChoiceRow(label: String, subtitle: String? = null, selected: Boolean, onClick: () -> Unit) {
     val bg = if (selected) {
-        AppColors.Calorie.copy(alpha = 0.14f)
+        MaterialTheme.colorScheme.primary.copy(alpha = 0.14f)
     } else {
         MaterialTheme.colorScheme.surface
     }
     Box(
         Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(AppRadii.Card))
+            .clip(MaterialTheme.shapes.large)
             .background(bg)
             .selectable(
                 selected = selected,
@@ -157,7 +155,7 @@ internal fun ChoiceRow(label: String, subtitle: String? = null, selected: Boolea
                 Modifier
                     .size(22.dp)
                     .clip(CircleShape)
-                    .background(if (selected) AppColors.Calorie else Color.Transparent)
+                    .background(if (selected) MaterialTheme.colorScheme.primary else Color.Transparent)
                     .padding(3.dp)
             ) {
                 if (selected) {
@@ -188,7 +186,7 @@ internal fun ChoiceRow(label: String, subtitle: String? = null, selected: Boolea
                     Text(
                         it,
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted)
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
@@ -215,7 +213,7 @@ internal fun ToggleCard(label: String, subtitle: String, enabled: Boolean, onTog
                 Text(
                     subtitle,
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
             Switch(checked = enabled, onCheckedChange = onToggle)
@@ -233,7 +231,7 @@ internal fun WheeledColumn(
         Text(
             label,
             style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             fontWeight = FontWeight.Medium
         )
         Spacer(Modifier.height(4.dp))

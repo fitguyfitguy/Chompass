@@ -32,7 +32,6 @@ import app.chompass.R
 import app.chompass.ui.components.ChompassDialog
 import app.chompass.ui.components.ChompassDialogActions
 import app.chompass.ui.navigation.ChompassRoutes
-import app.chompass.ui.theme.AppTextOpacity
 
 /**
  * Notifications settings: master toggle (with system permission handling),
@@ -109,7 +108,7 @@ fun NotificationsSettingsScreen(
         Text(
             stringResource(R.string.settings_notifications_intro),
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
 
         SectionCard(title = stringResource(R.string.settings_notifications)) {
@@ -163,7 +162,7 @@ fun NotificationsSettingsScreen(
     permissionDeniedMessage?.let { msg ->
         ChompassDialog(onDismissRequest = { permissionDeniedMessage = null }) {
             Text(stringResource(R.string.settings_permission_title), fontSize = 20.sp, fontWeight = FontWeight.Bold)
-            Text(msg, color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary))
+            Text(msg, color = MaterialTheme.colorScheme.onSurfaceVariant)
             ChompassDialogActions(
                 primaryText = stringResource(R.string.action_ok),
                 onPrimary = { permissionDeniedMessage = null }

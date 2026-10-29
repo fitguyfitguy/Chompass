@@ -43,10 +43,7 @@ import app.chompass.models.MealType
 import app.chompass.models.UserProfile
 import app.chompass.ui.components.rememberChompassSheetState
 import app.chompass.ui.components.ChompassBottomSheet
-import app.chompass.ui.theme.AppColors
 import kotlinx.coroutines.flow.first
-import app.chompass.ui.theme.AppRadii
-import app.chompass.ui.theme.AppTextOpacity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -90,7 +87,7 @@ fun ExportDiarySheet(
             Text(stringResource(R.string.export_diary_title), fontSize = 22.sp, fontWeight = FontWeight.Bold)
 
             Text(stringResource(R.string.export_range), fontSize = 13.sp, fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted))
+                color = MaterialTheme.colorScheme.onSurfaceVariant)
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 DiaryRange.values().forEach { r ->
                     FilterChip(
@@ -98,8 +95,8 @@ fun ExportDiarySheet(
                         onClick = { range = r },
                         label = { Text(stringResource(r.labelRes)) },
                         colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = AppColors.Calorie.copy(alpha = 0.18f),
-                            selectedLabelColor = AppColors.Calorie,
+                            selectedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.18f),
+                            selectedLabelColor = MaterialTheme.colorScheme.primary,
                         ),
                     )
                 }
@@ -111,7 +108,7 @@ fun ExportDiarySheet(
             }
 
             Text(stringResource(R.string.export_format), fontSize = 13.sp, fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted))
+                color = MaterialTheme.colorScheme.onSurfaceVariant)
             ExportFormatChipRow(
                 options = DiaryFormat.values(),
                 selected = format,
@@ -238,7 +235,7 @@ fun ExportDiarySheet(
                         if (editingStart) customStart = picked else customEnd = picked
                     }
                     picking = null
-                }) { Text(stringResource(R.string.action_ok), color = AppColors.Calorie) }
+                }) { Text(stringResource(R.string.action_ok), color = MaterialTheme.colorScheme.primary) }
             },
             dismissButton = { TextButton(onClick = { picking = null }) { Text(stringResource(R.string.action_cancel)) } },
         ) {
@@ -252,12 +249,12 @@ private fun DateRow(label: String, value: String, onClick: () -> Unit) {
     Row(
         Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(AppRadii.Field))
+            .clip(MaterialTheme.shapes.medium)
             .clickable(onClick = onClick)
             .padding(vertical = 10.dp),
     ) {
         Text(label, fontSize = 14.sp, modifier = Modifier.padding(end = 8.dp))
         Spacer(Modifier.weight(1f))
-        Text(value, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = AppColors.Calorie)
+        Text(value, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.primary)
     }
 }

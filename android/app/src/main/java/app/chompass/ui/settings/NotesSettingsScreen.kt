@@ -12,7 +12,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import app.chompass.AppContainer
 import app.chompass.R
-import app.chompass.ui.theme.AppTextOpacity
 
 /**
  * Optional daily notes (Codeberg #58a): one toggle that shows the Home note
@@ -38,7 +37,7 @@ fun NotesSettingsScreen(
         Text(
             stringResource(R.string.settings_notes_intro),
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
 
         SectionCard(title = stringResource(R.string.settings_notes_section_tracking)) {

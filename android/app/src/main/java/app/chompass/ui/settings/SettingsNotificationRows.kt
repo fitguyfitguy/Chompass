@@ -22,8 +22,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import app.chompass.R
-import app.chompass.ui.theme.AppColors
-import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.ui.util.clockTimePattern
 import app.chompass.ui.util.formatMinutesOfDay
 import java.time.LocalTime
@@ -42,7 +40,7 @@ internal fun NotificationTypeRows(
     Text(
         stringResource(R.string.settings_notification_types),
         style = MaterialTheme.typography.labelMedium,
-        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
     )
     ToggleRow(
@@ -83,7 +81,7 @@ internal fun NotificationTypeRows(
                 stringResource(R.string.settings_group_data),
             ),
             style = MaterialTheme.typography.bodySmall,
-            color = AppColors.Calorie,
+            color = MaterialTheme.colorScheme.primary,
             modifier = Modifier
                 .padding(start = 16.dp, end = 16.dp, bottom = 8.dp)
                 .clickable(onClick = onOpenHealth),
@@ -132,7 +130,7 @@ internal fun NotificationTypeRows(
         Text(
             stringResource(R.string.settings_needs_water_tracking),
             style = MaterialTheme.typography.bodySmall,
-            color = AppColors.Calorie,
+            color = MaterialTheme.colorScheme.primary,
             modifier = Modifier
                 .padding(start = 16.dp, end = 16.dp, bottom = 8.dp)
                 .clickable(onClick = onOpenWater),

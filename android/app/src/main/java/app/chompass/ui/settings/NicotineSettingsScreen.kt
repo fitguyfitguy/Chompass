@@ -27,7 +27,6 @@ import app.chompass.AppContainer
 import app.chompass.R
 import app.chompass.models.HabitPreset
 import app.chompass.models.HabitPresetDomain
-import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.ui.theme.warning
 
 /**
@@ -59,7 +58,7 @@ fun NicotineSettingsScreen(
         Text(
             stringResource(R.string.settings_nicotine_intro),
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
 
         SectionCard(title = stringResource(R.string.settings_nicotine_section_tracking)) {
@@ -91,7 +90,7 @@ fun NicotineSettingsScreen(
                 Text(
                     stringResource(R.string.settings_nicotine_quick_kinds_help),
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 FlowRow(
                     Modifier.fillMaxWidth(),

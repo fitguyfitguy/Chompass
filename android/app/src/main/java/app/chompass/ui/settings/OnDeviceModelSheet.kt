@@ -32,8 +32,6 @@ import app.chompass.R
 import app.chompass.services.ondevice.ModelCatalog
 import app.chompass.services.ondevice.OnDeviceCapability
 import app.chompass.services.ondevice.OnDeviceDownloadState
-import app.chompass.ui.theme.AppColors
-import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.models.LocaleFormat
 
 private fun gb(bytes: Long): String = "${LocaleFormat.decimal(bytes / 1_073_741_824.0, 1)} GB"
@@ -81,20 +79,20 @@ internal fun OnDeviceModelSheet(
         Text(
             "${entry.displayName} · ${gb(entry.sizeBytes)}",
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Spacer(Modifier.height(8.dp))
         Text(
             stringResource(R.string.on_device_model_accuracy_notice),
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         if (entry.modelId == ModelCatalog.E4B.modelId) {
             Spacer(Modifier.height(8.dp))
             Text(
                 stringResource(R.string.on_device_model_e4b_notice),
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle)
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
         Spacer(Modifier.height(12.dp))
@@ -104,13 +102,13 @@ internal fun OnDeviceModelSheet(
                 Text(
                     stringResource(R.string.on_device_model_privacy_notice, entry.modelCardUrl),
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(
                     stringResource(R.string.on_device_model_device_notice),
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Spacer(Modifier.height(12.dp))
                 if (!hasEnoughSpace) {
@@ -146,7 +144,7 @@ internal fun OnDeviceModelSheet(
                 LinearProgressIndicator(
                     progress = { current.progressPercent / 100f },
                     modifier = Modifier.fillMaxWidth(),
-                    color = AppColors.Calorie
+                    color = MaterialTheme.colorScheme.primary
                 )
                 Spacer(Modifier.height(12.dp))
                 TextButton(onClick = onCancelDownload, modifier = Modifier.fillMaxWidth()) {
@@ -170,7 +168,7 @@ internal fun OnDeviceModelSheet(
                         stringResource(R.string.on_device_model_not_loaded)
                     },
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
             is OnDeviceDownloadState.Failed -> {
@@ -227,7 +225,7 @@ internal fun OnDeviceModelSheet(
         Text(
             stringResource(R.string.settings_on_device_headroom_footer, gb(reserveBytes)),
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
 
         if (isLoaded || occupiedBytes > 0L) {
@@ -249,7 +247,7 @@ internal fun OnDeviceModelSheet(
                 Text(
                     stringResource(R.string.on_device_model_clear_footer, gb(occupiedBytes)),
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
         }

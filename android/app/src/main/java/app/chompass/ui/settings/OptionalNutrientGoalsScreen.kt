@@ -39,10 +39,7 @@ import app.chompass.ui.components.ChompassDialogActions
 import app.chompass.ui.components.ChompassSurface
 import app.chompass.ui.components.ChompassIconBubble
 import app.chompass.ui.navigation.BottomNavScrollPadding
-import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.macroAccentColor
-import app.chompass.ui.theme.AppRadii
-import app.chompass.ui.theme.AppTextOpacity
 
 @Composable
 fun OptionalNutrientGoalsScreen(
@@ -81,7 +78,7 @@ fun OptionalNutrientGoalsScreen(
                 item {
                     ChompassSurface(
                         modifier = Modifier.fillMaxWidth(),
-                        cornerRadius = AppRadii.SectionCard,
+                        cornerRadius = 16.dp,
                         padding = 0.dp,
                                 ) {
                         Row(
@@ -99,9 +96,9 @@ fun OptionalNutrientGoalsScreen(
                                 Text(
                                     stringResource(R.string.settings_optional_nutrient_estimate_ai),
                                     color = if (ui.estimatingOptionalNutrientGoals) {
-                                        MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Faint)
+                                        MaterialTheme.colorScheme.outline
                                     } else {
-                                        AppColors.Calorie
+                                        MaterialTheme.colorScheme.primary
                                     },
                                     style = MaterialTheme.typography.bodyLarge,
                                     fontWeight = FontWeight.Medium
@@ -109,7 +106,7 @@ fun OptionalNutrientGoalsScreen(
                                 Text(
                                     stringResource(R.string.settings_optional_nutrient_estimate_ai_hint),
                                     style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                             if (ui.estimatingOptionalNutrientGoals) {
@@ -122,7 +119,7 @@ fun OptionalNutrientGoalsScreen(
             item {
                 ChompassSurface(
                     modifier = Modifier.fillMaxWidth(),
-                    cornerRadius = AppRadii.SectionCard,
+                    cornerRadius = 16.dp,
                     padding = 0.dp,
                         ) {
                     Column {
@@ -144,7 +141,7 @@ fun OptionalNutrientGoalsScreen(
                 Text(
                     "Separate from calorie, protein, carb, and fat goals.",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(start = 4.dp, top = 4.dp)
                 )
             }
@@ -160,7 +157,7 @@ fun OptionalNutrientGoalsScreen(
                 currentValue = ui.optionalNutrientGoals.valueFor(nutrient),
                 range = nutrient.goalRange,
                 step = nutrient.goalStep,
-                accentColor = nutrient.macroAccentColor() ?: AppColors.Calorie,
+                accentColor = nutrient.macroAccentColor() ?: MaterialTheme.colorScheme.primary,
                 confirmAbove = nutrient.softMax,
                 conversionHintFor = if (nutrient == OptionalNutrient.VITAMIN_D) { v ->
                     String.format(java.util.Locale.getDefault(), iuTemplate, v, v * 40)
@@ -183,7 +180,7 @@ fun OptionalNutrientGoalsScreen(
             )
             Text(
                 message,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             ChompassDialogActions(
                 primaryText = stringResource(R.string.action_ok),

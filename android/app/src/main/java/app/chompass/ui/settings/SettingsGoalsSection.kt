@@ -39,8 +39,6 @@ import app.chompass.models.MacroPlanMode
 import app.chompass.models.WeightGoal
 import app.chompass.ui.components.ChompassIconBubble
 import app.chompass.ui.navigation.ChompassRoutes
-import app.chompass.ui.theme.AppColors
-import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.models.UnitFormat
 import app.chompass.services.ai.RecalcSheetData
 import app.chompass.services.ai.RecalcSheetSource
@@ -133,9 +131,9 @@ internal fun SettingsGoalsSection(
                         Text(
                             stringResource(R.string.settings_recalculate_goals),
                             color = if (ui.recalculatingGoals) {
-                                MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Faint)
+                                MaterialTheme.colorScheme.outline
                             } else {
-                                AppColors.Calorie
+                                MaterialTheme.colorScheme.primary
                             },
                             style = MaterialTheme.typography.bodyLarge,
                             fontWeight = FontWeight.Medium
@@ -148,7 +146,7 @@ internal fun SettingsGoalsSection(
                             // row's right edge, not a wrapped line below it.
                             Text(
                                 stringResource(R.string.settings_tap_to_update),
-                                color = AppColors.Calorie,
+                                color = MaterialTheme.colorScheme.primary,
                                 style = MaterialTheme.typography.bodySmall
                             )
                         }
@@ -179,17 +177,17 @@ internal fun SettingsGoalsSection(
             Text(
                 stringResource(R.string.settings_goals_how_adaptive),
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Text(
                 stringResource(R.string.settings_goals_how_energy),
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Text(
                 stringResource(R.string.settings_goals_how_lock),
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }

@@ -47,7 +47,6 @@ import app.chompass.ui.settings.NutrientCardLayoutPickerDialog
 import app.chompass.ui.settings.calorieHeroLayoutLabel
 import app.chompass.ui.settings.foodLogLayoutLabel
 import app.chompass.ui.settings.nutrientCardLayoutLabel
-import app.chompass.ui.theme.AppTextOpacity
 
 @Composable
 internal fun HomeLookStep(
@@ -155,7 +154,7 @@ internal fun HomeLookStep(
                 Text(
                     nutrientValue,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -178,7 +177,7 @@ internal fun HomeLookStep(
                 Text(
                     chipValue,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -274,7 +273,7 @@ private fun LayoutPickerCard(label: String, value: String, onClick: () -> Unit) 
             Text(
                 value,
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )

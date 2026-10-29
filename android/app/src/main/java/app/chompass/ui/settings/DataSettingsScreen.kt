@@ -32,7 +32,6 @@ import app.chompass.ui.components.ChompassDialogActions
 import app.chompass.ui.navigation.ChompassRoutes
 import app.chompass.models.CurrentMealCatalog
 import app.chompass.models.LocaleFormat
-import app.chompass.ui.theme.AppTextOpacity
 import java.time.Instant
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -252,7 +251,7 @@ fun DataSettingsScreen(
             Text(stringResource(R.string.settings_clear_food_title), fontSize = 20.sp, fontWeight = FontWeight.Bold)
             Text(
                 stringResource(R.string.settings_clear_food_message),
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             ChompassDialogActions(
                 primaryText = stringResource(R.string.action_clear),
@@ -273,7 +272,7 @@ fun DataSettingsScreen(
             Text(stringResource(R.string.settings_delete_all_title), fontSize = 20.sp, fontWeight = FontWeight.Bold)
             Text(
                 stringResource(R.string.settings_delete_all_message),
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             ChompassDialogActions(
                 primaryText = stringResource(R.string.action_delete),
@@ -293,7 +292,7 @@ fun DataSettingsScreen(
     importDiaryMessage?.let { msg ->
         ChompassDialog(onDismissRequest = { importDiaryMessage = null }) {
             Text(stringResource(R.string.import_diary_title), fontSize = 20.sp, fontWeight = FontWeight.Bold)
-            Text(msg, color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary))
+            Text(msg, color = MaterialTheme.colorScheme.onSurfaceVariant)
             ChompassDialogActions(
                 primaryText = stringResource(R.string.action_ok),
                 onPrimary = { importDiaryMessage = null }
@@ -304,7 +303,7 @@ fun DataSettingsScreen(
     importBodyMetricsMessage?.let { msg ->
         ChompassDialog(onDismissRequest = { importBodyMetricsMessage = null }) {
             Text(stringResource(R.string.import_body_metrics_title), fontSize = 20.sp, fontWeight = FontWeight.Bold)
-            Text(msg, color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary))
+            Text(msg, color = MaterialTheme.colorScheme.onSurfaceVariant)
             ChompassDialogActions(
                 primaryText = stringResource(R.string.action_ok),
                 onPrimary = { importBodyMetricsMessage = null }

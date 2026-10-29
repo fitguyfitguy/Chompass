@@ -27,7 +27,6 @@ import app.chompass.AppContainer
 import app.chompass.R
 import app.chompass.models.HabitPreset
 import app.chompass.models.HabitPresetDomain
-import app.chompass.ui.theme.AppTextOpacity
 
 /**
  * Optional caffeine tracker settings: enable, daily mg limit (0 = none), the
@@ -58,7 +57,7 @@ fun CaffeineSettingsScreen(
         Text(
             stringResource(R.string.settings_caffeine_intro),
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
 
         SectionCard(title = stringResource(R.string.settings_caffeine_section_tracking)) {
@@ -90,7 +89,7 @@ fun CaffeineSettingsScreen(
                 Text(
                     stringResource(R.string.settings_caffeine_quick_kinds_help),
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 FlowRow(
                     Modifier.fillMaxWidth(),

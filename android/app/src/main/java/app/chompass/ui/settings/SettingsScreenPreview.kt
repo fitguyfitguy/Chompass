@@ -39,7 +39,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
 import app.chompass.ui.components.ChompassSurface
-import app.chompass.ui.theme.AppRadii
 
 /**
  * SettingRow stress layout for release screenshot previews: long label + long
@@ -58,7 +57,7 @@ internal fun SettingRowStressPreviewContent() {
     ) {
         ChompassSurface(
             modifier = Modifier.fillMaxWidth(),
-            cornerRadius = AppRadii.Container,
+            cornerRadius = 16.dp,
             padding = 0.dp,
                     ) {
             Column(Modifier.padding(vertical = 4.dp)) {
@@ -94,7 +93,7 @@ internal fun SettingRowAlignmentPreviewContent() {
     ) {
         ChompassSurface(
             modifier = Modifier.fillMaxWidth(),
-            cornerRadius = AppRadii.Container,
+            cornerRadius = 16.dp,
             padding = 0.dp,
                     ) {
             Column(Modifier.padding(vertical = 4.dp)) {
@@ -159,7 +158,7 @@ internal fun SettingsScreenPreviewContent(
 
             ChompassSurface(
                 modifier = Modifier.fillMaxWidth(),
-                cornerRadius = AppRadii.Container,
+                cornerRadius = 16.dp,
                 padding = 0.dp,
                             ) {
                 Column(Modifier.padding(vertical = 4.dp)) {
@@ -244,7 +243,7 @@ internal fun SettingsScreenPreviewContent(
 
             ChompassSurface(
                 modifier = Modifier.fillMaxWidth(),
-                cornerRadius = AppRadii.Container,
+                cornerRadius = 16.dp,
                 padding = 0.dp,
             ) {
                 Column(Modifier.padding(vertical = 4.dp)) {

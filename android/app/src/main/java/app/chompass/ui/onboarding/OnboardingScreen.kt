@@ -45,7 +45,6 @@ import app.chompass.models.WeightGoal
 import java.time.LocalDate
 import java.time.Period
 import app.chompass.services.ondevice.OnDeviceCapability
-import app.chompass.ui.theme.AppRadii
 @OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
 fun OnboardingScreen(container: AppContainer, onComplete: () -> Unit) {
@@ -229,7 +228,7 @@ fun OnboardingScreen(container: AppContainer, onComplete: () -> Unit) {
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(56.dp)
-                            .clip(RoundedCornerShape(AppRadii.Field))
+                            .clip(MaterialTheme.shapes.medium)
                             .background(
                                 MaterialTheme.colorScheme.primary
                             )
@@ -259,7 +258,7 @@ fun OnboardingScreen(container: AppContainer, onComplete: () -> Unit) {
                         .padding(horizontal = 24.dp)
                         .padding(bottom = 36.dp)
                         .height(54.dp)
-                        .clip(RoundedCornerShape(AppRadii.Sheet))
+                        .clip(MaterialTheme.shapes.extraLarge)
                         .background(
                             MaterialTheme.colorScheme.primary
                         )
@@ -288,7 +287,7 @@ fun OnboardingScreen(container: AppContainer, onComplete: () -> Unit) {
                             else vm.next()
                         },
                         enabled = ui.canAdvance,
-                        shape = RoundedCornerShape(AppRadii.Sheet),
+                        shape = MaterialTheme.shapes.extraLarge,
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.onBackground,
                             contentColor = MaterialTheme.colorScheme.background
@@ -319,7 +318,7 @@ fun OnboardingScreen(container: AppContainer, onComplete: () -> Unit) {
                         } else vm.next()
                     },
                     enabled = ui.canAdvance,
-                    shape = RoundedCornerShape(AppRadii.Sheet),
+                    shape = MaterialTheme.shapes.extraLarge,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.onBackground,
                         contentColor = MaterialTheme.colorScheme.background

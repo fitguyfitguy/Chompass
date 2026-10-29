@@ -36,8 +36,6 @@ import androidx.compose.ui.unit.dp
 import app.chompass.R
 import app.chompass.ui.components.ChompassIconBubble
 import app.chompass.ui.navigation.BottomNavScrollPadding
-import app.chompass.ui.theme.AppRadii
-import app.chompass.ui.theme.AppTextOpacity
 
 /**
  * Pinned bar for a pushed settings screen. [backContentDescription] is where
@@ -131,12 +129,12 @@ internal fun RelatedLinks(rows: List<RelatedLink>) {
         Text(
             stringResource(R.string.settings_related),
             style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(start = 4.dp, bottom = 6.dp)
         )
         app.chompass.ui.components.ChompassSurface(
             modifier = Modifier.fillMaxWidth(),
-            cornerRadius = AppRadii.Container,
+            cornerRadius = 16.dp,
             padding = 0.dp,
         ) {
             Column(Modifier.padding(vertical = 4.dp)) {
@@ -158,7 +156,7 @@ internal fun RelatedLinks(rows: List<RelatedLink>) {
                         Icon(
                             Icons.AutoMirrored.Filled.KeyboardArrowRight,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled),
+                            tint = MaterialTheme.colorScheme.outline,
                         )
                     }
                 }
@@ -193,13 +191,13 @@ internal fun SettingsHubRow(
             Text(
                 summary,
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
         Icon(
             Icons.AutoMirrored.Filled.KeyboardArrowRight,
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled),
+            tint = MaterialTheme.colorScheme.outline,
         )
     }
 }

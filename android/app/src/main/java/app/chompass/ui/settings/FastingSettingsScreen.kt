@@ -18,7 +18,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import app.chompass.AppContainer
 import app.chompass.R
-import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.ui.util.clockTimePattern
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -58,7 +57,7 @@ fun FastingSettingsScreen(
         Text(
             stringResource(R.string.settings_fasting_intro),
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
 
         SectionCard(title = stringResource(R.string.settings_fasting_section_tracking)) {

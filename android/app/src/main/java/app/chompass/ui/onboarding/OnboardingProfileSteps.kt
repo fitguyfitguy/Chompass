@@ -43,7 +43,6 @@ import app.chompass.ui.components.DecimalWheelPicker
 import app.chompass.ui.components.UnitToggle
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppThemeColor
-import app.chompass.ui.theme.AppTextOpacity
 import java.time.LocalDate
 
 @Composable
@@ -79,7 +78,7 @@ internal fun WelcomeStep() {
         Text(
             stringResource(R.string.onboarding_welcome_subtitle),
             style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = androidx.compose.ui.text.style.TextAlign.Center
         )
         Spacer(Modifier.height(24.dp))
@@ -102,7 +101,7 @@ private fun WelcomeFeatureRow(icon: ImageVector, text: String) {
         Icon(
             imageVector = icon,
             contentDescription = null,
-            tint = AppColors.Calorie,
+            tint = MaterialTheme.colorScheme.primary,
             modifier = Modifier.size(20.dp)
         )
         Spacer(Modifier.width(12.dp))
@@ -243,7 +242,7 @@ internal fun BodyFatStep(
             Text(
                 stringResource(R.string.onboarding_body_fat_ranges),
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = androidx.compose.ui.text.style.TextAlign.Center
             )
@@ -257,7 +256,7 @@ internal fun BodyFatStep(
                 Text(
                     stringResource(R.string.onboarding_goal_optional),
                     style = MaterialTheme.typography.titleSmall,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Secondary),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.weight(1f)
                 )
                 Switch(
@@ -265,7 +264,7 @@ internal fun BodyFatStep(
                     onCheckedChange = { isOn ->
                         onGoalChange(if (isOn) bodyFat else null)
                     },
-                    colors = SwitchDefaults.colors(checkedThumbColor = AppColors.Calorie)
+                    colors = SwitchDefaults.colors(checkedThumbColor = MaterialTheme.colorScheme.primary)
                 )
             }
             if (goalBodyFat != null) {
@@ -283,7 +282,7 @@ internal fun BodyFatStep(
                 Text(
                     stringResource(R.string.onboarding_goal_set_later),
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Faint)
+                    color = MaterialTheme.colorScheme.outline
                 )
             }
         } else {
@@ -295,13 +294,13 @@ internal fun BodyFatStep(
                 Text(
                     "ƒ(x)",
                     style = MaterialTheme.typography.headlineSmall,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(
                     stringResource(R.string.onboarding_body_fat_no_worries),
                     style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = androidx.compose.ui.text.style.TextAlign.Center
                 )
             }

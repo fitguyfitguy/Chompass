@@ -13,7 +13,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import app.chompass.AppContainer
 import app.chompass.R
-import app.chompass.ui.theme.AppTextOpacity
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -34,7 +33,7 @@ fun PersonalSettingsScreen(
         Text(
             stringResource(R.string.settings_personal_intro),
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         SettingsPersonalSection(
             ui = ui,

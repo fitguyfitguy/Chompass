@@ -22,7 +22,6 @@ import app.chompass.R
 import app.chompass.ui.components.ChompassDialog
 import app.chompass.ui.components.ChompassDialogActions
 import app.chompass.ui.navigation.ChompassRoutes
-import app.chompass.ui.theme.AppTextOpacity
 
 /**
  * Health Connect connection screen: toggle, manage access, background sync and
@@ -181,7 +180,7 @@ fun HealthDataSettingsScreen(
             }
         ) {
             Text(stringResource(R.string.settings_permission_title), fontSize = 20.sp, fontWeight = FontWeight.Bold)
-            Text(msg, color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary))
+            Text(msg, color = MaterialTheme.colorScheme.onSurfaceVariant)
             if (actionLabel != null && actionIntent != null) {
                 ChompassDialogActions(
                     primaryText = actionLabel,
