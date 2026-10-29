@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
@@ -188,9 +189,14 @@ fun ChompassDialog(
             decorFitsSystemWindows = decorFitsSystemWindows,
         ),
     ) {
+        // M3 AlertDialog recipe (AlertDialogContent in material3 1.4.0):
+        // extraLarge shape, surfaceContainerHigh ground, zero tonal
+        // elevation, 560dp dialog max width. The free-form content stays a
+        // ColumnScope so call sites keep composing title/body rows directly.
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
+                .widthIn(max = 560.dp)
                 .padding(horizontal = 24.dp),
             shape = MaterialTheme.shapes.extraLarge,
             color = MaterialTheme.colorScheme.surfaceContainerHigh,

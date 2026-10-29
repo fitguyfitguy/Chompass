@@ -2279,6 +2279,7 @@
     <string name="body_fat_method_dexa">DEXA</string>
     <string name="body_fat_method_tape">卷尺</string>
     <string name="cd_collapsed">已折叠</string>
+    <string name="cd_change_meal_type">更改餐次类型</string>
     <string name="cd_decrease">减少</string>
     <string name="cd_expanded">已展开</string>
     <string name="cd_import_mealie">从 Mealie 导入</string>

@@ -2279,6 +2279,7 @@
     <string name="body_fat_method_dexa">DEXA</string>
     <string name="body_fat_method_tape">줄자</string>
     <string name="cd_collapsed">접힘</string>
+    <string name="cd_change_meal_type">식사 유형 변경</string>
     <string name="cd_decrease">감소</string>
     <string name="cd_expanded">펼침</string>
     <string name="cd_import_mealie">Mealie에서 가져오기</string>

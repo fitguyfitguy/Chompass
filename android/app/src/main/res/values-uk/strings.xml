@@ -2227,6 +2227,7 @@ LBM = вага × (1 − %жиру)</string>
     <string name="body_fat_method_dexa">DEXA</string>
     <string name="body_fat_method_tape">Стрічка</string>
     <string name="cd_collapsed">Згорнуто</string>
+    <string name="cd_change_meal_type">Змінити тип прийому їжі</string>
     <string name="cd_decrease">Зменшити</string>
     <string name="cd_expanded">Розгорнуто</string>
     <string name="cd_import_mealie">Імпортувати з Mealie</string>

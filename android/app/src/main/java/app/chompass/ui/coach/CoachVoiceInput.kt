@@ -22,6 +22,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
@@ -269,13 +270,7 @@ fun CoachMicButton(controller: CoachVoiceController) {
     val holding = controller.phase == VoicePhase.Holding
     Box(
         modifier = Modifier
-            .size(34.dp)
-            .scale(if (holding) 1.18f else 1f)
-            .clip(CircleShape)
-            .background(
-                if (holding) MaterialTheme.colorScheme.primary
-                else MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
-            )
+            .minimumInteractiveComponentSize()
             .pointerInput(Unit) {
                 awaitEachGesture {
                     val down = awaitFirstDown(requireUnconsumed = false)
@@ -310,12 +305,25 @@ fun CoachMicButton(controller: CoachVoiceController) {
             },
         contentAlignment = Alignment.Center
     ) {
-        Icon(
-            Icons.Filled.Mic,
-            contentDescription = stringResource(R.string.cd_hold_to_record),
-            tint = if (holding) Color.White else MaterialTheme.colorScheme.primary,
-            modifier = Modifier.size(18.dp)
-        )
+        // 34dp visual circle inside the 48dp touch target.
+        Box(
+            modifier = Modifier
+                .size(34.dp)
+                .scale(if (holding) 1.18f else 1f)
+                .clip(CircleShape)
+                .background(
+                    if (holding) MaterialTheme.colorScheme.primary
+                    else MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                Icons.Filled.Mic,
+                contentDescription = stringResource(R.string.cd_hold_to_record),
+                tint = if (holding) Color.White else MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(18.dp)
+            )
+        }
     }
 }
 
@@ -385,7 +393,6 @@ fun CoachRecordingIndicator(controller: CoachVoiceController, modifier: Modifier
 fun CoachVoiceCancelButton(onClick: () -> Unit) {
     FilledIconButton(
         onClick = onClick,
-        modifier = Modifier.size(34.dp),
         colors = IconButtonDefaults.filledIconButtonColors(
             containerColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f),
             contentColor = MaterialTheme.colorScheme.error,

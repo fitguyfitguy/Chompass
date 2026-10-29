@@ -199,7 +199,7 @@ private fun ClassicMacroCard(input: MacroCardInput) {
                 maxLines = 1,
                 // Shrink to fit the card at max font scale: long values + long
                 // suffixes (ru "91,5g übrig") clipped at 1.3× without this.
-                autoSize = TextAutoSize.StepBased(minFontSize = 8.sp, maxFontSize = 11.sp, stepSize = 0.5.sp),
+                autoSize = TextAutoSize.StepBased(minFontSize = 11.sp, maxFontSize = 11.sp, stepSize = 0.5.sp),
             )
         }
     }
@@ -317,7 +317,7 @@ private fun CompactBarsMacroCard(input: MacroCardInput) {
                 )
                 Text(
                     displayUnit,
-                    fontSize = 9.sp,
+                    fontSize = 11.sp,
                     fontWeight = FontWeight.Medium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
@@ -334,8 +334,8 @@ private fun CompactBarsMacroCard(input: MacroCardInput) {
                 horizontalArrangement = Arrangement.spacedBy(3.dp),
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                Text(
-                    formatted(current),
+                AnimatedNumberText(
+                    value = formatted(current),
                     fontSize = 12.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = accentColor,
@@ -350,7 +350,7 @@ private fun CompactBarsMacroCard(input: MacroCardInput) {
                         status.text,
                         fontSize = 11.sp,
                         maxLines = 1,
-                        autoSize = TextAutoSize.StepBased(minFontSize = 8.sp, maxFontSize = 11.sp, stepSize = 0.5.sp),
+                        autoSize = TextAutoSize.StepBased(minFontSize = 11.sp, maxFontSize = 11.sp, stepSize = 0.5.sp),
                         color = when {
                             status.over -> accentColor
                             status.met -> accentColor
@@ -407,8 +407,8 @@ private fun SlimLineMacroCard(input: MacroCardInput) {
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.weight(1f, fill = false),
                     )
-                    Text(
-                        formatted(current),
+                    AnimatedNumberText(
+                        value = formatted(current),
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
                         color = accentColor,
@@ -417,7 +417,7 @@ private fun SlimLineMacroCard(input: MacroCardInput) {
                     )
                     Text(
                         displayUnit,
-                        fontSize = 9.sp,
+                        fontSize = 11.sp,
                         fontWeight = FontWeight.Medium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 1,
@@ -428,7 +428,7 @@ private fun SlimLineMacroCard(input: MacroCardInput) {
                         status.text,
                         fontSize = 10.sp,
                         maxLines = 1,
-                        autoSize = TextAutoSize.StepBased(minFontSize = 8.sp, maxFontSize = 10.sp, stepSize = 0.5.sp),
+                        autoSize = TextAutoSize.StepBased(minFontSize = 11.sp, maxFontSize = 12.sp, stepSize = 0.5.sp),
                         color = when {
                             status.over -> accentColor
                             status.met -> accentColor

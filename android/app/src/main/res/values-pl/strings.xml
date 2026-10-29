@@ -2322,6 +2322,7 @@ makro rebalansowane do nowej sumy kalorii</string>
     <string name="body_fat_method_dexa">DEXA</string>
     <string name="body_fat_method_tape">Taśma</string>
     <string name="cd_collapsed">Zwinięte</string>
+    <string name="cd_change_meal_type">Zmień typ posiłku</string>
     <string name="cd_decrease">Zmniejsz</string>
     <string name="cd_expanded">Rozwinięte</string>
     <string name="cd_import_mealie">Importuj z Mealie</string>

@@ -2302,6 +2302,7 @@ macros reequilibradas al nuevo total calórico</string>
     <string name="add_food_trackers_section">Seguimiento</string>
     <string name="body_fat_method_dexa">DEXA</string>
     <string name="cd_collapsed">Contraído</string>
+    <string name="cd_change_meal_type">Cambiar tipo de comida</string>
     <string name="cd_decrease">Disminuir</string>
     <string name="cd_expanded">Expandido</string>
     <string name="cd_import_mealie">Importar desde Mealie</string>

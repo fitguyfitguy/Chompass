@@ -105,10 +105,9 @@ enum class SavedTab { RECENTS, FREQUENT, FAVORITES, RECIPES }
  *
  * Favorites segment additionally supports:
  *   - swipe-left to unfavorite
- *   - long-press the drag handle and slide vertically to reorder (mirrors iOS
- *     EditButton + .onMove). Drag delta is converted to an index offset using
- *     a fixed row pitch — favorites lists are short so an estimated pitch is
- *     accurate enough.
+ *   - long-press the drag handle and slide vertically to reorder. Drag delta
+ *     is converted to an index offset using a fixed row pitch — favorites
+ *     lists are short so an estimated pitch is accurate enough.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -128,8 +127,8 @@ fun SavedMealsSheet(
     val scope = rememberCoroutineScope()
 
     // Restore the last-selected segment from DataStore so reopening the sheet
-    // remembers whether the user was on Recents / Frequent / Favorites — same
-    // as iOS @AppStorage("lastRecentsSegment") in RecentsView.swift. Restored
+    // remembers whether the user was on Recents / Frequent / Favorites.
+    // Restored
     // exactly once, up front: keying the live tab on the DataStore stream let
     // a late emission land after the user had already switched segments and
     // yank them back to the persisted one (bounce to "Zuletzt").
@@ -661,7 +660,7 @@ private fun MoveButtons(
 }
 
 /**
- * iOS Mail-style trailing reveal, painted as the row's own background:
+ * Trailing reveal action, painted as the row's own background:
  * one full-row silhouette in the row's corner shape, the heart centered in
  * the strip the foreground has slid off of (maintainer finding M1
  * 2026-10-08: a separate reveal-width tile read as a second card).
@@ -862,8 +861,7 @@ private fun RecipeRow(
 
 /**
  * 56dp thumb. Prefers the saved food photo (via [imageStore]) over the emoji
- * fallback so logged entries with photos show their actual image — same as
- * iOS RecentsView's `entry.imageData` branch.
+ * fallback so logged entries with photos show their actual image.
  */
 @Composable
 private fun Thumbnail(emoji: String?, imageFilename: String?, imageStore: FoodImageStore) {

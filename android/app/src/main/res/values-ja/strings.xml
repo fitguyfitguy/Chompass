@@ -2279,6 +2279,7 @@
     <string name="body_fat_method_dexa">DEXA</string>
     <string name="body_fat_method_tape">メジャー</string>
     <string name="cd_collapsed">折りたたみ中</string>
+    <string name="cd_change_meal_type">食事タイプを変更</string>
     <string name="cd_decrease">減らす</string>
     <string name="cd_expanded">展開中</string>
     <string name="cd_import_mealie">Mealie からインポート</string>

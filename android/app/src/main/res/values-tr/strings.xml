@@ -2300,6 +2300,7 @@ makrolar yeni kalori toplamına göre yeniden dengelenir</string>
     <string name="body_fat_method_dexa">DEXA</string>
     <string name="body_fat_method_tape">Mezura</string>
     <string name="cd_collapsed">Daraltılmış</string>
+    <string name="cd_change_meal_type">Öğün türünü değiştir</string>
     <string name="cd_decrease">Azalt</string>
     <string name="cd_expanded">Genişletilmiş</string>
     <string name="cd_import_mealie">Mealie\'den içe aktar</string>

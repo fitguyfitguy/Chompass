@@ -2280,6 +2280,7 @@
     <string name="body_fat_method_dexa">DEXA</string>
     <string name="body_fat_method_tape">टेप</string>
     <string name="cd_collapsed">संकुचित</string>
+    <string name="cd_change_meal_type">भोजन का प्रकार बदलें</string>
     <string name="cd_decrease">घटाएँ</string>
     <string name="cd_expanded">विस्तारित</string>
     <string name="cd_import_mealie">Mealie से आयात करें</string>

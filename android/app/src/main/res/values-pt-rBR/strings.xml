@@ -2283,6 +2283,7 @@ macros reequilibradas ao novo total calórico</string>
     <string name="body_fat_method_dexa">DEXA</string>
     <string name="body_fat_method_tape">Fita</string>
     <string name="cd_collapsed">Recolhido</string>
+    <string name="cd_change_meal_type">Alterar tipo de refeição</string>
     <string name="cd_decrease">Diminuir</string>
     <string name="cd_expanded">Expandido</string>
     <string name="cd_import_mealie">Importar do Mealie</string>

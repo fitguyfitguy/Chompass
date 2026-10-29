@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.BuildConfig
 import app.chompass.R
+import app.chompass.ui.components.AnimatedNumberText
 import app.chompass.ui.components.ChompassSurface
 
 /**
@@ -141,13 +142,12 @@ internal fun StatBadge(label: String, value: String, modifier: Modifier = Modifi
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(2.dp)
     ) {
-        Text(
-            value,
+        AnimatedNumberText(
+            value = value,
             modifier = Modifier.fillMaxWidth(),
             fontSize = 14.sp,
             fontWeight = FontWeight.SemiBold,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
+            color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center,
             autoSize = TextAutoSize.StepBased(minFontSize = 10.sp, maxFontSize = 15.sp, stepSize = 0.5.sp)
         )

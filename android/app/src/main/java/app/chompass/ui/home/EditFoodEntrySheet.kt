@@ -632,7 +632,13 @@ fun EditFoodEntrySheet(
 
             item { SheetSectionHeader(stringResource(R.string.sheet_meal)) }
             item {
-                SheetPillRow(onClick = { mealMenuExpanded = true }) {
+                SheetPillRow(
+                    onClick = { mealMenuExpanded = true },
+                    onClickLabel = stringResource(R.string.cd_change_meal_type),
+                    stateDescription = stringResource(
+                        if (mealMenuExpanded) R.string.cd_expanded else R.string.cd_collapsed
+                    ),
+                ) {
                     Text(stringResource(R.string.sheet_meal_type), fontSize = 16.sp, modifier = Modifier.weight(1f))
                     // Wrap only the right cluster in a Box so the DropdownMenu
                     // anchors on the right side of the row (under the value),
@@ -913,7 +919,7 @@ fun EditFoodEntrySheet(
             }
 
             // "More Nutrition" — own pill row with chevron-right that flips to
-            // chevron-down when expanded; matches iOS DisclosureGroup behavior.
+            // chevron-down when expanded.
             if (MicronutrientField.MoreNutrition.any { editableMicros[it] != null }) {
                 item {
                     SheetPillRow(onClick = { moreNutritionExpanded = !moreNutritionExpanded }) {

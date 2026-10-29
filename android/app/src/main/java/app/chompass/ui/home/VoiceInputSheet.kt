@@ -254,7 +254,7 @@ fun VoiceInputSheet(
                 .padding(horizontal = 20.dp, vertical = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Provider pill — pink capsule with a bolt + provider name (mirrors iOS).
+            // Provider pill — capsule with a bolt + provider name.
             Row(
                 Modifier
                     .clip(CircleShape)
@@ -386,7 +386,7 @@ fun VoiceInputSheet(
                 )
             }
 
-            // Analyze / Cancel — iOS match: borderedProminent pink capsule, then
+            // Analyze / Cancel — filled accent capsule, then
             // a secondary Cancel text button. Native is one-tap (stops the live
             // recognizer and submits in one click); remote is two-tap (mic to
             // stop+transcribe, then Analyze on the reviewed transcript).
@@ -428,7 +428,7 @@ fun VoiceInputSheet(
 @Composable
 private fun MicButton(phase: VoicePhase, onToggle: () -> Unit) {
     val recording = phase == VoicePhase.RECORDING
-    // iOS has a slow 0.8s ease-in-out pulse to 1.15x while recording.
+    // Slow 0.8s ease-in-out pulse to 1.15x while recording.
     val infinite = rememberInfiniteTransition(label = "micPulse")
     val pulse by infinite.animateFloat(
         initialValue = 1f,

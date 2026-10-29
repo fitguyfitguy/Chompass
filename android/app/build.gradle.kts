@@ -160,6 +160,14 @@ android {
 
     experimentalProperties["android.experimental.enableScreenshotTest"] = true
 
+    // A11y regression gate (Morphe Phase 3): touch-target sizing and content
+    // labeling fail the build on new violations. Pre-existing findings (all
+    // categories) live in the committed lint baseline.
+    lint {
+        enable += listOf("Accessibility", "ContentDescription")
+        baseline = file("lint-baseline.xml")
+    }
+
     // IzzyOnDroid (and F-Droid infra) strongly prefer keeping APKs small.
     // Compress native *.so libs to reduce the on-disk size of "fat" builds.
     packaging {

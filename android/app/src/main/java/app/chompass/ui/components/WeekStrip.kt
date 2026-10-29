@@ -226,22 +226,16 @@ private fun DayTile(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
-        // .font(.system(.caption2, design: .rounded, weight: .medium))
-        // .foregroundStyle(isSelected ? AppColors.calorie : Color.secondary.opacity(0.6))
+        // Narrow weekday label; unselected reads as secondary text.
         Text(
             narrowDay(date.dayOfWeek),
             fontSize = 11.sp,
             fontWeight = FontWeight.Medium,
             color = if (isSelected) MaterialTheme.colorScheme.primary
-                    else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f * 0.6f),
+                    else MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = if (untracked) Modifier.alpha(0.45f) else Modifier,
         )
 
-        // .font(.system(.body, design: .rounded, weight: .semibold))
-        // .foregroundStyle(isSelected ? .white : (isToday ? AppColors.calorie : .primary))
-        // .frame(width: 36, height: 36)
-        // .background { if isSel Circle.fill(gradient).shadow(...)
-        //               else if isToday Circle.strokeBorder(Calorie*0.35, 1.5) }
         // Selection circle: fades/springs in on selection instead of snapping.
         // The circle layer scales behind the number (draw-only), so the tile's
         // resting look is unchanged — an unselected circle is transparent at

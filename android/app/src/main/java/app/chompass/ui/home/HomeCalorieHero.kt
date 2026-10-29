@@ -92,36 +92,10 @@ import app.chompass.ui.theme.success
 // ── Calorie hero ─────────────────────────────────────────────────────
 
 /**
- * Verbatim port of the calorie hero block in HomeView.body
- * (ios/calorietracker/ContentView.swift, lines ~322–362):
- *
- *   VStack(spacing: 20) {
- *     VStack(spacing: 4) {
- *       Text("\(selectedCalories)")
- *         .font(.system(size: 72, weight: .bold, design: .rounded))
- *         .foregroundStyle(LinearGradient(colors: AppColors.calorieGradient,
- *                                         startPoint: .topLeading,
- *                                         endPoint: .bottomTrailing))
- *         .contentTransition(.numericText())
- *         .animation(.snappy, value: selectedCalories)
- *       Text("of \(calorieGoal) kcal")
- *         .font(.system(.callout, design: .rounded, weight: .medium))
- *         .foregroundStyle(.tertiary)
- *     }
- *     GeometryReader { geo in
- *       ZStack(alignment: .leading) {
- *         Capsule().fill(AppColors.calorie.opacity(0.10)).frame(height: 10)
- *         Capsule().fill(LinearGradient(.leading, .trailing))
- *                  .frame(width: max(10, geo.size.width * progress), height: 10)
- *                  .shadow(color: AppColors.calorie.opacity(0.35), radius: 8, y: 3)
- *                  .animation(.spring(response: 0.8, dampingFraction: 0.75), value: selectedCalories)
- *       }
- *     }.frame(height: 10).padding(.horizontal, 24)
- *     Text("\(caloriesRemaining) left")
- *       .font(.system(.footnote, design: .rounded, weight: .medium))
- *       .foregroundStyle(.secondary)
- *   }
- *   .padding(.vertical, 20)
+ * The Home calorie hero: the selected kcal value in display numerals over a
+ * 10dp progress capsule (accent fill, soft glow), with the goal and remaining
+ * labels beneath. Changes animate — counter swap and fill springs via the
+ * AppMotion specs in the composables below.
  */
 private data class CalorieHeroInput(
     val current: Int,
@@ -1717,10 +1691,9 @@ private fun BudgetExplanationDialog(
     }
 }
 
-// ── Macro card (iOS port) ────────────────────────────────────────────
+// ── Macro card ───────────────────────────────────────────────────────
 
-// MacroCard moved to ui/components/MacroCard.kt as a verbatim port of
-// HomeComponents.swift's struct MacroCard. Imported above.
+// MacroCard lives in ui/components/MacroCard.kt; imported above.
 
 @Composable
 internal fun ViewMoreButton() {
