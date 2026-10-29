@@ -61,6 +61,7 @@ import app.chompass.ui.components.ChompassPrimaryButton
 import app.chompass.ui.components.DateWheelPicker
 import app.chompass.ui.components.NumericWheelPicker
 import app.chompass.ui.components.ChompassPinnedFooterSheet
+import app.chompass.ui.components.LocalPinnedToolbarHeight
 import app.chompass.ui.components.energyUnitLabel
 import app.chompass.ui.components.rememberChompassSheetState
 import app.chompass.ui.navigation.LocalEnergyUnit
@@ -312,6 +313,7 @@ internal fun GoalPhaseEditSheet(
                 Modifier
                     .fillMaxWidth()
                     .verticalScroll(rememberScrollState())
+                    .padding(top = LocalPinnedToolbarHeight.current)
                     .padding(horizontal = 18.dp)
                     .padding(top = 12.dp),
             ) {

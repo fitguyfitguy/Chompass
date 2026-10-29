@@ -20,11 +20,18 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.SheetValue
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
@@ -33,6 +40,16 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.hazeSource
+
+/**
+ * Height of the pinned glass toolbar inside a [ChompassPinnedFooterColumn].
+ * Body scroll containers read this and add it as leading content padding, so
+ * resting content sits just below the toolbar while scrolled content passes
+ * underneath the frost.
+ */
+val LocalPinnedToolbarHeight = compositionLocalOf { 0.dp }
 
 /**
  * Shared modal bottom sheet.
@@ -127,17 +144,39 @@ fun ChompassBottomSheet(
 fun ChompassPinnedFooterColumn(
     modifier: Modifier = Modifier,
     maxHeightFraction: Float = 0.92f,
+    containerColor: Color = MaterialTheme.colorScheme.surfaceContainerLow,
     toolbar: (@Composable () -> Unit)? = null,
     footer: @Composable () -> Unit,
     body: @Composable () -> Unit,
 ) {
     BoxWithConstraints(modifier.fillMaxWidth()) {
-        Column(
-            Modifier.fillMaxWidth().heightIn(max = maxHeight * maxHeightFraction)
-        ) {
-            toolbar?.invoke()
-            Box(Modifier.fillMaxWidth().weight(1f, fill = false)) { body() }
-            footer()
+        val density = LocalDensity.current
+        // Sheet-scoped blur: a sheet window cannot blur the app surface it
+        // floats over, so the body itself is the frost source and the pinned
+        // toolbar is the glass pane (Morphe DialogLayout recipe). Content
+        // scrolls under the toolbar; body scroll containers compensate via
+        // [LocalPinnedToolbarHeight].
+        val sheetHaze = remember { HazeState() }
+        var toolbarHeight by remember { mutableStateOf(0.dp) }
+        CompositionLocalProvider(LocalPinnedToolbarHeight provides toolbarHeight) {
+            Column(
+                Modifier.fillMaxWidth().heightIn(max = maxHeight * maxHeightFraction)
+            ) {
+                if (toolbar != null) {
+                    Box(Modifier.fillMaxWidth().weight(1f, fill = false)) {
+                        Box(Modifier.fillMaxWidth().hazeSource(sheetHaze)) { body() }
+                        Box(
+                            Modifier
+                                .fillMaxWidth()
+                                .onSizeChanged { toolbarHeight = with(density) { it.height.toDp() } }
+                                .hazeGlassFill(containerColor, RectangleShape, sheetHaze),
+                        ) { toolbar() }
+                    }
+                } else {
+                    Box(Modifier.fillMaxWidth().weight(1f, fill = false)) { body() }
+                }
+                footer()
+            }
         }
     }
 }
@@ -174,6 +213,7 @@ fun ChompassPinnedFooterSheet(
         ChompassPinnedFooterColumn(
             modifier = Modifier,
             maxHeightFraction = maxHeightFraction,
+            containerColor = containerColor,
             toolbar = toolbar,
             footer = footer,
             body = body,
