@@ -116,7 +116,9 @@ enum class AIProvider {
             "MiniMaxAI/MiniMax-M3"
         )
         GROQ -> listOf(
-            "qwen/qwen3.6-27b"
+            "openai/gpt-oss-120b",
+            "openai/gpt-oss-20b",
+            "qwen/qwen3.8-27b"
         )
         HUGGING_FACE -> listOf(
             "google/gemma-4-31B-it",
