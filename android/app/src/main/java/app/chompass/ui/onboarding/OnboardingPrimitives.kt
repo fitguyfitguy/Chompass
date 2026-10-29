@@ -38,7 +38,6 @@ import app.chompass.ui.components.ChompassSurface
 import app.chompass.ui.components.ChompassIconBubble
 import app.chompass.ui.components.NumericWheelPicker
 import app.chompass.ui.components.SplitDecimalWheelPicker
-import app.chompass.ui.theme.AppColors
 import androidx.compose.material3.Icon
 import app.chompass.models.UnitFormat
 

@@ -85,7 +85,6 @@ import app.chompass.ui.components.energyUnitLabel
 import app.chompass.ui.navigation.LocalLaunchFillEpoch
 import app.chompass.ui.navigation.LocalEnergyUnit
 import app.chompass.ui.components.pressScale
-import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppMotion
 import app.chompass.ui.theme.success
 
