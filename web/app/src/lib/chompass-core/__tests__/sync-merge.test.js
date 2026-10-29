@@ -198,7 +198,7 @@ test("mergeSyncDocuments collapses duplicate weights under different ids", () =>
   assert.ok(merged.weights.some((w) => w.id === "w4" && w.deleted_at));
 });
 
-test("daily notes merge collapses same-day to last-write-wins and stamps 1.2", () => {
+test("daily notes merge collapses same-day to last-write-wins and stamps the merged version", () => {
   const id = "00000000-0000-0000-0000-0000000050b2";
   const base = {
     export: { app: "Chompass", kind: "sync", format_version: "1.2" },
@@ -226,7 +226,9 @@ test("daily notes merge collapses same-day to last-write-wins and stamps 1.2", (
     ],
   };
   const merged = mergeSyncDocuments(phone, desktop);
-  assert.equal(merged.export.format_version, "1.2");
+  // Merged docs are stamped by content (1.5 composition > 1.4 photos > 1.3 base),
+  // never by the older input version.
+  assert.equal(merged.export.format_version, "1.3");
   assert.equal(merged.daily_notes.length, 1);
   assert.equal(merged.daily_notes[0].text, "desktop wins");
 
@@ -273,7 +275,8 @@ test("merge local 1.2 with remote 1.1 keeps daily_notes tombstones", () => {
     prefs: null,
   };
   const merged = mergeSyncDocuments(local, remote11);
-  assert.equal(merged.export.format_version, "1.2");
+  // Content-derived stamp (no photos, no composition rows → base 1.3).
+  assert.equal(merged.export.format_version, "1.3");
   // The local tombstone survives; the absent remote arrays come back empty.
   assert.deepEqual(merged.daily_notes, [
     { id, updated_at: "2026-07-24T18:00:00Z", deleted_at: "2026-07-24T18:00:00Z" },

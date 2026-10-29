@@ -14,6 +14,7 @@ import app.chompass.export.SyncDocument
 import app.chompass.export.SyncMerge
 import app.chompass.models.BodyFatEntry
 import app.chompass.models.BodyMeasurement
+import app.chompass.models.BodyCompositionEntry
 import app.chompass.models.FoodEntry
 import app.chompass.models.GoalJournal
 import app.chompass.models.WeightEntry
@@ -61,6 +62,7 @@ class SyncRepository(
             weights = prefs.weightEntries.first(),
             bodyFats = prefs.bodyFatEntries.first(),
             measurements = prefs.bodyMeasurements.first(),
+            compositions = prefs.bodyCompositions.first(),
             water = prefs.waterEntries.first(),
             dailyNotes = prefs.noteEntries.first(),
             nicotine = prefs.nicotineEntries.first(),
@@ -410,6 +412,7 @@ class SyncRepository(
         prefs.weightEntries.first().forEach { track(it.id, "weight") }
         prefs.bodyFatEntries.first().forEach { track(it.id, "bodyfat") }
         prefs.bodyMeasurements.first().forEach { track(it.id, "measure") }
+        prefs.bodyCompositions.first().forEach { track(it.id, "composition") }
         prefs.waterEntries.first().forEach { track(it.id, "water") }
         prefs.noteEntries.first().forEach { track(it.id, "daily_note") }
         prefs.nicotineEntries.first().forEach { track(it.id, "nicotine") }
@@ -426,6 +429,7 @@ class SyncRepository(
         prefs.weightEntries.first().forEach { rows += it.id to "weight" }
         prefs.bodyFatEntries.first().forEach { rows += it.id to "bodyfat" }
         prefs.bodyMeasurements.first().forEach { rows += it.id to "measure" }
+        prefs.bodyCompositions.first().forEach { rows += it.id to "composition" }
         prefs.waterEntries.first().forEach { rows += it.id to "water" }
         prefs.noteEntries.first().forEach { rows += it.id to "daily_note" }
         prefs.nicotineEntries.first().forEach { rows += it.id to "nicotine" }
@@ -491,6 +495,12 @@ class SyncRepository(
             it.entry
         }
         applyMergedMeasurementBuckets(liveMeasures, local?.measurements?.map { it.id }.orEmpty())
+
+        val liveCompositions = doc.compositions.mapNotNull {
+            track(it.id, it.updatedAt, it.deletedAt, "composition")
+            it.entry
+        }
+        applyMergedCompositionBuckets(liveCompositions, local?.compositions?.map { it.id }.orEmpty())
 
         val liveWater = doc.water.mapNotNull {
             track(it.id, it.updatedAt, it.deletedAt, "water")
@@ -572,6 +582,17 @@ class SyncRepository(
         val drop = uuidDropSet(localIds, live.map { it.id.toString() })
         val current = prefs.bodyMeasurements.first()
         prefs.applyMeasurementBucketChanges(
+            upsertsByMonth = live.groupBy { it.date.monthBucket() },
+            removalIdsByMonth = removalsByMonth(
+                current, drop, idOf = { it.id }, monthOf = { it.date.monthBucket() },
+            ),
+        )
+    }
+
+    private suspend fun applyMergedCompositionBuckets(live: List<BodyCompositionEntry>, localIds: Collection<String>) {
+        val drop = uuidDropSet(localIds, live.map { it.id.toString() })
+        val current = prefs.bodyCompositions.first()
+        prefs.applyCompositionBucketChanges(
             upsertsByMonth = live.groupBy { it.date.monthBucket() },
             removalIdsByMonth = removalsByMonth(
                 current, drop, idOf = { it.id }, monthOf = { it.date.monthBucket() },

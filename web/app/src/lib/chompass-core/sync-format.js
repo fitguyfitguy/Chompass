@@ -14,10 +14,13 @@ import { microOrNull } from "./constituents.js";
 
 export const SYNC_FORMAT_VERSION = "1.3";
 export const SYNC_KIND = "sync";
-export const SYNC_IMPORT_VERSIONS = new Set(["1.0", "1.1", "1.2", "1.3", "1.4"]);
+export const SYNC_IMPORT_VERSIONS = new Set(["1.0", "1.1", "1.2", "1.3", "1.4", "1.5"]);
 
 /** Sync 1.4 stamp: emitted iff any exported food/favorite row carries photo refs (Codeberg #122). */
 export const SYNC_PHOTOS_VERSION = "1.4";
+
+/** Sync 1.5 stamp: emitted iff the doc carries scale-composition rows (supersedes 1.4). */
+export const SYNC_COMPOSITION_VERSION = "1.5";
 
 /** @param {number} n */
 function pad2(n) {
@@ -153,6 +156,21 @@ const MEASUREMENT_FIELDS = [
   ["calf_cm", "calfCm"],
   ["wrist_cm", "wristCm"],
 ];
+
+/** Scale-composition wire keys (sync 1.5). The rating is unitless, so it is not a mass. */
+const COMPOSITION_FIELDS = [
+  ["bone_mass_kg", "boneMassKg"],
+  ["total_body_water_kg", "totalBodyWaterKg"],
+  ["muscle_mass_kg", "muscleMassKg"],
+  ["lean_mass_kg", "leanMassKg"],
+  ["visceral_fat_rating", "visceralFatRating"],
+];
+
+/** @param {string} wireKey @param {number|null} value */
+function compositionWireValue(wireKey, value) {
+  if (value == null) return null;
+  return wireKey === "visceral_fat_rating" ? round1(value) : round2(value);
+}
 
 function round1(n) {
   if (n == null) return null;
@@ -343,6 +361,7 @@ export function foodEntryFromSyncWire(wire) {
  *   weights?: import('./models.js').WeightEntry[],
  *   bodyFat?: import('./models.js').BodyFatEntry[],
  *   measurements?: import('./models.js').BodyMeasurement[],
+ *   bodyComposition?: import('./models.js').BodyCompositionEntry[],
  *   water?: import('./models.js').WaterEntry[],
  *   dailyNotes?: import('./models.js').DailyNote[],
  *   nicotine?: import('./models.js').NicotineEntry[],
@@ -390,10 +409,13 @@ export function exportSyncDocument(input) {
       app: "Chompass",
       kind: SYNC_KIND,
       // 1.4 only when photo refs are actually in the doc — older clients accept
-      // at most 1.3, so a 1.4 stamp without photos would lock them out.
+      // at most 1.3, so a 1.4 stamp without photos would lock them out. 1.5 iff
+      // scale-composition rows ride along (it supersedes 1.4).
       format_version:
-        (input.foodEntries ?? []).some((/** @type {any} */ e) => e.photos?.length) ||
-        (input.favorites ?? []).some((/** @type {any} */ e) => e.photos?.length)
+        (input.bodyComposition ?? []).length > 0
+          ? SYNC_COMPOSITION_VERSION
+          : (input.foodEntries ?? []).some((/** @type {any} */ e) => e.photos?.length) ||
+            (input.favorites ?? []).some((/** @type {any} */ e) => e.photos?.length)
           ? SYNC_PHOTOS_VERSION
           : SYNC_FORMAT_VERSION,
       generated_at: generatedAt,
@@ -431,6 +453,20 @@ export function exportSyncDocument(input) {
       };
       for (const [wireKey, modelKey] of MEASUREMENT_FIELDS) {
         wire[wireKey] = round1(m[modelKey] ?? null);
+      }
+      return wire;
+    }),
+    body_composition: (input.bodyComposition ?? []).map((c) => {
+      const meta = metaFor(c.id, c.date);
+      /** @type {Record<string, any>} */
+      const wire = {
+        id: c.id,
+        updated_at: meta.updated_at,
+        deleted_at: meta.deleted_at,
+        date: c.date,
+      };
+      for (const [wireKey, modelKey] of COMPOSITION_FIELDS) {
+        wire[wireKey] = compositionWireValue(wireKey, c[modelKey] ?? null);
       }
       return wire;
     }),
@@ -556,6 +592,7 @@ export function appendTombstones(doc, revisions) {
     weight: "weights",
     bodyfat: "body_fat",
     measure: "measurements",
+    composition: "body_composition",
     water: "water",
     daily_note: "daily_notes",
     nicotine: "nicotine_entries",
@@ -605,13 +642,16 @@ export function parseSyncDocument(doc) {
   // pre-1.2 remotes have no nicotine/caffeine/daily-notes arrays at all; each
   // must default to [] (Android's parser is lenient the same way). goal_journal
   // (#60) rides the same optional-array rule: old docs parse with [].
-  const OPTIONAL_ARRAYS = new Set(["nicotine_entries", "caffeine_entries", "daily_notes", "goal_journal"]);
+  const OPTIONAL_ARRAYS = new Set([
+    "nicotine_entries", "caffeine_entries", "daily_notes", "goal_journal", "body_composition",
+  ]);
   for (const key of [
     "food_entries",
     "favorites",
     "weights",
     "body_fat",
     "measurements",
+    "body_composition",
     "water",
     "daily_notes",
     "nicotine_entries",
@@ -682,6 +722,24 @@ export function liveMeasurementsFromSync(wires) {
         m[modelKey] = w[wireKey] ?? null;
       }
       return m;
+    });
+}
+
+/**
+ * @param {any[]} wires
+ * @returns {import('./models.js').BodyCompositionEntry[]}
+ */
+export function liveBodyCompositionFromSync(wires) {
+  return (wires ?? [])
+    .filter((w) => w && w.id && !w.deleted_at)
+    .map((w) => {
+      /** @type {import('./models.js').BodyCompositionEntry} */
+      const c = { id: String(w.id), date: String(w.date) };
+      for (const [wireKey, modelKey] of COMPOSITION_FIELDS) {
+        const value = w[wireKey];
+        c[modelKey] = typeof value === "number" && Number.isFinite(value) ? value : null;
+      }
+      return c;
     });
 }
 

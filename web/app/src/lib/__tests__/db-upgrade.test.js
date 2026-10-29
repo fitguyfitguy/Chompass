@@ -6,7 +6,7 @@
 // the real upgrade chain, and require the store to exist and serve reads/writes.
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { untrackedDays } from "../db.js";
+import { untrackedDays, bodyComposition, withRevisionHooksSuppressed } from "../db.js";
 
 /**
  * Minimal in-memory IndexedDB covering exactly what vendor/idb.js uses: open with
@@ -122,7 +122,10 @@ describe("db upgrade chain (#112)", () => {
 
     // Pre-fix, this threw NotFoundError on Home/diary renders.
     assert.deepEqual(await untrackedDays.all(), []);
-    assert.equal(databases.get("chompass-pwa").version, 8);
+    // The exact version keeps climbing with every new store (v9 added
+    // bodyComposition); the invariant here is that the open() upgrade chain ran
+    // past v7 and created the missing store.
+    assert.ok(databases.get("chompass-pwa").version >= 8);
     assert.equal(databases.get("chompass-pwa").stores.has("untrackedDays"), true);
 
     const row = { date: "2026-09-25", kcal: null };
@@ -130,5 +133,20 @@ describe("db upgrade chain (#112)", () => {
     assert.deepEqual(await untrackedDays.all(), [row]);
     await untrackedDays.delete("2026-09-25");
     assert.deepEqual(await untrackedDays.all(), []);
+
+    // The same upgrade chain also lands v9's scale-composition store, which reads
+    // empty and serves writes (db.js memoizes the connection, so one open covers
+    // every version bump in this process).
+    assert.equal(databases.get("chompass-pwa").stores.has("bodyComposition"), true);
+    assert.deepEqual(await bodyComposition.all(), []);
+    const comp = { id: "66666666-6666-4666-8666-666666666666", date: "2026-10-29T07:05:00.000Z", leanMassKg: 64.5 };
+    // Revision hooks read the `prefs` store, which the pre-v8 baseline never had;
+    // suppression keeps this test on the store contract it is about.
+    await withRevisionHooksSuppressed(async () => {
+      await bodyComposition.put(comp);
+      assert.deepEqual(await bodyComposition.all(), [comp]);
+      await bodyComposition.delete(comp.id);
+      assert.deepEqual(await bodyComposition.all(), []);
+    });
   });
 });

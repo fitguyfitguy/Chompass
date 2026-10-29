@@ -9,6 +9,7 @@ import {
   weights,
   bodyFat,
   measurements,
+  bodyComposition,
   water,
   dailyNotes,
   nicotine,
@@ -25,6 +26,7 @@ import {
   liveWeightsFromSync,
   liveBodyFatFromSync,
   liveMeasurementsFromSync,
+  liveBodyCompositionFromSync,
   liveWaterFromSync,
   liveDailyNotesFromSync,
   liveNicotineFromSync,
@@ -76,6 +78,7 @@ export async function buildLocalSyncDocument() {
     weights: await weights.all(),
     bodyFat: await bodyFat.all(),
     measurements: await measurements.all(),
+    bodyComposition: await bodyComposition.all(),
     water: await water.all(),
     dailyNotes: await dailyNotes.all(),
     nicotine: await nicotine.all(),
@@ -143,6 +146,13 @@ export async function applySyncDocument(doc) {
   }
   for (const id of mPart.deletedIds) await measurements.delete(id);
   for (const entry of liveMeasurementsFromSync(mPart.live)) await measurements.put(entry);
+
+  const compPart = partitionLiveAndDeleted(doc.body_composition ?? []);
+  for (const row of doc.body_composition ?? []) {
+    revisions[row.id] = { updatedAt: row.updated_at, deletedAt: row.deleted_at ?? null, kind: "composition" };
+  }
+  for (const id of compPart.deletedIds) await bodyComposition.delete(id);
+  for (const entry of liveBodyCompositionFromSync(compPart.live)) await bodyComposition.put(entry);
 
   const wPart = partitionLiveAndDeleted(doc.water ?? []);
   for (const row of doc.water ?? []) {

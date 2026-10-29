@@ -6,6 +6,12 @@
  */
 
 export const BODY_METRICS_FORMAT_VERSION = "1.0";
+/** Stamped only when the document carries scale-composition rows. */
+export const BODY_METRICS_FORMAT_VERSION_COMPOSITION = "1.1";
+export const BODY_METRICS_SUPPORTED_VERSIONS = [
+  BODY_METRICS_FORMAT_VERSION,
+  BODY_METRICS_FORMAT_VERSION_COMPOSITION,
+];
 export const BODY_METRICS_KIND = "body_metrics";
 
 /**
@@ -13,8 +19,8 @@ export const BODY_METRICS_KIND = "body_metrics";
  * BodyMetricsImporter.kt's `fileId`:
  *   UUID.nameUUIDFromBytes("file-$kind:${time.toEpochMilli()}".toByteArray())
  * i.e. an RFC 4122 v3 (name-based, MD5) UUID over the UTF-8 string
- * "file-<kind>:<epochMillis>", kind in {"weight","bodyfat","measure"}.
- * @param {"weight"|"bodyfat"|"measure"} kind
+ * "file-<kind>:<epochMillis>", kind in {"weight","bodyfat","measure","composition"}.
+ * @param {"weight"|"bodyfat"|"measure"|"composition"} kind
  * @param {number} epochMillis
  * @returns {Promise<string>}
  */
@@ -98,12 +104,35 @@ const MEASUREMENT_FIELDS = [
   ["upper_arm_cm", "upperArmCm"], ["thigh_cm", "thighCm"], ["calf_cm", "calfCm"], ["wrist_cm", "wristCm"],
 ];
 
+const COMPOSITION_FIELDS = [
+  ["bone_mass_kg", "boneMassKg"],
+  ["total_body_water_kg", "totalBodyWaterKg"],
+  ["muscle_mass_kg", "muscleMassKg"],
+  ["lean_mass_kg", "leanMassKg"],
+  ["visceral_fat_rating", "visceralFatRating"],
+];
+
+/** Mirrors BodyMetricsImporter.kt bounds: masses must be plausible kg, the rating is 1-59. */
+function compositionValueOk(wireKey, value) {
+  if (typeof value !== "number" || !Number.isFinite(value)) return false;
+  if (wireKey === "visceral_fat_rating") return value >= 1 && value <= 59;
+  return value > 0 && value < 300;
+}
+
 /**
- * @param {{weights: import('./models.js').WeightEntry[], bodyFat: import('./models.js').BodyFatEntry[], measurements: import('./models.js').BodyMeasurement[]}} input
+ * @param {{weights: import('./models.js').WeightEntry[], bodyFat: import('./models.js').BodyFatEntry[], measurements: import('./models.js').BodyMeasurement[], bodyComposition?: import('./models.js').BodyCompositionEntry[]}} input
  */
-export function exportBodyMetrics({ weights, bodyFat, measurements }) {
-  return {
-    export: { app: "Chompass", kind: BODY_METRICS_KIND, format_version: BODY_METRICS_FORMAT_VERSION },
+export function exportBodyMetrics({ weights, bodyFat, measurements, bodyComposition = [] }) {
+  /** @type {any} */
+  const doc = {
+    export: {
+      app: "Chompass",
+      kind: BODY_METRICS_KIND,
+      // 1.1 iff composition rows ride along; otherwise byte-identical to the 1.0 shape.
+      format_version: bodyComposition.length > 0
+        ? BODY_METRICS_FORMAT_VERSION_COMPOSITION
+        : BODY_METRICS_FORMAT_VERSION,
+    },
     weights: weights.map((w) => ({ id: w.id, date: w.date, weight_kg: round(w.weightKg, 2) })),
     body_fat: bodyFat.map((b) => ({ id: b.id, date: b.date, body_fat_percent: round(b.bodyFatPercent, 1) })),
     measurements: measurements.map((m) => {
@@ -112,13 +141,24 @@ export function exportBodyMetrics({ weights, bodyFat, measurements }) {
       return wire;
     }),
   };
+  if (bodyComposition.length > 0) {
+    doc.body_composition = bodyComposition.map((c) => {
+      const wire = { id: c.id, date: c.date };
+      for (const [wireKey, modelKey] of COMPOSITION_FIELDS) {
+        const value = c[modelKey];
+        wire[wireKey] = value == null ? null : round(value, wireKey === "visceral_fat_rating" ? 1 : 2);
+      }
+      return wire;
+    });
+  }
+  return doc;
 }
 
 export class UnsupportedFormatError extends Error {}
 
 /**
  * @param {any} doc
- * @returns {Promise<{weights: import('./models.js').WeightEntry[], bodyFat: import('./models.js').BodyFatEntry[], measurements: import('./models.js').BodyMeasurement[]}>}
+ * @returns {Promise<{weights: import('./models.js').WeightEntry[], bodyFat: import('./models.js').BodyFatEntry[], measurements: import('./models.js').BodyMeasurement[], bodyComposition: import('./models.js').BodyCompositionEntry[]}>}
  */
 export async function importBodyMetrics(doc) {
   const exp = doc?.export;
@@ -126,7 +166,7 @@ export async function importBodyMetrics(doc) {
   const app = exp.app.trim().toLowerCase();
   if (app !== "chompass" && app !== "nofud" && app !== "fud ai") throw new UnsupportedFormatError(`unrecognized app "${exp.app}"`);
   if (exp.kind !== BODY_METRICS_KIND) throw new UnsupportedFormatError(`unrecognized kind "${exp.kind}"`);
-  if (exp.format_version !== BODY_METRICS_FORMAT_VERSION) {
+  if (!BODY_METRICS_SUPPORTED_VERSIONS.includes(exp.format_version)) {
     throw new UnsupportedFormatError(`unsupported format_version "${exp.format_version}"`);
   }
 
@@ -153,6 +193,18 @@ export async function importBodyMetrics(doc) {
     for (const [wireKey, modelKey] of MEASUREMENT_FIELDS) entry[modelKey] = m[wireKey] ?? null;
     measurements.push(entry);
   }
+  const bodyComposition = [];
+  for (const c of doc.body_composition ?? []) {
+    const entry = { id: await withId(c, "composition"), date: c.date };
+    let any = false;
+    for (const [wireKey, modelKey] of COMPOSITION_FIELDS) {
+      // Out-of-bounds values drop silently, matching the Android importer.
+      const value = compositionValueOk(wireKey, c[wireKey]) ? c[wireKey] : null;
+      entry[modelKey] = value;
+      if (value != null) any = true;
+    }
+    if (any) bodyComposition.push(entry);
+  }
 
-  return { weights, bodyFat, measurements };
+  return { weights, bodyFat, measurements, bodyComposition };
 }

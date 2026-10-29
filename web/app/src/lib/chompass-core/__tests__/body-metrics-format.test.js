@@ -72,3 +72,75 @@ test("drops body-fat readings outside 3-65 percent on import", async () => {
   assert.equal(bodyFat.length, 1);
   assert.equal(bodyFat[0].bodyFatPercent, 22.0);
 });
+
+// --- Scale composition (body-metrics 1.1) ---
+
+test("imports the 1.1 composition fixture and round-trips every field", async () => {
+  const doc = loadParityFixture("body-metrics-composition-sample.json");
+  assert.equal(doc.export.format_version, "1.1");
+  const parsed = await importBodyMetrics(doc);
+  assert.equal(parsed.bodyComposition.length, 3);
+  const full = parsed.bodyComposition.find((c) => c.date === "2026-01-01T07:10:00Z");
+  assert.ok(full);
+  assert.equal(full.boneMassKg, 3.2);
+  assert.equal(full.totalBodyWaterKg, 46.0);
+  assert.equal(full.muscleMassKg, 30.4);
+  assert.equal(full.leanMassKg, 65.2);
+  assert.equal(full.visceralFatRating, 8.0);
+
+  const reExported = exportBodyMetrics(parsed);
+  assert.equal(reExported.export.format_version, "1.1");
+  // Field-level round-trip: the wire allows a missing key or an explicit null for an
+  // absent metric (Android omits, the PWA writes null), so compare values, not keys.
+  const COMPOSITION_KEYS = [
+    "bone_mass_kg",
+    "total_body_water_kg",
+    "muscle_mass_kg",
+    "lean_mass_kg",
+    "visceral_fat_rating",
+  ];
+  assert.equal(reExported.body_composition.length, doc.body_composition.length);
+  reExported.body_composition.forEach((row, i) => {
+    const original = doc.body_composition[i];
+    assert.equal(row.id, original.id);
+    assert.equal(row.date, original.date);
+    for (const key of COMPOSITION_KEYS) {
+      assert.equal(row[key] ?? null, original[key] ?? null, `${original.date} ${key}`);
+    }
+  });
+});
+
+test("a document without composition rows stays 1.0", () => {
+  const doc = exportBodyMetrics({ weights: [], bodyFat: [], measurements: [] });
+  assert.equal(doc.export.format_version, "1.0");
+  assert.equal("body_composition" in doc, false);
+});
+
+test("re-import of a composition fixture is idempotent (deterministic ids)", async () => {
+  const doc = loadParityFixture("body-metrics-composition-sample.json");
+  const withIdsStripped = {
+    ...doc,
+    body_composition: doc.body_composition.map(({ id, ...rest }) => rest),
+  };
+  const first = await importBodyMetrics(withIdsStripped);
+  const second = await importBodyMetrics(withIdsStripped);
+  assert.deepEqual(first.bodyComposition.map((c) => c.id), second.bodyComposition.map((c) => c.id));
+});
+
+test("drops out-of-bounds composition values and empty rows", async () => {
+  const doc = {
+    export: { app: "Chompass", kind: "body_metrics", format_version: "1.1" },
+    weights: [],
+    body_fat: [],
+    measurements: [],
+    body_composition: [
+      { date: "2026-01-01T07:00:00Z", lean_mass_kg: 999, visceral_fat_rating: 80 },
+      { date: "2026-01-02T07:00:00Z", lean_mass_kg: 64.5, bone_mass_kg: -1 },
+    ],
+  };
+  const { bodyComposition } = await importBodyMetrics(doc);
+  // The first row loses both fields and never lands; the second keeps lean only.
+  assert.equal(bodyComposition.length, 1);
+  assert.equal(bodyComposition[0].leanMassKg, 64.5);
+  assert.equal(bodyComposition[0].boneMassKg, null);
+});

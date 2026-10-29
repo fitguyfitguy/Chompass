@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://chompass.app/contracts/body-metrics-1.1.schema.json",
+  "title": "Chompass body-metrics export format 1.1",
+  "description": "Body-metrics 1.0 plus an optional `body_composition` array of bioimpedance-scale readings (bone mass, total body water, muscle mass, lean mass in kg; vendor visceral-fat rating). The 1.1 stamp is only valid when the array is present; a document without it stays 1.0.",
+  "type": "object",
+  "required": ["export", "weights", "body_fat", "measurements"],
+  "additionalProperties": true,
+  "properties": {
+    "export": {
+      "type": "object",
+      "required": ["app", "kind", "format_version"],
+      "properties": {
+        "app": { "type": "string", "minLength": 1 },
+        "kind": { "const": "body_metrics" },
+        "format_version": { "enum": ["1.0", "1.1"] }
+      }
+    },
+    "weights": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["date", "weight_kg"],
+        "properties": {
+          "id": { "type": "string" },
+          "date": { "type": "string" },
+          "weight_kg": { "type": "number" }
+        }
+      }
+    },
+    "body_fat": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["date", "body_fat_percent"],
+        "properties": {
+          "id": { "type": "string" },
+          "date": { "type": "string" },
+          "body_fat_percent": { "type": "number" }
+        }
+      }
+    },
+    "measurements": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["date"],
+        "properties": {
+          "id": { "type": "string" },
+          "date": { "type": "string" },
+          "neck_cm": { "type": ["number", "null"] },
+          "waist_cm": { "type": ["number", "null"] },
+          "hips_cm": { "type": ["number", "null"] },
+          "chest_cm": { "type": ["number", "null"] },
+          "upper_arm_cm": { "type": ["number", "null"] },
+          "thigh_cm": { "type": ["number", "null"] },
+          "calf_cm": { "type": ["number", "null"] },
+          "wrist_cm": { "type": ["number", "null"] }
+        }
+      }
+    },
+    "body_composition": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["date"],
+        "properties": {
+          "id": { "type": "string" },
+          "date": { "type": "string" },
+          "bone_mass_kg": { "type": ["number", "null"] },
+          "total_body_water_kg": { "type": ["number", "null"] },
+          "muscle_mass_kg": { "type": ["number", "null"] },
+          "lean_mass_kg": { "type": ["number", "null"] },
+          "visceral_fat_rating": { "type": ["number", "null"] }
+        }
+      }
+    }
+  }
+}

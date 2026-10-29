@@ -208,6 +208,17 @@
  */
 
 /**
+ * @typedef {Object} BodyCompositionEntry
+ * @property {string} id
+ * @property {string} date        ISO-8601 instant string
+ * @property {number|null} [boneMassKg]
+ * @property {number|null} [totalBodyWaterKg]
+ * @property {number|null} [muscleMassKg]
+ * @property {number|null} [leanMassKg]        fresh readings feed Katch-McArdle BMR
+ * @property {number|null} [visceralFatRating]  vendor rating (typically 1-59), display-only
+ */
+
+/**
  * @typedef {Object} WaterEntry
  * @property {string} id
  * @property {string} date        ISO date "YYYY-MM-DD"
@@ -306,6 +317,8 @@ export function dailyNoteIdFor(date) {
  * @property {"unknown"|"formula"|"ai"|"adaptive"|"manual"} [goalSource] target provenance; auto sources may be re-clamped on weight/body-fat sync (mirrors Android GoalSource)
  * @property {"dexa"|"bia8"|"bia4"|"tape"} [bodyFatMethod] how readings are measured; drives spike-guard width and reading freshness (mirrors Android BodyFatMethod)
  * @property {number} [bodyFatAccuracyPoints] user override of the method's known accuracy, in percentage points
+ * @property {number|null} [measuredLeanMassKg]  measured lean mass (kg) from a scale reading; fresh = feeds Katch-McArdle first
+ * @property {string|null} [leanMassUpdatedAt]   ISO-8601 instant of that reading; null/undefined = legacy = treated as fresh
  */
 
 export {};
