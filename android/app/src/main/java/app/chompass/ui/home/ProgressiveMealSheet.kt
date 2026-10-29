@@ -3,6 +3,7 @@ package app.chompass.ui.home
 import app.chompass.ui.components.ChompassSheetLazyColumn
 import app.chompass.ui.components.ChompassPinnedFooterColumn
 import app.chompass.ui.components.ChompassPinnedFooterSheet
+import app.chompass.ui.components.LocalPinnedToolbarHeight
 import app.chompass.ui.components.rememberChompassSheetState
 import app.chompass.ui.components.FoodReviewPositionalThreshold
 import app.chompass.ui.components.FoodReviewVelocityThreshold
@@ -188,6 +189,7 @@ private fun ProgressiveMealContentList(
             .padding(bottom = 12.dp)
             .onFocusChanged { inputFocused = it.isFocused },
         blockTopEdge = inputFocused || draft.name.isNotBlank(),
+        contentPadding = androidx.compose.foundation.layout.PaddingValues(top = LocalPinnedToolbarHeight.current),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         item {

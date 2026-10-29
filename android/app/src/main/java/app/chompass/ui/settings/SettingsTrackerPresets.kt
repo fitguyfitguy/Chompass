@@ -49,6 +49,7 @@ import app.chompass.models.builtinCaffeineDefaultMg
 import app.chompass.models.MilkKind
 import app.chompass.models.caffeineKindLabelRes
 import app.chompass.ui.components.ChompassPinnedFooterSheet
+import app.chompass.ui.components.LocalPinnedToolbarHeight
 import app.chompass.ui.components.ChompassTextField
 import app.chompass.ui.components.NumericWheelPicker
 import app.chompass.ui.components.rememberChompassSheetState
@@ -280,6 +281,7 @@ internal fun CaffeinePresetEditorSheet(
                 Modifier
                     .fillMaxWidth()
                     .verticalScroll(rememberScrollState())
+                    .padding(top = LocalPinnedToolbarHeight.current)
                     .padding(horizontal = 20.dp),
                 verticalArrangement = Arrangement.spacedBy(18.dp),
             ) {
@@ -389,6 +391,7 @@ internal fun NicotinePresetEditorSheet(
                 Modifier
                     .fillMaxWidth()
                     .verticalScroll(rememberScrollState())
+                    .padding(top = LocalPinnedToolbarHeight.current)
                     .padding(horizontal = 20.dp),
                 verticalArrangement = Arrangement.spacedBy(18.dp),
             ) {
