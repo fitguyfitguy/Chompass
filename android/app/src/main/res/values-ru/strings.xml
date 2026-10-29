@@ -1084,7 +1084,7 @@
     <string name="settings_calc_mifflin_used">Формула по умолчанию для базового метаболизма. Используется, если не указан процент жира.</string>
     <string name="settings_calc_mifflin_formula">Мужчины: 10×вес(кг) + 6,25×рост(см) − 5×возраст + 5\nЖенщины: 10×вес(кг) + 6,25×рост(см) − 5×возраст − 161</string>
     <string name="settings_calc_katch_name">Уравнение Кэтча-МакАрдла</string>
-    <string name="settings_calc_katch_used">Применяется автоматически, если указан процент жира. Точнее для худощавых и спортивных пользователей, так как рассчитывает BMR от безжировой массы, а не от общего веса. Замеры старше 90 дней переключаются на Миффлина—Сан-Жеора.</string>
+    <string name="settings_calc_katch_used">Применяется автоматически, если указан процент жира. Точнее для худощавых и спортивных пользователей, так как рассчитывает BMR от безжировой массы, а не от общего веса. Замеры старше 90 дней переключаются на Миффлина—Сан-Жеора. Свежее значение тощей массы с весов рассчитывает BMR так же и имеет приоритет над процентом жира.</string>
     <string name="settings_calc_katch_formula">BMR = 370 + 21,6 × БМТ(кг)\nБМТ = вес × (1 − %жира)</string>
     <string name="settings_calc_tdee_name">Метод множителя активности</string>
     <string name="settings_calc_tdee_used">TDEE = BMR × множитель активности. Множитель соответствует выбранному уровню активности. Умеренный использует 1,465 (между FAO/WHO лёгким 1,375 и умеренным 1,55) для офисных пользователей, тренирующихся несколько раз в неделю. Это базовый уровень поддержания, от которого отталкивается ИИ (если расход энергии не даёт измеренное значение).</string>
@@ -1239,6 +1239,7 @@
     <string name="import_body_metrics_empty">В этом файле нет записей о весе или данных тела для импорта.</string>
     <string name="import_body_metrics_malformed">Не удалось прочитать файл: %1$s</string>
     <string name="import_body_metrics_success">Импортировано: вес %1$d, жир %2$d, измерений %3$d.</string>
+    <string name="import_body_metrics_success_composition">Также импортировано записей весов: %1$d.</string>
     <string name="import_body_metrics_title">Импорт веса и данных тела</string>
     <string name="import_body_metrics_unsupported">Неподдерживаемый файл. Поддерживаются: JSON/CSV Chompass, CSV openScale или обычный CSV веса.</string>
     <string name="import_diary_empty">В этом файле нет записей дневника для импорта.</string>
@@ -2320,6 +2321,17 @@
     <string name="onboarding_goal_suggested_bmi">При ИМТ %1$.1f</string>
     <!-- Progress v2: оверлей тела, комбо калорий, фазы целей, приверженность. -->
     <string name="progress_body_section">Тело</string>
+    <string name="progress_scale_metrics">Данные весов</string>
+    <string name="progress_scale_metrics_bone_mass">Костная масса</string>
+    <string name="progress_scale_metrics_water">Общая вода в организме</string>
+    <string name="progress_scale_metrics_muscle">Мышечная масса</string>
+    <string name="progress_scale_metrics_lean">Тощая масса</string>
+    <string name="progress_scale_metrics_visceral">Висцеральный жир</string>
+    <string name="progress_scale_metrics_note">Оценка бытовых весов — тенденция надёжнее абсолютного значения</string>
+    <string name="progress_scale_metrics_tbw_percent">%1$.1f %% от массы тела · обычный диапазон 45–65 %%</string>
+    <string name="progress_log_scale_metrics">Данные весов</string>
+    <string name="progress_estimated_smm">Оценка скелетных мышц (Lee)</string>
+    <string name="progress_estimated_smm_note">Антропометрическая оценка по плечу, бедру и голени · ± ~3 кг</string>
     <string name="progress_overlay_off">Выкл.</string>
     <string name="progress_no_entries_in_range">Нет записей за этот период</string>
     <string name="progress_no_series_selected">Нажмите на показатель выше, чтобы отобразить его здесь</string>

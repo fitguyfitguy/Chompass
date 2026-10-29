@@ -1032,6 +1032,18 @@
 
     <string name="progress_weight_section">Weight</string>
     <string name="progress_body_section">Body</string>
+    <string name="progress_scale_metrics">Scale metrics</string>
+    <string name="progress_scale_metrics_bone_mass">Bone mass</string>
+    <string name="progress_scale_metrics_water">Total body water</string>
+    <string name="progress_scale_metrics_muscle">Muscle mass</string>
+    <string name="progress_scale_metrics_lean">Lean mass</string>
+    <string name="progress_scale_metrics_visceral">Visceral fat</string>
+    <string name="progress_scale_metrics_note">Consumer scale estimate — the trend is more reliable than the absolute value</string>
+    <string name="progress_scale_metrics_tbw_percent">%1$.1f %% of body weight · typical range 45–65 %%</string>
+    <string name="progress_log_scale_metrics">Scale metrics</string>
+    <string name="progress_log_scale_metrics_title">Log Scale Metrics</string>
+    <string name="progress_estimated_smm">Estimated skeletal muscle (Lee)</string>
+    <string name="progress_estimated_smm_note">Anthropometric estimate from arm, thigh and calf · ± ~3 kg</string>
     <string name="progress_overlay_off">Off</string>
     <string name="progress_log_weight">Log Weight</string>
     <string name="progress_log_measurement_format">Log %1$s</string>
@@ -2154,6 +2166,7 @@
     <string name="export_body_metrics_format">Format</string>
     <string name="import_body_metrics_title">Import Weight &amp; Body Data</string>
     <string name="import_body_metrics_success">Imported %1$d weight, %2$d body-fat and %3$d measurement entries.</string>
+    <string name="import_body_metrics_success_composition">Also imported %1$d scale-metric entries.</string>
     <string name="import_body_metrics_empty">This file has no weight or body-data entries to import.</string>
     <string name="import_body_metrics_unsupported">Unsupported file. Supported: Chompass JSON/CSV, openScale CSV, or a generic weight CSV.</string>
     <string name="import_body_metrics_malformed">Could not read file: %1$s</string>
@@ -2671,7 +2684,7 @@
     <string name="settings_calc_mifflin_used" formatted="false">Default formula for resting metabolism. Used when you haven\'t entered a body fat %.</string>
     <string name="settings_calc_mifflin_formula">Men: 10×weight(kg) + 6.25×height(cm) − 5×age + 5\nWomen: 10×weight(kg) + 6.25×height(cm) − 5×age − 161</string>
     <string name="settings_calc_katch_name">Katch-McArdle equation</string>
-    <string name="settings_calc_katch_used" formatted="false">Used when you\'ve entered a body fat % and left Use body fat % in BMR on. More accurate for lean and athletic users since it derives BMR from lean body mass instead of total weight. Turn the toggle off to keep Mifflin-St Jeor. Readings older than 90 days fall back to Mifflin-St Jeor.</string>
+    <string name="settings_calc_katch_used" formatted="false">Used when you\'ve entered a body fat % and left Use body fat % in BMR on. More accurate for lean and athletic users since it derives BMR from lean body mass instead of total weight. Turn the toggle off to keep Mifflin-St Jeor. Readings older than 90 days fall back to Mifflin-St Jeor. A fresh scale reading of lean (fat-free) mass drives BMR the same way and takes priority over body fat.</string>
     <string name="settings_calc_katch_formula" formatted="false">BMR = 370 + 21.6 × LBM(kg)\nLBM = weight × (1 − bodyFat%)</string>
     <string name="settings_calc_tdee_name">Activity-multiplier method</string>
     <string name="settings_calc_tdee_used">TDEE = BMR × activity multiplier. The multiplier corresponds to your selected activity level. Moderate uses 1.465 (between FAO/WHO light 1.375 and moderate 1.55) for desk-active users who exercise a few times per week. This is the maintenance baseline the AI starts from (unless Energy Burn supplies a measured one).</string>

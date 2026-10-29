@@ -1160,6 +1160,7 @@
     <string name="import_body_metrics_empty">このファイルにはインポートできる体重・身体データの記録がありません。</string>
     <string name="import_body_metrics_malformed">ファイルを読み込めませんでした：%1$s</string>
     <string name="import_body_metrics_success">体重 %1$d 件、体脂肪 %2$d 件、測定 %3$d 件をインポートしました。</string>
+    <string name="import_body_metrics_success_composition">体重計の指標を %1$d 件追加でインポートしました。</string>
     <string name="import_body_metrics_title">体重と身体データをインポート</string>
     <string name="import_body_metrics_unsupported">サポートされていないファイルです。対応：Chompass JSON/CSV、openScale CSV、一般的な体重 CSV。</string>
     <string name="import_diary_empty">このファイルにはインポートできる日記の記録がありません。</string>
@@ -1430,7 +1431,7 @@
     <string name="settings_calc_intro">1日のカロリーとマクロの目標は AI が設定します。「目標を再計算」をタップするか、適応型目標オンの場合に週1回程度自動で、Chompass はプロフィール、下記の参照式、最近記録した食事、体重傾向を AI プロバイダーに送信します。査読済みの計算式から始め、データに合わせて調整して維持量と目標を推定します。</string>
     <string name="settings_calc_katch_formula">BMR = 370 + 21.6 × LBM(kg)\nLBM = 体重 × (1 − %体脂肪)</string>
     <string name="settings_calc_katch_name">Katch-McArdle 式</string>
-    <string name="settings_calc_katch_used">体脂肪率を入力すると自動で使用されます。総体重ではなく除脂肪体重から BMR を導出するため、痩せ型・アスリートに正確です。 90日より古い測定値はMifflin-St Jeorにフォールバックします。</string>
+    <string name="settings_calc_katch_used">体脂肪率を入力すると自動で使用されます。総体重ではなく除脂肪体重から BMR を導出するため、痩せ型・アスリートに正確です。 90日より古い測定値はMifflin-St Jeorにフォールバックします。 体重計の新しい除脂肪量の値も同じ式でBMRを計算し、体脂肪より優先されます。</string>
     <string name="settings_calc_macro_split">マクロ栄養素の配分</string>
     <string name="settings_calc_maintenance">維持量と目標調整</string>
     <string name="settings_calc_methods">計算方法</string>
@@ -2224,6 +2225,17 @@
     <string name="onboarding_goal_suggested_bmi">BMI %1$.1f に基づく</string>
     <!-- Progress v2: 体オーバーレイ、カロリー組み合わせ、目標フェーズ、達成度。 -->
     <string name="progress_body_section">体</string>
+    <string name="progress_scale_metrics">体重計の指標</string>
+    <string name="progress_scale_metrics_bone_mass">骨量</string>
+    <string name="progress_scale_metrics_water">体内総水分量</string>
+    <string name="progress_scale_metrics_muscle">筋肉量</string>
+    <string name="progress_scale_metrics_lean">除脂肪量</string>
+    <string name="progress_scale_metrics_visceral">内臓脂肪</string>
+    <string name="progress_scale_metrics_note">家庭用体重計の推定値 — 傾向のほうが絶対値より信頼できます</string>
+    <string name="progress_scale_metrics_tbw_percent">体重の %1$.1f %% · 一般的な範囲 45–65 %%</string>
+    <string name="progress_log_scale_metrics">体重計の指標</string>
+    <string name="progress_estimated_smm">推定骨格筋量（Lee）</string>
+    <string name="progress_estimated_smm_note">上腕・大腿・下腿からの人体計測推定 · ± ~3 kg</string>
     <string name="progress_overlay_off">オフ</string>
     <string name="progress_no_entries_in_range">この期間の記録はありません</string>
     <string name="progress_no_series_selected">表示するには上の項目をタップしてください</string>

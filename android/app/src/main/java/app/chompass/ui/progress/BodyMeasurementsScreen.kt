@@ -82,11 +82,24 @@ private fun measurementSiteList(context: android.content.Context, m: BodyMeasure
 }
 
 /** Derived metrics computable from this entry + profile, skipping any missing their inputs. */
-private fun derivedMetricList(context: android.content.Context, m: BodyMeasurement, gender: Gender, heightCm: Double): List<Pair<String, String>> = buildList {
+private fun derivedMetricList(
+    context: android.content.Context,
+    m: BodyMeasurement,
+    gender: Gender,
+    heightCm: Double,
+    ageYears: Int,
+    useMetric: Boolean,
+): List<Pair<String, String>> = buildList {
     m.waistToHipRatio?.let { add(context.getString(R.string.derived_waist_to_hip) to String.format(Locale.getDefault(), "%.2f", it)) }
     m.waistToHeightRatio(heightCm)?.let { add(context.getString(R.string.derived_waist_to_height) to String.format(Locale.getDefault(), "%.2f", it)) }
     m.usNavyBodyFatPercent(gender, heightCm)?.let { add(context.getString(R.string.derived_navy_body_fat) to String.format(Locale.getDefault(), "%.0f%%", it)) }
     m.relativeFatMassPercent(gender, heightCm)?.let { add(context.getString(R.string.derived_rfm_body_fat) to String.format(Locale.getDefault(), "%.0f%%", it)) }
+    m.estimatedSkeletalMuscleMassKg(gender, ageYears, heightCm)?.let { kg ->
+        // SMM-LEE is display-only: a trend companion, never an input to BMR/macros.
+        val value = if (useMetric) String.format(Locale.getDefault(), "%.1f %s", kg, context.getString(R.string.unit_kg))
+        else String.format(Locale.getDefault(), "%.1f %s", UnitFormat.kgToLbs(kg), context.getString(R.string.unit_lbs))
+        add(context.getString(R.string.progress_estimated_smm) to value)
+    }
     m.wristFrame(gender, heightCm)?.let { add(context.getString(R.string.derived_frame) to context.getString(it.labelRes)) }
 }
 
@@ -240,7 +253,8 @@ fun BodyMeasurementsScreen(container: AppContainer, onBack: () -> Unit) {
                 }
             }
             if (latest != null) {
-                val derived = derivedMetricList(context, latest, gender, heightCm)
+                val ageYears = profile?.age ?: 0
+                val derived = derivedMetricList(context, latest, gender, heightCm, ageYears, heightMetric)
                 if (derived.isNotEmpty()) {
                     item {
                         ChompassSurface(modifier = Modifier.fillMaxWidth(), cornerRadius = AppRadii.SectionCard, padding = 16.dp) {
@@ -266,6 +280,13 @@ fun BodyMeasurementsScreen(container: AppContainer, onBack: () -> Unit) {
                                     ) {
                                         Text(stringResource(R.string.action_use_as_body_fat), color = AppColors.Calorie)
                                     }
+                                }
+                                if (latest.estimatedSkeletalMuscleMassKg(gender, ageYears, heightCm) != null) {
+                                    Text(
+                                        stringResource(R.string.progress_estimated_smm_note),
+                                        fontSize = 12.sp,
+                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+                                    )
                                 }
                             }
                         }

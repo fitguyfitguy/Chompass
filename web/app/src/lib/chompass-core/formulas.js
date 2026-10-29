@@ -23,6 +23,18 @@ export const KCAL_PER_KG_BODY_MASS = 7700;
  */
 export const BODY_FAT_RECENCY_DAYS = 90;
 
+/**
+ * Measured lean-mass readings older than this many days no longer feed
+ * Katch-McArdle; bmr() falls back to the body-fat path, then Mifflin-St Jeor.
+ * Undated readings count as fresh (same convention as body fat).
+ * @type {number}
+ */
+export const LEAN_MASS_RECENCY_DAYS = 90;
+
+/** Plausible lean-mass window in kg — mirrors NutritionConstants. */
+export const LEAN_MASS_MIN_KG = 20;
+export const LEAN_MASS_MAX_KG = 250;
+
 /** @type {Record<import('./models.js').ActivityLevel, number>} */
 export const PAL_MULTIPLIERS = {
   sedentary: 1.2,
@@ -124,12 +136,69 @@ export function bodyFatStale(profile, now = new Date()) {
 }
 
 /**
- * BMR dispatcher: Katch-McArdle when body fat is set, opted in, and fresh
- * (logged within BODY_FAT_RECENCY_DAYS); Mifflin-St Jeor otherwise.
+ * True when the lean-mass reading is dated and older than
+ * LEAN_MASS_RECENCY_DAYS. Null/undefined = undated = fresh.
+ * @param {UserProfile} profile
+ * @param {Date} [now]
+ * @returns {boolean}
+ */
+export function leanMassStale(profile, now = new Date()) {
+  if (profile.leanMassUpdatedAt == null) return false;
+  const ageDays = (now.getTime() - Date.parse(profile.leanMassUpdatedAt)) / 86_400_000;
+  return ageDays > LEAN_MASS_RECENCY_DAYS;
+}
+
+/**
+ * Fresh, plausible measured lean mass (kg) or null. Mirrors
+ * UserProfile.validMeasuredLeanMassKg.
+ * @param {UserProfile} profile
+ * @param {Date} [now]
+ * @returns {number|null}
+ */
+export function validMeasuredLeanMassKg(profile, now = new Date()) {
+  const lean = profile.measuredLeanMassKg;
+  if (lean == null) return null;
+  const value = Number(lean);
+  if (!Number.isFinite(value) || value < LEAN_MASS_MIN_KG || value > LEAN_MASS_MAX_KG) return null;
+  return leanMassStale(profile, now) ? null : value;
+}
+
+/**
+ * True when BMR runs Katch-McArdle on a MEASURED lean mass. Rides the same
+ * useBodyFatInBMR toggle as the body-fat path.
+ * @param {UserProfile} profile
+ * @param {Date} [now]
+ */
+export function usesMeasuredLeanMassForBMR(profile, now = new Date()) {
+  return validMeasuredLeanMassKg(profile, now) != null && profile.useBodyFatInBMR !== false;
+}
+
+/**
+ * Lean mass for the protein cap and g/kg-LBM basis: a fresh measured reading
+ * wins over the body-fat-derived estimate (UserProfile.leanMassForMacrosKg).
+ * @param {UserProfile} profile
+ * @param {Date} [now]
+ * @returns {number|null}
+ */
+export function leanMassForMacrosKg(profile, now = new Date()) {
+  const measured = validMeasuredLeanMassKg(profile, now);
+  if (measured != null) return measured;
+  const frac = leanMassFraction(profile);
+  return frac != null ? profile.weightKg * frac : null;
+}
+
+/**
+ * BMR dispatcher: Katch-McArdle on a fresh measured lean mass, then
+ * Katch-McArdle on body-fat-derived lean mass (when set, opted in, and fresh),
+ * then Mifflin-St Jeor.
  * @param {UserProfile} profile
  * @param {Date} [now]
  */
 export function bmr(profile, now = new Date()) {
+  const measured = validMeasuredLeanMassKg(profile, now);
+  if (measured != null && profile.useBodyFatInBMR !== false) {
+    return 370 + 21.6 * measured;
+  }
   const useKatch =
     profile.bodyFatPercentage != null &&
     profile.useBodyFatInBMR !== false &&
@@ -231,22 +300,50 @@ function leanMassFraction(profile) {
 /**
  * MACRO-P: protein target (g/day), mirroring UserProfile.kt standardProteinGoal:
  * the activity rate (+0.2 cutting) on full bodyweight, capped at 2.2 g/kg lean
- * mass (2.4 while losing) when a valid body-fat reading exists.
+ * mass (2.4 while losing) when a lean-mass basis exists (fresh measured reading
+ * first, then a valid body-fat reading).
  * @param {UserProfile} profile
  */
 export function proteinGoal(profile) {
   const cuttingBoost = profile.goal === "lose" ? 0.2 : 0;
   const perKg = PROTEIN_G_PER_KG[profile.activityLevel] + cuttingBoost;
   const total = perKg * profile.weightKg;
-  const leanFrac = leanMassFraction(profile);
-  const standard = leanFrac != null
-    ? Math.trunc(Math.min(total, (profile.goal === "lose" ? 2.4 : 2.2) * profile.weightKg * leanFrac))
+  const lbm = leanMassForMacrosKg(profile);
+  const standard = lbm != null
+    ? Math.trunc(Math.min(total, (profile.goal === "lose" ? 2.4 : 2.2) * lbm))
     : Math.trunc(total);
 
   if (!profile.ketoMode) return standard;
-  const basisWeight = leanFrac != null ? profile.weightKg * leanFrac : profile.weightKg;
+  const basisWeight = lbm != null ? lbm : profile.weightKg;
   const ketoFloor = Math.max(Math.trunc(1.6 * basisWeight), 60);
   return Math.max(standard, ketoFloor);
+}
+
+/**
+ * SMM-LEE: skeletal muscle mass estimate (Lee et al. 2000, AJCN 72:796-803, the
+ * limb-circumference model). Mirrors BodyMeasurement.estimatedSkeletalMuscleMassKg.
+ *
+ *   SM = Ht(m) × (0.00744·arm² + 0.00088·thigh² + 0.00441·calf²)
+ *        + 2.4·sex − 0.048·age + 7.8
+ *
+ * Height in METRES (the published coefficients need that scale), girths in cm.
+ * Skinfold correction is skipped (bias < 0.1 kg against a ~2.9 kg SEE); `race` is
+ * 0; sex "other" uses the female coefficient. Display-only — never feeds BMR or
+ * macros.
+ * @param {{upperArmCm?: number|null, thighCm?: number|null, calfCm?: number|null, sex?: string, age?: number|null, heightCm?: number|null}} input
+ * @returns {number|null} null when a site is missing or the result is implausible
+ */
+export function estimatedSkeletalMuscleMassKg(input) {
+  const { upperArmCm, thighCm, calfCm, sex, age, heightCm } = input ?? {};
+  for (const v of [upperArmCm, thighCm, calfCm, age, heightCm]) {
+    if (v == null || !Number.isFinite(Number(v))) return null;
+  }
+  if (upperArmCm <= 0 || thighCm <= 0 || calfCm <= 0 || heightCm <= 0 || age < 0) return null;
+  const sexTerm = sex === "male" ? 1 : 0;
+  const kg = (heightCm / 100) * (0.00744 * upperArmCm ** 2 + 0.00088 * thighCm ** 2 + 0.00441 * calfCm ** 2) +
+    2.4 * sexTerm - 0.048 * age + 7.8;
+  if (!Number.isFinite(kg) || kg < 10 || kg > 80) return null;
+  return kg;
 }
 
 /**

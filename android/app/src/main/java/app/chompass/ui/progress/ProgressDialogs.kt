@@ -1,6 +1,7 @@
 package app.chompass.ui.progress
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,12 +14,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
@@ -38,6 +42,7 @@ import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
 import app.chompass.models.UnitFormat
+import app.chompass.models.BodyCompositionEntry
 
 @Composable
 internal fun AddWeightDialog(
@@ -235,6 +240,88 @@ internal fun AddBodyFatDialog(
                     onSubmit(pct / 100.0, loggedAt)
                 },
                 modifier = Modifier.width(132.dp)
+            )
+        }
+    }
+}
+
+/**
+ * Manual scale-metrics entry: five optional fields (bone mass, total body water,
+ * muscle mass, lean mass in kg/lb, plus the unitless visceral-fat rating). Saving
+ * upserts the row for the day (the repository merges same-day metrics), and an
+ * empty submit is a plain dismiss — no zero row is ever written.
+ */
+@Composable
+internal fun AddBodyCompositionDialog(
+    useMetric: Boolean,
+    onDismiss: () -> Unit,
+    onSubmit: (BodyCompositionEntry) -> Unit,
+) {
+    var metric by remember { mutableStateOf(useMetric) }
+    val drafts = remember {
+        mutableStateMapOf<BodyCompositionEntry.CompositionMetric, String>().apply {
+            BodyCompositionEntry.CompositionMetric.entries.forEach { put(it, "") }
+        }
+    }
+
+    /** Draft text → kg (or the raw rating); null when blank or unparsable. */
+    fun parsed(m: BodyCompositionEntry.CompositionMetric): Double? {
+        val raw = drafts[m]?.trim()?.replace(',', '.')?.toDoubleOrNull() ?: return null
+        if (!raw.isFinite() || raw <= 0) return null
+        return if (m.isMass && !metric) UnitFormat.lbsToKg(raw) else raw
+    }
+
+    ChompassDialog(onDismissRequest = onDismiss, scrollable = true) {
+        Text(
+            stringResource(R.string.progress_log_scale_metrics_title),
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+        )
+        Spacer(Modifier.height(10.dp))
+        UnitToggle(
+            stringResource(R.string.unit_kg),
+            stringResource(R.string.unit_lbs),
+            metric,
+            { metric = it },
+            Modifier.fillMaxWidth(),
+        )
+        Spacer(Modifier.height(8.dp))
+        for (m in BodyCompositionEntry.CompositionMetric.entries) {
+            ChompassTextField(
+                value = drafts[m].orEmpty(),
+                onValueChange = { input ->
+                    drafts[m] = input.filter { it.isDigit() || it == '.' || it == ',' }.take(6)
+                },
+                placeholder = stringResource(m.labelRes),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Decimal,
+                    imeAction = ImeAction.Next,
+                ),
+                modifier = Modifier.fillMaxWidth(),
+            )
+            Spacer(Modifier.height(8.dp))
+        }
+        Row(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            ChompassTextButton(
+                text = stringResource(R.string.action_cancel),
+                onClick = onDismiss,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary),
+            )
+            Spacer(Modifier.width(8.dp))
+            ChompassPrimaryButton(
+                text = stringResource(R.string.action_save),
+                onClick = {
+                    val entry = BodyCompositionEntry.CompositionMetric.entries.fold(
+                        BodyCompositionEntry()
+                    ) { acc, m -> acc.setting(m, parsed(m)) }
+                    // Empty submit is a no-op dismiss; the repo would reject it anyway.
+                    if (!entry.hasAnyValue) onDismiss() else onSubmit(entry)
+                },
+                modifier = Modifier.width(132.dp),
             )
         }
     }

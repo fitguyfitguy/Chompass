@@ -49,6 +49,19 @@ export function proteinLbmCapLine() {
   return "cap protein at 2.2 g/kg lean mass (2.4 g/kg while losing)";
 }
 
+/**
+ * Basis line for the measured-lean-mass path (formulas.js usesMeasuredLeanMassForBMR).
+ * A scale reading no older than 90 days outranks the body-fat-derived estimate for
+ * both Katch-McArdle BMR and the lean-mass protein cap.
+ */
+export function measuredLeanMassBasisLine() {
+  return (
+    "a lean-mass reading from a scale is fresher and more direct than body fat: " +
+    "when it is no older than 90 days and plausible (20-250 kg) it drives " +
+    "Katch-McArdle BMR and the lean-mass protein cap instead of the body-fat estimate"
+  );
+}
+
 /** Standard fat floor: 0.6 g/kg bodyweight, at least 20% of calories (formulas.js). */
 export function fatTargetLine() {
   return "at least max(0.6 g/kg bodyweight, 20% of calories)";

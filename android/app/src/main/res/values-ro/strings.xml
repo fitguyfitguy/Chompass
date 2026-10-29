@@ -1155,6 +1155,7 @@
     <string name="import_body_metrics_empty">Acest fișier nu are înregistrări de greutate sau date corporale de importat.</string>
     <string name="import_body_metrics_malformed">Fișierul nu a putut fi citit: %1$s</string>
     <string name="import_body_metrics_success">Importate %1$d înregistrări de greutate, %2$d de grăsime și %3$d măsurători.</string>
+    <string name="import_body_metrics_success_composition">S-au importat și %1$d înregistrări de măsurători de cântar.</string>
     <string name="import_body_metrics_title">Importă greutatea și datele corporale</string>
     <string name="import_body_metrics_unsupported">Fișier nesuportat. Suportate: JSON/CSV Chompass, CSV openScale sau un CSV generic de greutate.</string>
     <string name="import_diary_empty">Acest fișier nu are înregistrări de jurnal de importat.</string>
@@ -1429,7 +1430,7 @@
     <string name="settings_calc_intro">Obiectivele tale zilnice de calorii și macrouri sunt setate de IA. Când atingi «Recalculează obiectivele», sau automat cam o dată pe săptămână dacă obiectivele adaptive sunt active, Chompass trimite profilul tău, formulele de referință de mai jos, mâncarea înregistrată recent și tendința de greutate către furnizorul tău IA. Pornește de la aceste formule verificate, apoi le ajustează la datele tale pentru a estima menținerea și obiectivele.</string>
     <string name="settings_calc_katch_formula">BMR = 370 + 21,6 × LBM(kg)\nLBM = greutate × (1 − %grăsime)</string>
     <string name="settings_calc_katch_name">Ecuația Katch-McArdle</string>
-    <string name="settings_calc_katch_used">Folosită automat când ai introdus un % de grăsime corporală. Mai precisă pentru utilizatorii slabi și sportivi, deoarece derivă BMR din masa slabă în loc de greutatea totală. Măsurătorile mai vechi de 90 de zile trec la Mifflin-St Jeor.</string>
+    <string name="settings_calc_katch_used">Folosită automat când ai introdus un % de grăsime corporală. Mai precisă pentru utilizatorii slabi și sportivi, deoarece derivă BMR din masa slabă în loc de greutatea totală. Măsurătorile mai vechi de 90 de zile trec la Mifflin-St Jeor. O citire recentă a masei slabe de la cântar calculează BMR la fel și are prioritate față de grăsimea corporală.</string>
     <string name="settings_calc_macro_split">Împărțirea macronutrienților</string>
     <string name="settings_calc_maintenance">Menținere și ajustarea obiectivului</string>
     <string name="settings_calc_methods">Metode de calcul</string>
@@ -2236,6 +2237,17 @@ macro-urile reechilibrate la noul total caloric</string>
     <string name="onboarding_goal_suggested_bmi">Pe baza unui IMC de %1$.1f</string>
     <!-- Progress v2: suprapunere corporală, combinare calorii, faze de obiectiv, aderență. -->
     <string name="progress_body_section">Corp</string>
+    <string name="progress_scale_metrics">Măsurători de cântar</string>
+    <string name="progress_scale_metrics_bone_mass">Masă osoasă</string>
+    <string name="progress_scale_metrics_water">Apă corporală totală</string>
+    <string name="progress_scale_metrics_muscle">Masă musculară</string>
+    <string name="progress_scale_metrics_lean">Masă slabă</string>
+    <string name="progress_scale_metrics_visceral">Grăsime viscerală</string>
+    <string name="progress_scale_metrics_note">Estimare de cântar de uz casnic — tendința este mai fiabilă decât valoarea absolută</string>
+    <string name="progress_scale_metrics_tbw_percent">%1$.1f %% din greutatea corporală · interval tipic 45–65 %%</string>
+    <string name="progress_log_scale_metrics">Măsurători de cântar</string>
+    <string name="progress_estimated_smm">Masă musculară scheletică estimată (Lee)</string>
+    <string name="progress_estimated_smm_note">Estimare antropometrică din braț, coapsă și gambă · ± ~3 kg</string>
     <string name="progress_overlay_off">Dezactivat</string>
     <string name="progress_no_entries_in_range">Nicio înregistrare în această perioadă</string>
     <string name="progress_no_series_selected">Atinge o metrică de mai sus pentru a o afișa aici</string>

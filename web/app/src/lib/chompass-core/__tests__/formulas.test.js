@@ -1,7 +1,7 @@
 // @ts-check
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { bmr, tdee, dailyCalories, calorieAdjustment, proteinGoal, fatGoalStandard, dailyTargets, relativeFatMassPercent, safetyFloorKcal, safetyCeilingKcal, clampAutoCalories, bodyFatStale, bodyFatRecencyDays, effectiveBodyFatAccuracyPoints, effectiveBodyFatRepeatabilityPoints } from "../formulas.js";
+import { bmr, tdee, dailyCalories, calorieAdjustment, proteinGoal, fatGoalStandard, dailyTargets, relativeFatMassPercent, safetyFloorKcal, safetyCeilingKcal, clampAutoCalories, bodyFatStale, bodyFatRecencyDays, effectiveBodyFatAccuracyPoints, effectiveBodyFatRepeatabilityPoints, estimatedSkeletalMuscleMassKg } from "../formulas.js";
 import { averageDailyIntake } from "../forecast.js";
 import { loadParityFixture } from "../../parity-fixtures.js";
 
@@ -21,6 +21,16 @@ for (const scenario of scenarios) {
       } else {
         assert.ok(actual != null);
         assert.ok(Math.abs(actual - scenario.expect.percent) <= (scenario.expect.tol ?? 1e-9));
+      }
+      return;
+    }
+    if (scenario.kind === "leeSmm") {
+      const actual = estimatedSkeletalMuscleMassKg(scenario.input);
+      if (scenario.expect.kg == null) {
+        assert.equal(actual, null);
+      } else {
+        assert.ok(actual != null);
+        assert.ok(Math.abs(actual - scenario.expect.kg) <= (scenario.expect.tol ?? 1e-9));
       }
       return;
     }

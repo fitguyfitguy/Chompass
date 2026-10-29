@@ -9,6 +9,7 @@ import {
   calorieSafetyLine,
   proteinLbmCapLine,
   fatTargetLine,
+  measuredLeanMassBasisLine,
 } from "../chompass-core/goal-formula-reference.js";
 import { loadParityFixture } from "../parity-fixtures.js";
 
@@ -41,5 +42,9 @@ describe("goal formula prompt fragments (parity fixture)", () => {
 
   it("fatTargetLine matches fixture", () => {
     assert.equal(fatTargetLine(), fixture.fatTargetLine);
+  });
+
+  it("measuredLeanMassBasisLine matches fixture", () => {
+    assert.equal(measuredLeanMassBasisLine(), fixture.measuredLeanMassBasisLine);
   });
 });

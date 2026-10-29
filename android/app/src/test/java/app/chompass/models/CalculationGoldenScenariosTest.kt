@@ -43,6 +43,32 @@ class CalculationGoldenScenariosTest(
             }
             return
         }
+        if (scenario.optString("kind") == "leeSmm") {
+            val input = scenario.getJSONObject("input")
+            val expect = scenario.getJSONObject("expect")
+            val gender = when (input.optString("sex", "male")) {
+                "female" -> Gender.FEMALE
+                "male" -> Gender.MALE
+                else -> Gender.OTHER
+            }
+            val m = BodyMeasurement(
+                upperArmCm = if (input.isNull("upperArmCm")) null else input.getDouble("upperArmCm"),
+                thighCm = if (input.isNull("thighCm")) null else input.getDouble("thighCm"),
+                calfCm = if (input.isNull("calfCm")) null else input.getDouble("calfCm"),
+            )
+            val actual = m.estimatedSkeletalMuscleMassKg(
+                gender = gender,
+                ageYears = input.getInt("age"),
+                heightCm = input.getDouble("heightCm"),
+            )
+            if (expect.isNull("kg")) {
+                assertEquals(scenarioId, null, actual)
+            } else {
+                requireNotNull(actual) { scenarioId }
+                assertEquals(scenarioId, expect.getDouble("kg"), actual, expect.optDouble("tol", 1e-9))
+            }
+            return
+        }
         if (scenario.optString("kind") == "averageDailyIntake") {
             val input = scenario.getJSONObject("input")
             val expect = scenario.getJSONObject("expect")
@@ -141,6 +167,8 @@ class CalculationGoldenScenariosTest(
                 goal = goal,
                 weeklyChangeKg = if (p.isNull("weeklyChangeKg")) null else p.getDouble("weeklyChangeKg"),
                 dietMode = if (keto) DietMode.KETO else DietMode.STANDARD,
+                measuredLeanMassKg = if (p.isNull("measuredLeanMassKg")) null else p.getDouble("measuredLeanMassKg"),
+                leanMassUpdatedAt = if (p.isNull("leanMassUpdatedAt")) null else Instant.parse(p.getString("leanMassUpdatedAt")),
             )
         }
     }

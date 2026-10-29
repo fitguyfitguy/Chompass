@@ -1160,6 +1160,7 @@
     <string name="import_body_metrics_empty">이 파일에는 가져올 체중 또는 신체 데이터 기록이 없어요.</string>
     <string name="import_body_metrics_malformed">파일을 읽지 못했어요: %1$s</string>
     <string name="import_body_metrics_success">체중 %1$d개, 체지방 %2$d개, 측정 %3$d개를 가져왔어요.</string>
+    <string name="import_body_metrics_success_composition">체중계 지표 %1$d개도 가져왔어요.</string>
     <string name="import_body_metrics_title">체중 및 신체 데이터 가져오기</string>
     <string name="import_body_metrics_unsupported">지원되지 않는 파일이에요. 지원: Chompass JSON/CSV, openScale CSV, 일반 체중 CSV.</string>
     <string name="import_diary_empty">이 파일에는 가져올 일기 기록이 없어요.</string>
@@ -1430,7 +1431,7 @@
     <string name="settings_calc_intro">일일 칼로리와 매크로 목표는 AI가 설정해요. "목표 재계산"을 탭하거나 적응형 목표가 켜져 있으면 주 1회 자동으로, Chompass가 프로필, 아래 참조 공식, 최근 기록 음식, 체중 추세를 AI 제공자에게 보내요. 검증된 공식에서 시작하여 데이터에 맞게 조정해 유지량과 목표를 추정해요.</string>
     <string name="settings_calc_katch_formula">BMR = 370 + 21.6 × LBM(kg)\nLBM = 체중 × (1 − %체지방)</string>
     <string name="settings_calc_katch_name">Katch-McArdle 공식</string>
-    <string name="settings_calc_katch_used">체지방률을 입력하면 자동으로 사용돼요. 총 체중 대신 제지방량에서 BMR을 도출하므로 마른 체형과 운동선수에게 더 정확해요. 90일이 지난 측정값은 Mifflin-St Jeor로 전환됩니다.</string>
+    <string name="settings_calc_katch_used">체지방률을 입력하면 자동으로 사용돼요. 총 체중 대신 제지방량에서 BMR을 도출하므로 마른 체형과 운동선수에게 더 정확해요. 90일이 지난 측정값은 Mifflin-St Jeor로 전환됩니다. 체중계의 최신 제지방량 값도 같은 방식으로 BMR을 계산하며 체지방보다 우선합니다.</string>
     <string name="settings_calc_macro_split">매크로 영양소 배분</string>
     <string name="settings_calc_maintenance">유지량 및 목표 조정</string>
     <string name="settings_calc_methods">계산 방법</string>
@@ -2224,6 +2225,17 @@
     <string name="onboarding_goal_suggested_bmi">BMI %1$.1f 기준</string>
     <!-- Progress v2: 신체 오버레이, 칼로리 조합, 목표 페이즈, 준수율. -->
     <string name="progress_body_section">신체</string>
+    <string name="progress_scale_metrics">체중계 지표</string>
+    <string name="progress_scale_metrics_bone_mass">골량</string>
+    <string name="progress_scale_metrics_water">체내 총 수분</string>
+    <string name="progress_scale_metrics_muscle">근육량</string>
+    <string name="progress_scale_metrics_lean">제지방량</string>
+    <string name="progress_scale_metrics_visceral">내장지방</string>
+    <string name="progress_scale_metrics_note">가정용 체중계 추정치 — 절대값보다 추세가 더 신뢰할 만합니다</string>
+    <string name="progress_scale_metrics_tbw_percent">체중의 %1$.1f %% · 일반 범위 45–65 %%</string>
+    <string name="progress_log_scale_metrics">체중계 지표</string>
+    <string name="progress_estimated_smm">추정 골격근량(Lee)</string>
+    <string name="progress_estimated_smm_note">팔·허벅지·종아리 인체계측 추정 · ± ~3 kg</string>
     <string name="progress_overlay_off">끄기</string>
     <string name="progress_no_entries_in_range">이 기간에 기록 없음</string>
     <string name="progress_no_series_selected">표시하려면 위에서 항목을 탭하세요</string>

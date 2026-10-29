@@ -18,6 +18,7 @@ import android.util.Log
 import app.chompass.AppContainer
 import app.chompass.data.aggregateFoodEntriesByDay
 import app.chompass.models.BodyFatEntry
+import app.chompass.models.BodyCompositionEntry
 import app.chompass.models.BodyMeasurement
 import app.chompass.models.DailyFoodTotals
 import app.chompass.models.HomeTopNutrient
@@ -69,6 +70,8 @@ data class ProgressUiState(
     val filteredBodyFats: List<BodyFatEntry> = emptyList(),
     /** Body-measurement snapshots inside the selected range, date-sorted (for the plot cards). */
     val filteredMeasurements: List<BodyMeasurement> = emptyList(),
+    /** Scale composition rows inside the selected range, date-sorted (for the plot cards). */
+    val filteredCompositions: List<BodyCompositionEntry> = emptyList(),
     /** Sites with a Progress-tab trend plot enabled in Customize Progress; empty = plots off. */
     val measurementSites: Set<BodyMeasurement.Site> = emptySet(),
     /** One [CalorieSlot] per calendar day in range — logged kcal, untracked
@@ -117,6 +120,8 @@ private data class BaseProgressData(
     val entries: List<WeightEntry>,
     val bodyFatEntries: List<BodyFatEntry>,
     val bodyMeasurements: List<BodyMeasurement>,
+    /** Scale composition rows (bone / water / muscle / lean / visceral), all dates. */
+    val compositions: List<BodyCompositionEntry> = emptyList(),
     /** Site storage ids with a Progress-tab plot enabled (empty = off). */
     val measurementSites: Set<String> = emptySet(),
     /** Per-day goal journal (#60): frozen actual targets behind the range goals + bars. */
@@ -169,14 +174,19 @@ class ProgressViewModel(private val container: AppContainer) : ViewModel() {
             container.profileRepository.profile,
             container.weightRepository.entries,
             container.bodyFatRepository.entries,
-            container.bodyMeasurementRepository.entries,
-            container.prefs.progressMeasurementSites
-        ) { profile, weights, bodyFats, measurements, measurementSites ->
+            combine(
+                container.bodyMeasurementRepository.entries,
+                container.bodyCompositionRepository.entries,
+                container.prefs.progressMeasurementSites,
+            ) { measures, compositions, sites -> Triple(measures, compositions, sites) },
+        ) { profile, weights, bodyFats, bodyExtras ->
+            val (measures, compositions, measurementSites) = bodyExtras
             BaseProgressData(
                 profile = profile,
                 entries = weights,
                 bodyFatEntries = bodyFats,
-                bodyMeasurements = measurements,
+                bodyMeasurements = measures,
+                compositions = compositions,
                 measurementSites = measurementSites
             )
         }.let { base ->
@@ -305,6 +315,15 @@ class ProgressViewModel(private val container: AppContainer) : ViewModel() {
         viewModelScope.launch { container.bodyMeasurementRepository.deleteEntry(id) }
     }
 
+    /** Scale-metrics log from the Progress composition card (per-day upsert). */
+    fun addBodyComposition(entry: BodyCompositionEntry) {
+        viewModelScope.launch { container.bodyCompositionRepository.upsert(entry) }
+    }
+
+    fun deleteBodyComposition(id: UUID) {
+        viewModelScope.launch { container.bodyCompositionRepository.deleteEntry(id) }
+    }
+
     fun dismissGoalReached() {
         goalReached.value = false
     }
@@ -376,6 +395,11 @@ private fun ProgressSnapshot.toUiState(anchorDate: LocalDate = LocalDate.now()):
         .sortedBy { it.date }
         .toList()
     val filteredMeasurements = base.bodyMeasurements
+        .asSequence()
+        .filter { it.date in rangeStart..rangeEnd }
+        .sortedBy { it.date }
+        .toList()
+    val filteredCompositions = base.compositions
         .asSequence()
         .filter { it.date in rangeStart..rangeEnd }
         .sortedBy { it.date }
@@ -467,6 +491,7 @@ private fun ProgressSnapshot.toUiState(anchorDate: LocalDate = LocalDate.now()):
         filteredWeights = filteredWeights,
         filteredBodyFats = filteredBodyFats,
         filteredMeasurements = filteredMeasurements,
+        filteredCompositions = filteredCompositions,
         measurementSites = base.measurementSites.mapNotNull { BodyMeasurement.Site.fromStorageId(it) }.toSet(),
         calorieSlots = calorieSlots,
         calorieAverage = calorieAverage,

@@ -1208,6 +1208,7 @@
     <string name="import_body_metrics_empty">Este archivo no tiene entradas de peso o datos corporales para importar.</string>
     <string name="import_body_metrics_malformed">No se pudo leer el archivo: %1$s</string>
     <string name="import_body_metrics_success">Se importaron %1$d entradas de peso, %2$d de grasa corporal y %3$d de medidas.</string>
+    <string name="import_body_metrics_success_composition">También se importaron %1$d registros de métricas de báscula.</string>
     <string name="import_body_metrics_title">Importar peso y datos corporales</string>
     <string name="import_body_metrics_unsupported">Archivo no compatible. Compatibles: JSON/CSV de Chompass, CSV de openScale o un CSV genérico de peso.</string>
     <string name="import_diary_empty">Este archivo no tiene entradas de diario para importar.</string>
@@ -1496,7 +1497,7 @@
     <string name="settings_calc_intro">Tus objetivos diarios de calorías y macros los define la IA. Cuando tocas Recalcular objetivos, o automáticamente una vez por semana si los Objetivos adaptativos están activados, Chompass envía tu perfil, las ecuaciones de referencia de abajo, tu comida registrada recientemente y tu tendencia de peso a tu proveedor de IA. Parte de estas fórmulas revisadas por pares y luego las ajusta a tus datos para estimar tu mantenimiento y tus objetivos.</string>
     <string name="settings_calc_katch_formula" formatted="false">BMR = 370 + 21,6 × MLG (kg)\nMLG = peso × (1 − % de grasa corporal)</string>
     <string name="settings_calc_katch_name">Ecuación de Katch-McArdle</string>
-    <string name="settings_calc_katch_used" formatted="false">Se usa automáticamente cuando has introducido un % de grasa corporal. Más preciso para usuarios delgados y deportistas, porque deriva el BMR de la masa magra en lugar del peso total. Las mediciones de más de 90 días vuelven a Mifflin-St Jeor.</string>
+    <string name="settings_calc_katch_used" formatted="false">Se usa automáticamente cuando has introducido un % de grasa corporal. Más preciso para usuarios delgados y deportistas, porque deriva el BMR de la masa magra en lugar del peso total. Las mediciones de más de 90 días vuelven a Mifflin-St Jeor. Una lectura reciente de masa magra de una báscula calcula el BMR igual y tiene prioridad sobre la grasa corporal.</string>
     <string name="settings_calc_macro_split">Reparto de macronutrientes</string>
     <string name="settings_calc_maintenance">Mantenimiento y ajuste de la meta</string>
     <string name="settings_calc_methods">Métodos de cálculo</string>
@@ -2251,6 +2252,17 @@ macros reequilibradas al nuevo total calórico</string>
     <string name="onboarding_goal_suggested_bmi">Según un IMC de %1$.1f</string>
     <!-- Progress v2: overlay corporal, combo de calorías, fases de objetivo, adherencia. -->
     <string name="progress_body_section">Cuerpo</string>
+    <string name="progress_scale_metrics">Métricas de báscula</string>
+    <string name="progress_scale_metrics_bone_mass">Masa ósea</string>
+    <string name="progress_scale_metrics_water">Agua corporal total</string>
+    <string name="progress_scale_metrics_muscle">Masa muscular</string>
+    <string name="progress_scale_metrics_lean">Masa magra</string>
+    <string name="progress_scale_metrics_visceral">Grasa visceral</string>
+    <string name="progress_scale_metrics_note">Estimación de báscula doméstica: la tendencia es más fiable que el valor absoluto</string>
+    <string name="progress_scale_metrics_tbw_percent">%1$.1f %% del peso corporal · rango habitual 45–65 %%</string>
+    <string name="progress_log_scale_metrics">Métricas de báscula</string>
+    <string name="progress_estimated_smm">Músculo esquelético estimado (Lee)</string>
+    <string name="progress_estimated_smm_note">Estimación antropométrica con brazo, muslo y pantorrilla · ± ~3 kg</string>
     <string name="progress_overlay_off">Apagado</string>
     <string name="progress_no_entries_in_range">No hay registros en este periodo</string>
     <string name="progress_no_series_selected">Toca una métrica arriba para mostrarla aquí</string>

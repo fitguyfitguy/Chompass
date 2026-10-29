@@ -1132,6 +1132,7 @@
     <string name="import_body_metrics_empty">Dit bestand bevat geen gewichts- of lichaamsgegevens om te importeren.</string>
     <string name="import_body_metrics_malformed">Bestand lezen mislukt: %1$s</string>
     <string name="import_body_metrics_success">%1$d gewichts-, %2$d vet- en %3$d meetitems geïmporteerd.</string>
+    <string name="import_body_metrics_success_composition">Ook %1$d waalmetingen geïmporteerd.</string>
     <string name="import_body_metrics_title">Gewicht en lichaamsgegevens importeren</string>
     <string name="import_body_metrics_unsupported">Niet-ondersteund bestand. Ondersteund: Chompass JSON/CSV, openScale CSV of een algemene gewichts-CSV.</string>
     <string name="import_diary_empty">Dit bestand bevat geen dagboekitems om te importeren.</string>
@@ -1410,7 +1411,7 @@
     <string name="settings_calc_intro">Je dagelijkse calorie- en macrodoelen worden door AI ingesteld. Wanneer je op «Doelen herberekenen» tikt, of automatisch ongeveer één keer per week als adaptieve doelen aan staan, stuurt Chompass je profiel, de referentieformules hieronder, je recent gelogde voedsel en je gewichtstrend naar je AI-provider. Het start vanuit deze peer-reviewed formules en past ze dan aan je gegevens aan om je onderhoud en doelen te schatten.</string>
     <string name="settings_calc_katch_formula">BMR = 370 + 21,6 × LBM(kg)\nLBM = gewicht × (1 − %lichaamsvet)</string>
     <string name="settings_calc_katch_name">Katch-McArdle-vergelijking</string>
-    <string name="settings_calc_katch_used">Automatisch gebruikt wanneer je een lichaamsvet-% hebt ingevoerd. Nauwkeuriger voor slanke en sportieve gebruikers omdat het BMR afleidt uit vetvrije massa in plaats van totaal gewicht. Metingen ouder dan 90 dagen vallen terug op Mifflin-St Jeor.</string>
+    <string name="settings_calc_katch_used">Automatisch gebruikt wanneer je een lichaamsvet-% hebt ingevoerd. Nauwkeuriger voor slanke en sportieve gebruikers omdat het BMR afleidt uit vetvrije massa in plaats van totaal gewicht. Metingen ouder dan 90 dagen vallen terug op Mifflin-St Jeor. Een recente meting van vetvrije massa van de weegschaal bepaalt de BMR op dezelfde manier en gaat voor op lichaamsvet.</string>
     <string name="settings_calc_macro_split">Macronutriëntenverdeling</string>
     <string name="settings_calc_maintenance">Onderhoud en doelaanpassing</string>
     <string name="settings_calc_methods">Berekeningsmethoden</string>
@@ -2224,6 +2225,17 @@ macro\'s opnieuw verdeeld over het nieuwe calorieëntotaal</string>
     <string name="onboarding_goal_suggested_bmi">Op basis van een BMI van %1$.1f</string>
     <!-- Progress v2: lichaamsoverlay, caloriecombinatie, doelfases, naleving. -->
     <string name="progress_body_section">Lichaam</string>
+    <string name="progress_scale_metrics">Waalmetingen</string>
+    <string name="progress_scale_metrics_bone_mass">Botmassa</string>
+    <string name="progress_scale_metrics_water">Totaal lichaamswater</string>
+    <string name="progress_scale_metrics_muscle">Spiermassa</string>
+    <string name="progress_scale_metrics_lean">Vetvrije massa</string>
+    <string name="progress_scale_metrics_visceral">Visceraal vet</string>
+    <string name="progress_scale_metrics_note">Schatting van een huisweegschaal — de trend is betrouwbaarder dan de absolute waarde</string>
+    <string name="progress_scale_metrics_tbw_percent">%1$.1f %% van het lichaamsgewicht · gebruikelijk bereik 45–65 %%</string>
+    <string name="progress_log_scale_metrics">Waalmetingen</string>
+    <string name="progress_estimated_smm">Geschatte skeletspiermassa (Lee)</string>
+    <string name="progress_estimated_smm_note">Antropometrische schatting uit arm, dij en kuit · ± ~3 kg</string>
     <string name="progress_overlay_off">Uit</string>
     <string name="progress_no_entries_in_range">Geen registraties in deze periode</string>
     <string name="progress_no_series_selected">Tik hierboven op een meetwaarde om deze hier te tonen</string>

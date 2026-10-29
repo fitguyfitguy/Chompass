@@ -1456,6 +1456,7 @@
     <string name="export_body_metrics_format">Biçim</string>
     <string name="import_body_metrics_title">Kilo ve Vücut Verilerini İçe Aktar</string>
     <string name="import_body_metrics_success">%1$d kilo, %2$d vücut yağı ve %3$d ölçüm kaydı içe aktarıldı.</string>
+    <string name="import_body_metrics_success_composition">Ayrıca %1$d tartı ölçümü içe aktarıldı.</string>
     <string name="import_body_metrics_empty">Bu dosyada içe aktarılacak kilo veya vücut verisi yok.</string>
     <string name="import_body_metrics_unsupported">Desteklenmeyen dosya. Desteklenenler: Chompass JSON/CSV, openScale CSV veya genel kilo CSV\'si.</string>
     <string name="import_body_metrics_malformed">Dosya okunamadı: %1$s</string>
@@ -1836,7 +1837,7 @@
     <string name="settings_calc_mifflin_used">Dinlenme metabolizması için varsayılan formül. Vücut yağı yüzdesi girmediğinde kullanılır.</string>
     <string name="settings_calc_mifflin_formula">Erkekler: 10×kilo(kg) + 6.25×boy(cm) − 5×yaş + 5\nKadınlar: 10×kilo(kg) + 6.25×boy(cm) − 5×yaş − 161</string>
     <string name="settings_calc_katch_name">Katch-McArdle denklemi</string>
-    <string name="settings_calc_katch_used">Vücut yağı yüzdesi girdiğinde otomatik kullanılır. BMR\'yi toplam kilo yerine yağsız vücut kütlesinden türettiği için zayıf ve atletik kullanıcılar için daha doğrudur. 90 günden eski ölçümler Mifflin-St Jeor\'a döner.</string>
+    <string name="settings_calc_katch_used">Vücut yağı yüzdesi girdiğinde otomatik kullanılır. BMR\'yi toplam kilo yerine yağsız vücut kütlesinden türettiği için zayıf ve atletik kullanıcılar için daha doğrudur. 90 günden eski ölçümler Mifflin-St Jeor\'a döner. Tartıdan alınan güncel yağsız kütle de BMR\'yi aynı şekilde hesaplar ve vücut yağından önce gelir.</string>
     <string name="settings_calc_katch_formula">BMR = 370 + 21.6 × LBM(kg)\nLBM = kilo × (1 − bodyFat%)</string>
     <string name="settings_calc_tdee_name">Aktivite çarpanı yöntemi</string>
     <string name="settings_calc_tdee_used">TDEE = BMR × aktivite çarpanı. Çarpan, seçtiğin aktivite seviyesine karşılık gelir. Orta, haftada birkaç kez egzersiz yapan masa başı aktif kullanıcılar için 1.465 kullanır (FAO/WHO hafif 1.375 ile orta 1.55 arası). Bu, AI\'nın başladığı bakım taban çizgisidir (Enerji Yakımı ölçülen bir değer sağlamadıkça).</string>
@@ -2245,6 +2246,17 @@ makrolar yeni kalori toplamına göre yeniden dengelenir</string>
     <string name="onboarding_goal_suggested_bmi">BMI %1$.1f temel alınarak</string>
     <!-- Progress v2: vücut katmanı, kalori birleşimi, hedef fazları, uyum. -->
     <string name="progress_body_section">Vücut</string>
+    <string name="progress_scale_metrics">Tartı ölçümleri</string>
+    <string name="progress_scale_metrics_bone_mass">Kemik kütlesi</string>
+    <string name="progress_scale_metrics_water">Toplam vücut suyu</string>
+    <string name="progress_scale_metrics_muscle">Kas kütlesi</string>
+    <string name="progress_scale_metrics_lean">Yağsız kütle</string>
+    <string name="progress_scale_metrics_visceral">İç organ yağı</string>
+    <string name="progress_scale_metrics_note">Evdeki tartı tahmini — eğilim mutlak değerden daha güvenilir</string>
+    <string name="progress_scale_metrics_tbw_percent">vücut ağırlığının %1$.1f %%-i · tipik aralık 45–65 %%</string>
+    <string name="progress_log_scale_metrics">Tartı ölçümleri</string>
+    <string name="progress_estimated_smm">Tahmini iskelet kası (Lee)</string>
+    <string name="progress_estimated_smm_note">Kol, uyluk ve baldırdan antropometrik tahmin · ± ~3 kg</string>
     <string name="progress_overlay_off">Kapalı</string>
     <string name="progress_no_entries_in_range">Bu aralıkta kayıt yok</string>
     <string name="progress_no_series_selected">Burada göstermek için yukarıdaki bir metriğe dokunun</string>

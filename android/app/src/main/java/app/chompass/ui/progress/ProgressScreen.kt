@@ -109,6 +109,16 @@ fun ProgressScreen(container: AppContainer, onOpenCustomize: (() -> Unit)? = nul
 
     var showAddDialog by remember { mutableStateOf(false) }
     var showAddBodyFatDialog by remember { mutableStateOf(false) }
+    var showAddCompositionDialog by remember { mutableStateOf(false) }
+    // Collected at screen level so the history sheets compose with data
+    // already present: collected inside the `if` they start empty, the sheet
+    // anchors to the header-only height, and the later emission never
+    // re-anchors it (maintainer finding M3 2026-10-08: sheet showed one
+    // entry, nothing to scroll). allWeights also feeds the composition card's
+    // ±12 h TBW% join, which may reach outside the selected range.
+    val allWeights by container.weightRepository.entries.collectAsState(initial = emptyList())
+    val allBodyFats by container.bodyFatRepository.entries.collectAsState(initial = emptyList())
+    val allMeasurements by container.bodyMeasurementRepository.entries.collectAsState(initial = emptyList())
     var editingMeasurementSite by remember { mutableStateOf<BodyMeasurement.Site?>(null) }
     var showAllWeights by remember { mutableStateOf(false) }
     var showAllBodyFats by remember { mutableStateOf(false) }
@@ -228,6 +238,24 @@ fun ProgressScreen(container: AppContainer, onOpenCustomize: (() -> Unit)? = nul
                     }
             }
 
+            // Scale composition: renders nothing at all when the range holds no
+            // composition rows, so users without such a scale see no change.
+            if (heavySectionsReady && ui.filteredCompositions.isNotEmpty()) {
+                item {
+                    CompositionSection(
+                        compositions = ui.filteredCompositions,
+                        // All weigh-ins, not the range slice: the ±12 h TBW% join may
+                        // legitimately reach a weigh-in just outside the selected range.
+                        weights = allWeights,
+                        useMetric = weightMetric,
+                        dayTypeByDay = ui.dayTypeByDay,
+                        untrackedDays = ui.untrackedDays,
+                        typeColorOf = typeColorOf,
+                        onLog = { showAddCompositionDialog = true },
+                    )
+                }
+            }
+
             if (heavySectionsReady) {
                 item {
                     CardSection {
@@ -330,10 +358,8 @@ fun ProgressScreen(container: AppContainer, onOpenCustomize: (() -> Unit)? = nul
     // already present: collected inside the `if` they start empty, the sheet
     // anchors to the header-only height, and the later emission never
     // re-anchors it (maintainer finding M3 2026-10-08: sheet showed one
-    // entry, nothing to scroll).
-    val allWeights by container.weightRepository.entries.collectAsState(initial = emptyList())
-    val allBodyFats by container.bodyFatRepository.entries.collectAsState(initial = emptyList())
-    val allMeasurements by container.bodyMeasurementRepository.entries.collectAsState(initial = emptyList())
+    // entry, nothing to scroll). allWeights also feeds the composition card's
+    // ±12 h TBW% join, which may reach outside the selected range.
     editingMeasurementSite?.let { site ->
         val scope = rememberCoroutineScope()
         BodyMeasurementEntryDialog(
@@ -349,6 +375,15 @@ fun ProgressScreen(container: AppContainer, onOpenCustomize: (() -> Unit)? = nul
             },
             onDismiss = { editingMeasurementSite = null },
         )
+    }
+    if (showAddCompositionDialog) {
+        AddBodyCompositionDialog(
+            useMetric = weightMetric,
+            onDismiss = { showAddCompositionDialog = false },
+        ) { entry ->
+            vm.addBodyComposition(entry)
+            showAddCompositionDialog = false
+        }
     }
     if (showAllWeights) {
         AllWeightHistorySheet(
@@ -458,6 +493,19 @@ internal fun ProgressScreenPreviewContent(
                         )
                     }
                 }
+            if (ui.filteredCompositions.isNotEmpty()) {
+                item {
+                    CompositionSection(
+                        compositions = ui.filteredCompositions,
+                        weights = ui.filteredWeights,
+                        useMetric = weightMetric,
+                        chartsImmediate = chartsImmediate,
+                        dayTypeByDay = ui.dayTypeByDay,
+                        untrackedDays = ui.untrackedDays,
+                        typeColorOf = typeColorOf,
+                    )
+                }
+            }
             item {
                 CardSection {
                     CalorieSection(

@@ -1,5 +1,5 @@
 // @ts-check
-import { weights, foodEntries, profile as profileStore, bodyFat, prefs, goalJournal, untrackedDays } from "../lib/db.js";
+import { weights, foodEntries, profile as profileStore, bodyFat, bodyComposition, prefs, goalJournal, untrackedDays } from "../lib/db.js";
 import { dailyTargets } from "../lib/chompass-core/formulas.js";
 import { journalAverage } from "../lib/chompass-core/macro-plan.js";
 import { computeWeightForecast, suggestAdaptiveCalories } from "../lib/chompass-core/forecast.js";
@@ -30,6 +30,34 @@ const RANGES = [
   { id: "All", labelKey: "progress.range_all", days: 3650 },
 ];
 const RANGE_IDS = RANGES.map((r) => r.id);
+
+/** How far a weigh-in may sit from a composition row and still supply the TBW% denominator. */
+const TBW_WEIGHT_JOIN_MS = 12 * 60 * 60 * 1000;
+
+/**
+ * TBW-PCT (display only): the newest composition row with body water, divided by
+ * the nearest weigh-in within ±12 h. Null when no weigh-in is close enough — the
+ * badge simply does not render. Mirrors Android totalBodyWaterPercent.
+ * @param {Array<{date: string, totalBodyWaterKg?: number|null}>} compEntries
+ * @param {Array<{date: string, weightKg: number}>} allWeights
+ * @returns {number|null}
+ */
+function totalBodyWaterPercent(compEntries, allWeights) {
+  for (const entry of compEntries.slice().reverse()) {
+    const water = entry.totalBodyWaterKg;
+    if (typeof water !== "number" || !Number.isFinite(water) || water <= 0) continue;
+    const at = Date.parse(entry.date);
+    let best = null;
+    for (const w of allWeights) {
+      const gap = Math.abs(Date.parse(w.date) - at);
+      if (!best || gap < best.gap) best = { gap, weightKg: w.weightKg };
+    }
+    if (best && best.gap <= TBW_WEIGHT_JOIN_MS && best.weightKg > 0) {
+      return (water / best.weightKg) * 100;
+    }
+  }
+  return null;
+}
 
 const ICONS = {
   addCircle: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>`,
@@ -66,6 +94,7 @@ export class ProgressView extends HTMLElement {
     this.bodyMetric = "weight";
     this.showWeightHistory = false;
     this.showBodyFatHistory = false;
+    this.showCompositionHistory = false;
     /** @type {HTMLElement | null} */
     this._tipEl = null;
     /** @type {AbortController | null} */
@@ -77,10 +106,11 @@ export class ProgressView extends HTMLElement {
   }
 
   async render() {
-    const [allWeights, allEntries, allBf, prof, appPrefs, journal, untrackedRows] = await Promise.all([
+    const [allWeights, allEntries, allBf, allComp, prof, appPrefs, journal, untrackedRows] = await Promise.all([
       weights.all(),
       foodEntries.all(),
       bodyFat.all(),
+      bodyComposition.all(),
       profileStore.load(),
       prefs.load(),
       goalJournal.all(),
@@ -229,6 +259,94 @@ export class ProgressView extends HTMLElement {
         )
       : null;
 
+    // Scale composition (bone / water / muscle / lean / visceral): one block per
+    // metric with readings in range, plus the derived TBW% badge. Renders nothing
+    // at all when the user has no scale-composition data — no empty cards.
+    const COMPOSITION_METRICS = [
+      { key: "boneMassKg", labelKey: "progress.scale_bone_mass" },
+      { key: "totalBodyWaterKg", labelKey: "progress.scale_water" },
+      { key: "muscleMassKg", labelKey: "progress.scale_muscle" },
+      { key: "leanMassKg", labelKey: "progress.scale_lean" },
+      { key: "visceralFatRating", labelKey: "progress.scale_visceral", isMass: false },
+    ];
+    const filteredComp = allComp
+      .filter((c) => c.date.slice(0, 10) >= startIso)
+      .slice()
+      .sort((a, b) => a.date.localeCompare(b.date));
+    const compBlocks = COMPOSITION_METRICS.map((metric) => {
+      const points = filteredComp
+        .filter((c) => typeof c[metric.key] === "number" && Number.isFinite(c[metric.key]))
+        .map((c) => ({ label: shortDate(c.date), value: c[metric.key], day: c.date.slice(0, 10) }));
+      return { metric, points };
+    }).filter(({ points }) => points.length > 0);
+    if (compBlocks.length === 0) this.showCompositionHistory = false;
+    const compositionSection = compBlocks.length === 0
+      ? ""
+      : `
+      <div class="card card--glass">
+        <div class="progress-head">
+          <h2 class="progress-title">${t("progress.scale_metrics")}</h2>
+        </div>
+        <p class="legend-hint">${t("progress.scale_metrics_note")}</p>
+        ${compBlocks
+          .map(({ metric, points }) => {
+            const unit = metric.isMass ? weightUnit : "";
+            const latest = points[points.length - 1].value;
+            const net = latest - points[0].value;
+            const shown = metric.isMass ? toDisplay(latest) : latest;
+            const shownNet = metric.isMass ? toDisplay(net) : net;
+            // TBW-PCT: derived display value, joined to the nearest weigh-in ±12 h.
+            const tbw = metric.key === "totalBodyWaterKg" ? totalBodyWaterPercent(filteredComp, allWeights) : null;
+            return `
+            <div class="progress-head" style="margin-top:0.75rem;">
+              <h3 class="progress-title" style="font-size:1rem;">${t(metric.labelKey)}</h3>
+              <button type="button" class="progress-log-btn" data-log-comp="${metric.key}">${ICONS.addCircle}${t(metric.labelKey)}</button>
+            </div>
+            ${tbw != null ? `<p class="legend-hint">${t("progress.scale_tbw_percent", { pct: tbw.toFixed(1) })}</p>` : ""}
+            <div class="stat-badges">
+              <div class="stat-badge"><strong>${fmt(shown)} ${unit}</strong>${t("progress.stat_current")}</div>
+              <div class="stat-badge"><strong>${fmt(shownNet, true)} ${unit}</strong>${t("progress.stat_net_change")}</div>
+            </div>
+            ${lineChartSvg(points, {
+              color: "var(--teal)",
+              unit,
+              rangeLabel: yearSpanLabel(points),
+            })}`;
+          })
+          .join("")}
+        <button type="button" class="history-link" data-toggle-comph>
+          <span class="history-link__icon">${ICONS.listAlt}</span>
+          <span class="history-link__text">
+            <strong>${t("progress.scale_metrics_history")}</strong>
+            <span>${t("progress.history_count_format", { count: filteredComp.length })}</span>
+          </span>
+          <span class="history-link__chevron">${ICONS.chevron}</span>
+        </button>
+        ${
+          this.showCompositionHistory
+            ? `<div class="history-list">
+                ${filteredComp
+                  .slice()
+                  .reverse()
+                  .map((c) => {
+                    const parts = COMPOSITION_METRICS.flatMap((m) => {
+                      const v = c[m.key];
+                      if (typeof v !== "number") return [];
+                      const shown = m.isMass ? toDisplay(v) : v;
+                      return [`${t(m.labelKey)} ${fmt(shown)}${m.isMass ? ` ${weightUnit}` : ""}`];
+                    });
+                    return `
+                  <div class="history-item">
+                    <span>${shortDate(c.date)} · ${parts.join(" · ")}</span>
+                    <button type="button" data-del-comp="${c.id}">${t("action.delete")}</button>
+                  </div>`;
+                  })
+                  .join("")}
+              </div>`
+            : ""
+        }
+      </div>`;
+
     const weightSection = `
       <div class="progress-head">
         <h2 class="progress-title">${t("progress.weight")}</h2>
@@ -347,6 +465,8 @@ export class ProgressView extends HTMLElement {
       <div class="card card--glass">
         ${this.bodyMetric === "body_fat" ? bodyFatSection : weightSection}
       </div>
+
+      ${compositionSection}
 
       ${allWeights.length ? `
       <button type="button" class="history-link" data-toggle-wh>
@@ -485,6 +605,52 @@ export class ProgressView extends HTMLElement {
         bodyFatPercent: v / 100,
       });
       this.render();
+    });
+    this.querySelectorAll("[data-log-comp]").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const key = btn.getAttribute("data-log-comp") || "";
+        const metric = COMPOSITION_METRICS.find((m) => m.key === key);
+        if (!metric) return;
+        const raw = await openInput({
+          title: t(metric.labelKey),
+          label: t(metric.labelKey),
+          value: "",
+          unit: metric.isMass ? weightUnit : "",
+          inputMode: "decimal",
+          type: "number",
+          confirmLabel: t("action.save"),
+        });
+        if (raw == null) return;
+        const v = Number(raw);
+        if (!(v > 0)) return;
+        const valueKg = metric.isMass ? fromDisplay(v) : v;
+        // Per-day upsert, mirroring BodyCompositionRepository.upsert: a second
+        // metric logged the same day lands on that day's single row.
+        const dayKey = new Date().toISOString().slice(0, 10);
+        const existing = (await bodyComposition.all()).find((c) => c.date.slice(0, 10) === dayKey);
+        await bodyComposition.put({
+          ...(existing ?? { id: crypto.randomUUID(), date: new Date().toISOString() }),
+          [metric.key]: valueKg,
+        });
+        this.render();
+      });
+    });
+    this.querySelector("[data-toggle-comph]")?.addEventListener("click", () => {
+      this.showCompositionHistory = !this.showCompositionHistory;
+      this.render();
+    });
+    this.querySelectorAll("[data-del-comp]").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const ok = await openConfirm({
+          title: t("progress.delete_scale_title"),
+          message: t("progress.delete_scale_confirm"),
+          confirmLabel: t("action.delete"),
+          danger: true,
+        });
+        if (!ok) return;
+        await bodyComposition.delete(btn.getAttribute("data-del-comp"));
+        this.render();
+      });
     });
     this.querySelector("[data-toggle-wh]")?.addEventListener("click", () => {
       this.showWeightHistory = !this.showWeightHistory;
