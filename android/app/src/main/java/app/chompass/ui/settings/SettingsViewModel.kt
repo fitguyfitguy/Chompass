@@ -244,6 +244,8 @@ data class SettingsUiState(
     val fixedLauncherIcon: Boolean = false,
     /** Codeberg #77: meal date/time uses the system pickers. */
     val useSystemDateTimePickers: Boolean = false,
+    /** Frosted glass behind floating panels (Morphe traits); default ON. */
+    val glassBlurEnabled: Boolean = true,
     val foodLogSortOrder: FoodLogSortOrder = FoodLogSortOrder.STANDARD,
     val weekStartsOnMonday: Boolean = true,
     val weekStartDay: app.chompass.models.WeekStartDay = app.chompass.models.WeekStartDay.MONDAY,
@@ -624,6 +626,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                     appThemeColor = AppThemeColor.fromKey(snap.appThemeColorKey),
                     fixedLauncherIcon = snap.fixedLauncherIcon,
                     useSystemDateTimePickers = snap.useSystemDateTimePickers,
+                    glassBlurEnabled = snap.glassBlurEnabled,
                     foodLogSortOrder = FoodLogSortOrder.fromStorage(snap.foodLogSortOrderRaw),
                     weekStartsOnMonday = snap.weekStartDay == app.chompass.models.WeekStartDay.MONDAY,
                     weekStartDay = snap.weekStartDay,
@@ -1042,6 +1045,11 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
     fun setUseSystemDateTimePickers(enabled: Boolean) = updateUiPref(
         { container.prefs.setUseSystemDateTimePickers(enabled) },
         { copy(useSystemDateTimePickers = enabled) },
+    )
+
+    fun setGlassBlurEnabled(enabled: Boolean) = updateUiPref(
+        { container.prefs.setGlassBlurEnabled(enabled) },
+        { copy(glassBlurEnabled = enabled) },
     )
 
     fun setWeekStartsOnMonday(monday: Boolean) = setWeekStartDay(

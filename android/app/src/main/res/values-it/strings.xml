@@ -1431,6 +1431,8 @@
     <string name="settings_fixed_launcher_icon_subtitle">Mantiene l\'icona dell\'app di colore teal. Smette di seguire il colore del tema e dello sfondo.</string>
     <string name="settings_system_date_time_pickers">Selettori data e ora di sistema</string>
     <string name="settings_system_date_time_pickers_subtitle">Usa i dialoghi data e ora del telefono quando modifichi un pasto.</string>
+    <string name="settings_glass_blur">Vetro smerigliato</string>
+    <string name="settings_glass_blur_subtitle">Sfoca il contenuto dietro ai pannelli mobili, come l’intestazione dei risultati quando aggiungi un cibo.</string>
     <string name="add_food_log_time">Ora del registro</string>
     <string name="add_food_log_time_now">Adesso</string>
     <string name="cd_clear_log_time">Usa l\'ora attuale</string>
@@ -1441,7 +1443,6 @@
     <string name="settings_food_section_photo">Analisi foto</string>
     <string name="settings_food_section_serving">Dimensione porzione</string>
     <string name="settings_gemini_google_search">Ancoraggio Ricerca Google</string>
-    <string name="settings_glass_blur">Effetto vetro</string>
     <string name="settings_goal_auto">Auto</string>
     <string name="settings_goals_how_adaptive">Gli obiettivi adattivi ricalcolano i tuoi obiettivi di calorie e macro circa una volta a settimana.</string>
     <string name="settings_goals_how_energy">Dispendio energetico ancora gli obiettivi sul dispendio misurato da Health Connect.</string>

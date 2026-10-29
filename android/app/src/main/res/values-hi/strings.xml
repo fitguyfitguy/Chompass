@@ -1469,6 +1469,8 @@
     <string name="settings_fixed_launcher_icon_subtitle">लॉन्चर आइकन को टील रखता है। यह थीम रंग और वॉलपेपर का अनुसरण करना बंद कर देता है।</string>
     <string name="settings_system_date_time_pickers">सिस्टम तारीख और समय चुनने वाले</string>
     <string name="settings_system_date_time_pickers_subtitle">भोजन संपादित करते समय फ़ोन के तारीख और समय संवाद इस्तेमाल करें।</string>
+    <string name="settings_glass_blur">फ्रॉस्टेड ग्लास</string>
+    <string name="settings_glass_blur_subtitle">तैरते पैनलों के पीछे की सामग्री को धुंधला करता है, जैसे भोजन जोड़ें परिणाम शीर्षक।</string>
     <string name="add_food_log_time">लॉग समय</string>
     <string name="add_food_log_time_now">अभी</string>
     <string name="cd_clear_log_time">अभी का समय इस्तेमाल करें</string>
@@ -1479,7 +1481,6 @@
     <string name="settings_food_section_photo">फोटो विश्लेषण</string>
     <string name="settings_food_section_serving">सर्विंग आकार</string>
     <string name="settings_gemini_google_search">Google खोज ग्राउंडिंग</string>
-    <string name="settings_glass_blur">ग्लास ब्लर</string>
     <string name="settings_goal_auto">ऑटो</string>
     <string name="settings_goals_how_adaptive">अनुकूली लक्ष्य आपके कैलोरी और मैक्रो लक्ष्यों की सप्ताह में लगभग एक बार पुनर्गणना करते हैं।</string>
     <string name="settings_goals_how_energy">ऊर्जा व्यय लक्ष्यों को Health Connect के मापे खर्च पर आधारित करता है।</string>

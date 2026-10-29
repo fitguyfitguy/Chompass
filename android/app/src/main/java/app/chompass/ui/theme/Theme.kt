@@ -8,6 +8,7 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.lerp
@@ -116,6 +117,7 @@ fun ChompassTheme(
     oledTheme: Boolean = false,
     themeColor: AppThemeColor = AppThemeColor.SYSTEM,
     useDynamicColor: Boolean = true,
+    glassBlur: Boolean = true,
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current
@@ -172,10 +174,16 @@ fun ChompassTheme(
     // Mirror the scheme primary into AppColors so Calorie accents equal
     // colorScheme.primary in every mode (UI-audit 2.4).
     AppColors.setThemeColor(themeColor, colorScheme.primary)
+    // Expressive-motion skip (recorded): material3 1.4.0 (BOM 2026.02.01) keeps
+    // MaterialExpressiveTheme/MotionScheme internal, so the root stays on
+    // MaterialTheme; custom surfaces carry the motion via AppMotion specs.
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,
         shapes = Shapes,
-        content = content
-    )
+    ) {
+        CompositionLocalProvider(LocalChompassTraits provides ChompassTraits(glassBlur = glassBlur)) {
+            content()
+        }
+    }
 }

@@ -1732,6 +1732,8 @@ für dich ein</string>
     <string name="settings_fixed_launcher_icon_subtitle">Behält die Launcher-Ikone in Petrol. Sie folgt nicht mehr der Akzentfarbe oder dem Hintergrundbild.</string>
     <string name="settings_system_date_time_pickers">System-Datums- und Zeitwahl</string>
     <string name="settings_system_date_time_pickers_subtitle">Beim Bearbeiten einer Mahlzeit die Datums- und Zeitdialoge des Telefons nutzen.</string>
+    <string name="settings_glass_blur">Mattes Glas</string>
+    <string name="settings_glass_blur_subtitle">Inhalte hinter schwebenden Bereichen weichzeichnen, z. B. über der Ergebnisliste beim Essen hinzufügen.</string>
     <string name="add_food_log_time">Log-Zeit</string>
     <string name="add_food_log_time_now">Jetzt</string>
     <string name="cd_clear_log_time">Aktuelle Uhrzeit verwenden</string>
@@ -1886,8 +1888,6 @@ für dich ein</string>
     <string name="settings_water_reminder_window_too_short">Das Trinkfenster muss mindestens 15 Minuten betragen.</string>
 
     <string name="unit_celsius">°C</string>
-
-    <string name="settings_glass_blur">Glas-Unschärfe</string>
 
     <string name="settings_food_log_sort">Sortierung des Ernährungsprotokolls</string>
 

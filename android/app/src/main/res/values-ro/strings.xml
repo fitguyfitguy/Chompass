@@ -1467,6 +1467,8 @@
     <string name="settings_fixed_launcher_icon_subtitle">Păstrează pictograma aplicației turcoaz. Nu mai urmează culoarea temei și a fundalului.</string>
     <string name="settings_system_date_time_pickers">Selectoare de dată și oră ale sistemului</string>
     <string name="settings_system_date_time_pickers_subtitle">Folosește dialogurile de dată și oră ale telefonului la editarea unei mese.</string>
+    <string name="settings_glass_blur">Sticlă mată</string>
+    <string name="settings_glass_blur_subtitle">Estompează conținutul din spatele panourilor plutitoare, cum ar fi antetul rezultatelor la adăugarea mâncării.</string>
     <string name="add_food_log_time">Ora înregistrării</string>
     <string name="add_food_log_time_now">Acum</string>
     <string name="cd_clear_log_time">Folosește ora actuală</string>
@@ -1477,7 +1479,6 @@
     <string name="settings_food_section_photo">Analiza fotografiilor</string>
     <string name="settings_food_section_serving">Mărimea porției</string>
     <string name="settings_gemini_google_search">Fundamentare Căutare Google</string>
-    <string name="settings_glass_blur">Estompare sticlă</string>
     <string name="settings_goal_auto">Auto</string>
     <string name="settings_goals_how_adaptive">Obiectivele adaptive recalculează obiectivele tale de calorii și macrouri cam o dată pe săptămână.</string>
     <string name="settings_goals_how_energy">Cheltuiala energetică ancorează obiectivele pe arderea măsurată din Health Connect.</string>

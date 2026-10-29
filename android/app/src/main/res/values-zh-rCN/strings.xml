@@ -1470,6 +1470,8 @@
     <string name="settings_fixed_launcher_icon_subtitle">保持启动器图标为青色，不再跟随主题色和壁纸。</string>
     <string name="settings_system_date_time_pickers">系统日期和时间选择器</string>
     <string name="settings_system_date_time_pickers_subtitle">编辑餐次时使用手机的日期和时间对话框。</string>
+    <string name="settings_glass_blur">磨砂玻璃</string>
+    <string name="settings_glass_blur_subtitle">模糊悬浮面板（如添加食物结果栏）背后的内容。</string>
     <string name="add_food_log_time">记录时间</string>
     <string name="add_food_log_time_now">现在</string>
     <string name="cd_clear_log_time">使用当前时间</string>
@@ -1480,7 +1482,6 @@
     <string name="settings_food_section_photo">照片分析</string>
     <string name="settings_food_section_serving">份量大小</string>
     <string name="settings_gemini_google_search">Google 搜索接地</string>
-    <string name="settings_glass_blur">玻璃模糊</string>
     <string name="settings_goal_auto">自动</string>
     <string name="settings_goals_how_adaptive">自适应目标约每周重新计算一次你的热量和宏量目标。</string>
     <string name="settings_goals_how_energy">能量消耗把目标锚定在 Health Connect 实测消耗上。</string>

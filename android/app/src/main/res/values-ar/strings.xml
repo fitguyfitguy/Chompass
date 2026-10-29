@@ -1481,6 +1481,8 @@
     <string name="settings_fixed_launcher_icon_subtitle">تبقي أيقونة التطبيق بلون تركوازي. تتوقف عن متابعة لون السمة والخلفية.</string>
     <string name="settings_system_date_time_pickers">منتقي التاريخ والوقت للنظام</string>
     <string name="settings_system_date_time_pickers_subtitle">استخدم نوافذ التاريخ والوقت في الهاتف عند تعديل وجبة.</string>
+    <string name="settings_glass_blur">زجاج مصنفر</string>
+    <string name="settings_glass_blur_subtitle">طمس المحتوى خلف اللوحات العائمة، مثل ترويسة نتائج إضافة الطعام.</string>
     <string name="add_food_log_time">وقت التسجيل</string>
     <string name="add_food_log_time_now">الآن</string>
     <string name="cd_clear_log_time">استخدام الوقت الحالي</string>
@@ -1491,7 +1493,6 @@
     <string name="settings_food_section_photo">تحليل الصور</string>
     <string name="settings_food_section_serving">حجم الحصة</string>
     <string name="settings_gemini_google_search">الربط بالبحث في Google</string>
-    <string name="settings_glass_blur">تأثير الزجاج</string>
     <string name="settings_goal_auto">تلقائي</string>
     <string name="settings_goals_how_adaptive">تعيد الأهداف التكيفية حساب أهداف السعرات والمغذيات الكبرى مرة أسبوعيًا تقريبًا.</string>
     <string name="settings_goals_how_energy">يُرسي إنفاق الطاقة الأهداف على حرقك المقاس من Health Connect.</string>

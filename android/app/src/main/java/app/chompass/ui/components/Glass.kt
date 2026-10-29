@@ -13,6 +13,7 @@ import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.HazeStyle
 import dev.chrisbanes.haze.HazeTint
 import dev.chrisbanes.haze.hazeEffect
+import app.chompass.ui.theme.ChompassTraitsDefaults
 
 /** Alpha of the tint laid over the blur: thin enough to read what passes beneath. */
 const val GlassTintAlpha = 0.55f
@@ -48,7 +49,8 @@ fun Modifier.hazeGlassFill(
     haze: HazeState?,
 ): Modifier {
     val backdrop = MaterialTheme.colorScheme.surfaceContainerLow
-    if (haze == null) {
+    // Traits off (Appearance toggle) or no blur source: same solid fallback.
+    if (haze == null || !ChompassTraitsDefaults.glassBlur()) {
         return background(tint.compositeOver(backdrop), shape)
     }
     val style = remember(tint, backdrop) { hazeGlassStyle(tint, backdrop) }

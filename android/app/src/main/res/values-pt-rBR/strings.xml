@@ -1448,6 +1448,8 @@
     <string name="settings_fixed_launcher_icon_subtitle">Mantém o ícone do app azul-petróleo. Ele deixa de seguir a cor do tema e do papel de parede.</string>
     <string name="settings_system_date_time_pickers">Seletores de data e hora do sistema</string>
     <string name="settings_system_date_time_pickers_subtitle">Use os diálogos de data e hora do telefone ao editar uma refeição.</string>
+    <string name="settings_glass_blur">Vidro fosco</string>
+    <string name="settings_glass_blur_subtitle">Desfoca o conteúdo atrás dos painéis flutuantes, como o cabeçalho de resultados ao adicionar comida.</string>
     <string name="add_food_log_time">Hora do registro</string>
     <string name="add_food_log_time_now">Agora</string>
     <string name="cd_clear_log_time">Usar a hora atual</string>
@@ -1458,7 +1460,6 @@
     <string name="settings_food_section_photo">Análise de fotos</string>
     <string name="settings_food_section_serving">Tamanho da porção</string>
     <string name="settings_gemini_google_search">Fundamentação na Pesquisa Google</string>
-    <string name="settings_glass_blur">Desfoque de vidro</string>
     <string name="settings_goal_auto">Auto</string>
     <string name="settings_goals_how_adaptive">As metas adaptativas recalculam suas metas de calorias e macros cerca de uma vez por semana.</string>
     <string name="settings_goals_how_energy">Gasto Energético ancora as metas no seu gasto medido do Health Connect.</string>
