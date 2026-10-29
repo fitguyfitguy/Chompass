@@ -6,6 +6,16 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## [Unreleased]
 
+### Added
+
+- **Scale body-composition metrics** (Android and PWA): Progress now shows bone mass, total body water, muscle mass, lean mass and the visceral-fat rating when your scale reports them, with one card per metric, the current value, the change over the selected range, and a water percentage against your latest weigh-in. Readings arrive from Health Connect, an openScale CSV export, sync, or the Scale metrics entry in Progress. Nothing appears for anyone without such a scale. Exported and synced files carry the readings so both apps stay in step.
+
+- **Estimated skeletal muscle from tape measurements** (Android and PWA): Measurements shows a skeletal-muscle estimate once upper arm, thigh and calf are logged. The estimate is within about 3 kg, so read it as a trend next to your other tape metrics. It does not change your calorie or protein targets.
+
+### Changed
+
+- **Calorie targets use a measured lean mass when your scale reports one** (Android and PWA): a lean-mass reading from the last 90 days now drives Katch-McArdle BMR and the protein cap ahead of the body-fat estimate, because it is the value the formula works from. Older readings fall back to your body-fat reading, then to Mifflin-St Jeor. Turning off Use Body Fat for BMR turns this path off too. Stored goals mark as out of date when the number changes.
+
 ## [5.12.1] - 2026-10-28
 
 ### Added

@@ -3771,6 +3771,7 @@ für dich ein</string>
     <string name="progress_scale_metrics_note">Schätzung einer Körperwaage — der Trend ist verlässlicher als der Absolutwert</string>
     <string name="progress_scale_metrics_tbw_percent">%1$.1f %% des Körpergewichts · typischer Bereich 45–65 %%</string>
     <string name="progress_log_scale_metrics">Waagen-Werte</string>
+    <string name="progress_log_scale_metrics_title">Waagen-Werte erfassen</string>
     <string name="progress_estimated_smm">Geschätzte Skelettmuskulatur (Lee)</string>
     <string name="progress_estimated_smm_note">Anthropometrische Schätzung aus Arm, Oberschenkel und Wade · ± ~3 kg</string>
     <string name="progress_overlay_off">Aus</string>

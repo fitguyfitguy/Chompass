@@ -2279,6 +2279,7 @@
     <string name="progress_scale_metrics_note">تقدير من ميزان منزلي — الاتجاه أدق من الرقم المطلق</string>
     <string name="progress_scale_metrics_tbw_percent">%1$.1f %% من وزن الجسم · النطاق المعتاد 45–65 %%</string>
     <string name="progress_log_scale_metrics">مقاييس الميزان</string>
+    <string name="progress_log_scale_metrics_title">تسجيل مقاييس الميزان</string>
     <string name="progress_estimated_smm">العضلات الهيكلية المقدَّرة (Lee)</string>
     <string name="progress_estimated_smm_note">تقدير قياسي من الذراع والفخذ والسمانة · ± ~3 كغم</string>
     <string name="progress_overlay_off">إيقاف</string>

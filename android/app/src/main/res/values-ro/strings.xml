@@ -2246,6 +2246,7 @@ macro-urile reechilibrate la noul total caloric</string>
     <string name="progress_scale_metrics_note">Estimare de cântar de uz casnic — tendința este mai fiabilă decât valoarea absolută</string>
     <string name="progress_scale_metrics_tbw_percent">%1$.1f %% din greutatea corporală · interval tipic 45–65 %%</string>
     <string name="progress_log_scale_metrics">Măsurători de cântar</string>
+    <string name="progress_log_scale_metrics_title">Înregistrează măsurători de cântar</string>
     <string name="progress_estimated_smm">Masă musculară scheletică estimată (Lee)</string>
     <string name="progress_estimated_smm_note">Estimare antropometrică din braț, coapsă și gambă · ± ~3 kg</string>
     <string name="progress_overlay_off">Dezactivat</string>

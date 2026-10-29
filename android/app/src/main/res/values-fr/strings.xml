@@ -2263,6 +2263,7 @@ macros rééquilibrées au nouveau total calorique</string>
     <string name="progress_scale_metrics_note">Estimation d\'une balance grand public — la tendance est plus fiable que la valeur absolue</string>
     <string name="progress_scale_metrics_tbw_percent">%1$.1f %% du poids corporel · plage habituelle 45–65 %%</string>
     <string name="progress_log_scale_metrics">Mesures de balance</string>
+    <string name="progress_log_scale_metrics_title">Enregistrer les mesures de balance</string>
     <string name="progress_estimated_smm">Muscle squelettique estimé (Lee)</string>
     <string name="progress_estimated_smm_note">Estimation anthropométrique (bras, cuisse, mollet) · ± ~3 kg</string>
     <string name="progress_overlay_off">Désactivé</string>

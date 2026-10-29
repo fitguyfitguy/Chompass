@@ -2234,6 +2234,7 @@
     <string name="progress_scale_metrics_note">가정용 체중계 추정치 — 절대값보다 추세가 더 신뢰할 만합니다</string>
     <string name="progress_scale_metrics_tbw_percent">체중의 %1$.1f %% · 일반 범위 45–65 %%</string>
     <string name="progress_log_scale_metrics">체중계 지표</string>
+    <string name="progress_log_scale_metrics_title">체중계 지표 기록</string>
     <string name="progress_estimated_smm">추정 골격근량(Lee)</string>
     <string name="progress_estimated_smm_note">팔·허벅지·종아리 인체계측 추정 · ± ~3 kg</string>
     <string name="progress_overlay_off">끄기</string>

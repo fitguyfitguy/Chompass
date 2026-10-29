@@ -2238,6 +2238,7 @@ macros reequilibradas ao novo total calórico</string>
     <string name="progress_scale_metrics_note">Estimativa de balança doméstica — a tendência é mais confiável que o valor absoluto</string>
     <string name="progress_scale_metrics_tbw_percent">%1$.1f %% do peso corporal · faixa típica 45–65 %%</string>
     <string name="progress_log_scale_metrics">Métricas da balança</string>
+    <string name="progress_log_scale_metrics_title">Registrar métricas da balança</string>
     <string name="progress_estimated_smm">Músculo esquelético estimado (Lee)</string>
     <string name="progress_estimated_smm_note">Estimativa antropométrica de braço, coxa e panturrilha · ± ~3 kg</string>
     <string name="progress_overlay_off">Desligado</string>
