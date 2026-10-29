@@ -1,5 +1,6 @@
 package app.chompass.models
 
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
@@ -73,4 +74,41 @@ class BodyMeasurementCalculationTest {
     val femaleSmall = BodyMeasurement(wristCm = 14.0)
     assertEquals(BodyMeasurement.FrameSize.SMALL, femaleSmall.wristFrame(Gender.FEMALE, 165.0))
   }
+
+    // --- SMM-LEE (Lee et al. 2000 limb-circumference model) ---
+
+    @Test
+    fun `skeletal muscle estimate needs all three limb sites`() {
+        val noThigh = BodyMeasurement(upperArmCm = 32.0, calfCm = 37.0)
+        assertNull(noThigh.estimatedSkeletalMuscleMassKg(Gender.MALE, 30, 175.0))
+        val all = BodyMeasurement(upperArmCm = 32.0, thighCm = 55.0, calfCm = 37.0)
+        assertNotNull(all.estimatedSkeletalMuscleMassKg(Gender.MALE, 30, 175.0))
+    }
+
+    @Test
+    fun `skeletal muscle estimate rejects impossible inputs and results`() {
+        val base = BodyMeasurement(upperArmCm = 32.0, thighCm = 55.0, calfCm = 37.0)
+        // Height must be a real positive length.
+        assertNull(base.estimatedSkeletalMuscleMassKg(Gender.MALE, 30, 0.0))
+        // A negative age is not a person.
+        assertNull(base.estimatedSkeletalMuscleMassKg(Gender.MALE, -1, 175.0))
+        // A non-positive girth is a parsing bug, not a limb.
+        assertNull(
+            BodyMeasurement(upperArmCm = 0.0, thighCm = 55.0, calfCm = 37.0)
+                .estimatedSkeletalMuscleMassKg(Gender.MALE, 30, 175.0)
+        )
+        // Girths that no human carries push the model output past the 80 kg cap.
+        val absurd = BodyMeasurement(upperArmCm = 80.0, thighCm = 90.0, calfCm = 80.0)
+        assertNull(absurd.estimatedSkeletalMuscleMassKg(Gender.MALE, 30, 175.0))
+    }
+
+    @Test
+    fun `gender other uses the female coefficient`() {
+        val m = BodyMeasurement(upperArmCm = 27.0, thighCm = 50.0, calfCm = 33.0)
+        val female = m.estimatedSkeletalMuscleMassKg(Gender.FEMALE, 35, 165.0)!!
+        val other = m.estimatedSkeletalMuscleMassKg(Gender.OTHER, 35, 165.0)!!
+        assertEquals(female, other, 1e-9)
+        val male = m.estimatedSkeletalMuscleMassKg(Gender.MALE, 35, 165.0)!!
+        assertEquals(2.4, male - female, 1e-9)
+    }
 }

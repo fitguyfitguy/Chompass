@@ -37,6 +37,9 @@ data class HealthCapabilities(
     val weightWrite: Boolean,
     val bodyFatRead: Boolean,
     val bodyFatWrite: Boolean,
+    /** Scale composition reads (bone mass / body water / lean mass); no write direction —
+     *  the scale app owns those records. */
+    val compositionRead: Boolean,
     val nutritionRead: Boolean,
     val nutritionWrite: Boolean,
     val energyRead: Boolean,
@@ -127,6 +130,26 @@ data class ExternalBodyFat(
     /** 0–1 fraction, matching UserProfile.bodyFatPercentage convention. */
     val bodyFatFraction: Double,
     val clientRecordId: String?,
+    /** Stable Health Connect record id (Metadata.id) — see [ExternalWeight.recordId]. */
+    val recordId: String = ""
+)
+
+/**
+ * One bioimpedance-scale composition reading, already clustered to a single timestamp.
+ * Health Connect reports these as separate record types written seconds apart, so the
+ * reader merges same-session records into one row.
+ *
+ * [muscleMassKg] and [visceralFatRating] are always null here: Health Connect has no
+ * record type for either — they arrive through CSV import, sync, or manual entry.
+ */
+data class ExternalBodyComposition(
+    val time: Instant,
+    val boneMassKg: Double? = null,
+    val totalBodyWaterKg: Double? = null,
+    val muscleMassKg: Double? = null,
+    val leanMassKg: Double? = null,
+    val visceralFatRating: Double? = null,
+    val clientRecordId: String? = null,
     /** Stable Health Connect record id (Metadata.id) — see [ExternalWeight.recordId]. */
     val recordId: String = ""
 )

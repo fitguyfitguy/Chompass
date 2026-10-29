@@ -1,5 +1,6 @@
 package app.chompass.services.health
 
+import app.chompass.data.BodyCompositionRepository
 import app.chompass.data.BodyFatRepository
 import app.chompass.data.FoodRepository
 import app.chompass.data.PreferencesStore
@@ -13,15 +14,17 @@ import kotlinx.coroutines.flow.first
  *  persisted alongside the token so we can detect a newly-granted read capability. */
 private const val HEALTH_READ_TYPE_WEIGHT = "weight"
 private const val HEALTH_READ_TYPE_BODY_FAT = "bodyfat"
+private const val HEALTH_READ_TYPE_COMPOSITION = "composition"
 private const val HEALTH_READ_TYPE_NUTRITION = "nutrition"
 
 /**
- * Pull external weight + body-fat readings FROM Health Connect into the app (e.g. a
- * Withings scale that writes weigh-ins to Health Connect). Runs on app foreground and
- * right after the user connects/grants. Read-direction only — gated per metric on READ
- * permission, so a user who granted read but not write still gets their data imported
- * (issue #91). Incremental via a persisted changes token, with a one-time historical
- * backfill when there's no token yet; imports are deduped, so re-runs are harmless.
+ * Pull external weight + body-fat + scale-composition readings FROM Health Connect into
+ * the app (e.g. a Withings scale that writes weigh-ins and body composition to Health
+ * Connect). Runs on app foreground and right after the user connects/grants.
+ * Read-direction only — gated per metric on READ permission, so a user who granted read
+ * but not write still gets their data imported (issue #91). Incremental via a persisted
+ * changes token, with a one-time historical backfill when there's no token yet; imports
+ * are deduped, so re-runs are harmless.
  */
 class HealthConnectReadSync(
     private val prefs: PreferencesStore,
@@ -29,6 +32,7 @@ class HealthConnectReadSync(
     private val foodRepository: FoodRepository,
     private val weightRepository: WeightRepository,
     private val bodyFatRepository: BodyFatRepository,
+    private val bodyCompositionRepository: BodyCompositionRepository,
     private val waterRepository: WaterRepository,
 ) {
     @Volatile
@@ -46,7 +50,11 @@ class HealthConnectReadSync(
         foodRepository.retryPendingHealthWrites()
 
         val caps = health.capabilities()
-        if (!caps.weightRead && !caps.bodyFatRead && !caps.nutritionRead && !caps.hydrationRead) return
+        if (!caps.weightRead && !caps.bodyFatRead && !caps.compositionRead &&
+            !caps.nutritionRead && !caps.hydrationRead
+        ) {
+            return
+        }
 
         inFlight = true
         try {
@@ -75,11 +83,12 @@ class HealthConnectReadSync(
                     prefs.setHealthHydrationRestoreDone(true)
                 }
             }
-            if (!caps.weightRead && !caps.bodyFatRead && !caps.nutritionRead) return
+            if (!caps.weightRead && !caps.bodyFatRead && !caps.compositionRead && !caps.nutritionRead) return
 
             val desiredTypes = buildSet {
                 if (caps.weightRead) add(HEALTH_READ_TYPE_WEIGHT)
                 if (caps.bodyFatRead) add(HEALTH_READ_TYPE_BODY_FAT)
+                if (caps.compositionRead) add(HEALTH_READ_TYPE_COMPOSITION)
                 if (caps.nutritionRead) add(HEALTH_READ_TYPE_NUTRITION)
             }
             // If a read type was granted AFTER the token was seeded, the existing token never
@@ -100,6 +109,9 @@ class HealthConnectReadSync(
                 if (caps.bodyFatRead) {
                     bodyFatRepository.importExternalBodyFats(health.readBodyFats(from, now))
                 }
+                if (caps.compositionRead) {
+                    bodyCompositionRepository.importExternal(health.readBodyComposition(from, now))
+                }
                 // Seed a token covering only the types we can actually read. Nutrition
                 // gets no external backfill on purpose — the one-shot restore above
                 // already brings back Fud AI's own history, and silently importing two
@@ -108,6 +120,11 @@ class HealthConnectReadSync(
                 val recordTypes = buildSet {
                     if (caps.weightRead) add(androidx.health.connect.client.records.WeightRecord::class)
                     if (caps.bodyFatRead) add(androidx.health.connect.client.records.BodyFatRecord::class)
+                    if (caps.compositionRead) {
+                        add(androidx.health.connect.client.records.BoneMassRecord::class)
+                        add(androidx.health.connect.client.records.BodyWaterMassRecord::class)
+                        add(androidx.health.connect.client.records.LeanBodyMassRecord::class)
+                    }
                     if (caps.nutritionRead) add(androidx.health.connect.client.records.NutritionRecord::class)
                 }
                 health.getChangesToken(recordTypes)?.let {
@@ -126,6 +143,12 @@ class HealthConnectReadSync(
                     val result = health.consumeBodyFatChanges(token)
                     if (result == null) { prefs.clearHealthChangesToken(); return }
                     bodyFatRepository.importExternalBodyFats(result.first)
+                    next = result.second ?: next
+                }
+                if (caps.compositionRead) {
+                    val result = health.consumeCompositionChanges(token)
+                    if (result == null) { prefs.clearHealthChangesToken(); return }
+                    bodyCompositionRepository.importExternal(result.first)
                     next = result.second ?: next
                 }
                 if (caps.nutritionRead) {

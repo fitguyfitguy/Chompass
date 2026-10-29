@@ -12,9 +12,12 @@ import androidx.health.connect.client.PermissionController
 import androidx.health.connect.client.permission.HealthPermission
 import androidx.health.connect.client.records.ActiveCaloriesBurnedRecord
 import androidx.health.connect.client.records.BodyFatRecord
+import androidx.health.connect.client.records.BodyWaterMassRecord
+import androidx.health.connect.client.records.BoneMassRecord
 import androidx.health.connect.client.records.ExerciseSessionRecord
 import androidx.health.connect.client.records.HeightRecord
 import androidx.health.connect.client.records.HydrationRecord
+import androidx.health.connect.client.records.LeanBodyMassRecord
 import androidx.health.connect.client.records.NutritionRecord
 import androidx.health.connect.client.records.RestingHeartRateRecord
 import androidx.health.connect.client.records.SleepSessionRecord
@@ -108,11 +111,17 @@ class HealthConnectManager(private val context: Context) {
     private val restingHrRead = HealthPermission.getReadPermission(RestingHeartRateRecord::class)
     private val hydrationRead = HealthPermission.getReadPermission(HydrationRecord::class)
     private val hydrationWrite = HealthPermission.getWritePermission(HydrationRecord::class)
+    // Scale composition: read-only. The scale app owns these records, so we never
+    // write them back (no write permission is requested at all).
+    private val boneMassRead = HealthPermission.getReadPermission(BoneMassRecord::class)
+    private val bodyWaterMassRead = HealthPermission.getReadPermission(BodyWaterMassRecord::class)
+    private val leanBodyMassRead = HealthPermission.getReadPermission(LeanBodyMassRecord::class)
 
     private val corePermissions: Set<String> = setOf(
         weightRead, weightWrite, nutritionRead, nutritionWrite,
         bodyFatRead, bodyFatWrite, activeEnergyRead, totalEnergyRead,
-        stepsRead, exerciseRead, heightWrite, sleepRead, restingHrRead, hydrationRead, hydrationWrite
+        stepsRead, exerciseRead, heightWrite, sleepRead, restingHrRead, hydrationRead, hydrationWrite,
+        boneMassRead, bodyWaterMassRead, leanBodyMassRead
     )
 
     /**
@@ -249,6 +258,7 @@ class HealthConnectManager(private val context: Context) {
             weightWrite = weightWrite in g,
             bodyFatRead = bodyFatRead in g,
             bodyFatWrite = bodyFatWrite in g,
+            compositionRead = boneMassRead in g || bodyWaterMassRead in g || leanBodyMassRead in g,
             nutritionRead = nutritionRead in g,
             nutritionWrite = nutritionWrite in g,
             energyRead = activeEnergyRead in g && totalEnergyRead in g,
@@ -336,7 +346,13 @@ class HealthConnectManager(private val context: Context) {
 
     suspend fun getChangesToken(
         recordTypes: Set<kotlin.reflect.KClass<out androidx.health.connect.client.records.Record>> =
-            setOf(WeightRecord::class, BodyFatRecord::class)
+            setOf(
+                WeightRecord::class,
+                BodyFatRecord::class,
+                BoneMassRecord::class,
+                BodyWaterMassRecord::class,
+                LeanBodyMassRecord::class,
+            )
     ): String? = reader.getChangesToken(recordTypes)
 
     suspend fun consumeWeightChanges(sinceToken: String): Pair<List<ExternalWeight>, String?>? =
@@ -344,6 +360,14 @@ class HealthConnectManager(private val context: Context) {
 
     suspend fun consumeBodyFatChanges(sinceToken: String): Pair<List<ExternalBodyFat>, String?>? =
         reader.consumeBodyFatChanges(sinceToken)
+
+    /** Read-only scale composition (bone mass / body water / lean mass). No write path:
+     *  the scale app owns these records. */
+    suspend fun readBodyComposition(from: Instant, to: Instant): List<ExternalBodyComposition> =
+        reader.readBodyComposition(from, to)
+
+    suspend fun consumeCompositionChanges(sinceToken: String): Pair<List<ExternalBodyComposition>, String?>? =
+        reader.consumeCompositionChanges(sinceToken)
 
     suspend fun consumeNutritionChanges(sinceToken: String): Pair<List<ExternalNutrition>, String?>? =
         reader.consumeNutritionChanges(sinceToken)
@@ -363,7 +387,8 @@ class HealthConnectManager(private val context: Context) {
          *  v5 = added Steps + ExerciseSession read permissions (activity card).
          *  v6 = added Height write + Sleep/RestingHeartRate/Hydration reads (wellness card).
          *  v7 = added READ_HEALTH_DATA_HISTORY when the module supports it.
-         *  v8 = added HydrationRecord write permission (water sync). */
-        const val CURRENT_TYPES_VERSION = 8
+         *  v8 = added HydrationRecord write permission (water sync).
+         *  v9 = added BoneMass/BodyWaterMass/LeanBodyMass read permissions (composition card). */
+        const val CURRENT_TYPES_VERSION = 9
     }
 }

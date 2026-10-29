@@ -4,8 +4,11 @@ import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.changes.UpsertionChange
 import androidx.health.connect.client.records.ActiveCaloriesBurnedRecord
 import androidx.health.connect.client.records.BodyFatRecord
+import androidx.health.connect.client.records.BodyWaterMassRecord
+import androidx.health.connect.client.records.BoneMassRecord
 import androidx.health.connect.client.records.ExerciseSessionRecord
 import androidx.health.connect.client.records.HydrationRecord
+import androidx.health.connect.client.records.LeanBodyMassRecord
 import androidx.health.connect.client.records.MealType as HCMealType
 import androidx.health.connect.client.records.NutritionRecord
 import androidx.health.connect.client.records.RestingHeartRateRecord
@@ -90,6 +93,70 @@ internal class HealthConnectReader(
             pageToken = response.pageToken
         } while (pageToken != null)
         return out
+    }
+
+    /**
+     * Scale composition readings (bone mass, total body water, lean body mass) in the
+     * range. Health Connect stores these as three separate record types written seconds
+     * apart by the scale app, so the samples are CLUSTERED into one row per measurement
+     * session: a gap of more than [COMPOSITION_CLUSTER_GAP] starts a new cluster, and
+     * each cluster keeps its earliest time plus the first non-null value per field.
+     *
+     * Muscle mass and visceral-fat rating have no Health Connect record type, so they
+     * stay null here (CSV import / sync / manual entry supply those).
+     *
+     * A per-type read failure (missing permission, binder error) skips that type only —
+     * a user who granted lean mass but not bone mass still gets their lean mass.
+     */
+    suspend fun readBodyComposition(from: Instant, to: Instant): List<ExternalBodyComposition> {
+        val c = client() ?: return emptyList()
+        val samples = mutableListOf<CompositionSample>()
+
+        suspend fun <T : androidx.health.connect.client.records.Record> collect(
+            recordType: kotlin.reflect.KClass<T>,
+            map: (T) -> CompositionSample,
+        ) {
+            var pageToken: String? = null
+            do {
+                val response = runCatching {
+                    c.readRecords(
+                        ReadRecordsRequest(
+                            recordType = recordType,
+                            timeRangeFilter = TimeRangeFilter.between(from, to),
+                            pageToken = pageToken
+                        )
+                    )
+                }.getOrNull() ?: break
+                response.records.forEach { samples.add(map(it)) }
+                pageToken = response.pageToken
+            } while (pageToken != null)
+        }
+
+        collect(BoneMassRecord::class) {
+            CompositionSample(
+                time = it.time,
+                boneMassKg = it.mass.inKilograms,
+                clientRecordId = it.metadata.clientRecordId,
+                recordId = it.metadata.id
+            )
+        }
+        collect(BodyWaterMassRecord::class) {
+            CompositionSample(
+                time = it.time,
+                totalBodyWaterKg = it.mass.inKilograms,
+                clientRecordId = it.metadata.clientRecordId,
+                recordId = it.metadata.id
+            )
+        }
+        collect(LeanBodyMassRecord::class) {
+            CompositionSample(
+                time = it.time,
+                leanMassKg = it.mass.inKilograms,
+                clientRecordId = it.metadata.clientRecordId,
+                recordId = it.metadata.id
+            )
+        }
+        return clusterComposition(samples)
     }
 
     /** All NutritionRecords in the range, mapped back to Fud AI's units (the exact
@@ -414,6 +481,109 @@ internal class HealthConnectReader(
         return results to token
     }
 
+    /** Sibling of [consumeWeightChanges] for the three composition record types. The
+     *  combined changes-token watches every seeded type, so callers drain the typed
+     *  consumers using the SAME nextChangesToken. Samples are clustered exactly like
+     *  [readBodyComposition], so a scale session arrives as one row. */
+    suspend fun consumeCompositionChanges(sinceToken: String): Pair<List<ExternalBodyComposition>, String?>? {
+        val c = client() ?: return null
+        val samples = mutableListOf<CompositionSample>()
+        var token = sinceToken
+        while (true) {
+            val changes = runCatching { c.getChanges(token) }.getOrNull() ?: return null
+            if (changes.changesTokenExpired) return null
+            changes.changes.filterIsInstance<UpsertionChange>().forEach { change ->
+                val rec = change.record
+                val cid = when (rec) {
+                    is BoneMassRecord -> rec.metadata.clientRecordId
+                    is BodyWaterMassRecord -> rec.metadata.clientRecordId
+                    is LeanBodyMassRecord -> rec.metadata.clientRecordId
+                    else -> null
+                }
+                // We never write composition records, so an own-tagged one can only
+                // be a leftover from another install: skip it like the other consumers.
+                if (cid != null && cid.startsWith(HealthConnectManager.CLIENT_PREFIX)) return@forEach
+                when (rec) {
+                    is BoneMassRecord -> samples.add(
+                        CompositionSample(
+                            time = rec.time,
+                            boneMassKg = rec.mass.inKilograms,
+                            clientRecordId = cid,
+                            recordId = rec.metadata.id
+                        )
+                    )
+                    is BodyWaterMassRecord -> samples.add(
+                        CompositionSample(
+                            time = rec.time,
+                            totalBodyWaterKg = rec.mass.inKilograms,
+                            clientRecordId = cid,
+                            recordId = rec.metadata.id
+                        )
+                    )
+                    is LeanBodyMassRecord -> samples.add(
+                        CompositionSample(
+                            time = rec.time,
+                            leanMassKg = rec.mass.inKilograms,
+                            clientRecordId = cid,
+                            recordId = rec.metadata.id
+                        )
+                    )
+                }
+            }
+            token = changes.nextChangesToken
+            if (!changes.hasMore) break
+        }
+        return clusterComposition(samples) to token
+    }
+
+    /** One raw InstantaneousRecord of a composition type, before session clustering. */
+    private data class CompositionSample(
+        val time: Instant,
+        val boneMassKg: Double? = null,
+        val totalBodyWaterKg: Double? = null,
+        val leanMassKg: Double? = null,
+        val clientRecordId: String? = null,
+        val recordId: String = ""
+    )
+
+    /**
+     * Group samples written within [COMPOSITION_CLUSTER_GAP] of each other into one
+     * reading: earliest timestamp, first non-null value per field. A scale emits bone
+     * mass, body water and lean mass as separate records seconds apart, so exact
+     * timestamps never match — a 10-minute session window does.
+     */
+    private fun clusterComposition(samples: List<CompositionSample>): List<ExternalBodyComposition> {
+        if (samples.isEmpty()) return emptyList()
+        val out = mutableListOf<ExternalBodyComposition>()
+        var cluster = mutableListOf<CompositionSample>()
+        fun flush() {
+            if (cluster.isEmpty()) return
+            out.add(
+                ExternalBodyComposition(
+                    time = cluster.first().time,
+                    boneMassKg = cluster.firstNotNullOfOrNull { it.boneMassKg },
+                    totalBodyWaterKg = cluster.firstNotNullOfOrNull { it.totalBodyWaterKg },
+                    muscleMassKg = null,
+                    leanMassKg = cluster.firstNotNullOfOrNull { it.leanMassKg },
+                    visceralFatRating = null,
+                    clientRecordId = cluster.firstNotNullOfOrNull { it.clientRecordId },
+                    recordId = cluster.firstNotNullOfOrNull { it.recordId }.orEmpty()
+                )
+            )
+            cluster = mutableListOf()
+        }
+        for (sample in samples.sortedBy { it.time }) {
+            if (cluster.isNotEmpty() &&
+                java.time.Duration.between(cluster.last().time, sample.time) > COMPOSITION_CLUSTER_GAP
+            ) {
+                flush()
+            }
+            cluster.add(sample)
+        }
+        flush()
+        return out
+    }
+
     private fun externalNutritionFrom(it: NutritionRecord): ExternalNutrition = ExternalNutrition(
         time = it.startTime,
         name = it.name,
@@ -452,5 +622,10 @@ internal class HealthConnectReader(
         HCMealType.MEAL_TYPE_DINNER -> app.chompass.models.MealType.DINNER
         HCMealType.MEAL_TYPE_SNACK -> app.chompass.models.MealType.SNACK
         else -> app.chompass.models.MealType.OTHER
+    }
+
+    private companion object {
+        /** Composition records landing within this gap belong to one scale session. */
+        val COMPOSITION_CLUSTER_GAP: java.time.Duration = java.time.Duration.ofMinutes(10)
     }
 }
