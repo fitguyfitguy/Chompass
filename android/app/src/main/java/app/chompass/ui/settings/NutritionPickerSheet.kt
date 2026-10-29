@@ -31,9 +31,6 @@ import androidx.compose.ui.unit.dp
 import app.chompass.R
 import app.chompass.ui.components.ChompassTextButton
 import app.chompass.ui.components.energyText
-import app.chompass.ui.theme.AppColors
-import app.chompass.ui.theme.AppRadii
-import app.chompass.ui.theme.AppTextOpacity
 /**
  * Wheel-picker sheet for a single macro / calorie target. Mirrors iOS
  * NutritionPickerSheet exactly: optional title, wheel picker stepped at the
@@ -54,7 +51,7 @@ fun NutritionPickerSheet(
     // Live wheel-selection reporter, for hosts that need the current value
     // before Save (e.g. to convert it when a unit switcher flips).
     onValueChange: ((Int) -> Unit)? = null,
-    accentColor: Color = AppColors.Calorie,
+    accentColor: Color = MaterialTheme.colorScheme.primary,
     /**
      * Optional per-value conversion line under the wheel (e.g. vitamin D
      * mcg → IU). Receives the live selection so the hint stays current.
@@ -104,7 +101,7 @@ fun NutritionPickerSheet(
         Text(
             unit,
             style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
     if (conversionHintFor != null) {
@@ -112,7 +109,7 @@ fun NutritionPickerSheet(
         Text(
             conversionHintFor(selected),
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.fillMaxWidth(),
             textAlign = androidx.compose.ui.text.style.TextAlign.Center
         )
@@ -127,13 +124,13 @@ fun NutritionPickerSheet(
             text = stringResource(R.string.action_cancel),
             onClick = onDismiss,
             modifier = Modifier.weight(1f),
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Box(
             Modifier
                 .weight(1f)
                 .height(54.dp)
-                .clip(RoundedCornerShape(AppRadii.Field))
+                .clip(MaterialTheme.shapes.medium)
                 .background(accentColor)
                 .clickable {
                     app.chompass.ui.components.MagnitudeDrafts.commitAll()
@@ -160,7 +157,7 @@ fun NutritionPickerSheet(
         ) {
             Text(
                 resetLabel ?: stringResource(R.string.settings_reset_autobalance),
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }

@@ -89,7 +89,6 @@ import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.components.NumericWheelPicker
 import app.chompass.ui.home.FoodLogSortOrder
 import app.chompass.ui.theme.AppColors
-import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.ui.theme.AppThemeColor
 import app.chompass.ui.theme.macroAccentColor
 import java.time.Instant
@@ -123,7 +122,7 @@ private fun ProviderPickerChipLabel(chip: ProviderPickerChip) {
         ProviderPickerChip.YOUR_SERVER -> Triple(R.string.ai_provider_chip_your_server, scheme.tertiary, scheme.tertiary)
         ProviderPickerChip.CLOUD -> Triple(
             R.string.ai_provider_chip_cloud,
-            scheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+            scheme.onSurfaceVariant,
             scheme.outline,
         )
     }
@@ -261,7 +260,7 @@ internal fun SettingsSheets(
                         Text(
                             stringResource(R.string.ai_provider_directory_footer),
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 }
@@ -1109,7 +1108,7 @@ internal fun ServingUnitHeuristicsSheet(
     Text(
         stringResource(R.string.serving_unit_heuristics_footer),
         style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+        color = MaterialTheme.colorScheme.onSurfaceVariant
     )
     Spacer(Modifier.height(8.dp))
     LazyColumn(
@@ -1175,7 +1174,7 @@ internal fun OptionalNutrientGoalsSheet(
 
     if (nutrient != null) {
         TextButton(onClick = { editing = null }) {
-            Text(stringResource(R.string.settings_other_nutrients), color = AppColors.Calorie)
+            Text(stringResource(R.string.settings_other_nutrients), color = MaterialTheme.colorScheme.primary)
         }
         Spacer(Modifier.height(4.dp))
         NutritionPickerSheet(
@@ -1184,7 +1183,7 @@ internal fun OptionalNutrientGoalsSheet(
             currentValue = goals.valueFor(nutrient),
             range = nutrient.goalRange,
             step = nutrient.goalStep,
-            accentColor = nutrient.macroAccentColor() ?: AppColors.Calorie,
+            accentColor = nutrient.macroAccentColor() ?: MaterialTheme.colorScheme.primary,
             confirmAbove = nutrient.softMax,
             onSave = { value ->
                 onChange(goals.withValue(nutrient, value))
@@ -1198,12 +1197,12 @@ internal fun OptionalNutrientGoalsSheet(
     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         Text(stringResource(R.string.settings_other_nutrient_goals), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
         Spacer(Modifier.weight(1f))
-        TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_done), color = AppColors.Calorie) }
+        TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_done), color = MaterialTheme.colorScheme.primary) }
     }
     Text(
         "Separate from calorie, protein, carbs, and fat targets.",
         style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+        color = MaterialTheme.colorScheme.onSurfaceVariant
     )
     Spacer(Modifier.height(12.dp))
     LazyColumn(
@@ -1222,7 +1221,7 @@ internal fun OptionalNutrientGoalsSheet(
         onClick = { onChange(OptionalNutrientGoals.Default) },
         modifier = Modifier.fillMaxWidth()
     ) {
-        Text(stringResource(R.string.settings_reset_defaults), color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted))
+        Text(stringResource(R.string.settings_reset_defaults), color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
 
@@ -1257,20 +1256,20 @@ internal fun OptionalNutrientGoalRow(
             Text(
                 stringResource(nutrient.unitRes),
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Faint)
+                color = MaterialTheme.colorScheme.outline
             )
         }
         Text(
             "$value${nutrient.unit}",
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.SemiBold,
-            color = accent?.copy(alpha = AppTextOpacity.Strong) ?: MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+            color = accent ?: MaterialTheme.colorScheme.onSurfaceVariant
         )
         Spacer(Modifier.width(8.dp))
         Icon(
             Icons.AutoMirrored.Filled.KeyboardArrowRight,
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled),
+            tint = MaterialTheme.colorScheme.outline,
             modifier = Modifier.size(18.dp)
         )
     }

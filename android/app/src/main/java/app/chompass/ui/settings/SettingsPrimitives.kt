@@ -73,11 +73,8 @@ import app.chompass.models.WeightGoal
 import app.chompass.ui.components.ChompassSurface
 import app.chompass.ui.components.ChompassTextField
 import app.chompass.ui.components.ChompassIconBubble
-import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppThemeColor
-import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppSpacing
-import app.chompass.ui.theme.AppTextOpacity
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import app.chompass.models.UnitFormat
@@ -135,12 +132,12 @@ internal fun SectionCard(title: String, content: @Composable () -> Unit) {
         Text(
             title,
             style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(start = AppSpacing.Xs, bottom = 6.dp)
         )
         ChompassSurface(
             modifier = Modifier.fillMaxWidth(),
-            cornerRadius = AppRadii.Container,
+            cornerRadius = 16.dp,
             padding = 0.dp,
         ) {
             Column(Modifier.padding(vertical = 4.dp)) { content() }
@@ -191,7 +188,7 @@ internal fun SettingRow(
             Icon(
                 if (inlineMenu) Icons.Filled.UnfoldMore else Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled),
+                tint = MaterialTheme.colorScheme.outline,
                 modifier = Modifier
                     .align(Alignment.CenterEnd)
                     .size(if (inlineMenu) 18.dp else 24.dp)
@@ -202,7 +199,7 @@ internal fun SettingRow(
                     .align(Alignment.CenterEnd)
                     .padding(end = if (inlineMenu) 18.dp else 24.dp),
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 textAlign = TextAlign.End,
@@ -243,14 +240,14 @@ internal fun ActivityLevelSettingRow(
             value,
             modifier = Modifier.weight(1f, fill = false),
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
         Icon(
             Icons.Filled.UnfoldMore,
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled),
+            tint = MaterialTheme.colorScheme.outline,
             modifier = Modifier.size(18.dp)
         )
     }
@@ -270,7 +267,7 @@ internal fun LockableGoalRow(
     locked: Boolean,
     onClick: () -> Unit,
     onToggleLock: () -> Unit,
-    iconTint: Color = AppColors.Calorie,
+    iconTint: Color = MaterialTheme.colorScheme.primary,
 ) {
     Row(
         Modifier
@@ -290,7 +287,7 @@ internal fun LockableGoalRow(
         Text(
             value,
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
@@ -308,9 +305,9 @@ internal fun GoalStatusChip(locked: Boolean, onClick: () -> Unit) {
         stringResource(R.string.settings_goal_auto)
     }
     val chipColor = if (locked) {
-        AppColors.Calorie
+        MaterialTheme.colorScheme.primary
     } else {
-        MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled)
+        MaterialTheme.colorScheme.outline
     }
     val chipCd = if (locked) {
         stringResource(R.string.settings_goal_chip_locked_cd)
@@ -319,7 +316,7 @@ internal fun GoalStatusChip(locked: Boolean, onClick: () -> Unit) {
     }
     Box(
         Modifier
-            .clip(RoundedCornerShape(AppRadii.Chip))
+            .clip(MaterialTheme.shapes.small)
             .semantics { contentDescription = chipCd }
             .clickable(onClick = onClick, role = Role.Button)
             .background(chipColor.copy(alpha = 0.14f))
@@ -373,13 +370,13 @@ internal fun CustomInstructionsBlock(
             Icon(
                 Icons.Filled.Check,
                 contentDescription = null,
-                tint = if (hasChanges) AppColors.Calorie else MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled),
+                tint = if (hasChanges) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
                 modifier = Modifier.size(18.dp)
             )
             Spacer(Modifier.width(8.dp))
             Text(
                 stringResource(R.string.settings_save),
-                color = if (hasChanges) AppColors.Calorie else MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled),
+                color = if (hasChanges) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
                 fontWeight = FontWeight.SemiBold
             )
         }
@@ -410,7 +407,7 @@ internal fun ToggleRow(
             color = if (enabled) {
                 MaterialTheme.colorScheme.onSurface
             } else {
-                MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Faint)
+                MaterialTheme.colorScheme.outline
             },
         )
         Switch(checked = checked, onCheckedChange = onChange, enabled = enabled)
@@ -444,7 +441,7 @@ internal fun ToggleRowWithInfo(
             Icon(
                 Icons.Outlined.Info,
                 contentDescription = stringResource(R.string.action_info),
-                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(18.dp)
             )
         }
@@ -486,7 +483,7 @@ internal fun BusyToggleRow(
                 Text(
                     subtitle,
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = if (onSubtitleClick != null) {
                         Modifier.clickable(onClick = onSubtitleClick)
                     } else {
@@ -499,7 +496,7 @@ internal fun BusyToggleRow(
             CircularProgressIndicator(
                 modifier = Modifier.size(22.dp),
                 strokeWidth = 2.dp,
-                color = AppColors.Calorie
+                color = MaterialTheme.colorScheme.primary
             )
             Spacer(Modifier.width(14.dp))
         }
@@ -508,7 +505,7 @@ internal fun BusyToggleRow(
                 Icon(
                     Icons.Outlined.Info,
                     contentDescription = stringResource(R.string.action_info),
-                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(18.dp)
                 )
             }
@@ -517,13 +514,13 @@ internal fun BusyToggleRow(
     }
 }
 
-/** Standard one-line helper text under settings rows (13.sp / AppTextOpacity.Muted). */
+/** Standard one-line helper text under settings rows (13.sp / onSurfaceVariant). */
 @Composable
 internal fun SettingFootnote(text: String, modifier: Modifier = Modifier) {
     Text(
         text,
         style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
         modifier = modifier.padding(horizontal = 16.dp, vertical = 10.dp)
     )
 }

@@ -25,8 +25,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.FileProvider
 import app.chompass.R
-import app.chompass.ui.theme.AppColors
-import app.chompass.ui.theme.AppRadii
 import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStream
@@ -46,8 +44,8 @@ internal fun <T> ExportFormatChipRow(
                 onClick = { onSelect(option) },
                 label = { Text(label(option)) },
                 colors = FilterChipDefaults.filterChipColors(
-                    selectedContainerColor = AppColors.Calorie.copy(alpha = 0.18f),
-                    selectedLabelColor = AppColors.Calorie,
+                    selectedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.18f),
+                    selectedLabelColor = MaterialTheme.colorScheme.primary,
                 ),
             )
         }
@@ -59,7 +57,7 @@ internal fun ExportPrimaryButton(onClick: () -> Unit) {
     Box(
         Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(AppRadii.Card))
+            .clip(MaterialTheme.shapes.large)
             .background(MaterialTheme.colorScheme.primary)
             .clickable(onClick = onClick)
             .padding(vertical = 14.dp),

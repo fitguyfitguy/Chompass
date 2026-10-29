@@ -34,10 +34,7 @@ import app.chompass.services.weather.OmCity
 import app.chompass.ui.components.ChompassSurface
 import app.chompass.ui.components.ChompassTextButton
 import app.chompass.ui.components.ChompassTextField
-import app.chompass.ui.theme.AppColors
 import app.chompass.ui.util.clockTimePattern
-import app.chompass.ui.theme.AppRadii
-import app.chompass.ui.theme.AppTextOpacity
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -101,7 +98,7 @@ internal fun OpenMeteoCitySheet(
         Text(
             stringResource(R.string.settings_weather_city_help),
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Spacer(Modifier.height(12.dp))
         ChompassTextField(
@@ -131,7 +128,7 @@ internal fun OpenMeteoCitySheet(
             searched && results.isNullOrEmpty() -> Text(
                 stringResource(R.string.settings_weather_city_search_none),
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             !results.isNullOrEmpty() -> LazyColumn(
                 Modifier.fillMaxWidth().heightIn(max = 260.dp),
@@ -151,14 +148,14 @@ internal fun OpenMeteoCitySheet(
                                 city.displayName,
                                 style = MaterialTheme.typography.bodyMedium,
                                 fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
-                                color = if (selected) AppColors.Calorie else MaterialTheme.colorScheme.onSurface,
+                                color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
                             )
                         }
                         if (selected) {
                             Text(
                                 stringResource(R.string.settings_weather_city_selected),
                                 style = MaterialTheme.typography.bodySmall,
-                                color = AppColors.Calorie,
+                                color = MaterialTheme.colorScheme.primary,
                             )
                         }
                     }
@@ -171,7 +168,7 @@ internal fun OpenMeteoCitySheet(
         // Current selection + status + manual refresh.
         ChompassSurface(
             modifier = Modifier.fillMaxWidth(),
-            cornerRadius = AppRadii.Container,
+            cornerRadius = 16.dp,
             padding = 0.dp,
         ) {
             Column {
@@ -187,14 +184,14 @@ internal fun OpenMeteoCitySheet(
         Text(
             stringResource(R.string.settings_weather_attribution),
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Spacer(Modifier.height(14.dp))
         ChompassTextButton(
             text = stringResource(R.string.action_close),
             onClick = onClose,
             modifier = Modifier.fillMaxWidth(),
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Spacer(Modifier.height(8.dp))
     }

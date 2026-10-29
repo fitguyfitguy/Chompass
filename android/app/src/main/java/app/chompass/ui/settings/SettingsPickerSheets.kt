@@ -76,8 +76,6 @@ import app.chompass.ui.theme.AppColors
 import app.chompass.ui.util.formatMinutesOfDay
 import androidx.compose.ui.platform.LocalContext
 import java.time.Instant
-import app.chompass.ui.theme.AppRadii
-import app.chompass.ui.theme.AppTextOpacity
 import java.time.LocalDate
 import java.time.ZoneId
 import androidx.compose.material3.Icon
@@ -108,7 +106,7 @@ internal fun CancelSaveRow(
             text = stringResource(R.string.action_cancel),
             onClick = onDismiss,
             modifier = Modifier.weight(1f),
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         ChompassPrimaryButton(flushDrafts = true, enabled = enabled, modifier = Modifier.weight(1f), onClick = onSave)
     }
@@ -161,7 +159,7 @@ internal fun <T> ListSheet(
                 Icon(
                     Icons.Filled.Search,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(18.dp),
                 )
             },
@@ -171,7 +169,7 @@ internal fun <T> ListSheet(
                         Icon(
                             Icons.Filled.Close,
                             contentDescription = stringResource(R.string.action_clear),
-                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(20.dp),
                         )
                     }
@@ -190,7 +188,7 @@ internal fun <T> ListSheet(
                 Text(
                     stringResource(R.string.sheet_no_match),
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.fillMaxWidth().padding(vertical = 14.dp),
                 )
             }
@@ -208,7 +206,7 @@ internal fun <T> ListSheet(
                 Text(
                     header,
                     style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Spacer(Modifier.height(6.dp))
             }
@@ -243,7 +241,7 @@ internal fun <T> ListSheet(
                         Text(
                             sub,
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -256,7 +254,7 @@ internal fun <T> ListSheet(
                     Icon(
                         Icons.Filled.Check,
                         contentDescription = stringResource(R.string.sheet_selected_a11y),
-                        tint = AppColors.Calorie,
+                        tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -267,7 +265,7 @@ internal fun <T> ListSheet(
     if (customField != null) {
         footer?.let {
             Spacer(Modifier.height(8.dp))
-            Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted))
+            Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         var custom by remember { mutableStateOf("") }
         Spacer(Modifier.height(8.dp))
@@ -337,7 +335,7 @@ internal fun ApiKeySheet(
                 color = when (testOk) {
                     true -> AppColors.SuccessLight
                     false -> MaterialTheme.colorScheme.error
-                    else -> MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+                    else -> MaterialTheme.colorScheme.onSurfaceVariant
                 }
             )
         }
@@ -352,7 +350,7 @@ internal fun ApiKeySheet(
             text = stringResource(R.string.action_cancel),
             onClick = onDismiss,
             modifier = Modifier.weight(1f),
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         if (onTest != null) {
             TextButton(
@@ -514,7 +512,7 @@ internal fun BodyFatSheet(
         Text(
             stringResource(R.string.sheet_body_fat_accuracy, LocaleFormat.decimal(shownAccuracy, 1)),
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         DecimalWheelPicker(shownAccuracy, { accuracyOverride = it }, 0.5, 10.0, 0.1, stringResource(R.string.unit_pp))
     }
@@ -540,7 +538,7 @@ internal fun GoalBodyFatSheet(currentGoal: Double?, currentBodyFat: Double?, onS
         Text(
             stringResource(R.string.sheet_goal_body_fat_currently, LocaleFormat.decimal(currentBodyFat * 100, 1)),
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
     Spacer(Modifier.height(12.dp))
@@ -570,7 +568,7 @@ internal fun WaterGoalSheet(current: Int, onSave: (Int) -> Unit, onDismiss: () -
     Text(
         stringResource(R.string.settings_water_goal_wheel_help),
         style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
     Spacer(Modifier.height(16.dp))
     CancelSaveRow(onDismiss) { onSave(goal) }
@@ -596,7 +594,7 @@ internal fun NicotineLimitSheet(current: Int, onSave: (Int) -> Unit, onDismiss: 
         Text(
             stringResource(R.string.settings_nicotine_limit_wheel_help),
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Spacer(Modifier.height(16.dp))
         CancelSaveRow(onDismiss) { onSave(limit) }
@@ -623,7 +621,7 @@ internal fun CaffeineLimitSheet(current: Int, onSave: (Int) -> Unit, onDismiss: 
         Text(
             stringResource(R.string.settings_caffeine_limit_wheel_help),
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Spacer(Modifier.height(16.dp))
         CancelSaveRow(onDismiss) { onSave(limit) }
@@ -680,14 +678,14 @@ internal fun FastingGoalSheet(
             Text(
                 stringResource(R.string.fasting_preset_detail, selectedPreset.fastHours, selectedPreset.eatHours),
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Spacer(Modifier.height(8.dp))
         }
         Text(
             stringResource(R.string.fasting),
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         NumericWheelPicker(
             value = fast,
@@ -701,7 +699,7 @@ internal fun FastingGoalSheet(
         Text(
             stringResource(R.string.settings_fasting_eat_window),
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         NumericWheelPicker(
             value = eat,
@@ -715,7 +713,7 @@ internal fun FastingGoalSheet(
         Text(
             stringResource(R.string.settings_fasting_goal_wheel_help),
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Spacer(Modifier.height(16.dp))
         CancelSaveRow(onDismiss) { onSave(fast, eat) }
@@ -778,7 +776,7 @@ internal fun FastingReminderLeadSheet(
     Text(
         stringResource(R.string.settings_fasting_reminder_help),
         style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
     Spacer(Modifier.height(16.dp))
     CancelSaveRow(onDismiss) { onSave(lead) }
@@ -819,7 +817,7 @@ internal fun WaterQuickPresetsSheet(
         Text(
             stringResource(R.string.settings_water_quick_presets_help),
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Spacer(Modifier.height(16.dp))
         // Up to 5 wheels (~220dp each) exceed the sheet on small screens and at
@@ -838,7 +836,7 @@ internal fun WaterQuickPresetsSheet(
                     stringResource(R.string.settings_water_preset_label, index + 1),
                     style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Spacer(Modifier.height(6.dp))
                 if (useMetric) {
@@ -931,9 +929,9 @@ internal fun GoalSpeedSheet(current: Double, goal: WeightGoal, useMetric: Boolea
             Row(
                 Modifier
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(AppRadii.Field))
+                    .clip(MaterialTheme.shapes.medium)
                     .background(
-                        if (isSel) AppColors.Calorie.copy(alpha = 0.13f)
+                        if (isSel) MaterialTheme.colorScheme.primary.copy(alpha = 0.13f)
                         else if (isDark) MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f)
                         else MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.78f)
                     )
@@ -947,14 +945,14 @@ internal fun GoalSpeedSheet(current: Double, goal: WeightGoal, useMetric: Boolea
                     Text(
                         subtitle,
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
                 if (isSel) {
                     Icon(
                         Icons.Filled.Check,
                         contentDescription = stringResource(R.string.cd_selected),
-                        tint = AppColors.Calorie,
+                        tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(20.dp)
                     )
                 }

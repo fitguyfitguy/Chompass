@@ -49,7 +49,6 @@ import app.chompass.ui.components.blockSheetDragAtScrollEdges
 import app.chompass.ui.components.energyUnitLabel
 import app.chompass.ui.navigation.LocalEnergyUnit
 import app.chompass.ui.theme.AppColors
-import app.chompass.ui.theme.AppTextOpacity
 
 /**
  * Transparency sheet shown after Recalculate Goals: the new targets, who
@@ -121,9 +120,9 @@ internal fun RecalcResultSheet(
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
                     color = if (editable && caloriesLocked) {
-                        AppColors.Calorie.copy(alpha = AppTextOpacity.Faint)
+                        MaterialTheme.colorScheme.outline
                     } else {
-                        AppColors.Calorie
+                        MaterialTheme.colorScheme.primary
                     },
                 )
                 if (editable && caloriesLocked) {
@@ -131,7 +130,7 @@ internal fun RecalcResultSheet(
                     Icon(
                         Icons.Outlined.Lock,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(16.dp),
                     )
                 }
@@ -173,7 +172,7 @@ internal fun RecalcResultSheet(
                         result.protein, result.carbs, result.fat,
                     ),
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
             HorizontalDivider()
@@ -360,7 +359,7 @@ internal fun RecalcResultSheet(
                 Text(
                     reason,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
             if (editable) {
@@ -444,21 +443,21 @@ private fun editableMacro(
             Text(
                 label,
                 style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     LocaleFormat.integer(grams) + " " + stringResource(R.string.unit_g),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
-                    color = if (locked) color.copy(alpha = AppTextOpacity.Faint) else color,
+                    color = if (locked) color.copy(alpha = 0.45f) else color,
                 )
                 if (locked) {
                     Spacer(Modifier.width(4.dp))
                     Icon(
                         Icons.Outlined.Lock,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(14.dp),
                     )
                 }
@@ -472,9 +471,7 @@ private fun SheetInfoRow(text: String, dim: Boolean = false) {
     Text(
         text,
         style = MaterialTheme.typography.bodyMedium,
-        color = MaterialTheme.colorScheme.onSurface.copy(
-            alpha = if (dim) AppTextOpacity.Faint else AppTextOpacity.Muted,
-        ),
+        color = if (dim) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.onSurfaceVariant,
     )
 }
 

@@ -54,8 +54,6 @@ import app.chompass.AppContainer
 import app.chompass.services.update.AndroidUpdateChecker
 import app.chompass.services.update.AndroidUpdateState
 import app.chompass.ui.settings.SettingsSubScreen
-import app.chompass.ui.theme.AppColors
-import app.chompass.ui.theme.AppTextOpacity
 import kotlinx.coroutines.launch
 
 private const val CODEBERG_REPO = "https://codeberg.org/fitguy/chompass"
@@ -125,12 +123,12 @@ fun AboutSettingsScreen(
                     stringResource(R.string.about_made_by),
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Medium,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
                     stringResource(R.string.about_with_care),
                     fontSize = 11.sp,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Disabled)
+                    color = MaterialTheme.colorScheme.outline
                 )
             }
         }
@@ -202,7 +200,7 @@ private fun UpdateRow(
                 CircularProgressIndicator(
                     modifier = Modifier.size(18.dp),
                     strokeWidth = 2.dp,
-                    color = AppColors.Calorie
+                    color = MaterialTheme.colorScheme.primary
                 )
             },
             onClick = null
@@ -233,7 +231,7 @@ private fun UpdateRow(
                 Text(
                     state.current,
                     fontSize = 14.sp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             },
             onClick = onRefresh
@@ -270,7 +268,7 @@ private fun AboutRow(
             Icon(
                 icon,
                 contentDescription = null,
-                tint = AppColors.Calorie,
+                tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(22.dp)
             )
             if (showDot) {
@@ -279,7 +277,7 @@ private fun AboutRow(
                         .align(Alignment.TopEnd)
                         .size(8.dp)
                         .clip(CircleShape)
-                        .background(AppColors.Calorie)
+                        .background(MaterialTheme.colorScheme.primary)
                 )
             }
         }
@@ -290,14 +288,14 @@ private fun AboutRow(
                 Text(
                     subtitle,
                     fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
             if (!note.isNullOrBlank()) {
                 Text(
                     note,
                     fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }

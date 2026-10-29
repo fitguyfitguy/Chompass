@@ -34,9 +34,6 @@ import app.chompass.ui.components.ChompassDialog
 import app.chompass.ui.components.ChompassDialogActions
 import app.chompass.ui.components.ChompassSnackbarHost
 import app.chompass.ui.navigation.ChompassRoutes
-import app.chompass.ui.theme.AppColors
-import app.chompass.ui.theme.AppRadii
-import app.chompass.ui.theme.AppTextOpacity
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -68,7 +65,7 @@ fun GoalsSettingsScreen(
         Text(
             stringResource(R.string.settings_goals_intro),
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         SettingsGoalsSection(
             ui = ui,
@@ -98,14 +95,14 @@ fun GoalsSettingsScreen(
                     }
                 ),
                 fontSize = 13.sp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)
             )
             if (display.calorieDisplayMode == HomeCalorieDisplayMode.ADD_ACTIVE) {
                 Text(
                     stringResource(R.string.home_calorie_mode_add_active_hc_hint),
                     fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Faint),
+                    color = MaterialTheme.colorScheme.outline,
                     modifier = Modifier.padding(horizontal = 16.dp).padding(bottom = 12.dp)
                 )
                 HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f))
@@ -117,7 +114,7 @@ fun GoalsSettingsScreen(
                 Text(
                     stringResource(R.string.home_calorie_full_credit_desc),
                     fontSize = 13.sp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)
                 )
             }
@@ -157,7 +154,7 @@ fun GoalsSettingsScreen(
             Text(stringResource(R.string.settings_rebalance_blocked_title), fontSize = 20.sp, fontWeight = FontWeight.Bold)
             Text(
                 stringResource(R.string.settings_rebalance_blocked_message),
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             ChompassDialogActions(
                 primaryText = stringResource(R.string.action_ok),
@@ -171,7 +168,7 @@ fun GoalsSettingsScreen(
             Text(stringResource(R.string.settings_adaptive_goals), fontSize = 20.sp, fontWeight = FontWeight.Bold)
             Text(
                 stringResource(R.string.settings_adaptive_goals_info),
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             ChompassDialogActions(
                 primaryText = stringResource(R.string.action_ok),
@@ -187,7 +184,7 @@ fun GoalsSettingsScreen(
             Text(adaptiveAlertTitle, fontSize = 20.sp, fontWeight = FontWeight.Bold)
             Text(
                 adaptiveAlertMessage,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             ChompassDialogActions(
                 primaryText = stringResource(R.string.action_ok),
@@ -215,7 +212,7 @@ fun GoalsSettingsScreen(
     invalidGoalWeightMessage?.let { msg ->
         ChompassDialog(onDismissRequest = { invalidGoalWeightMessage = null }) {
             Text(stringResource(R.string.settings_invalid_goal_title), fontSize = 20.sp, fontWeight = FontWeight.Bold)
-            Text(msg, color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary))
+            Text(msg, color = MaterialTheme.colorScheme.onSurfaceVariant)
             ChompassDialogActions(
                 primaryText = stringResource(R.string.action_ok),
                 onPrimary = { invalidGoalWeightMessage = null }
@@ -248,7 +245,7 @@ private fun CalorieModePickerDialog(
                 Row(
                     Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(AppRadii.Field))
+                        .clip(MaterialTheme.shapes.medium)
                         .clickable { onSelect(mode) }
                         .padding(horizontal = 14.dp, vertical = 12.dp),
                     verticalAlignment = Alignment.CenterVertically
@@ -256,7 +253,7 @@ private fun CalorieModePickerDialog(
                     Text(
                         stringResource(mode.displayNameRes),
                         fontWeight = if (mode == selected) FontWeight.Bold else FontWeight.Normal,
-                        color = if (mode == selected) AppColors.Calorie else MaterialTheme.colorScheme.onSurface
+                        color = if (mode == selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                     )
                 }
             }

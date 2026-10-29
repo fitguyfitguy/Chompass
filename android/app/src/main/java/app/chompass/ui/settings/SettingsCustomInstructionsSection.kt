@@ -11,7 +11,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
-import app.chompass.ui.theme.AppTextOpacity
 
 @Composable
 internal fun SettingsCustomInstructionsSection(ui: SettingsUiState, vm: SettingsViewModel) {
@@ -24,7 +23,7 @@ internal fun SettingsCustomInstructionsSection(ui: SettingsUiState, vm: Settings
                 Text(
                     stringResource(R.string.settings_custom_instructions_footer),
                     fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)
                 )
     }

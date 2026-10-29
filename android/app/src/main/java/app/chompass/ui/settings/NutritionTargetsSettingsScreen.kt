@@ -19,7 +19,6 @@ import app.chompass.AppContainer
 import app.chompass.R
 import app.chompass.ui.components.ChompassDialog
 import app.chompass.ui.components.ChompassDialogActions
-import app.chompass.ui.theme.AppTextOpacity
 
 /**
  * Calories + macro targets, split out of Goals so that screen stays about the
@@ -117,7 +116,7 @@ fun NutritionTargetsSettingsScreen(
             Text(stringResource(R.string.settings_max_pinned_title), fontSize = 20.sp, fontWeight = FontWeight.Bold)
             Text(
                 stringResource(R.string.settings_max_pinned_message),
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             ChompassDialogActions(
                 primaryText = stringResource(R.string.action_ok),
@@ -131,7 +130,7 @@ fun NutritionTargetsSettingsScreen(
             Text(stringResource(R.string.settings_energy_goals), fontSize = 20.sp, fontWeight = FontWeight.Bold)
             Text(
                 stringResource(R.string.settings_energy_goals_info),
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             ChompassDialogActions(
                 primaryText = stringResource(R.string.action_ok),
@@ -147,7 +146,7 @@ fun NutritionTargetsSettingsScreen(
             Text(energyAlertTitle, fontSize = 20.sp, fontWeight = FontWeight.Bold)
             Text(
                 energyAlertMessage,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             ChompassDialogActions(
                 primaryText = stringResource(R.string.action_ok),
@@ -167,7 +166,7 @@ fun NutritionTargetsSettingsScreen(
             }
         ) {
             Text(stringResource(R.string.settings_permission_title), fontSize = 20.sp, fontWeight = FontWeight.Bold)
-            Text(msg, color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary))
+            Text(msg, color = MaterialTheme.colorScheme.onSurfaceVariant)
             if (actionLabel != null && actionIntent != null) {
                 ChompassDialogActions(
                     primaryText = actionLabel,

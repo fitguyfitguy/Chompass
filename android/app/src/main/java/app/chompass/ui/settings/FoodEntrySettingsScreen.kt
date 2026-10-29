@@ -33,7 +33,6 @@ import app.chompass.R
 import app.chompass.models.ServingUnitInferenceMode
 import app.chompass.ui.components.ChompassDialog
 import app.chompass.ui.components.ChompassDialogActions
-import app.chompass.ui.theme.AppTextOpacity
 
 /**
  * Food & Entry settings: how logging behaves (units, sort, meal times), which
@@ -60,7 +59,7 @@ fun FoodEntrySettingsScreen(
         Text(
             stringResource(R.string.settings_food_intro),
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
 
         SectionCard(title = stringResource(R.string.settings_food_section_logging)) {
@@ -191,7 +190,7 @@ fun FoodEntrySettingsScreen(
             Text(stringResource(R.string.settings_default_to_grams), fontSize = 20.sp, fontWeight = FontWeight.Bold)
             Text(
                 stringResource(R.string.settings_default_to_grams_info),
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             ChompassDialogActions(
                 primaryText = stringResource(R.string.action_ok),
@@ -204,7 +203,7 @@ fun FoodEntrySettingsScreen(
             Text(stringResource(R.string.settings_meal_planning), fontSize = 20.sp, fontWeight = FontWeight.Bold)
             Text(
                 stringResource(R.string.settings_meal_planning_info),
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             ChompassDialogActions(
                 primaryText = stringResource(R.string.action_ok),

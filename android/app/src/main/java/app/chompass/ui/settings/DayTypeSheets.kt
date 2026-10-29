@@ -53,9 +53,6 @@ import app.chompass.ui.components.ChompassTextField
 import app.chompass.ui.components.NumericWheelPicker
 import app.chompass.ui.components.energyUnitLabel
 import app.chompass.ui.navigation.LocalEnergyUnit
-import app.chompass.ui.theme.AppColors
-import app.chompass.ui.theme.AppRadii
-import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.ui.theme.DayTypePaletteKeys
 import app.chompass.ui.theme.dayTypeColor
 import androidx.compose.ui.semantics.Role
@@ -140,7 +137,7 @@ private fun DayTypePickerRow(
     Row(
         Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(AppRadii.Field))
+            .clip(MaterialTheme.shapes.medium)
             .background(
                 if (selected) MaterialTheme.colorScheme.primaryContainer
                 else MaterialTheme.colorScheme.surfaceContainerHigh
@@ -156,7 +153,7 @@ private fun DayTypePickerRow(
                 Text(
                     subtitle,
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
         }
@@ -164,7 +161,7 @@ private fun DayTypePickerRow(
             Icon(
                 Icons.Filled.Check,
                 contentDescription = stringResource(R.string.sheet_selected_a11y),
-                tint = AppColors.Calorie,
+                tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(20.dp),
             )
         }
@@ -242,7 +239,7 @@ internal fun DayTypeProfileEditorSheet(
                 Text(
                     stringResource(R.string.settings_day_types_name_taken),
                     style = MaterialTheme.typography.bodySmall,
-                    color = AppColors.Calorie,
+                    color = MaterialTheme.colorScheme.primary,
                 )
             }
             Spacer(Modifier.height(12.dp))
@@ -250,14 +247,14 @@ internal fun DayTypeProfileEditorSheet(
                 Text(
                     stringResource(R.string.settings_day_type_color),
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 if (colorKey == null) {
                     Spacer(Modifier.width(4.dp))
                     Text(
                         stringResource(R.string.settings_day_type_color_auto),
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
             }
@@ -299,7 +296,7 @@ internal fun DayTypeProfileEditorSheet(
                 Spacer(Modifier.height(4.dp))
                 Text(
                     stringResource(R.string.settings_day_types_floor_warning, EnergyFormat.quantity(calorieFloor, unit), energyUnitLabel()),
-                    color = AppColors.Calorie,
+                    color = MaterialTheme.colorScheme.primary,
                 )
             }
             Spacer(Modifier.height(12.dp))
@@ -395,14 +392,14 @@ internal fun DayTypeProfileEditorSheet(
             )
             Text(
                 stringResource(R.string.settings_day_types_delete_used_message),
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             if (isReferenced) {
                 replacementOptions.forEach { option ->
                     Row(
                         Modifier
                             .fillMaxWidth()
-                            .clip(RoundedCornerShape(AppRadii.Field))
+                            .clip(MaterialTheme.shapes.medium)
                             .background(MaterialTheme.colorScheme.surfaceContainerHighest)
                             .clickable { onDelete(option) }
                             .padding(horizontal = 14.dp, vertical = 13.dp),
@@ -417,7 +414,7 @@ internal fun DayTypeProfileEditorSheet(
                         Icon(
                             Icons.Filled.Check,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Faint),
+                            tint = MaterialTheme.colorScheme.outline,
                             modifier = Modifier.size(18.dp),
                         )
                     }
@@ -449,13 +446,13 @@ internal fun EditorWheelLabel(label: String, unit: String) {
             label,
             style = MaterialTheme.typography.bodySmall,
             fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Spacer(Modifier.width(4.dp))
         Text(
             unit,
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
 }

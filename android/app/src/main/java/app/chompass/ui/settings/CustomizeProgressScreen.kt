@@ -36,8 +36,6 @@ import app.chompass.ui.components.ChompassDialogActions
 
 import app.chompass.ui.progress.TimeRange
 import java.util.Locale
-import app.chompass.ui.theme.AppRadii
-import app.chompass.ui.theme.AppTextOpacity
 
 /**
  * Settings → App & Display → Customize progress. Groups everything that tunes the
@@ -70,7 +68,7 @@ fun CustomizeProgressScreen(
     ) {
         ChompassSurface(
             modifier = Modifier.fillMaxWidth(),
-            cornerRadius = AppRadii.SectionCard,
+            cornerRadius = 16.dp,
             padding = 0.dp,
                     ) {
             Column {
@@ -101,7 +99,7 @@ fun CustomizeProgressScreen(
                 Text(
                     stringResource(R.string.settings_progress_nutrient_averages_subtitle),
                     fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 10.dp),
                 )
                 // #75: pick which nutrients the Progress averages card shows.
@@ -129,7 +127,7 @@ fun CustomizeProgressScreen(
 
         ChompassSurface(
             modifier = Modifier.fillMaxWidth(),
-            cornerRadius = AppRadii.SectionCard,
+            cornerRadius = 16.dp,
             padding = 0.dp,
                     ) {
             Column {
@@ -137,7 +135,7 @@ fun CustomizeProgressScreen(
                     stringResource(R.string.settings_progress_plots),
                     fontSize = 13.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
                 )
                 BodyMeasurement.Site.values().forEachIndexed { index, site ->
@@ -167,7 +165,7 @@ fun CustomizeProgressScreen(
         Text(
             stringResource(R.string.settings_progress_plots_subtitle),
             fontSize = 13.sp,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(horizontal = 4.dp),
         )
     }
@@ -192,7 +190,7 @@ fun CustomizeProgressScreen(
             )
             Text(
                 stringResource(R.string.settings_progress_nutrient_averages_warning_body),
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             ChompassDialogActions(
                 primaryText = stringResource(R.string.settings_progress_nutrient_averages_confirm),
@@ -230,7 +228,7 @@ private fun MeasurementSiteToggleRow(
             Text(
                 subtitle,
                 fontSize = 12.sp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
         Spacer(Modifier.padding(start = 8.dp))
@@ -280,7 +278,7 @@ private fun NutrientToggleRow(
             color = if (enabled) {
                 MaterialTheme.colorScheme.onSurface
             } else {
-                MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+                MaterialTheme.colorScheme.onSurfaceVariant
             },
             modifier = Modifier.weight(1f),
         )

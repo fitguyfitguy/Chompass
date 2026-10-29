@@ -56,8 +56,6 @@ import app.chompass.ui.components.energyUnitLabel
 import app.chompass.ui.navigation.ChompassRoutes
 import app.chompass.ui.navigation.LocalEnergyUnit
 import app.chompass.models.GoalJournal
-import app.chompass.ui.theme.AppColors
-import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.ui.theme.dayTypeColor
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -101,7 +99,7 @@ fun DayTypesSettingsScreen(
         Text(
             stringResource(R.string.settings_day_types_intro),
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
 
         // Phases are dated day-type windows — the natural cross-link (Rule C).
@@ -154,7 +152,7 @@ fun DayTypesSettingsScreen(
                 Icon(
                     Icons.Outlined.Add,
                     contentDescription = null,
-                    tint = AppColors.Calorie,
+                    tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(22.dp),
                 )
                 Spacer(Modifier.width(14.dp))
@@ -162,7 +160,7 @@ fun DayTypesSettingsScreen(
                     stringResource(R.string.settings_day_types_add),
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Medium,
-                    color = AppColors.Calorie,
+                    color = MaterialTheme.colorScheme.primary,
                 )
             }
             if (plan != null && !plan.enabled && plan.profiles.isNotEmpty()) {
@@ -310,7 +308,7 @@ private fun DayTypesMasterToggle(plan: MacroPlan?, onChange: (Boolean) -> Unit) 
         Icon(
             Icons.Outlined.Event,
             contentDescription = null,
-            tint = AppColors.Calorie,
+            tint = MaterialTheme.colorScheme.primary,
             modifier = Modifier.size(22.dp),
         )
         Spacer(Modifier.width(14.dp))
@@ -359,7 +357,7 @@ private fun DayTypeListRow(
                     energyUnitLabel(),
                 ),
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
         if (!first) {
@@ -430,7 +428,7 @@ private fun DayTypesScheduleCard(
                     MacroPlanMode.CYCLE -> stringResource(R.string.settings_day_types_mode_cycle_hint)
                 },
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
 
@@ -459,7 +457,7 @@ private fun DayTypesScheduleCard(
                 Text(
                     stringResource(R.string.settings_day_types_pattern),
                     style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(start = 16.dp, top = 12.dp, bottom = 4.dp),
                 )
                 plan.cyclePattern.forEachIndexed { index, profileId ->
@@ -473,7 +471,7 @@ private fun DayTypesScheduleCard(
                         Text(
                             stringResource(R.string.settings_day_types_pattern_day, index + 1),
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                         Spacer(Modifier.width(16.dp))
                         Text(
@@ -519,7 +517,7 @@ private fun DayTypesOverridesCard(
             Text(
                 stringResource(R.string.settings_day_types_preview_help),
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
         (0L..6L).forEach { offset ->
@@ -551,7 +549,7 @@ private fun DayTypesOverridesCard(
                         Text(
                             "${LocaleFormat.integer(EnergyFormat.quantity(it.targets.calories, LocalEnergyUnit.current))} ${energyUnitLabel()}",
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 }
@@ -560,7 +558,7 @@ private fun DayTypesOverridesCard(
                         stringResource(R.string.settings_day_types_override),
                         fontSize = 11.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color = AppColors.Calorie,
+                        color = MaterialTheme.colorScheme.primary,
                     )
                 }
             }
@@ -587,7 +585,7 @@ private fun DayTypesOverridesCard(
                         Text(
                             row.profileName,
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                     TextButton(onClick = { onClearOverride(row.date) }) {

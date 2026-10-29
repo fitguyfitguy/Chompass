@@ -27,8 +27,6 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import app.chompass.R
 import app.chompass.ui.components.ChompassIconBubble
-import app.chompass.ui.theme.AppColors
-import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.models.LocaleFormat
 import java.time.Instant
 
@@ -58,7 +56,7 @@ internal fun SettingsSyncSection(
             Text(
                 stringResource(R.string.settings_sync_blurb),
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(bottom = 8.dp),
             )
             OutlinedTextField(
@@ -97,7 +95,7 @@ internal fun SettingsSyncSection(
                     .padding(vertical = 14.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                ChompassIconBubble(icon = Icons.Outlined.CloudSync, size = 22.dp, iconSize = 14.dp, tint = AppColors.Calorie)
+                ChompassIconBubble(icon = Icons.Outlined.CloudSync, size = 22.dp, iconSize = 14.dp, tint = MaterialTheme.colorScheme.primary)
                 Spacer(Modifier.width(14.dp))
                 Text(
                     stringResource(R.string.settings_webdav_save),
@@ -115,7 +113,7 @@ internal fun SettingsSyncSection(
         Text(
             stringResource(R.string.settings_webdav_auto_sync_desc),
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 10.dp),
         )
         HorizontalDivider()
@@ -127,7 +125,7 @@ internal fun SettingsSyncSection(
         Text(
             stringResource(R.string.sync_photos_caption),
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 10.dp),
         )
         if (webDavPhotosEnabled) {
@@ -146,7 +144,7 @@ internal fun SettingsSyncSection(
                 .padding(horizontal = 16.dp, vertical = 14.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            ChompassIconBubble(icon = Icons.Outlined.Upload, size = 22.dp, iconSize = 14.dp, tint = AppColors.Calorie)
+            ChompassIconBubble(icon = Icons.Outlined.Upload, size = 22.dp, iconSize = 14.dp, tint = MaterialTheme.colorScheme.primary)
             Spacer(Modifier.width(14.dp))
             Text(
                 stringResource(R.string.export_sync_title),
@@ -162,7 +160,7 @@ internal fun SettingsSyncSection(
                 .padding(horizontal = 16.dp, vertical = 14.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            ChompassIconBubble(icon = Icons.Outlined.Download, size = 22.dp, iconSize = 14.dp, tint = AppColors.Calorie)
+            ChompassIconBubble(icon = Icons.Outlined.Download, size = 22.dp, iconSize = 14.dp, tint = MaterialTheme.colorScheme.primary)
             Spacer(Modifier.width(14.dp))
             Text(
                 stringResource(R.string.import_sync_title),
@@ -178,7 +176,7 @@ internal fun SettingsSyncSection(
                 .padding(horizontal = 16.dp, vertical = 14.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            ChompassIconBubble(icon = Icons.Outlined.Sync, size = 22.dp, iconSize = 14.dp, tint = AppColors.Calorie)
+            ChompassIconBubble(icon = Icons.Outlined.Sync, size = 22.dp, iconSize = 14.dp, tint = MaterialTheme.colorScheme.primary)
             Spacer(Modifier.width(14.dp))
             Column {
                 Text(
@@ -197,7 +195,7 @@ internal fun SettingsSyncSection(
                 Text(
                     subtitle,
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
         }

@@ -25,10 +25,7 @@ import app.chompass.ui.components.ChompassSurface
 import app.chompass.ui.components.ChompassTextButton
 import app.chompass.ui.components.NumericWheelPicker
 import app.chompass.ui.components.WheelPicker
-import app.chompass.ui.theme.AppColors
 import app.chompass.ui.util.clockTimePattern
-import app.chompass.ui.theme.AppRadii
-import app.chompass.ui.theme.AppTextOpacity
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -71,12 +68,12 @@ internal fun WaterReminderPlanSheet(
         Text(
             stringResource(R.string.settings_water_reminder_interval_help),
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Spacer(Modifier.height(16.dp))
         ChompassSurface(
             modifier = Modifier.fillMaxWidth(),
-            cornerRadius = AppRadii.Container,
+            cornerRadius = 16.dp,
             padding = 0.dp,
         ) {
             Column {
@@ -108,20 +105,20 @@ internal fun WaterReminderPlanSheet(
                 ),
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.SemiBold,
-                color = AppColors.Calorie,
+                color = MaterialTheme.colorScheme.primary,
             )
         } else {
             Text(
                 stringResource(R.string.settings_water_reminder_window_too_short),
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
         Spacer(Modifier.height(6.dp))
         Text(
             stringResource(R.string.settings_water_reminder_note),
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Spacer(Modifier.height(16.dp))
         ChompassPrimaryButton(flushDrafts = true, onClick = { onSave(startMinutes, endMinutes, cupMl) })
@@ -133,7 +130,7 @@ internal fun WaterReminderPlanSheet(
                 cupMl = WaterGoalCalculator.DEFAULT_CUP_SIZE_ML
             },
             modifier = Modifier.fillMaxWidth(),
-            color = AppColors.Calorie,
+            color = MaterialTheme.colorScheme.primary,
         )
         Spacer(Modifier.height(8.dp))
     } else {
@@ -181,7 +178,7 @@ internal fun WaterReminderPlanSheet(
                     text = stringResource(R.string.action_cancel),
                     onClick = { editing = null },
                     modifier = Modifier.fillMaxWidth(),
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Spacer(Modifier.height(8.dp))
             }
@@ -217,7 +214,7 @@ private fun TimeFieldEditor(
         text = stringResource(R.string.action_cancel),
         onClick = onCancel,
         modifier = Modifier.fillMaxWidth(),
-        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle),
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
     Spacer(Modifier.height(8.dp))
 }
@@ -235,7 +232,7 @@ internal fun WaterManualTempSheet(current: Int, onSave: (Int) -> Unit) {
         Text(
             stringResource(R.string.settings_water_manual_temp_help),
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Spacer(Modifier.height(16.dp))
         NumericWheelPicker(
