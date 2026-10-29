@@ -85,6 +85,36 @@ data class BodyMeasurement(
         return result
     }
 
+    /**
+     * Skeletal muscle mass estimate (Lee et al. 2000, AJCN 72:796-803 — the limb-
+     * circumference model, R² = 0.91, SEE ≈ 2.9 kg):
+     *
+     *   SM = Ht(m) × (0.00744·arm² + 0.00088·thigh² + 0.00441·calf²)
+     *        + 2.4·sex − 0.048·age + 7.8
+     *
+     * The published coefficients expect height in METRES and girths in cm. The
+     * skinfold correction is skipped: uncorrected girths bias the result by < 0.1 kg
+     * against a ~2.9 kg standard error, so the extra tape site buys nothing.
+     * `race` is 0 (the app has no race field). Gender OTHER uses the female
+     * coefficient (sex = 0), matching the Mifflin/RFM convention.
+     *
+     * Display-only estimate: needs all three limb sites, never feeds BMR or macros.
+     * Returns null when a site is missing or the result is outside the plausible
+     * 10–80 kg window.
+     */
+    fun estimatedSkeletalMuscleMassKg(gender: Gender, ageYears: Int, heightCm: Double): Double? {
+        val arm = upperArmCm ?: return null
+        val thigh = thighCm ?: return null
+        val calf = calfCm ?: return null
+        if (heightCm <= 0 || ageYears < 0 || arm <= 0 || thigh <= 0 || calf <= 0) return null
+        val sex = if (gender == Gender.MALE) 1.0 else 0.0
+        val heightM = heightCm / 100.0
+        val kg = heightM * (0.00744 * arm * arm + 0.00088 * thigh * thigh + 0.00441 * calf * calf) +
+            2.4 * sex - 0.048 * ageYears + 7.8
+        if (!kg.isFinite() || kg < 10.0 || kg > 80.0) return null
+        return kg
+    }
+
     /** Bone-frame size from height ÷ wrist circumference (gender-specific cut-offs). Needs wrist. */
     fun wristFrame(gender: Gender, heightCm: Double): FrameSize? {
         val wrist = wristCm ?: return null
