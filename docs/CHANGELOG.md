@@ -12,6 +12,8 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 - **Estimated skeletal muscle from tape measurements** (Android and PWA): Measurements shows a skeletal-muscle estimate once upper arm, thigh and calf are logged. The estimate is within about 3 kg, so read it as a trend next to your other tape metrics. It does not change your calorie or protein targets.
 
+- **Updated Claude model list** (Android and PWA): the Anthropic picker gains claude-opus-5-5, claude-sonnet-5-5 and claude-haiku-5-5. Your selected model is unchanged. Closes Codeberg [#147](https://codeberg.org/fitguy/Chompass/issues/147)
+
 ### Changed
 
 - **Chompass is now licensed under the GNU GPL, version 3 or later** (Android and PWA): derived from its MIT-licensed upstream Fud AI with upstream attribution preserved (see NOTICE), the project as a whole now carries a strong copyleft license — forks and rebuilds must ship their source under the same terms. The in-app About screen, README, website and F-Droid listing all show the new license.
