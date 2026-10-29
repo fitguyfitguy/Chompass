@@ -22,7 +22,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ### Fixed
 
-- **Text search finds brand matches deeper in Open Food Facts** (Android): searching a product name plus its brand now asks Open Food Facts for a wider result window and lets the app's own ranking pick the best matches, so a product that sits below the old cutoff — for example a brand-qualified soda water — shows up instead of only one near-spelling hit. Closes Codeberg [#145](https://codeberg.org/fitguy/Chompass/issues/145)
+- **Text search sees deeper into Open Food Facts results** (Android): search now fetches a wider result window before the app's own ranking picks the best matches, so brand-qualified products that Open Food Facts ranks just past the old cutoff can show up instead of being cut off. Closes Codeberg [#145](https://codeberg.org/fitguy/Chompass/issues/145)
 
 ## [5.12.1] - 2026-10-28
 
