@@ -57,8 +57,6 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat
 import app.chompass.R
-import app.chompass.ui.theme.AppColors
-import app.chompass.ui.theme.AppRadii
 import java.io.File
 
 @Composable
@@ -181,7 +179,7 @@ fun InAppCameraCaptureDialog(
                     Icon(
                         flashIcon,
                         contentDescription = flashDesc,
-                        tint = if (flashMode == ImageCapture.FLASH_MODE_OFF) Color.White else AppColors.Calorie
+                        tint = if (flashMode == ImageCapture.FLASH_MODE_OFF) Color.White else MaterialTheme.colorScheme.primary
                     )
                 }
             }
@@ -192,7 +190,7 @@ fun InAppCameraCaptureDialog(
                     modifier = Modifier
                         .align(Alignment.TopCenter)
                         .padding(top = 74.dp, start = 24.dp, end = 24.dp)
-                        .background(Color.Black.copy(alpha = 0.55f), RoundedCornerShape(AppRadii.Card))
+                        .background(Color.Black.copy(alpha = 0.55f), MaterialTheme.shapes.large)
                         .padding(horizontal = 14.dp, vertical = 10.dp)
                 ) {
                     Text(
@@ -204,7 +202,7 @@ fun InAppCameraCaptureDialog(
                     Spacer(modifier = Modifier.width(10.dp))
                     Text(
                         text = stringResource(R.string.camera_scale_tip_dismiss),
-                        color = AppColors.Calorie,
+                        color = MaterialTheme.colorScheme.primary,
                         fontSize = 13.sp,
                         fontWeight = FontWeight.SemiBold,
                         modifier = Modifier.clickable {
@@ -292,11 +290,11 @@ fun InAppCameraCaptureDialog(
                     .size(76.dp)
                     .clip(CircleShape)
                     .background(Color.White.copy(alpha = 0.95f))
-                    .border(5.dp, AppColors.Calorie, CircleShape)
+                    .border(5.dp, MaterialTheme.colorScheme.primary, CircleShape)
             ) {
                 if (isCapturing) {
                     CircularProgressIndicator(
-                        color = AppColors.Calorie,
+                        color = MaterialTheme.colorScheme.primary,
                         strokeWidth = 3.dp,
                         modifier = Modifier.size(30.dp)
                     )

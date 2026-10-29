@@ -232,7 +232,7 @@ private fun DayTile(
             narrowDay(date.dayOfWeek),
             fontSize = 11.sp,
             fontWeight = FontWeight.Medium,
-            color = if (isSelected) AppColors.Calorie
+            color = if (isSelected) MaterialTheme.colorScheme.primary
                     else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f * 0.6f),
             modifier = if (untracked) Modifier.alpha(0.45f) else Modifier,
         )
@@ -260,7 +260,7 @@ private fun DayTile(
         val numberColor by animateColorAsState(
             targetValue = when {
                 isSelected -> MaterialTheme.colorScheme.onPrimary
-                isToday -> AppColors.Calorie
+                isToday -> MaterialTheme.colorScheme.primary
                 else -> MaterialTheme.colorScheme.onSurface
             },
             animationSpec = tween(AppMotion.TweenDefaultMs, easing = AppMotion.EasingStandard),
@@ -273,7 +273,7 @@ private fun DayTile(
                     if (!isSelected && isToday) {
                         it
                             .clip(CircleShape)
-                            .border(1.5.dp, AppColors.Calorie.copy(alpha = 0.35f), CircleShape)
+                            .border(1.5.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.35f), CircleShape)
                     } else it
                 },
             contentAlignment = Alignment.Center

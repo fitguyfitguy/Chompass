@@ -54,7 +54,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.ChompassApp
 import app.chompass.R
-import app.chompass.ui.theme.AppTextOpacity
 import kotlinx.coroutines.launch
 
 internal const val PICKER_MODE_WHEEL = "wheel"
@@ -112,7 +111,7 @@ internal fun MagnitudeUnitLabel(unit: String?, compact: Boolean = false) {
     Text(
         unit,
         style = MaterialTheme.typography.titleMedium,
-        color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted),
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
         modifier = Modifier.width(if (compactUnit) 30.dp else 48.dp).padding(start = 4.dp),
         maxLines = 1,
         softWrap = false,

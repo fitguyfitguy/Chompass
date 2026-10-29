@@ -7,7 +7,7 @@ import androidx.compose.animation.core.SpringSpec
 import androidx.compose.animation.core.spring
 
 /**
- * Central motion tokens, beside [AppRadii]/[AppSpacing]/[AppTextOpacity]: a spec
+ * Central motion tokens, beside [AppSpacing]: a spec
  * change lands everywhere at once.
  *
  * Four springs, two durations, one easing pair — the whole vocabulary:

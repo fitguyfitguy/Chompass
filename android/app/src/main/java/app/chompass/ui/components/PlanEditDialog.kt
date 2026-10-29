@@ -3,6 +3,7 @@ package app.chompass.ui.components
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -55,7 +56,7 @@ internal fun PlanEditDialog(
         mutableStateOf(currentValue.coerceIn(min, max))
     }
     val accent = when (field) {
-        PlanField.CALORIES -> AppColors.Calorie
+        PlanField.CALORIES -> MaterialTheme.colorScheme.primary
         PlanField.PROTEIN -> AppColors.Protein
         PlanField.CARBS -> AppColors.Carbs
         PlanField.FAT -> AppColors.Fat
