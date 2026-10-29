@@ -27,9 +27,6 @@ import androidx.compose.ui.unit.sp
 import app.chompass.R
 import app.chompass.models.LocaleFormat
 import app.chompass.models.EnergyFormat
-import app.chompass.ui.theme.AppColors
-import app.chompass.ui.theme.AppRadii
-import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.ui.components.energyUnitLabel
 import app.chompass.ui.navigation.LocalEnergyUnit
 @Composable
@@ -37,11 +34,11 @@ fun StepsCard(
     steps: Long,
     goal: Int,
     modifier: Modifier = Modifier,
-    accentColor: Color = AppColors.Calorie,
+    accentColor: Color = MaterialTheme.colorScheme.primary,
 ) {
     Column(
         modifier = modifier
-            .clip(RoundedCornerShape(AppRadii.Container))
+            .clip(MaterialTheme.shapes.large)
             .fillMaxWidth()
             .padding(horizontal = 10.dp, vertical = 4.dp),
         verticalArrangement = Arrangement.Center
@@ -58,7 +55,7 @@ fun StepsCard(
                 text = stringResource(R.string.home_steps_label),
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Medium,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
         Spacer(Modifier.height(4.dp))
@@ -71,7 +68,7 @@ fun StepsCard(
         Text(
             text = stringResource(R.string.home_steps_goal_format, LocaleFormat.integer(goal)),
             fontSize = 12.sp,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
 }
@@ -105,7 +102,7 @@ fun ActiveCaloriesCard(
             stringResource(R.string.home_active_calories_label, energyUnitLabel()),
             fontSize = 11.sp,
             fontWeight = FontWeight.Medium,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             maxLines = 2,
         )
     }

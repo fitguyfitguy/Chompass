@@ -46,16 +46,9 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import app.chompass.R
-import app.chompass.ui.theme.AppColors
 
 @Composable
 fun isDarkTheme(): Boolean = MaterialTheme.colorScheme.background.luminance() < 0.5f
-
-fun translucentFill(isDark: Boolean): Color =
-    if (isDark) AppColors.TranslucentSurfaceDark else AppColors.TranslucentSurfaceLight
-
-fun hairlineBorder(isDark: Boolean): Color =
-    if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight
 
 @Composable
 fun ChompassSurface(
