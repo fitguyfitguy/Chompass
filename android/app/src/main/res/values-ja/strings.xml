@@ -605,7 +605,7 @@
     <!-- About -->
     <string name="about_rate">アプリを評価</string>
     <string name="about_share">アプリを共有</string>
-    <string name="about_open_source">オープンソース (MIT)</string>
+    <string name="about_open_source">オープンソース (GPL v3)</string>
     <string name="about_report_issue">問題を報告</string>
     <string name="about_request_feature">機能をリクエスト</string>
     <string name="about_privacy">プライバシーポリシー</string>
