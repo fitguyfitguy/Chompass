@@ -4,8 +4,10 @@
 # Two lanes, different jobs:
 #   1. DEVICE (published): scripts/capture_device_screenshots.sh drives the real
 #      debug app on a phone and writes release-screenshots/ + docs/screenshots/
-#      at native panel resolution. These are the images the README, chompass.app
-#      and optional Codeberg attachments use.
+#      at native panel resolution. scripts/build_feature_shots.py then composes
+#      docs/screenshots/features/ (hero collage + framed panels) for the README.
+#      These are the images the README, chompass.app and optional Codeberg
+#      attachments use.
 #   2. JVM PREVIEWS (regression): `updateDebugScreenshotTest` re-renders the
 #      @PreviewTest reference PNGs. Deterministic, no device — the pixel gate.
 #
@@ -76,6 +78,14 @@ if [[ "${SKIP_PREVIEWS}" -eq 0 ]]; then
   run_in_devenv 'cd android && ./gradlew :app:updateDebugScreenshotTest'
 fi
 
+# README feature shots (hero collage + framed panels), composed from the full
+# captures. Device lane only: a previews-only run must not touch published PNGs.
+if [[ "${SKIP_DEVICE}" -eq 0 ]]; then
+  echo ""
+  echo "==> Composing README feature shots"
+  uv run --with pillow python "${ROOT}/scripts/build_feature_shots.py"
+fi
+
 # After a capture docs/screenshots/ is dirty until committed — that counts as fresh.
 # --previews-only leaves published PNGs untouched, so a stale UI still fails here.
 "${ROOT}/scripts/check_ui_screenshot_staleness.sh"
@@ -83,8 +93,9 @@ fi
 cat <<'EOF'
 
 Done.
-  docs/screenshots/      committed README + site gallery (device captures)
-  release-screenshots/   optional Codeberg attachments (gitignored)
+  docs/screenshots/           committed README + site gallery (device captures)
+  docs/screenshots/features/  composed README feature shots (hero + panels)
+  release-screenshots/        optional Codeberg attachments (gitignored)
   android/app/src/screenshotTestDebug/reference/   JVM pixel-regression refs
 
 Commit docs/screenshots/ (and the preview refs) with the release.
