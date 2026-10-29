@@ -178,12 +178,22 @@ fun ChompassDialog(
     modifier: Modifier = Modifier,
     /** Cap the dialog height to the window and scroll the content when it overflows. */
     scrollable: Boolean = false,
+    /**
+     * Window inset dispatch for dialogs whose content pads itself from the raw
+     * insets (e.g. [androidx.compose.foundation.layout.imePadding] so the Save
+     * row clears the keyboard). Floating dialog windows default to
+     * decor-fitting, which swallows the IME inset before Compose sees it.
+     */
+    decorFitsSystemWindows: Boolean = true,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     BasicAlertDialog(
         onDismissRequest = onDismissRequest,
         modifier = modifier,
-        properties = DialogProperties(usePlatformDefaultWidth = false),
+        properties = DialogProperties(
+            usePlatformDefaultWidth = false,
+            decorFitsSystemWindows = decorFitsSystemWindows,
+        ),
     ) {
         Surface(
             modifier = Modifier
