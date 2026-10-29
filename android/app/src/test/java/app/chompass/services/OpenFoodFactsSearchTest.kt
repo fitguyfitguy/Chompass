@@ -480,4 +480,23 @@ class OpenFoodFactsSearchTest {
         assertTrue(result.hits.isEmpty())
         assertTrue(!result.unreachable)
     }
+
+    @Test
+    fun search_wideLimit_requestsWidenedPageSize() {
+        // #145: the default search window widened from 6 to 25 so the app-side
+        // ranker sees a deeper OFF result pool. The coerceIn ceiling must not
+        // clamp the request back down — with the old ceiling of 8 the widened
+        // limit silently never reached the wire.
+        server.enqueue(jsonResponse(salHitsJson("Bio Rhabarberschorle" to "fritz-spritz")))
+        runBlocking {
+            OpenFoodFactsService.search(
+                "Rhabarberschorle fritz",
+                limit = 25,
+                client = client,
+                baseUrl = server.url("/").toString(),
+                searchBaseUrl = server.url("/").toString(),
+            )
+        }
+        assertEquals("25", lastQueryParameter("page_size"))
+    }
 }

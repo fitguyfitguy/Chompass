@@ -18,6 +18,10 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 - **Calorie targets use a measured lean mass when your scale reports one** (Android and PWA): a lean-mass reading from the last 90 days now drives Katch-McArdle BMR and the protein cap ahead of the body-fat estimate, because it is the value the formula works from. Older readings fall back to your body-fat reading, then to Mifflin-St Jeor. Turning off Use Body Fat for BMR turns this path off too. Stored goals mark as out of date when the number changes.
 
+### Fixed
+
+- **Text search finds brand matches deeper in Open Food Facts** (Android): searching a product name plus its brand now asks Open Food Facts for a wider result window and lets the app's own ranking pick the best matches, so a product that sits below the old cutoff — for example a brand-qualified soda water — shows up instead of only one near-spelling hit. Closes Codeberg [#145](https://codeberg.org/fitguy/Chompass/issues/145)
+
 ## [5.12.1] - 2026-10-28
 
 ### Added

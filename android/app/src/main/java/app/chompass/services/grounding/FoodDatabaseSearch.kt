@@ -117,7 +117,7 @@ class FoodDatabaseSearch(
      * test without waiting out the real client's retry chain.
      */
     private val offSearch: suspend (String) -> OnlineSearchOutcome = { query ->
-        OpenFoodFactsService.search(query, limit = 6).let { outcome ->
+        OpenFoodFactsService.search(query, limit = 25).let { outcome ->
             OnlineSearchOutcome(
                 results = outcome.hits.map(DatabaseSearchResult::fromOff),
                 unreachable = outcome.unreachable,
