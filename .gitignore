@@ -59,3 +59,7 @@ __pycache__/
 website/public/
 website/resources/
 website/.hugo_build.lock
+
+# Kotlin compiler session junk (Kotlin 2.x writes here during builds)
+android/.kotlin/
+

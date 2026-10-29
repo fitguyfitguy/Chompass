@@ -8,6 +8,8 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ### Added
 
+- **Frosted glass behind floating panels** (Android): the new Frosted glass toggle in Settings blurs the content behind floating panels such as the Add Food results header. It is on by default; turning it off draws a solid tint instead.
+
 - **Scale body-composition metrics** (Android and PWA): Progress now shows bone mass, total body water, muscle mass, lean mass and the visceral-fat rating when your scale reports them, with one card per metric, the current value, the change over the selected range, and a water percentage against your latest weigh-in. Readings arrive from Health Connect, an openScale CSV export, sync, or the Scale metrics entry in Progress. Nothing appears for anyone without such a scale. Exported and synced files carry the readings so both apps stay in step.
 
 - **Estimated skeletal muscle from tape measurements** (Android and PWA): Measurements shows a skeletal-muscle estimate once upper arm, thigh and calf are logged. The estimate is within about 3 kg, so read it as a trend next to your other tape metrics. It does not change your calorie or protein targets.
@@ -16,6 +18,9 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ### Changed
 
+- **A calmer, more consistent look across every screen** (Android): cards, sheets, dialogs and lists now share one set of rounded corners and text shades. On tablets and wide displays, Progress and Settings keep their content at a readable width instead of stretching edge to edge.
+- **Numbers and touches respond with motion** (Android): the Home calorie number counts up when it changes, and rows, chips and buttons give a short press animation.
+- **Easier to touch, read and hear** (Android): touch targets keep a comfortable size, the smallest text no longer drops below a readable size, dialogs follow the standard Material 3 layout, and screen readers announce actions such as Change meal type on food rows.
 - **Chompass is now licensed under the GNU GPL, version 3 or later** (Android and PWA): derived from its MIT-licensed upstream Fud AI with upstream attribution preserved (see NOTICE), the project as a whole now carries a strong copyleft license — forks and rebuilds must ship their source under the same terms. The in-app About screen, README, website and F-Droid listing all show the new license.
 
 - **Calorie targets use a measured lean mass when your scale reports one** (Android and PWA): a lean-mass reading from the last 90 days now drives Katch-McArdle BMR and the protein cap ahead of the body-fat estimate, because it is the value the formula works from. Older readings fall back to your body-fat reading, then to Mifflin-St Jeor. Turning off Use Body Fat for BMR turns this path off too. Stored goals mark as out of date when the number changes.
