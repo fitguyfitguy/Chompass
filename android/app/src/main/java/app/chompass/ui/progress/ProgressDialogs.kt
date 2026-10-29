@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
@@ -271,7 +272,15 @@ internal fun AddBodyCompositionDialog(
         return if (m.isMass && !metric) UnitFormat.lbsToKg(raw) else raw
     }
 
-    ChompassDialog(onDismissRequest = onDismiss, scrollable = true) {
+    ChompassDialog(
+        onDismissRequest = onDismiss,
+        // Device pass 2026-10-29: with the keyboard open the Save row sat
+        // under the IME. Scrolling the content is not enough — lift the whole
+        // dialog above the keyboard. Scoped to this dialog, not ChompassDialog
+        // itself, so other dialogs keep their behavior.
+        modifier = Modifier.imePadding(),
+        scrollable = true,
+    ) {
         Text(
             stringResource(R.string.progress_log_scale_metrics_title),
             fontSize = 20.sp,
