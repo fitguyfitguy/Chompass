@@ -74,6 +74,9 @@ object OpenFoodFactsService {
     /** Hard cap on total network attempts per search() call, across candidates and retries. */
     private const val MAX_SEARCH_ATTEMPTS = 4
 
+    /** Server-side page size ceiling for a search page (#145); requests clamp to it. */
+    private const val MAX_SEARCH_PAGE_SIZE = 30
+
     /**
      * Per-request network bound for every Open Food Facts call — the mirror of
      * REQUEST_TIMEOUT_MS in web/app/src/lib/off-client.js. Applied via
@@ -249,7 +252,7 @@ object OpenFoodFactsService {
     suspend fun search(
         query: String,
         brand: String? = null,
-        limit: Int = 6,
+        limit: Int = 25,
         client: OkHttpClient = FoodAnalysisService.defaultClient,
         baseUrl: String = OFF_BASE_URL,
         searchBaseUrl: String = SAL_BASE_URL,
@@ -262,7 +265,7 @@ object OpenFoodFactsService {
         // rather than adding more load (cached hits come from the callers'
         // local indexes; search has no cache of its own).
         if (rateLimitActive()) return@withContext OffSearchResult(emptyList(), unreachable = true)
-        val capped = limit.coerceIn(1, 8)
+        val capped = limit.coerceIn(1, MAX_SEARCH_PAGE_SIZE)
         val brandToken = brand?.trim()?.takeIf { it.isNotEmpty() }
         val terms = listOfNotNull(brandToken, q).distinct().joinToString(" ")
 
