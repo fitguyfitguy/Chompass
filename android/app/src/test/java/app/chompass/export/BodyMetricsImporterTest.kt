@@ -145,4 +145,96 @@ class BodyMetricsImporterTest {
         val r = BodyMetricsImporter.parse(csv, utc)
         assertTrue(r is BodyMetricsImportResult.Malformed)
     }
+
+    @Test
+    fun `openscale converts percent water and muscle to kg from the same row weight`() {
+        val csv = """
+            dateTime;weight;fat;water;muscle;bone;lbm;visceral
+        """.trimIndent().replace(";", ",") + "\n" + "02.01.2026 08:30,80.0,20.0,57.5,38.2,3.1,61.0,8"
+        val r = success(csv)
+        assertEquals(BodyMetricsSourceFormat.OPENSCALE_CSV, r.sourceFormat)
+        val c = r.compositions.single()
+        assertEquals(46.0, c.totalBodyWaterKg!!, 0.0001)   // 57.5% of 80 kg
+        assertEquals(30.56, c.muscleMassKg!!, 0.0001)     // 38.2% of 80 kg
+        assertEquals(3.1, c.boneMassKg!!, 0.0001)         // kg as-is
+        assertEquals(61.0, c.leanMassKg!!, 0.0001)        // kg as-is
+        assertEquals(8.0, c.visceralFatRating!!, 0.0001)
+    }
+
+    @Test
+    fun `openscale row without weight drops percent columns but keeps kg columns`() {
+        val csv = """
+            dateTime,weight,fat,water,muscle,bone,lbm,visceral
+            02.01.2026 08:30,,,57.5,38.2,3.1,61.0,8
+        """.trimIndent()
+        val c = success(csv).compositions.single()
+        // No same-row weight → a percent value cannot become kg; it is dropped, not guessed.
+        assertEquals(null, c.totalBodyWaterKg)
+        assertEquals(null, c.muscleMassKg)
+        assertEquals(3.1, c.boneMassKg!!, 0.0001)
+        assertEquals(61.0, c.leanMassKg!!, 0.0001)
+        assertEquals(8.0, c.visceralFatRating!!, 0.0001)
+    }
+
+    @Test
+    fun `openscale drops implausible composition values without failing the import`() {
+        val csv = """
+            dateTime,weight,fat,water,muscle,bone,lbm,visceral
+            02.01.2026 08:30,80.0,20.0,120.0,90.0,40.0,95.0,80
+        """.trimIndent()
+        val r = success(csv)
+        // Water > 100%, muscle 90% of weight, bone 40 kg, lean > weight, rating 80:
+        // every field is implausible, so no composition row is produced at all.
+        assertTrue(r.compositions.isEmpty())
+        // The weight row still imports — one bad column never sinks the file.
+        assertEquals(80.0, r.weights.single().weightKg, 0.001)
+    }
+
+    @Test
+    fun `nofud csv collapses composition rows sharing a timestamp into one entry`() {
+        val csv = """
+            metric,timestamp,value,unit
+            bone_mass,2026-01-02T08:30:00Z,3.2,kg
+            lean_mass,2026-01-02T08:30:00Z,65.2,kg
+            visceral_fat,2026-01-02T08:30:00Z,8,index
+        """.trimIndent()
+        val r = success(csv)
+        assertEquals(BodyMetricsSourceFormat.NOFUD_CSV, r.sourceFormat)
+        val c = r.compositions.single()
+        assertEquals(3.2, c.boneMassKg!!, 0.0001)
+        assertEquals(65.2, c.leanMassKg!!, 0.0001)
+        assertEquals(8.0, c.visceralFatRating!!, 0.0001)
+    }
+
+    @Test
+    fun `json 1_1 composition array is imported and 1_0 stays accepted`() {
+        val json11 = """
+            {
+              "export": {"app": "Chompass", "kind": "body_metrics", "format_version": "1.1"},
+              "weights": [{"id": "11111111-1111-4111-8111-111111111111", "date": "2026-01-02T08:30:00Z", "weight_kg": 80.0}],
+              "body_fat": [],
+              "measurements": [],
+              "body_composition": [
+                {"date": "2026-01-02T07:00:00Z", "bone_mass_kg": 3.2, "lean_mass_kg": 65.2, "visceral_fat_rating": 8},
+                {"date": "2026-01-03T07:00:00Z", "lean_mass_kg": 999.0}
+              ]
+            }
+        """.trimIndent()
+        val r = success(json11)
+        assertEquals(BodyMetricsSourceFormat.NOFUD_JSON, r.sourceFormat)
+        // The 999 kg row fails the plausibility bound and never lands.
+        assertEquals(1, r.compositions.size)
+        assertEquals(65.2, r.compositions.single().leanMassKg!!, 0.0001)
+
+        val json10 = """
+            {
+              "export": {"app": "Chompass", "kind": "body_metrics", "format_version": "1.0"},
+              "weights": [{"date": "2026-01-02T08:30:00Z", "weight_kg": 80.0}],
+              "body_fat": [],
+              "measurements": []
+            }
+        """.trimIndent()
+        val old = success(json10)
+        assertTrue(old.compositions.isEmpty())
+    }
 }

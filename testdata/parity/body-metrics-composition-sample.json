@@ -1,0 +1,55 @@
+{
+  "export": {
+    "app": "Chompass",
+    "kind": "body_metrics",
+    "format_version": "1.1"
+  },
+  "weights": [
+    { "date": "2026-01-01T12:00:00Z", "weight_kg": 80.0 },
+    { "date": "2026-01-08T12:00:00Z", "weight_kg": 79.5 },
+    { "date": "2026-01-15T12:00:00Z", "weight_kg": 79.2 },
+    { "date": "2026-01-22T12:00:00Z", "weight_kg": 78.8 }
+  ],
+  "body_fat": [
+    { "date": "2026-01-01T12:00:00Z", "body_fat_percent": 18.5 },
+    { "date": "2026-01-15T12:00:00Z", "body_fat_percent": 18.2 }
+  ],
+  "measurements": [
+    {
+      "date": "2026-01-01T12:00:00Z",
+      "neck_cm": 38.0,
+      "waist_cm": 85.0,
+      "hips_cm": 98.0,
+      "chest_cm": 102.0,
+      "upper_arm_cm": 34.0,
+      "thigh_cm": 56.0,
+      "calf_cm": 38.0,
+      "wrist_cm": 17.0
+    }
+  ],
+  "body_composition": [
+    {
+      "id": "66666666-6666-4666-8666-666666666666",
+      "date": "2026-01-01T07:10:00Z",
+      "bone_mass_kg": 3.2,
+      "total_body_water_kg": 46.0,
+      "muscle_mass_kg": 30.4,
+      "lean_mass_kg": 65.2,
+      "visceral_fat_rating": 8.0
+    },
+    {
+      "id": "77777777-7777-4777-8777-777777777777",
+      "date": "2026-01-08T07:05:00Z",
+      "bone_mass_kg": 3.2,
+      "total_body_water_kg": 45.7,
+      "muscle_mass_kg": 30.2,
+      "lean_mass_kg": 64.9,
+      "visceral_fat_rating": 8.0
+    },
+    {
+      "id": "88888888-8888-4888-8888-888888888888",
+      "date": "2026-01-15T07:15:00Z",
+      "lean_mass_kg": 64.5
+    }
+  ]
+}

@@ -9,6 +9,7 @@ import {
   SYNC_FORMAT_VERSION,
   SYNC_IMPORT_VERSIONS,
   liveFoodEntriesFromSync,
+  liveBodyCompositionFromSync,
   liveDailyNotesFromSync,
   liveGoalJournalFromSync,
   liveNicotineFromSync,
@@ -377,4 +378,93 @@ test("daily-note tombstone rides the wire", () => {
   assert.equal(doc.daily_notes[0].id, id);
   assert.equal(doc.daily_notes[0].deleted_at, "2026-07-24T22:00:00Z");
   assert.equal(liveDailyNotesFromSync(doc.daily_notes).length, 0);
+});
+
+// --- Sync 1.5: scale composition rows ---
+
+test("composition rows stamp sync 1.5 and round-trip through the live projection", () => {
+  const doc = exportSyncDocument({
+    bodyComposition: [
+      {
+        id: "66666666-6666-4666-8666-666666666666",
+        date: "2026-07-20T07:10:00Z",
+        boneMassKg: 3.2,
+        totalBodyWaterKg: 45.6,
+        muscleMassKg: 30.1,
+        leanMassKg: 64.9,
+        visceralFatRating: 8.0,
+      },
+      { id: "88888888-8888-4888-8888-888888888888", date: "2026-07-22T07:05:00Z", leanMassKg: 64.6 },
+    ],
+    revisions: {},
+  });
+  assert.equal(doc.export.format_version, "1.5");
+  assert.equal(doc.body_composition.length, 2);
+  const parsed = parseSyncDocument(doc);
+  const live = liveBodyCompositionFromSync(parsed.body_composition);
+  assert.equal(live.length, 2);
+  const full = live.find((c) => c.leanMassKg === 64.9);
+  assert.ok(full);
+  assert.equal(full.boneMassKg, 3.2);
+  assert.equal(full.totalBodyWaterKg, 45.6);
+  assert.equal(full.muscleMassKg, 30.1);
+  assert.equal(full.visceralFatRating, 8.0);
+});
+
+test("a composition-free document keeps the base stamp and parses the empty array", () => {
+  const doc = exportSyncDocument({ foodEntries: [] });
+  assert.equal(doc.export.format_version, "1.3");
+  assert.deepEqual(doc.body_composition, []);
+  // Older docs have no body_composition key at all; the parser defaults it to [].
+  const legacy = parseSyncDocument({
+    export: { app: "Chompass", kind: "sync", format_version: "1.3" },
+    food_entries: [],
+    favorites: [],
+    weights: [],
+    body_fat: [],
+    measurements: [],
+    water: [],
+    recipes: [],
+  });
+  assert.deepEqual(legacy.body_composition, []);
+});
+
+test("sync 1.5 is an accepted import version", () => {
+  const parsed = parseSyncDocument({
+    export: { app: "Chompass", kind: "sync", format_version: "1.5" },
+    food_entries: [],
+    favorites: [],
+    weights: [],
+    body_fat: [],
+    measurements: [],
+    body_composition: [
+      { id: "66666666-6666-4666-8666-666666666666", updated_at: "2026-07-20T07:10:00Z", deleted_at: null, date: "2026-07-20T07:10:00Z", lean_mass_kg: 64.9 },
+    ],
+    water: [],
+    recipes: [],
+  });
+  assert.equal(parsed.body_composition.length, 1);
+});
+
+test("composition tombstones drop out of the live projection", () => {
+  const doc = exportSyncDocument({
+    bodyComposition: [],
+    revisions: {
+      "99999999-9999-4999-8999-999999999999": {
+        updatedAt: "2026-07-23T07:06:00Z",
+        deletedAt: "2026-07-23T07:06:00Z",
+        kind: "composition",
+      },
+    },
+  });
+  appendTombstones(doc, {
+    "99999999-9999-4999-8999-999999999999": {
+      updatedAt: "2026-07-23T07:06:00Z",
+      deletedAt: "2026-07-23T07:06:00Z",
+      kind: "composition",
+    },
+  });
+  const parsed = parseSyncDocument(doc);
+  assert.equal(parsed.body_composition.length, 1);
+  assert.equal(liveBodyCompositionFromSync(parsed.body_composition).length, 0);
 });

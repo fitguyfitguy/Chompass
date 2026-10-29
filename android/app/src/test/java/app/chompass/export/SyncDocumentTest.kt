@@ -1,5 +1,6 @@
 package app.chompass.export
 
+import app.chompass.models.BodyCompositionEntry
 import app.chompass.models.DailyNote
 import app.chompass.models.FoodConstituent
 import app.chompass.models.FoodEntry
@@ -795,5 +796,73 @@ class SyncDocumentTest {
         val merged = SyncDocument.mergeRawDocuments(local, remoteRaw)
         val parsed = (SyncDocument.parse(merged.toString(), ZoneOffset.UTC) as SyncDocument.ParseResult.Success).parsed
         assertTrue(parsed.foodEntries.none { it.id == id.toString() && it.entry != null })
+    }
+
+    @Test
+    fun compositionRowsRoundTripAndStamp15() {
+        val t0 = Instant.parse("2026-07-20T07:10:00Z")
+        val entry = BodyCompositionEntry(
+            date = t0,
+            boneMassKg = 3.2,
+            totalBodyWaterKg = 45.6,
+            muscleMassKg = 30.1,
+            leanMassKg = 64.9,
+            visceralFatRating = 8.0,
+        )
+        val json = SyncDocument.buildJson(
+            foodEntries = emptyList(),
+            favorites = emptyList(),
+            weights = emptyList(),
+            bodyFats = emptyList(),
+            measurements = emptyList(),
+            compositions = listOf(entry),
+            water = emptyList(),
+            recipes = emptyList(),
+            zone = ZoneOffset.UTC,
+        )
+        assertTrue(
+            "expected a 1.5 stamp",
+            json.contains("\"format_version\": \"${SyncDocument.FORMAT_VERSION_COMPOSITION}\""),
+        )
+        val parsed = (SyncDocument.parse(json, ZoneOffset.UTC) as SyncDocument.ParseResult.Success).parsed
+        val row = parsed.compositions.single().entry!!
+        assertEquals(entry.id, row.id)
+        assertEquals(3.2, row.boneMassKg!!, 0.0001)
+        assertEquals(45.6, row.totalBodyWaterKg!!, 0.0001)
+        assertEquals(30.1, row.muscleMassKg!!, 0.0001)
+        assertEquals(64.9, row.leanMassKg!!, 0.0001)
+        assertEquals(8.0, row.visceralFatRating!!, 0.0001)
+    }
+
+    @Test
+    fun compositionFreeDocumentStaysAtBaseVersion() {
+        val json = SyncDocument.buildJson(
+            foodEntries = emptyList(),
+            favorites = emptyList(),
+            weights = emptyList(),
+            bodyFats = emptyList(),
+            measurements = emptyList(),
+            water = emptyList(),
+            recipes = emptyList(),
+            zone = ZoneOffset.UTC,
+        )
+        assertTrue(json.contains("\"format_version\": \"${SyncDocument.FORMAT_VERSION}\""))
+        // The array is always emitted (like every other sync list) but empty; older
+        // readers ignore the unknown key, and the stamp stays at the base version.
+        assertTrue(json.contains("\"body_composition\": []"))
+    }
+
+    @Test
+    fun compositionSampleFixtureParses() {
+        val json = ParityFixtures.readText("sync-composition-sample.json")
+        val result = SyncDocument.parse(json, ZoneOffset.UTC)
+        assertTrue("expected Success but was $result", result is SyncDocument.ParseResult.Success)
+        val parsed = (result as SyncDocument.ParseResult.Success).parsed
+        // Two live rows + one tombstone.
+        assertEquals(3, parsed.compositions.size)
+        assertEquals(2, parsed.compositions.count { it.entry != null })
+        val live = parsed.compositions.firstNotNullOf { row -> row.entry?.takeIf { it.leanMassKg != null } }
+        assertEquals(64.9, live.leanMassKg!!, 0.0001)
+        assertTrue(parsed.compositions.any { it.deletedAt != null })
     }
 }

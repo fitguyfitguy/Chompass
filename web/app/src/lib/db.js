@@ -17,7 +17,7 @@ const DB_NAME =
   typeof window !== "undefined" && /** @type {any} */ (window).CHOMPASS_DEMO
     ? "chompass-pwa-demo"
     : "chompass-pwa";
-const DB_VERSION = 8;
+const DB_VERSION = 9;
 
 /** @type {Promise<IDBDatabase>|null} */
 let dbPromise = null;
@@ -71,6 +71,13 @@ function openChompassDb() {
     if (oldVersion < 8) {
       if (!db.objectStoreNames.contains("untrackedDays")) {
         db.createObjectStore("untrackedDays", { keyPath: "date" }).createIndex("date", "date");
+      }
+    }
+    // Scale composition metrics (bone / water / muscle / lean / visceral): own
+    // store + own version bump, same pattern as the trackers above.
+    if (oldVersion < 9) {
+      if (!db.objectStoreNames.contains("bodyComposition")) {
+        db.createObjectStore("bodyComposition", { keyPath: "id" }).createIndex("date", "date");
       }
     }
   });
@@ -263,6 +270,26 @@ export const measurements = {
   },
   async clear() {
     return (await store("measurements")).clear();
+  },
+};
+
+export const bodyComposition = {
+  /** @param {import("./chompass-core/models.js").BodyCompositionEntry} entry */
+  async put(entry) {
+    const result = await (await store("bodyComposition")).put(entry);
+    await touchRevision(entry.id, "composition");
+    return result;
+  },
+  async delete(id) {
+    const result = await (await store("bodyComposition")).delete(id);
+    await tombstoneRevision(id, "composition");
+    return result;
+  },
+  async all() {
+    return (await store("bodyComposition")).getAll();
+  },
+  async clear() {
+    return (await store("bodyComposition")).clear();
   },
 };
 

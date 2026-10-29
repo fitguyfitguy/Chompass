@@ -1,0 +1,351 @@
+{
+  "export": {
+    "app": "Chompass",
+    "kind": "sync",
+    "format_version": "1.5",
+    "generated_at": "2026-07-24T10:00:00Z"
+  },
+  "food_entries": [
+    {
+      "id": "11111111-1111-4111-8111-111111111111",
+      "updated_at": "2026-07-24T12:00:00Z",
+      "deleted_at": null,
+      "name": "Chicken salad",
+      "emoji": "\ud83e\udd57",
+      "date": "2026-07-24",
+      "time": "12:30",
+      "timestamp": "2026-07-24T12:30:00Z",
+      "meal_type": "lunch",
+      "quantity_g": 350,
+      "calories": 420,
+      "protein_g": 38,
+      "carbs_g": 12,
+      "fat_g": 22,
+      "source": "manually_edited",
+      "note": null,
+      "recipe_log_id": null,
+      "sugar_g": null,
+      "added_sugar_g": null,
+      "fiber_g": 4,
+      "saturated_fat_g": null,
+      "monounsaturated_fat_g": null,
+      "polyunsaturated_fat_g": null,
+      "cholesterol_mg": null,
+      "sodium_mg": null,
+      "potassium_mg": null,
+      "trans_fat_g": null,
+      "calcium_mg": null,
+      "iron_mg": null,
+      "magnesium_mg": null,
+      "zinc_mg": null,
+      "vitamin_a_mcg": null,
+      "vitamin_c_mg": null,
+      "vitamin_d_mcg": null,
+      "vitamin_b12_mcg": null,
+      "vitamin_e_mg": null,
+      "vitamin_k_mcg": null,
+      "folate_mcg": null,
+      "omega3_g": null,
+      "caffeine_mg": 95,
+      "grounding": null,
+      "serving_unit_options": [
+        {
+          "unit": "bowl",
+          "grams_per_unit": 350.0,
+          "quantity": 1.0
+        }
+      ],
+      "selected_serving_unit": "bowl",
+      "selected_serving_quantity": 1.0,
+      "constituents": [
+        {
+          "name": "Chicken",
+          "calories": 280,
+          "protein_g": 32.0,
+          "carbs_g": 0.0,
+          "fat_g": 16.0,
+          "quantity_g": 180.0,
+          "emoji": "\ud83c\udf57",
+          "serving_unit_options": [
+            {
+              "unit": "piece",
+              "grams_per_unit": 90.0,
+              "quantity": 2.0
+            }
+          ],
+          "selected_serving_unit": "piece",
+          "selected_serving_quantity": 2.0,
+          "sugar_g": 0.0,
+          "added_sugar_g": null,
+          "fiber_g": 0.0,
+          "saturated_fat_g": 4.5,
+          "monounsaturated_fat_g": 6.2,
+          "polyunsaturated_fat_g": 3.1,
+          "cholesterol_mg": 145.0,
+          "sodium_mg": 220.0,
+          "potassium_mg": 640.0,
+          "trans_fat_g": null,
+          "calcium_mg": null,
+          "iron_mg": 1.0,
+          "magnesium_mg": null,
+          "zinc_mg": 3.4,
+          "vitamin_a_mcg": null,
+          "vitamin_c_mg": null,
+          "vitamin_d_mcg": null,
+          "vitamin_b12_mcg": 0.5,
+          "vitamin_e_mg": null,
+          "vitamin_k_mcg": null,
+          "folate_mcg": null,
+          "omega3_g": 0.5,
+          "caffeine_mg": null
+        },
+        {
+          "name": "Mixed greens",
+          "calories": 140,
+          "protein_g": 6.0,
+          "carbs_g": 12.0,
+          "fat_g": 6.0,
+          "quantity_g": 170.0,
+          "emoji": null,
+          "serving_unit_options": [],
+          "selected_serving_unit": null,
+          "selected_serving_quantity": null,
+          "sugar_g": 2.0,
+          "added_sugar_g": null,
+          "fiber_g": 4.0,
+          "saturated_fat_g": 0.8,
+          "monounsaturated_fat_g": 2.1,
+          "polyunsaturated_fat_g": 1.2,
+          "cholesterol_mg": 0.0,
+          "sodium_mg": 60.0,
+          "potassium_mg": 480.0,
+          "trans_fat_g": null,
+          "calcium_mg": null,
+          "iron_mg": 1.6,
+          "magnesium_mg": null,
+          "zinc_mg": null,
+          "vitamin_a_mcg": 240.0,
+          "vitamin_c_mg": 15.0,
+          "vitamin_d_mcg": null,
+          "vitamin_b12_mcg": null,
+          "vitamin_e_mg": null,
+          "vitamin_k_mcg": 100.0,
+          "folate_mcg": 50.0,
+          "omega3_g": null,
+          "caffeine_mg": null
+        }
+      ],
+      "photos": [
+        "photos/0123456789abcdef.jpg"
+      ]
+    },
+    {
+      "id": "44444444-4444-4444-8444-444444444444",
+      "updated_at": "2026-07-24T08:00:00Z",
+      "deleted_at": null,
+      "name": "Black coffee",
+      "date": "2026-07-24",
+      "time": "08:00",
+      "timestamp": "2026-07-24T08:00:00Z",
+      "meal_type": "breakfast",
+      "quantity_g": 240,
+      "calories": 2,
+      "protein_g": 0.3,
+      "carbs_g": 0,
+      "fat_g": 0,
+      "source": "manually_edited",
+      "note": null,
+      "recipe_log_id": null,
+      "sugar_g": null,
+      "added_sugar_g": null,
+      "fiber_g": null,
+      "saturated_fat_g": null,
+      "monounsaturated_fat_g": null,
+      "polyunsaturated_fat_g": null,
+      "cholesterol_mg": null,
+      "sodium_mg": null,
+      "potassium_mg": null,
+      "trans_fat_g": null,
+      "calcium_mg": null,
+      "iron_mg": null,
+      "magnesium_mg": null,
+      "zinc_mg": null,
+      "vitamin_a_mcg": null,
+      "vitamin_c_mg": null,
+      "vitamin_d_mcg": null,
+      "vitamin_b12_mcg": null,
+      "vitamin_e_mg": null,
+      "vitamin_k_mcg": null,
+      "folate_mcg": null,
+      "omega3_g": null,
+      "caffeine_mg": null,
+      "grounding": null,
+      "serving_unit_options": [
+        {
+          "unit": "cup",
+          "grams_per_unit": 240.0,
+          "quantity": 1.0
+        }
+      ],
+      "selected_serving_unit": "cup",
+      "selected_serving_quantity": 1.0,
+      "constituents": []
+    }
+  ],
+  "favorites": [],
+  "weights": [
+    {
+      "id": "22222222-2222-4222-8222-222222222222",
+      "updated_at": "2026-07-20T08:00:00Z",
+      "deleted_at": null,
+      "date": "2026-07-20T08:00:00Z",
+      "weight_kg": 79.4
+    }
+  ],
+  "body_fat": [],
+  "measurements": [],
+  "body_composition": [
+    {
+      "id": "66666666-6666-4666-8666-666666666666",
+      "updated_at": "2026-07-20T07:10:00Z",
+      "deleted_at": null,
+      "date": "2026-07-20T07:10:00Z",
+      "bone_mass_kg": 3.2,
+      "total_body_water_kg": 45.6,
+      "muscle_mass_kg": 30.1,
+      "lean_mass_kg": 64.9,
+      "visceral_fat_rating": 8.0
+    },
+    {
+      "id": "88888888-8888-4888-8888-888888888888",
+      "updated_at": "2026-07-22T07:05:00Z",
+      "deleted_at": null,
+      "date": "2026-07-22T07:05:00Z",
+      "lean_mass_kg": 64.6
+    },
+    {
+      "id": "99999999-9999-4999-8999-999999999999",
+      "updated_at": "2026-07-23T07:05:00Z",
+      "deleted_at": "2026-07-23T07:06:00Z"
+    }
+  ],
+  "water": [
+    {
+      "id": "33333333-3333-4333-8333-333333333333",
+      "updated_at": "2026-07-24T09:00:00Z",
+      "deleted_at": null,
+      "date": "2026-07-24",
+      "amount_ml": 500
+    }
+  ],
+  "daily_notes": [
+    {
+      "id": "00000000-0000-0000-0000-0000000050b2",
+      "updated_at": "2026-07-24T21:30:00Z",
+      "deleted_at": null,
+      "date": "2026-07-24",
+      "text": "Solid day: lunch felt light, energy stayed up all afternoon."
+    }
+  ],
+  "nicotine_entries": [
+    {
+      "id": "44444444-4444-4444-8444-444444444444",
+      "updated_at": "2026-07-24T10:00:00Z",
+      "deleted_at": null,
+      "date": "2026-07-24",
+      "kind": "cigarette",
+      "count": 1,
+      "mg": null
+    }
+  ],
+  "caffeine_entries": [
+    {
+      "id": "55555555-5555-5555-8555-555555555555",
+      "updated_at": "2026-07-24T08:30:00Z",
+      "deleted_at": null,
+      "date": "2026-07-24",
+      "kind": "coffee",
+      "mg": 95
+    }
+  ],
+  "recipes": [],
+  "goal_journal": [
+    {
+      "id": "00000000-0000-0000-0000-0000000050b1",
+      "updated_at": "2026-07-23T21:45:00.000Z",
+      "deleted_at": null,
+      "date": "2026-07-23",
+      "calories": 2800,
+      "protein_g": 170,
+      "carbs_g": 350,
+      "fat_g": 78,
+      "profile_id": "t-2026-07",
+      "profile_name": "Training day",
+      "source": "plan"
+    },
+    {
+      "id": "00000000-0000-0000-0000-0000000050b2",
+      "updated_at": "2026-07-24T22:10:00.000Z",
+      "deleted_at": null,
+      "date": "2026-07-24",
+      "calories": 2100,
+      "protein_g": 150,
+      "carbs_g": 160,
+      "fat_g": 78,
+      "profile_id": "r-2026-07",
+      "profile_name": "Rest day",
+      "source": "manual_switch"
+    }
+  ],
+  "profile": {
+    "updated_at": "2026-07-01T00:00:00Z",
+    "deleted_at": null,
+    "payload": {
+      "sex": "male",
+      "age": 35,
+      "height_cm": 178,
+      "weight_kg": 79.4,
+      "activity": "moderate",
+      "goal": "lose",
+      "macroPlan": {
+        "enabled": true,
+        "profiles": [
+          {
+            "id": "t-2026-07",
+            "name": "Training day",
+            "calories": 2800,
+            "proteinG": 170,
+            "carbsG": 350,
+            "fatG": 78
+          },
+          {
+            "id": "r-2026-07",
+            "name": "Rest day",
+            "calories": 2100,
+            "proteinG": 150,
+            "carbsG": 160,
+            "fatG": 78
+          }
+        ],
+        "mode": "CYCLE",
+        "defaultProfileId": "r-2026-07",
+        "cyclePattern": [
+          "t-2026-07",
+          "t-2026-07",
+          "r-2026-07"
+        ],
+        "cycleAnchorDay": "2026-07-20"
+      }
+    }
+  },
+  "prefs": {
+    "updated_at": "2026-07-01T00:00:00Z",
+    "deleted_at": null,
+    "payload": {
+      "theme": "system",
+      "units": "metric",
+      "show_water": true,
+      "water_goal_ml": 2500
+    }
+  }
+}

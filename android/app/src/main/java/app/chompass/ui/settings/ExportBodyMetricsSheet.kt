@@ -87,7 +87,14 @@ fun ExportBodyMetricsSheet(
                     val weights = container.weightRepository.entries.first()
                     val bodyFats = container.bodyFatRepository.entries.first()
                     val measurements = container.bodyMeasurementRepository.entries.first()
-                    val result = BodyMetricsExporter.build(weights, bodyFats, measurements, format)
+                    val compositions = container.bodyCompositionRepository.entries.first()
+                    val result = BodyMetricsExporter.build(
+                        weights = weights,
+                        bodyFats = bodyFats,
+                        measurements = measurements,
+                        compositions = compositions,
+                        format = format,
+                    )
                     if (result == null) {
                         status = context.getString(R.string.export_body_metrics_empty)
                         return@launch

@@ -167,13 +167,21 @@ fun DataSettingsScreen(
                         val w = container.weightRepository.importFromFile(result.weights)
                         val f = container.bodyFatRepository.importFromFile(result.bodyFats)
                         val m = container.bodyMeasurementRepository.importFromFile(result.measurements)
-                        if (w + f + m <= 0) {
+                        val c = container.bodyCompositionRepository.importFromFile(result.compositions)
+                        if (w + f + m + c <= 0) {
                             importBodyMetricsMessage = activityContext.getString(R.string.import_body_metrics_empty)
                             return@runCatching
                         }
-                        importBodyMetricsMessage = activityContext.getString(
+                        val base = activityContext.getString(
                             R.string.import_body_metrics_success, w, f, m
                         )
+                        importBodyMetricsMessage = if (c > 0) {
+                            base + " " + activityContext.getString(
+                                R.string.import_body_metrics_success_composition, c
+                            )
+                        } else {
+                            base
+                        }
                     }
                     BodyMetricsImportResult.EmptyPayload -> {
                         importBodyMetricsMessage = activityContext.getString(R.string.import_body_metrics_empty)

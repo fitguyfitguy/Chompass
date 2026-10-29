@@ -7,6 +7,7 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.doubleOrNull
+import app.chompass.models.BodyCompositionEntry
 import app.chompass.models.BodyFatEntry
 import app.chompass.models.BodyMeasurement
 import app.chompass.models.WeightEntry
@@ -25,6 +26,9 @@ sealed class BodyMetricsImportResult {
         val weights: List<WeightEntry>,
         val bodyFats: List<BodyFatEntry>,
         val measurements: List<BodyMeasurement>,
+        /** Scale composition rows (bone / water / muscle / lean / visceral); empty when the
+         *  file has none — e.g. every generic-CSV and plain-weight source. */
+        val compositions: List<BodyCompositionEntry>,
         val sourceFormat: BodyMetricsSourceFormat,
     ) : BodyMetricsImportResult()
     object EmptyPayload : BodyMetricsImportResult()
@@ -88,19 +92,32 @@ object BodyMetricsImporter {
         percent.isFinite() && percent in MIN_BODY_FAT_PERCENT..MAX_BODY_FAT_PERCENT
     private fun circumferenceOk(cm: Double): Boolean = cm.isFinite() && cm > 0 && cm < 500
 
+    /** Mass columns are kg in every accepted format once converted; nothing plausible
+     *  reaches 300 kg. The visceral rating is the vendor score, not a mass. */
+    private fun compositionMassOk(kg: Double): Boolean = kg.isFinite() && kg > 0 && kg < 300
+    private fun visceralRatingOk(rating: Double): Boolean = rating.isFinite() && rating in 1.0..59.0
+
+    private fun compositionValueOk(
+        metric: BodyCompositionEntry.CompositionMetric,
+        value: Double,
+    ): Boolean =
+        if (metric.isMass) compositionMassOk(value) else visceralRatingOk(value)
+
     private fun success(
         weights: List<WeightEntry>,
         bodyFats: List<BodyFatEntry>,
         measurements: List<BodyMeasurement>,
+        compositions: List<BodyCompositionEntry>,
         format: BodyMetricsSourceFormat,
     ): BodyMetricsImportResult =
-        if (weights.isEmpty() && bodyFats.isEmpty() && measurements.isEmpty()) {
+        if (weights.isEmpty() && bodyFats.isEmpty() && measurements.isEmpty() && compositions.isEmpty()) {
             BodyMetricsImportResult.EmptyPayload
         } else {
             BodyMetricsImportResult.Success(
                 weights.sortedBy { it.date },
                 bodyFats.sortedBy { it.date },
                 measurements.sortedBy { it.date },
+                compositions.sortedBy { it.date },
                 format,
             )
         }
@@ -118,7 +135,7 @@ object BodyMetricsImporter {
         val app = export["app"].asString().orEmpty().trim().lowercase()
         if (app != "chompass" && app != "nofud" && app != "fud ai") return BodyMetricsImportResult.UnsupportedFormat
         if (export["kind"].asString() != BodyMetricsExporter.KIND) return BodyMetricsImportResult.UnsupportedFormat
-        if (export["format_version"].asString() != BodyMetricsExporter.FORMAT_VERSION) {
+        if (export["format_version"].asString() !in BodyMetricsExporter.SUPPORTED_FORMAT_VERSIONS) {
             return BodyMetricsImportResult.UnsupportedFormat
         }
 
@@ -158,7 +175,23 @@ object BodyMetricsImporter {
             )
             if (m.hasAnyValue) measurements += m
         }
-        return success(weights, bodyFats, measurements, BodyMetricsSourceFormat.NOFUD_JSON)
+        val compositions = mutableListOf<BodyCompositionEntry>()
+        for (el in root["body_composition"].asArray()) {
+            val obj = el as? JsonObject ?: return BodyMetricsImportResult.Malformed("Invalid composition entry")
+            val date = obj["date"].asInstant() ?: return BodyMetricsImportResult.Malformed("Invalid composition date")
+            fun mass(key: String): Double? = obj[key].asDouble()?.takeIf { compositionMassOk(it) }
+            val entry = BodyCompositionEntry(
+                id = obj["id"].asUuid() ?: fileId("composition", date),
+                date = date,
+                boneMassKg = mass("bone_mass_kg"),
+                totalBodyWaterKg = mass("total_body_water_kg"),
+                muscleMassKg = mass("muscle_mass_kg"),
+                leanMassKg = mass("lean_mass_kg"),
+                visceralFatRating = obj["visceral_fat_rating"].asDouble()?.takeIf { visceralRatingOk(it) },
+            )
+            if (entry.hasAnyValue) compositions += entry
+        }
+        return success(weights, bodyFats, measurements, compositions, BodyMetricsSourceFormat.NOFUD_JSON)
     }
 
     // --- 2. Chompass long CSV (metric,timestamp,value,unit) ---
@@ -168,11 +201,16 @@ object BodyMetricsImporter {
             // openScale/1.7 tolerance: singular/alias spellings
             .plus(mapOf("hip" to BodyMeasurement.Site.HIPS, "biceps" to BodyMeasurement.Site.UPPER_ARM))
 
+    private val csvCompositionByMetric: Map<String, BodyCompositionEntry.CompositionMetric> =
+        BodyMetricsExporter.compositionMetricNames.entries.associate { (metric, name) -> name to metric }
+
     private fun parseLegacyMetricsCsv(rows: List<String>, zone: ZoneId): BodyMetricsImportResult {
         val weights = mutableListOf<WeightEntry>()
         val bodyFats = mutableListOf<BodyFatEntry>()
         // Site rows sharing a timestamp collapse into one snapshot, like the export wrote them.
         val measurementsByTime = LinkedHashMap<Instant, BodyMeasurement>()
+        // Same collapse for scale metrics: one row per timestamp, not per metric.
+        val compositionsByTime = LinkedHashMap<Instant, BodyCompositionEntry>()
 
         for ((index, line) in rows.withIndex()) {
             val cols = csvParseLine(line)
@@ -194,17 +232,28 @@ object BodyMetricsImporter {
                     }
                 }
                 else -> {
-                    val site = csvSiteByMetric[metric] ?: continue
-                    if (!circumferenceOk(value)) continue
-                    val existing = measurementsByTime[time]
-                        ?: BodyMeasurement(id = fileId("measure", time), date = time)
-                    measurementsByTime[time] = existing.setting(site, value)
+                    val site = csvSiteByMetric[metric]
+                    if (site != null) {
+                        if (!circumferenceOk(value)) continue
+                        val existing = measurementsByTime[time]
+                            ?: BodyMeasurement(id = fileId("measure", time), date = time)
+                        measurementsByTime[time] = existing.setting(site, value)
+                        continue
+                    }
+                    // Composition masses are kg in this format (the exporter writes kg);
+                    // the visceral rating carries unit `index`.
+                    val composition = csvCompositionByMetric[metric] ?: continue
+                    if (!compositionValueOk(composition, value)) continue
+                    val existing = compositionsByTime[time]
+                        ?: BodyCompositionEntry(id = fileId("composition", time), date = time)
+                    compositionsByTime[time] = existing.setting(composition, value)
                 }
             }
         }
         return success(
             weights, bodyFats,
             measurementsByTime.values.filter { it.hasAnyValue },
+            compositionsByTime.values.filter { it.hasAnyValue },
             BodyMetricsSourceFormat.NOFUD_CSV,
         )
     }
@@ -221,16 +270,30 @@ object BodyMetricsImporter {
         "calf" to BodyMeasurement.Site.CALF,
     )
 
+    /** openScale CSV composition columns. `water` and `muscle` are PERCENT of the
+     *  same-row body weight (openScale's measurement types), `bone`/`lbm` are kg, and
+     *  `visceral` is the vendor rating. */
+    private const val OPENSCALE_MIN_BONE_KG = 0.5
+    private const val OPENSCALE_MAX_BONE_KG = 15.0
+    private const val OPENSCALE_MAX_TBW_FRACTION_OF_WEIGHT = 0.85
+    private const val OPENSCALE_MAX_MUSCLE_FRACTION_OF_WEIGHT = 0.70
+
     private fun parseOpenScaleCsv(header: List<String>, rows: List<String>, zone: ZoneId): BodyMetricsImportResult {
         val dateIdx = header.indexOf("datetime")
         val weightIdx = header.indexOf("weight")
         val fatIdx = header.indexOf("fat")
+        val boneIdx = header.indexOf("bone")
+        val waterIdx = header.indexOf("water")
+        val muscleIdx = header.indexOf("muscle")
+        val lbmIdx = header.indexOf("lbm")
+        val visceralIdx = header.indexOf("visceral")
         val siteIdx = openScaleSites.mapValues { (name, _) -> header.indexOf(name) }
             .entries.associate { (name, idx) -> openScaleSites.getValue(name) to idx }
 
         val weights = mutableListOf<WeightEntry>()
         val bodyFats = mutableListOf<BodyFatEntry>()
         val measurements = mutableListOf<BodyMeasurement>()
+        val compositions = mutableListOf<BodyCompositionEntry>()
 
         for ((index, line) in rows.withIndex()) {
             val cols = csvParseLine(line)
@@ -238,7 +301,8 @@ object BodyMetricsImporter {
             val time = col(dateIdx)?.let { parseOpenScaleDate(it, zone) }
                 ?: return BodyMetricsImportResult.Malformed("Row ${index + 2}: invalid dateTime")
 
-            col(weightIdx)?.toDoubleOrNull()?.takeIf { weightOk(it) }?.let {
+            val rowWeightKg = col(weightIdx)?.toDoubleOrNull()?.takeIf { weightOk(it) }
+            rowWeightKg?.let {
                 weights += WeightEntry(id = fileId("weight", time), date = time, weightKg = it)
             }
             if (fatIdx >= 0) {
@@ -252,8 +316,49 @@ object BodyMetricsImporter {
                 col(idx)?.toDoubleOrNull()?.takeIf { circumferenceOk(it) }?.let { m = m.setting(site, it) }
             }
             if (m.hasAnyValue) measurements += m
+
+            var c = BodyCompositionEntry(id = fileId("composition", time), date = time)
+            if (boneIdx >= 0) {
+                col(boneIdx)?.toDoubleOrNull()
+                    ?.takeIf { it.isFinite() && it > OPENSCALE_MIN_BONE_KG && it <= OPENSCALE_MAX_BONE_KG }
+                    ?.let { c = c.copy(boneMassKg = it) }
+            }
+            if (lbmIdx >= 0) {
+                col(lbmIdx)?.toDoubleOrNull()
+                    ?.takeIf { it.isFinite() && it > 0 && (rowWeightKg == null || it <= rowWeightKg) }
+                    ?.let { c = c.copy(leanMassKg = it) }
+            }
+            // Percent-of-weight columns need the same row's weight to become kg; a row
+            // without a valid weight drops them instead of inventing a mass.
+            if (rowWeightKg != null) {
+                if (waterIdx >= 0) {
+                    col(waterIdx)?.toDoubleOrNull()
+                        ?.takeIf { it.isFinite() && it > 0 && it <= 100 }
+                        ?.let { pct ->
+                            val kg = pct / 100.0 * rowWeightKg
+                            if (kg <= OPENSCALE_MAX_TBW_FRACTION_OF_WEIGHT * rowWeightKg) {
+                                c = c.copy(totalBodyWaterKg = kg)
+                            }
+                        }
+                }
+                if (muscleIdx >= 0) {
+                    col(muscleIdx)?.toDoubleOrNull()
+                        ?.takeIf { it.isFinite() && it > 0 && it <= 100 }
+                        ?.let { pct ->
+                            val kg = pct / 100.0 * rowWeightKg
+                            if (kg <= OPENSCALE_MAX_MUSCLE_FRACTION_OF_WEIGHT * rowWeightKg) {
+                                c = c.copy(muscleMassKg = kg)
+                            }
+                        }
+                }
+            }
+            if (visceralIdx >= 0) {
+                col(visceralIdx)?.toDoubleOrNull()?.takeIf { visceralRatingOk(it) }
+                    ?.let { c = c.copy(visceralFatRating = it) }
+            }
+            if (c.hasAnyValue) compositions += c
         }
-        return success(weights, bodyFats, measurements, BodyMetricsSourceFormat.OPENSCALE_CSV)
+        return success(weights, bodyFats, measurements, compositions, BodyMetricsSourceFormat.OPENSCALE_CSV)
     }
 
     private fun parseOpenScaleDate(raw: String, zone: ZoneId): Instant? =
@@ -297,7 +402,7 @@ object BodyMetricsImporter {
                 }
             }
         }
-        return success(weights, bodyFats, emptyList(), BodyMetricsSourceFormat.GENERIC_CSV)
+        return success(weights, bodyFats, emptyList(), emptyList(), BodyMetricsSourceFormat.GENERIC_CSV)
     }
 
     // --- shared parsing helpers ---

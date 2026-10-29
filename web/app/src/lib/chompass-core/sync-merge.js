@@ -143,6 +143,7 @@ const LIST_KEYS = [
   "weights",
   "body_fat",
   "measurements",
+  "body_composition",
   "water",
   "daily_notes",
   "nicotine_entries",
@@ -150,6 +151,20 @@ const LIST_KEYS = [
   "recipes",
   "goal_journal",
 ];
+
+/**
+ * Version stamp for a merged document, mirroring SyncDocument.mergeRawDocuments:
+ * 1.5 iff composition rows survive, else 1.4 iff photo refs do, else 1.3.
+ * @param {any} doc
+ * @returns {string}
+ */
+function mergedFormatVersion(doc) {
+  if ((doc.body_composition ?? []).length > 0) return "1.5";
+  const hasPhotos = [...(doc.food_entries ?? []), ...(doc.favorites ?? [])].some(
+    (/** @type {any} */ row) => Array.isArray(row?.photos) && row.photos.length > 0,
+  );
+  return hasPhotos ? "1.4" : "1.3";
+}
 
 /**
  * Merge two sync documents into one. Export metadata comes from `remote`
@@ -166,7 +181,6 @@ export function mergeSyncDocuments(local, remote) {
       ...(remote.export ?? local.export ?? {}),
       app: "Chompass",
       kind: "sync",
-      format_version: "1.2",
     },
   };
   for (const key of LIST_KEYS) {
@@ -175,6 +189,7 @@ export function mergeSyncDocuments(local, remote) {
         ? dedupeRecordLists(local[key] ?? [], remote[key] ?? [], weightDedupeKey)
         : mergeRecordLists(local[key] ?? [], remote[key] ?? []);
   }
+  out.export.format_version = mergedFormatVersion(out);
   const profile = mergeSingleton(local.profile, remote.profile);
   const prefs = mergeSingleton(local.prefs, remote.prefs);
   out.profile = profile
