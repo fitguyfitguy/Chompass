@@ -1,8 +1,11 @@
 package app.chompass.ui.progress
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.runtime.remember
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,6 +34,7 @@ import app.chompass.R
 import app.chompass.models.UnitFormat
 import app.chompass.ui.components.ChompassSurface
 import app.chompass.ui.components.ChompassIconBubble
+import app.chompass.ui.components.pressScale
 
 internal fun formatWeight(kg: Double, useMetric: Boolean): String =
     UnitFormat.weight(kg, useMetric)
@@ -82,10 +86,12 @@ internal fun LegendSwatch(
 
 @Composable
 internal fun WeightHistoryLink(count: Int, onClick: () -> Unit) {
+    val cardInteraction = remember { MutableInteractionSource() }
     ChompassSurface(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick),
+            .pressScale(cardInteraction)
+            .clickable(interactionSource = cardInteraction, indication = LocalIndication.current, onClick = onClick),
         cornerRadius = 16.dp,
         padding = 14.dp
     ) {
@@ -116,10 +122,12 @@ internal fun WeightHistoryLink(count: Int, onClick: () -> Unit) {
 
 @Composable
 internal fun BodyFatHistoryLink(count: Int, onClick: () -> Unit) {
+    val cardInteraction = remember { MutableInteractionSource() }
     ChompassSurface(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick),
+            .pressScale(cardInteraction)
+            .clickable(interactionSource = cardInteraction, indication = LocalIndication.current, onClick = onClick),
         cornerRadius = 16.dp,
         padding = 14.dp
     ) {

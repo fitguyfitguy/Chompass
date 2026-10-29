@@ -18,7 +18,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.ui.Alignment
+import app.chompass.ui.theme.AppMotion
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -99,7 +104,11 @@ internal fun AddWeightDialog(
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
-        if (advanced) {
+        AnimatedVisibility(
+            visible = advanced,
+            enter = expandVertically(expandFrom = Alignment.Top, animationSpec = tween(AppMotion.TweenDefaultMs, easing = AppMotion.EasingStandard)),
+            exit = shrinkVertically(shrinkTowards = Alignment.Top, animationSpec = tween(AppMotion.TweenDefaultMs, easing = AppMotion.EasingStandard)),
+        ) {
             DateWheelPicker(
                 selected = pickedDate,
                 onSelect = { pickedDate = it },
@@ -193,7 +202,11 @@ internal fun AddBodyFatDialog(
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
-        if (advanced) {
+        AnimatedVisibility(
+            visible = advanced,
+            enter = expandVertically(expandFrom = Alignment.Top, animationSpec = tween(AppMotion.TweenDefaultMs, easing = AppMotion.EasingStandard)),
+            exit = shrinkVertically(shrinkTowards = Alignment.Top, animationSpec = tween(AppMotion.TweenDefaultMs, easing = AppMotion.EasingStandard)),
+        ) {
             DateWheelPicker(
                 selected = pickedDate,
                 onSelect = { pickedDate = it },

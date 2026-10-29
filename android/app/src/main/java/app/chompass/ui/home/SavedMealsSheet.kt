@@ -1,12 +1,15 @@
 package app.chompass.ui.home
 
 import app.chompass.ui.components.ChompassSegmentedTabs
+import app.chompass.ui.components.pressScale
 import app.chompass.ui.components.ChompassSheetLazyColumn
 import app.chompass.ui.components.ChompassBottomSheet
 import app.chompass.ui.components.rememberChompassSheetState
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -619,15 +622,17 @@ private fun MoveButtons(
     onMoveDown: () -> Unit
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        val upInteraction = remember { MutableInteractionSource() }
         Box(
             Modifier
                 .size(width = 32.dp, height = 28.dp)
                 .clip(MaterialTheme.shapes.small)
+                .pressScale(upInteraction, enabled = canMoveUp)
                 .background(
                     if (canMoveUp) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f)
                     else Color.Transparent
                 )
-                .clickable(enabled = canMoveUp, onClick = onMoveUp),
+                .clickable(interactionSource = upInteraction, indication = LocalIndication.current, enabled = canMoveUp, onClick = onMoveUp),
             contentAlignment = Alignment.Center
         ) {
             Icon(
@@ -637,15 +642,17 @@ private fun MoveButtons(
                 modifier = Modifier.size(20.dp)
             )
         }
+        val downInteraction = remember { MutableInteractionSource() }
         Box(
             Modifier
                 .size(width = 32.dp, height = 28.dp)
                 .clip(MaterialTheme.shapes.small)
+                .pressScale(downInteraction, enabled = canMoveDown)
                 .background(
                     if (canMoveDown) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f)
                     else Color.Transparent
                 )
-                .clickable(enabled = canMoveDown, onClick = onMoveDown),
+                .clickable(interactionSource = downInteraction, indication = LocalIndication.current, enabled = canMoveDown, onClick = onMoveDown),
             contentAlignment = Alignment.Center
         ) {
             Icon(
@@ -711,17 +718,19 @@ private fun SavedMealRow(
     val isDark = isDarkTheme()
     val rowFill = MaterialTheme.colorScheme.surfaceContainerLow.copy(alpha = 0.92f)
     val rowBorder = MaterialTheme.colorScheme.outlineVariant
+    val rowInteraction = remember { MutableInteractionSource() }
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clip(MaterialTheme.shapes.large)
+            .pressScale(rowInteraction)
             .background(rowFill)
             .border(
                 0.5.dp,
                 rowBorder,
                 MaterialTheme.shapes.large
             )
-            .clickable(onClick = onClick)
+            .clickable(interactionSource = rowInteraction, indication = LocalIndication.current, onClick = onClick)
             .padding(horizontal = 12.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -816,13 +825,15 @@ private fun RecipeRow(
     val isDark = isDarkTheme()
     val rowFill = MaterialTheme.colorScheme.surfaceContainerLow.copy(alpha = 0.92f)
     val rowBorder = MaterialTheme.colorScheme.outlineVariant
+    val rowInteraction = remember { MutableInteractionSource() }
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clip(MaterialTheme.shapes.large)
+            .pressScale(rowInteraction)
             .background(rowFill)
             .border(0.5.dp, rowBorder, MaterialTheme.shapes.large)
-            .clickable(onClick = onEdit)
+            .clickable(interactionSource = rowInteraction, indication = LocalIndication.current, onClick = onEdit)
             .padding(horizontal = 12.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)

@@ -5,18 +5,22 @@ import app.chompass.ui.components.SplitDecimalWheelPicker
 import app.chompass.ui.components.NumericWheelPicker
 import app.chompass.ui.components.ChompassSheetLazyColumn
 import app.chompass.ui.components.ChompassBottomSheet
+import app.chompass.ui.components.ChompassDialog
 import app.chompass.ui.components.rememberChompassSheetState
 import app.chompass.ui.components.FoodReviewPositionalThreshold
 import app.chompass.ui.components.FoodReviewVelocityThreshold
 import app.chompass.ui.components.MagnitudeDrafts
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
@@ -37,7 +41,6 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.LockOpen
 import androidx.compose.material.icons.filled.UnfoldMore
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -110,6 +113,8 @@ import app.chompass.ui.components.energyText
 import app.chompass.ui.components.energyUnitLabel
 import app.chompass.ui.navigation.LocalEnergyUnit
 import app.chompass.ui.components.macroGramsText
+import app.chompass.ui.components.pressScale
+import app.chompass.ui.theme.AppMotion
 import app.chompass.ui.components.ChompassTextField
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.rememberScrollState
@@ -694,6 +699,7 @@ fun FoodResultSheet(
                     ?.takeIf { it.isNotEmpty() }
                     ?.let { "https://world.openfoodfacts.org/product/$it" }
                 val uriHandler = LocalUriHandler.current
+                val linkInteraction = remember { MutableInteractionSource() }
                 Box(
                     Modifier.fillMaxWidth().padding(vertical = 2.dp),
                     contentAlignment = Alignment.Center
@@ -713,10 +719,11 @@ fun FoodResultSheet(
                                     else Modifier.size(96.dp),
                                 )
                                 .clip(MaterialTheme.shapes.medium)
+                                .pressScale(linkInteraction, enabled = packShot && productUrl != null)
                                 .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f))
                                 .then(
                                     if (packShot && productUrl != null) {
-                                        Modifier.clickable { uriHandler.openUri(productUrl) }
+                                        Modifier.clickable(interactionSource = linkInteraction, indication = LocalIndication.current) { uriHandler.openUri(productUrl) }
                                     } else {
                                         Modifier
                                     },
@@ -1476,11 +1483,11 @@ internal fun ReviewNutritionValueRow(
             }
         }
 
-        // Expanded wheel picker
+        // Expanded wheel picker (Morphe: tweened disclosure, expand from top)
         AnimatedVisibility(
             visible = expanded && unlocked,
-            enter = expandVertically(animationSpec = spring(dampingRatio = 0.75f)),
-            exit = shrinkVertically(animationSpec = spring(dampingRatio = 0.75f))
+            enter = expandVertically(expandFrom = Alignment.Top, animationSpec = tween(AppMotion.TweenDefaultMs, easing = AppMotion.EasingStandard)),
+            exit = shrinkVertically(shrinkTowards = Alignment.Top, animationSpec = tween(AppMotion.TweenDefaultMs, easing = AppMotion.EasingStandard)),
         ) {
             if (isCalories) {
                 val currentCalories = currentValue.roundToInt().coerceIn(0, calorieWheelMax)
@@ -1580,17 +1587,13 @@ internal fun WhatIfMealImpactDialog(
         loading = false
     }
 
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        shape = MaterialTheme.shapes.extraLarge,
-        title = {
-            Text(
-                stringResource(R.string.what_if_title),
-                fontWeight = FontWeight.Bold
-            )
-        },
-        text = {
-            Column(
+    ChompassDialog(onDismissRequest = onDismiss) {
+        Text(
+            stringResource(R.string.what_if_title),
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.Bold
+        )
+        Column(
                 // Codeberg #17: cap the content height so the dialog fits small
                 // screens (M3 AlertDialog never scrolls) — the content scrolls
                 // internally when the AI text is long. 60% of the screen
@@ -1683,13 +1686,15 @@ internal fun WhatIfMealImpactDialog(
                     }
                 }
             }
-        },
-        confirmButton = {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
+        ) {
             TextButton(onClick = onDismiss) {
                 Text(stringResource(R.string.action_done), color = MaterialTheme.colorScheme.primary)
             }
         }
-    )
+    }
 }
 
 @Composable

@@ -2,8 +2,11 @@ package app.chompass.ui.home
 
 import app.chompass.ui.components.ChompassBottomSheet
 import app.chompass.ui.components.rememberChompassSheetState
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import app.chompass.ui.components.pressScale
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -470,11 +473,13 @@ private fun FavoritesIngredientPickerSheet(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(favorites, key = { it.id }) { entry ->
+                    val pickInteraction = remember { MutableInteractionSource() }
                     Row(
                         Modifier
                             .fillMaxWidth()
                             .clip(MaterialTheme.shapes.medium)
-                            .clickable { onPick(entry) }
+                            .pressScale(pickInteraction)
+                            .clickable(interactionSource = pickInteraction, indication = LocalIndication.current) { onPick(entry) }
                             .padding(horizontal = 12.dp, vertical = 10.dp),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {

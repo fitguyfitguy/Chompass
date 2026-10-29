@@ -1,6 +1,8 @@
 package app.chompass.ui.home
 
 import app.chompass.ui.components.ChompassBottomSheet
+import app.chompass.ui.components.ChompassDialog
+import app.chompass.ui.components.ChompassDialogActions
 import app.chompass.ui.components.rememberChompassSheetState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -29,7 +31,6 @@ import androidx.compose.material.icons.filled.AddAPhoto
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.PhotoLibrary
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -344,26 +345,22 @@ fun MultiPhotoCaptureSheet(
     }
 
     if (pendingConfirm) {
-        AlertDialog(
-            onDismissRequest = { pendingConfirm = false },
-            title = { Text(stringResource(R.string.meal_photos_confirm_title)) },
-            text = { Text(confirmMessage) },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        pendingConfirm = false
-                        commitAnalyze()
-                    },
-                ) {
-                    Text(stringResource(R.string.meal_photos_confirm_continue))
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { pendingConfirm = false }) {
-                    Text(stringResource(R.string.meal_photos_confirm_back))
-                }
-            },
-        )
+        ChompassDialog(onDismissRequest = { pendingConfirm = false }) {
+            Text(
+                stringResource(R.string.meal_photos_confirm_title),
+                style = MaterialTheme.typography.headlineSmall,
+            )
+            Text(confirmMessage, style = MaterialTheme.typography.bodyMedium)
+            ChompassDialogActions(
+                primaryText = stringResource(R.string.meal_photos_confirm_continue),
+                onPrimary = {
+                    pendingConfirm = false
+                    commitAnalyze()
+                },
+                dismissText = stringResource(R.string.meal_photos_confirm_back),
+                onDismiss = { pendingConfirm = false },
+            )
+        }
     }
 
     ChompassBottomSheet(

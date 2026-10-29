@@ -18,8 +18,10 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import app.chompass.ui.components.pressScale
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -334,13 +336,15 @@ private fun AddFoodToolButton(
     val shape = MaterialTheme.shapes.medium
     val fill = MaterialTheme.colorScheme.surfaceContainerLow.copy(alpha = 0.92f)
     val border = MaterialTheme.colorScheme.outlineVariant
+    val toolInteraction = remember { MutableInteractionSource() }
     Row(
         modifier
             .height(44.dp)
             .clip(shape)
+            .pressScale(toolInteraction)
             .background(fill)
             .border(0.5.dp, border, shape)
-            .clickable(onClick = onClick, role = Role.Button)
+            .clickable(interactionSource = toolInteraction, indication = LocalIndication.current, onClick = onClick, role = Role.Button)
             .padding(horizontal = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
@@ -576,10 +580,12 @@ internal fun AddFoodSuggestionList(
                             { PackagedSearchOffChip(onOff = { onPackagedSearchChange(false) }) }
                         } else {
                             {
+                                val settingsInteraction = remember { MutableInteractionSource() }
                                 Row(
                                     Modifier
                                         .minimumInteractiveComponentSize()
-                                        .clickable(onClick = onOpenFoodSettings, role = Role.Button)
+                                        .pressScale(settingsInteraction)
+                                        .clickable(interactionSource = settingsInteraction, indication = LocalIndication.current, onClick = onOpenFoodSettings, role = Role.Button)
                                         .padding(4.dp),
                                     verticalAlignment = Alignment.CenterVertically,
                                 ) {
@@ -888,14 +894,16 @@ private fun AddFoodSuggestionRow(
     val fill = MaterialTheme.colorScheme.surfaceContainerLow.copy(alpha = 0.92f)
     val border = MaterialTheme.colorScheme.outlineVariant
     val reviewLabel = stringResource(R.string.sheet_review_food)
+    val rowInteraction = remember { MutableInteractionSource() }
     Row(
         Modifier
             .fillMaxWidth()
             .clip(shape)
+            .pressScale(rowInteraction)
             .background(fill)
             .border(0.5.dp, border, shape)
             .combinedClickable(
-                interactionSource = remember { MutableInteractionSource() },
+                interactionSource = rowInteraction,
                 indication = null,
                 onClick = onClick,
                 onLongClick = onLongClick,

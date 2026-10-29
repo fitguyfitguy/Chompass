@@ -13,7 +13,10 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.runtime.remember
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -36,6 +39,7 @@ import app.chompass.BuildConfig
 import app.chompass.R
 import app.chompass.ui.components.AnimatedNumberText
 import app.chompass.ui.components.ChompassSurface
+import app.chompass.ui.components.pressScale
 
 /**
  * uiautomator reports every Compose FilterChip as selected="false". Debug
@@ -59,11 +63,13 @@ internal fun Modifier.chipAccessibility(label: String, selected: Boolean): Modif
 @Composable
 internal fun MeasurementAddButton(siteLabel: String, onClick: () -> Unit) {
     val description = stringResource(R.string.progress_log_measurement_format, siteLabel)
+    val addInteraction = remember { MutableInteractionSource() }
     Box(
         modifier = Modifier
             .size(32.dp)
             .clip(CircleShape)
-            .clickable(role = Role.Button, onClick = onClick)
+            .pressScale(addInteraction)
+            .clickable(interactionSource = addInteraction, indication = LocalIndication.current, role = Role.Button, onClick = onClick)
             .semantics { contentDescription = description },
         contentAlignment = Alignment.Center,
     ) {

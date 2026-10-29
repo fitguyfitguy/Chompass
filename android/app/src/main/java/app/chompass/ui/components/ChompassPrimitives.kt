@@ -19,6 +19,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.scaleIn
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
@@ -34,6 +38,11 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -47,6 +56,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import app.chompass.R
+import app.chompass.ui.theme.AppMotion
 
 @Composable
 fun isDarkTheme(): Boolean = MaterialTheme.colorScheme.background.luminance() < 0.5f
@@ -189,6 +199,18 @@ fun ChompassDialog(
             decorFitsSystemWindows = decorFitsSystemWindows,
         ),
     ) {
+        // Enter-only scale+fade on first composition (Morphe dialog spec).
+        // Exit keeps the platform window fade — window exits cannot be
+        // intercepted composable-side.
+        var shown by remember { mutableStateOf(false) }
+        LaunchedEffect(Unit) { shown = true }
+        AnimatedVisibility(
+            visible = shown,
+            enter = scaleIn(
+                tween(AppMotion.TweenDefaultMs, easing = AppMotion.EasingStandard),
+                initialScale = 0.95f,
+            ) + fadeIn(tween(AppMotion.TweenDefaultMs, easing = AppMotion.EasingStandard)),
+        ) {
         // M3 AlertDialog recipe (AlertDialogContent in material3 1.4.0):
         // extraLarge shape, surfaceContainerHigh ground, zero tonal
         // elevation, 560dp dialog max width. The free-form content stays a
@@ -218,6 +240,7 @@ fun ChompassDialog(
                     content = content,
                 )
             }
+        }
         }
     }
 }
