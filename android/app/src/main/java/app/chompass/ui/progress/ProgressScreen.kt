@@ -43,6 +43,7 @@ import app.chompass.models.BodyMeasurement
 import app.chompass.services.health.DailyActivity
 import app.chompass.ui.components.ChompassDialog
 import app.chompass.ui.components.ChompassDialogActions
+import app.chompass.ui.components.contentMaxWidth
 import app.chompass.ui.navigation.BottomNavScrollPadding
 import app.chompass.ui.theme.dayTypeColor
 import androidx.compose.ui.graphics.Color
@@ -136,7 +137,7 @@ fun ProgressScreen(container: AppContainer, onOpenCustomize: (() -> Unit)? = nul
 
     Scaffold(containerColor = MaterialTheme.colorScheme.background) { padding ->
         LazyColumn(
-            modifier = Modifier.fillMaxSize().padding(padding),
+            modifier = Modifier.contentMaxWidth().padding(padding),
             contentPadding = androidx.compose.foundation.layout.PaddingValues(
                 start = 16.dp,
                 top = 16.dp,
@@ -434,7 +435,7 @@ internal fun ProgressScreenPreviewContent(
 
     Scaffold(containerColor = MaterialTheme.colorScheme.background) { padding ->
         LazyColumn(
-            modifier = Modifier.fillMaxSize().padding(padding),
+            modifier = Modifier.contentMaxWidth().padding(padding),
             contentPadding = androidx.compose.foundation.layout.PaddingValues(
                 start = 16.dp,
                 top = 16.dp,
