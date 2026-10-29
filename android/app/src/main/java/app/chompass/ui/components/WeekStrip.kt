@@ -1,5 +1,8 @@
 package app.chompass.ui.components
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
@@ -21,11 +24,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -38,6 +44,7 @@ import app.chompass.R
 import app.chompass.models.LocaleFormat
 import app.chompass.models.WeekStartDay
 import app.chompass.ui.theme.AppColors
+import app.chompass.ui.theme.AppMotion
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -192,15 +199,19 @@ private fun DayTile(
     val narrowLabel = narrowDay(date.dayOfWeek)
     val baseA11y = "$narrowLabel ${date.dayOfMonth}"
     val fullA11y = stringResource(R.string.a11y_week_strip_day, baseA11y, markerA11y ?: "")
+    val interactionSource = remember { MutableInteractionSource() }
     Column(
         modifier = modifier
+            // Draw-only sink while held (AppMotion press recipe); layout and
+            // touch target stay full-size.
+            .pressScale(interactionSource)
             // selectable exposes the selected state + Tab role to TalkBack
             // (UI-audit 2.7); indication stays null to keep the iOS look.
             .selectable(
                 selected = isSelected,
                 onClick = onTap,
                 role = Role.Tab,
-                interactionSource = remember { MutableInteractionSource() },
+                interactionSource = interactionSource,
                 indication = null,
             )
             .then(
@@ -231,15 +242,35 @@ private fun DayTile(
         // .frame(width: 36, height: 36)
         // .background { if isSel Circle.fill(gradient).shadow(...)
         //               else if isToday Circle.strokeBorder(Calorie*0.35, 1.5) }
+        // Selection circle: fades/springs in on selection instead of snapping.
+        // The circle layer scales behind the number (draw-only), so the tile's
+        // resting look is unchanged — an unselected circle is transparent at
+        // any scale. Morphe-style pop per docs/local/MORPHE_DESIGN_ANALYSIS.md
+        // §1.2–§1.3 (parameters reimplemented; reference is GPL-3.0).
+        val circleColor by animateColorAsState(
+            targetValue = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent,
+            animationSpec = tween(AppMotion.TweenDefaultMs, easing = AppMotion.EasingStandard),
+            label = "dayTileCircleColor",
+        )
+        val circleScale = animateFloatAsState(
+            targetValue = if (isSelected) 1f else 0.8f,
+            animationSpec = AppMotion.spatialSpring(),
+            label = "dayTileCircleScale",
+        )
+        val numberColor by animateColorAsState(
+            targetValue = when {
+                isSelected -> MaterialTheme.colorScheme.onPrimary
+                isToday -> AppColors.Calorie
+                else -> MaterialTheme.colorScheme.onSurface
+            },
+            animationSpec = tween(AppMotion.TweenDefaultMs, easing = AppMotion.EasingStandard),
+            label = "dayTileNumberColor",
+        )
         Box(
             modifier = Modifier
                 .size(36.dp)
                 .let {
-                    if (isSelected) {
-                        it
-                            .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.primary)
-                    } else if (isToday) {
+                    if (!isSelected && isToday) {
                         it
                             .clip(CircleShape)
                             .border(1.5.dp, AppColors.Calorie.copy(alpha = 0.35f), CircleShape)
@@ -247,15 +278,24 @@ private fun DayTile(
                 },
             contentAlignment = Alignment.Center
         ) {
+            Box(
+                modifier = Modifier
+                    .size(36.dp)
+                    // Scale state read in the layer block: selection pops
+                    // without recomposing the tile per frame.
+                    .graphicsLayer {
+                        val s = circleScale.value
+                        scaleX = s
+                        scaleY = s
+                    }
+                    .clip(CircleShape)
+                    .background(circleColor),
+            )
             Text(
                 date.dayOfMonth.toString(),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = when {
-                    isSelected -> MaterialTheme.colorScheme.onPrimary
-                    isToday -> AppColors.Calorie
-                    else -> MaterialTheme.colorScheme.onSurface
-                },
+                color = numberColor,
                 modifier = if (untracked) Modifier.alpha(0.45f) else Modifier,
             )
         }

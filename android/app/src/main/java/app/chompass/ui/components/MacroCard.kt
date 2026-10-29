@@ -1,7 +1,6 @@
 package app.chompass.ui.components
 
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -41,6 +40,7 @@ import app.chompass.models.HomeMacroCardLayout
 import app.chompass.models.MacroValueFormatter
 import app.chompass.ui.navigation.LocalEnergyUnit
 import app.chompass.ui.navigation.LocalLaunchFillEpoch
+import app.chompass.ui.theme.AppMotion
 
 /**
  * A single macro shown as a vertical fill bar (rounded tube that fills bottom-up toward the goal),
@@ -214,7 +214,7 @@ private fun rememberMacroAnimation(progress: Float, freezeProgress: Boolean): Fl
     val animatable = remember { Animatable(if (lastEpoch == epoch) progress else 0f) }
     LaunchedEffect(epoch, progress) {
         if (freezeProgress) return@LaunchedEffect
-        val spec = spring<Float>(dampingRatio = 0.85f, stiffness = 55f)
+        val spec = AppMotion.fillSpring<Float>()
         if (lastEpoch != epoch) {
             animatable.snapTo(0f)
             animatable.animateTo(progress, spec)

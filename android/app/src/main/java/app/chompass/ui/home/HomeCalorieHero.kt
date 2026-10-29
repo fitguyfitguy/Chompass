@@ -2,7 +2,6 @@ package app.chompass.ui.home
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationVector1D
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.material3.HorizontalDivider
@@ -79,6 +78,7 @@ import app.chompass.ui.components.energyUnitLabel
 import app.chompass.ui.navigation.LocalLaunchFillEpoch
 import app.chompass.ui.navigation.LocalEnergyUnit
 import app.chompass.ui.theme.AppColors
+import app.chompass.ui.theme.AppMotion
 import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.ui.theme.success
 
@@ -279,7 +279,7 @@ private fun rememberArcAnimation(
             animatedRatio.snapTo(ratio)
             return@LaunchedEffect
         }
-        val spec = spring<Float>(dampingRatio = 0.85f, stiffness = 55f)
+        val spec = AppMotion.fillSpring<Float>()
         if (lastEpoch != epoch) {
             animatedRatio.snapTo(0f)
             animatedRatio.animateTo(ratio, spec)

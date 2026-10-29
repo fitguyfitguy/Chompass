@@ -1,0 +1,37 @@
+package app.chompass.ui.components
+
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.interaction.InteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
+import app.chompass.ui.theme.AppMotion
+
+/**
+ * Sinks the node to [pressedScale] while [interactionSource] reports a press,
+ * springing back with [AppMotion.pressSpring] on release.
+ *
+ * The animated value is read inside the `graphicsLayer` block, so a held press
+ * repaints the layer instead of recomposing the composition every frame.
+ * Draw-only: layout and touch target stay at full size.
+ */
+@Composable
+fun Modifier.pressScale(
+    interactionSource: InteractionSource,
+    enabled: Boolean = true,
+    pressedScale: Float = 0.97f,
+): Modifier {
+    val pressed by interactionSource.collectIsPressedAsState()
+    val scale = animateFloatAsState(
+        targetValue = if (enabled && pressed) pressedScale else 1f,
+        animationSpec = AppMotion.pressSpring(),
+        label = "pressScale",
+    )
+    return graphicsLayer {
+        val s = scale.value
+        scaleX = s
+        scaleY = s
+    }
+}
