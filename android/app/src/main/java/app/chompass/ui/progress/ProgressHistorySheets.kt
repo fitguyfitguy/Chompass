@@ -34,9 +34,6 @@ import app.chompass.models.LocaleFormat
 import app.chompass.models.BodyFatEntry
 import app.chompass.models.WeightEntry
 import app.chompass.ui.components.ChompassSurface
-import app.chompass.ui.theme.AppColors
-import app.chompass.ui.theme.AppRadii
-import app.chompass.ui.theme.AppTextOpacity
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun AllWeightHistorySheet(
@@ -57,12 +54,12 @@ internal fun AllWeightHistorySheet(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(stringResource(R.string.progress_weight_history), fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
                 Spacer(Modifier.weight(1f))
-                TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_done), color = AppColors.Calorie) }
+                TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_done), color = MaterialTheme.colorScheme.primary) }
             }
             Spacer(Modifier.height(12.dp))
             ChompassSurface(
                 modifier = Modifier.fillMaxWidth(),
-                cornerRadius = AppRadii.SectionCard,
+                cornerRadius = 16.dp,
                 padding = 0.dp
             ) {
                 LazyColumn(
@@ -79,13 +76,13 @@ internal fun AllWeightHistorySheet(
                             Column(Modifier.weight(1f)) {
                                 Text(formatWeight(entry.weightKg, useMetric), fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
                                 Spacer(Modifier.height(2.dp))
-                                Text(fmt.format(entry.date), fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted))
+                                Text(fmt.format(entry.date), fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
                             IconButton(onClick = { onDelete(entry.id) }) {
                                 Icon(
                                     Icons.Filled.Delete,
                                     contentDescription = stringResource(R.string.action_delete),
-                                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Faint),
+                                    tint = MaterialTheme.colorScheme.outline,
                                     modifier = Modifier.size(18.dp)
                                 )
                             }
@@ -118,12 +115,12 @@ internal fun AllBodyFatHistorySheet(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(stringResource(R.string.progress_body_fat_history), fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
                 Spacer(Modifier.weight(1f))
-                TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_done), color = AppColors.Calorie) }
+                TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_done), color = MaterialTheme.colorScheme.primary) }
             }
             Spacer(Modifier.height(12.dp))
             ChompassSurface(
                 modifier = Modifier.fillMaxWidth(),
-                cornerRadius = AppRadii.SectionCard,
+                cornerRadius = 16.dp,
                 padding = 0.dp
             ) {
                 LazyColumn(
@@ -140,13 +137,13 @@ internal fun AllBodyFatHistorySheet(
                             Column(Modifier.weight(1f)) {
                                 Text("${LocaleFormat.decimal(entry.bodyFatPercent, 1)}${stringResource(R.string.unit_percent)}", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
                                 Spacer(Modifier.height(2.dp))
-                                Text(fmt.format(entry.date), fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted))
+                                Text(fmt.format(entry.date), fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
                             IconButton(onClick = { onDelete(entry.id) }) {
                                 Icon(
                                     Icons.Filled.Delete,
                                     contentDescription = stringResource(R.string.action_delete),
-                                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Faint),
+                                    tint = MaterialTheme.colorScheme.outline,
                                     modifier = Modifier.size(18.dp)
                                 )
                             }

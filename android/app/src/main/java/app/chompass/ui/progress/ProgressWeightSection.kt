@@ -31,7 +31,6 @@ import app.chompass.R
 import app.chompass.models.UnitFormat
 import app.chompass.ui.components.ChompassSurface
 import app.chompass.ui.components.ChompassIconBubble
-import app.chompass.ui.theme.AppTextOpacity
 
 internal fun formatWeight(kg: Double, useMetric: Boolean): String =
     UnitFormat.weight(kg, useMetric)
@@ -77,7 +76,7 @@ internal fun LegendSwatch(
                 )
             }
         }
-        Text(label, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle))
+        Text(label, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
 
@@ -102,13 +101,13 @@ internal fun WeightHistoryLink(count: Int, onClick: () -> Unit) {
                 Text(
                     stringResource(R.string.progress_history_count_format, count),
                     fontSize = 13.sp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
             Icon(
                 Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 null,
-                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled),
+                tint = MaterialTheme.colorScheme.outline,
                 modifier = Modifier.size(18.dp)
             )
         }
@@ -136,13 +135,13 @@ internal fun BodyFatHistoryLink(count: Int, onClick: () -> Unit) {
                 Text(
                     stringResource(R.string.progress_history_count_format, count),
                     fontSize = 13.sp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
             Icon(
                 Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 null,
-                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled),
+                tint = MaterialTheme.colorScheme.outline,
                 modifier = Modifier.size(18.dp)
             )
         }

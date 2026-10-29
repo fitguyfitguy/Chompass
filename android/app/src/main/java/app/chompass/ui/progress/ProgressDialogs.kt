@@ -36,8 +36,6 @@ import app.chompass.ui.components.ChompassTextField
 import app.chompass.ui.components.MagnitudeDrafts
 import app.chompass.ui.components.SplitDecimalWheelPicker
 import app.chompass.ui.components.UnitToggle
-import app.chompass.ui.theme.AppColors
-import app.chompass.ui.theme.AppTextOpacity
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
@@ -91,14 +89,14 @@ internal fun AddWeightDialog(
             Text(
                 text = stringResource(R.string.action_advanced),
                 fontSize = 14.sp,
-                color = AppColors.Calorie,
+                color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Medium
             )
             Spacer(Modifier.weight(1f))
             Text(
                 text = if (advanced) stringResource(R.string.action_hide) else stringResource(R.string.action_show),
                 fontSize = 13.sp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle)
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
         if (advanced) {
@@ -130,7 +128,7 @@ internal fun AddWeightDialog(
             ChompassTextButton(
                 text = stringResource(R.string.action_cancel),
                 onClick = onDismiss,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Spacer(Modifier.width(8.dp))
             ChompassPrimaryButton(
@@ -185,14 +183,14 @@ internal fun AddBodyFatDialog(
             Text(
                 text = stringResource(R.string.action_advanced),
                 fontSize = 14.sp,
-                color = AppColors.Calorie,
+                color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Medium
             )
             Spacer(Modifier.weight(1f))
             Text(
                 text = if (advanced) stringResource(R.string.action_hide) else stringResource(R.string.action_show),
                 fontSize = 13.sp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle)
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
         if (advanced) {
@@ -224,7 +222,7 @@ internal fun AddBodyFatDialog(
             ChompassTextButton(
                 text = stringResource(R.string.action_cancel),
                 onClick = onDismiss,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Spacer(Modifier.width(8.dp))
             ChompassPrimaryButton(
@@ -320,7 +318,7 @@ internal fun AddBodyCompositionDialog(
             ChompassTextButton(
                 text = stringResource(R.string.action_cancel),
                 onClick = onDismiss,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Spacer(Modifier.width(8.dp))
             ChompassPrimaryButton(

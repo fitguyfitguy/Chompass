@@ -28,8 +28,6 @@ import app.chompass.models.PhaseIntent
 import app.chompass.models.UnitFormat
 import app.chompass.ui.components.energyUnitLabel
 import app.chompass.ui.navigation.LocalEnergyUnit
-import app.chompass.ui.theme.AppColors
-import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.ui.theme.dayTypeColor
 import app.chompass.ui.theme.success
 
@@ -74,7 +72,7 @@ internal fun ProgressAdherenceSection(
                     AdherenceFact(
                         text = stringResource(R.string.progress_adherence_net_format, net),
                         color = if (adherence.avgDelta != null && adherence.avgDelta < 0) {
-                            AppColors.Calorie
+                            MaterialTheme.colorScheme.primary
                         } else {
                             MaterialTheme.colorScheme.onSurface
                         },
@@ -96,7 +94,7 @@ internal fun ProgressAdherenceSection(
                 Text(
                     stringResource(R.string.progress_adherence_by_day_type),
                     fontSize = 13.sp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 adherence.byDayType.forEach { row ->
                     // Current plan wins for label/color consistency; the
@@ -120,7 +118,7 @@ internal fun ProgressAdherenceSection(
                 Text(
                     stringResource(R.string.progress_adherence_by_phase),
                     fontSize = 13.sp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 adherence.byPhase.filter { it.overlapDays > 0 }.forEach { row ->
                     PhaseAdherenceRow(
@@ -157,7 +155,7 @@ private fun DayTypeAdherenceRow(color: Color, name: String, detail: String) {
         Text(
             detail,
             fontSize = 13.sp,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
 }
@@ -201,7 +199,7 @@ private fun PhaseAdherenceRow(
         Text(
             detail,
             fontSize = 13.sp,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
 }

@@ -33,8 +33,6 @@ import app.chompass.models.BodyCompositionEntry
 import app.chompass.models.BodyCompositionEntry.CompositionMetric
 import app.chompass.models.UnitFormat
 import app.chompass.models.WeightEntry
-import app.chompass.ui.theme.AppColors
-import app.chompass.ui.theme.AppTextOpacity
 
 /** How far a weigh-in may sit from a composition row and still supply the TBW% denominator. */
 internal const val TBW_WEIGHT_JOIN_MILLIS: Long = 12L * 60 * 60 * 1000
@@ -129,7 +127,7 @@ internal fun CompositionSection(
                     Icon(
                         Icons.Filled.AddCircle,
                         contentDescription = null,
-                        tint = AppColors.Calorie,
+                        tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.width(16.dp),
                     )
                     Spacer(Modifier.width(4.dp))
@@ -137,7 +135,7 @@ internal fun CompositionSection(
                         stringResource(R.string.progress_log_scale_metrics),
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Medium,
-                        color = AppColors.Calorie,
+                        color = MaterialTheme.colorScheme.primary,
                         maxLines = 1,
                     )
                 }
@@ -145,7 +143,7 @@ internal fun CompositionSection(
             Text(
                 stringResource(R.string.progress_scale_metrics_note),
                 fontSize = 11.sp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             for (metric in metrics) {
                 CompositionMetricBlock(
@@ -197,7 +195,7 @@ private fun CompositionMetricBlock(
             Text(
                 formatCompositionValue(context, metric, latest, useMetric),
                 fontSize = 14.sp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Spacer(Modifier.width(4.dp))
             CollapseChevron(expanded)
@@ -209,7 +207,7 @@ private fun CompositionMetricBlock(
                 Text(
                     stringResource(R.string.progress_scale_metrics_tbw_percent, percent),
                     fontSize = 11.sp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
         }

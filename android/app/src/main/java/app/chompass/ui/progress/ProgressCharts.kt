@@ -3,6 +3,7 @@ package app.chompass.ui.progress
 import app.chompass.models.LocaleFormat
 import app.chompass.models.EnergyFormat
 import app.chompass.R
+import app.chompass.ui.theme.AppColors
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.animation.core.Animatable
@@ -61,8 +62,6 @@ import androidx.compose.ui.unit.sp
 import app.chompass.models.BodyFatEntry
 import app.chompass.models.BodyMeasurement
 import app.chompass.models.WeightEntry
-import app.chompass.ui.theme.AppColors
-import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.ui.navigation.LocalEnergyUnit
 import java.time.DayOfWeek
 import java.time.Instant
@@ -714,7 +713,7 @@ internal fun OverlayChartCanvas(
     val untrackedSpans = rememberUntrackedSpans(model.xFromMs, model.tRange, untrackedDays)
     val bandColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f)
     val gridColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.10f)
-    val secondaryColor = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+    val secondaryColor = MaterialTheme.colorScheme.onSurfaceVariant
     val reveal = remember(model, immediate) { Animatable(if (immediate) 1f else 0f) }
     LaunchedEffect(model, immediate) {
         if (!immediate) reveal.animateTo(1f, tween(durationMillis = 450, easing = FastOutSlowInEasing))
@@ -739,7 +738,7 @@ internal fun OverlayChartCanvas(
     }
     var inspectedIndex by remember(model) { mutableStateOf<Int?>(null) }
     val textMeasurer = rememberTextMeasurer()
-    val chipBackground = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Strong)
+    val chipBackground = MaterialTheme.colorScheme.onSurface
     val chipForeground = MaterialTheme.colorScheme.surface
     val guideColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
     val spanDays = model.tRange / 86_400_000L
@@ -1010,7 +1009,7 @@ internal fun MeasurementChartCanvas(
     val bandColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f)
     val rawDotColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.75f)
     val gridColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.10f)
-    val secondaryColor = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+    val secondaryColor = MaterialTheme.colorScheme.onSurfaceVariant
     val reveal = remember(chartModel, immediate) { Animatable(if (immediate) 1f else 0f) }
     LaunchedEffect(chartModel, immediate) {
         if (!immediate) reveal.animateTo(1f, tween(durationMillis = 450, easing = FastOutSlowInEasing))
@@ -1021,7 +1020,7 @@ internal fun MeasurementChartCanvas(
 
     var inspectedPoint by remember(chartModel) { mutableStateOf<Int?>(null) }
     val textMeasurer = rememberTextMeasurer()
-    val chipBackground = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Strong)
+    val chipBackground = MaterialTheme.colorScheme.onSurface
     val chipForeground = MaterialTheme.colorScheme.surface
     val metricTitle = title
     val inspectedNow = inspectedPoint?.let { chartModel.points.getOrNull(it) }
@@ -1193,13 +1192,13 @@ internal fun CalorieBarChart(
 ) {
     val maxValue = slots.mapNotNull { it.kcal }.maxOrNull()?.coerceAtLeast(goal)?.toDouble()
         ?: goal.toDouble()
-    val barColor = AppColors.Calorie
+    val barColor = MaterialTheme.colorScheme.primary
     // Over-goal bars are flat error (no gradient — restyle D1/D10).
     val overColor = MaterialTheme.colorScheme.error.copy(alpha = 0.85f)
     val dashColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
-    val goalColor = AppColors.Calorie.copy(alpha = 0.4f)
+    val goalColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)
     val gridColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.10f)
-    val secondaryColor = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+    val secondaryColor = MaterialTheme.colorScheme.onSurfaceVariant
     val density = LocalDensity.current
     val ticks = niceAxisTicks(0.0, maxValue, count = 5)
     val yTop = ticks.last().coerceAtLeast(maxValue)
@@ -1217,7 +1216,7 @@ internal fun CalorieBarChart(
 
     var inspectedBar by remember(slots) { mutableStateOf<Int?>(null) }
     val textMeasurer = rememberTextMeasurer()
-    val chipBackground = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Strong)
+    val chipBackground = MaterialTheme.colorScheme.onSurface
     val chipForeground = MaterialTheme.colorScheme.surface
     val energyUnit = LocalEnergyUnit.current
     val inspectedTitle = stringResource(R.string.progress_calories_section)
@@ -1517,7 +1516,7 @@ internal fun ChartPlaceholder(height: Dp = 180.dp) {
         Text(
             text = stringResource(R.string.progress_chart_loading),
             fontSize = 13.sp,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
 }

@@ -55,10 +55,7 @@ import app.chompass.ui.components.ChompassDialog
 import app.chompass.ui.components.ChompassDialogActions
 import app.chompass.ui.components.ChompassSurface
 import app.chompass.ui.navigation.BottomNavScrollPadding
-import app.chompass.ui.theme.AppColors
 import java.time.format.DateTimeFormatter
-import app.chompass.ui.theme.AppRadii
-import app.chompass.ui.theme.AppTextOpacity
 import java.util.Locale
 import app.chompass.models.UnitFormat
 
@@ -132,10 +129,10 @@ private fun BodyMeasurementsHistorySheet(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(stringResource(R.string.measurement_history), fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
                 Spacer(Modifier.weight(1f))
-                TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_done), color = AppColors.Calorie) }
+                TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_done), color = MaterialTheme.colorScheme.primary) }
             }
             Spacer(Modifier.height(12.dp))
-            ChompassSurface(modifier = Modifier.fillMaxWidth(), cornerRadius = AppRadii.SectionCard, padding = 0.dp) {
+            ChompassSurface(modifier = Modifier.fillMaxWidth(), cornerRadius = 16.dp, padding = 0.dp) {
                 LazyColumn(modifier = Modifier.fillMaxWidth().heightIn(max = 560.dp).padding(vertical = 4.dp)) {
                     items(entries, key = { it.id }) { entry ->
                         Row(
@@ -147,14 +144,14 @@ private fun BodyMeasurementsHistorySheet(
                                 Text(
                                     measurementHistorySummary(LocalContext.current, entry, gender, heightCm, useMetric),
                                     fontSize = 13.sp,
-                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                             IconButton(onClick = { onDelete(entry.id) }) {
                                 Icon(
                                     Icons.Filled.Delete,
                                     contentDescription = stringResource(R.string.action_delete),
-                                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Faint),
+                                    tint = MaterialTheme.colorScheme.outline,
                                     modifier = Modifier.size(18.dp)
                                 )
                             }
@@ -226,11 +223,11 @@ fun BodyMeasurementsScreen(container: AppContainer, onBack: () -> Unit) {
                 Text(
                     "Optional. Chompass turns these into waist-to-hip, waist-to-height, body-fat %, and frame size, and reads them when it recalculates your goals and in Coach.",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
             item {
-                ChompassSurface(modifier = Modifier.fillMaxWidth(), cornerRadius = AppRadii.SectionCard, padding = 0.dp) {
+                ChompassSurface(modifier = Modifier.fillMaxWidth(), cornerRadius = 16.dp, padding = 0.dp) {
                     Column {
                         BodyMeasurement.Site.values().forEachIndexed { index, site ->
                             Row(
@@ -241,9 +238,9 @@ fun BodyMeasurementsScreen(container: AppContainer, onBack: () -> Unit) {
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Text(stringResource(site.labelRes), modifier = Modifier.weight(1f), fontSize = 16.sp, fontWeight = FontWeight.Medium)
-                                Text(displayValue(site), fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted))
+                                Text(displayValue(site), fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                 Spacer(Modifier.width(6.dp))
-                                Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled), modifier = Modifier.size(18.dp))
+                                Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = MaterialTheme.colorScheme.outline, modifier = Modifier.size(18.dp))
                             }
                             if (index != BodyMeasurement.Site.values().lastIndex) {
                                 HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f))
@@ -257,20 +254,20 @@ fun BodyMeasurementsScreen(container: AppContainer, onBack: () -> Unit) {
                 val derived = derivedMetricList(context, latest, gender, heightCm, ageYears, heightMetric)
                 if (derived.isNotEmpty()) {
                     item {
-                        ChompassSurface(modifier = Modifier.fillMaxWidth(), cornerRadius = AppRadii.SectionCard, padding = 16.dp) {
+                        ChompassSurface(modifier = Modifier.fillMaxWidth(), cornerRadius = 16.dp, padding = 16.dp) {
                             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                                Text(stringResource(R.string.label_derived), fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted))
+                                Text(stringResource(R.string.label_derived), fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                 derived.forEach { (label, value) ->
                                     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                                         Text(label, modifier = Modifier.weight(1f), fontSize = 14.sp)
-                                        Text(value, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = AppColors.Calorie)
+                                        Text(value, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.primary)
                                     }
                                 }
                                 if (navyPercent != null || rfmPercent != null) {
                                     Text(
                                         stringResource(R.string.derived_tape_estimate_caption),
                                         fontSize = 12.sp,
-                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                     TextButton(
                                         onClick = {
@@ -278,14 +275,14 @@ fun BodyMeasurementsScreen(container: AppContainer, onBack: () -> Unit) {
                                             showUseAsBodyFat = true
                                         }
                                     ) {
-                                        Text(stringResource(R.string.action_use_as_body_fat), color = AppColors.Calorie)
+                                        Text(stringResource(R.string.action_use_as_body_fat), color = MaterialTheme.colorScheme.primary)
                                     }
                                 }
                                 if (latest.estimatedSkeletalMuscleMassKg(gender, ageYears, heightCm) != null) {
                                     Text(
                                         stringResource(R.string.progress_estimated_smm_note),
                                         fontSize = 12.sp,
-                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 }
                             }
@@ -297,7 +294,7 @@ fun BodyMeasurementsScreen(container: AppContainer, onBack: () -> Unit) {
                         Text(
                             stringResource(R.string.body_metrics_height_hint),
                             fontSize = 13.sp,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
                         )
                     }
@@ -311,9 +308,9 @@ fun BodyMeasurementsScreen(container: AppContainer, onBack: () -> Unit) {
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(stringResource(R.string.measurement_history), modifier = Modifier.weight(1f), fontSize = 16.sp, fontWeight = FontWeight.Medium)
-                                Text("${entries.size}", fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted))
+                                Text("${entries.size}", fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                 Spacer(Modifier.width(6.dp))
-                                Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled), modifier = Modifier.size(18.dp))
+                                Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = MaterialTheme.colorScheme.outline, modifier = Modifier.size(18.dp))
                             }
                         }
                     }
