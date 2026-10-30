@@ -118,6 +118,9 @@ fun ChompassTheme(
     themeColor: AppThemeColor = AppThemeColor.SYSTEM,
     useDynamicColor: Boolean = true,
     glassBlur: Boolean = true,
+    ambientMotion: Boolean = true,
+    glassStrength: GlassStrength = GlassStrength.DEFAULT,
+    ambientIntensity: AmbientIntensity = AmbientIntensity.DEFAULT,
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current
@@ -182,7 +185,14 @@ fun ChompassTheme(
         typography = Typography,
         shapes = Shapes,
     ) {
-        CompositionLocalProvider(LocalChompassTraits provides ChompassTraits(glassBlur = glassBlur)) {
+        CompositionLocalProvider(
+            LocalChompassTraits provides ChompassTraits(
+                glassBlur = glassBlur,
+                ambientMotion = ambientMotion,
+                glassStrength = glassStrength,
+                ambientIntensity = ambientIntensity,
+            )
+        ) {
             content()
         }
     }

@@ -1470,6 +1470,16 @@ bilirsən?</string>
     <string name="settings_system_date_time_pickers_subtitle">Yeməyi redaktə edərkən telefonun tarix və saat pəncərələrindən istifadə et.</string>
     <string name="settings_glass_blur">Donuşdurulmuş şüşə</string>
     <string name="settings_glass_blur_subtitle">Üzən panellərin arxasındakı məzmunu bulanıqlaşdırır (məsələn, yemək əlavə etmə nəticələri başlığı).</string>
+    <string name="settings_ambient_motion">Hərəkətli fon</string>
+    <string name="settings_ambient_motion_subtitle">Hər ekranın arxasında yumşaq sürüşən rəng sahələri. Batareyaya qənaət rejimində və animasiyalar azaldılanda dayanır.</string>
+    <string name="settings_frost_strength">Donuşdurma gücü</string>
+    <string name="frost_strength_light">Yüngül</string>
+    <string name="frost_strength_medium">Orta</string>
+    <string name="frost_strength_strong">Güclü</string>
+    <string name="settings_ambient_intensity">Fon intensivliyi</string>
+    <string name="ambient_intensity_subtle">Zərif</string>
+    <string name="ambient_intensity_balanced">Tarazlı</string>
+    <string name="ambient_intensity_vivid">Canlı</string>
     <string name="add_food_log_time">Qeyd vaxtı</string>
     <string name="add_food_log_time_now">İndi</string>
     <string name="cd_clear_log_time">Cari vaxtı istifadə et</string>

@@ -1470,6 +1470,16 @@
     <string name="settings_system_date_time_pickers_subtitle">食事を編集するとき、端末の日付・時刻ダイアログを使う。</string>
     <string name="settings_glass_blur">すりガラス効果</string>
     <string name="settings_glass_blur_subtitle">食事を追加の結果ヘッダーなど、浮かぶパネルの背後のコンテンツをぼかします。</string>
+    <string name="settings_ambient_motion">アンビエント背景</string>
+    <string name="settings_ambient_motion_subtitle">すべての画面の背後で色がゆっくりと漂います。省電力モードやアニメーションが無効なときは一時停止します。</string>
+    <string name="settings_frost_strength">すりガラスの強さ</string>
+    <string name="frost_strength_light">弱め</string>
+    <string name="frost_strength_medium">標準</string>
+    <string name="frost_strength_strong">強め</string>
+    <string name="settings_ambient_intensity">背景の強さ</string>
+    <string name="ambient_intensity_subtle">控えめ</string>
+    <string name="ambient_intensity_balanced">バランス</string>
+    <string name="ambient_intensity_vivid">鮮やか</string>
     <string name="add_food_log_time">記録時刻</string>
     <string name="add_food_log_time_now">現在</string>
     <string name="cd_clear_log_time">現在時刻を使う</string>

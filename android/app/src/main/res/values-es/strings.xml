@@ -1536,6 +1536,16 @@
     <string name="settings_system_date_time_pickers_subtitle">Usa los diálogos de fecha y hora del teléfono al editar una comida.</string>
     <string name="settings_glass_blur">Vidrio esmerilado</string>
     <string name="settings_glass_blur_subtitle">Desenfoca el contenido detrás de los paneles flotantes, como el encabezado de resultados al añadir comida.</string>
+    <string name="settings_ambient_motion">Fondo ambiental</string>
+    <string name="settings_ambient_motion_subtitle">Campos de color suaves que flotan detrás de cada pantalla. Se pausa con el ahorro de batería o cuando las animaciones están reducidas.</string>
+    <string name="settings_frost_strength">Intensidad del esmerilado</string>
+    <string name="frost_strength_light">Suave</string>
+    <string name="frost_strength_medium">Media</string>
+    <string name="frost_strength_strong">Fuerte</string>
+    <string name="settings_ambient_intensity">Intensidad ambiental</string>
+    <string name="ambient_intensity_subtle">Sutil</string>
+    <string name="ambient_intensity_balanced">Equilibrado</string>
+    <string name="ambient_intensity_vivid">Vívido</string>
     <string name="add_food_log_time">Hora del registro</string>
     <string name="add_food_log_time_now">Ahora</string>
     <string name="cd_clear_log_time">Usar la hora actual</string>

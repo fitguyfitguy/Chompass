@@ -1483,6 +1483,16 @@
     <string name="settings_system_date_time_pickers_subtitle">استخدم نوافذ التاريخ والوقت في الهاتف عند تعديل وجبة.</string>
     <string name="settings_glass_blur">زجاج مصنفر</string>
     <string name="settings_glass_blur_subtitle">طمس المحتوى خلف اللوحات العائمة، مثل ترويسة نتائج إضافة الطعام.</string>
+    <string name="settings_ambient_motion">خلفية محيطية</string>
+    <string name="settings_ambient_motion_subtitle">حقول لونية ناعمة تنساب خلف كل شاشة. تتوقف في وضع توفير الطاقة أو عند تقليل الحركات.</string>
+    <string name="settings_frost_strength">قوة التزجيج المصنفر</string>
+    <string name="frost_strength_light">خفيف</string>
+    <string name="frost_strength_medium">متوسط</string>
+    <string name="frost_strength_strong">قوي</string>
+    <string name="settings_ambient_intensity">شدة الخلفية</string>
+    <string name="ambient_intensity_subtle">خفيف</string>
+    <string name="ambient_intensity_balanced">متوازن</string>
+    <string name="ambient_intensity_vivid">نابض</string>
     <string name="add_food_log_time">وقت التسجيل</string>
     <string name="add_food_log_time_now">الآن</string>
     <string name="cd_clear_log_time">استخدام الوقت الحالي</string>

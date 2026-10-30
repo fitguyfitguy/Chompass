@@ -7,6 +7,8 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 
 /**
  * Nav transition specs (Morphe §1.2), consumed by `ChompassNavHost`:
@@ -59,4 +61,27 @@ object ChompassNavTransitions {
     /** Tab switch out: fast fade inside the short window; pop uses the same pair. */
     fun tabExit(): ExitTransition =
         fadeOut(tween(AppMotion.NavFadeShortMs, easing = AppMotion.EasingStandard))
+
+    /** Directional tab switch: incoming page slides in from the tap side. [delta] is the ordinal
+     *  distance between tabs (sign = direction); 0 treated as forward. */
+    fun tabEnter(delta: Int): EnterTransition {
+        val direction = if (delta >= 0) 1 else -1
+        return slideInHorizontally(tween(AppMotion.TweenNavMs, easing = AppMotion.EasingDecelerate)) { direction * it / 4 } +
+            fadeIn(tween(AppMotion.TweenNavMs, delayMillis = AppMotion.NavFadeShortMs, easing = AppMotion.EasingDecelerate))
+    }
+
+    fun tabExit(delta: Int): ExitTransition {
+        val direction = if (delta >= 0) 1 else -1
+        return slideOutHorizontally(tween(AppMotion.TweenNavMs, easing = AppMotion.EasingStandard)) { -direction * it / 4 } +
+            fadeOut(tween(AppMotion.NavFadeShortMs, easing = AppMotion.EasingStandard))
+    }
+
+    /** Wax-field pan per bottom-tab ordinal step, as a fraction of screen width. The
+     *  pages slide a quarter width per switch while the lamp moves one step of this
+     *  fraction, so it trails the content and reads as a plane behind them. */
+    const val TabParallaxStepFraction = 0.09f
+
+    /** Uniform overscan for the wax field, sized to cover the ±(n−1)/2-step pan
+     *  (four tabs → ±13.5% width) with margin, so a panned field never exposes edges. */
+    const val TabParallaxOverscan = 1.29f
 }

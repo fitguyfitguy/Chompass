@@ -1770,6 +1770,16 @@
     <string name="settings_system_date_time_pickers_subtitle">При правке приёма пищи использовать системные окна даты и времени.</string>
     <string name="settings_glass_blur">Матированное стекло</string>
     <string name="settings_glass_blur_subtitle">Размывает содержимое за плавающими панелями, например над списком результатов добавления еды.</string>
+    <string name="settings_ambient_motion">Атмосферный фон</string>
+    <string name="settings_ambient_motion_subtitle">Мягкие переливы цвета за каждым экраном. Ставится на паузу в режиме энергосбережения или при уменьшенных анимациях.</string>
+    <string name="settings_frost_strength">Сила матирования</string>
+    <string name="frost_strength_light">Слабая</string>
+    <string name="frost_strength_medium">Средняя</string>
+    <string name="frost_strength_strong">Сильная</string>
+    <string name="settings_ambient_intensity">Интенсивность фона</string>
+    <string name="ambient_intensity_subtle">Ненавязчиво</string>
+    <string name="ambient_intensity_balanced">Сбалансированно</string>
+    <string name="ambient_intensity_vivid">Ярко</string>
     <string name="add_food_log_time">Время записи</string>
     <string name="add_food_log_time_now">Сейчас</string>
     <string name="cd_clear_log_time">Использовать текущее время</string>

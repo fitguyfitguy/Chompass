@@ -53,6 +53,7 @@ import app.chompass.ui.components.LocalPinnedToolbarHeight
 import app.chompass.ui.components.ChompassTextField
 import app.chompass.ui.components.NumericWheelPicker
 import app.chompass.ui.components.rememberChompassSheetState
+import app.chompass.ui.components.glassDialogColor
 import app.chompass.ui.home.SheetReviewToolbar
 import app.chompass.ui.home.formatMg
 import app.chompass.ui.home.CaffeineMilkSection
@@ -215,6 +216,7 @@ internal fun TrackerPresetDeleteDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
+        containerColor = glassDialogColor(MaterialTheme.colorScheme.surfaceContainerHigh),
         title = { Text(stringResource(R.string.settings_tracker_preset_delete_title)) },
         text = {
             Text(

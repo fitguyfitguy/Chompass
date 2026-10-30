@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.clickable
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
@@ -42,6 +43,7 @@ import app.chompass.models.MealType
 import app.chompass.models.UserProfile
 import app.chompass.ui.components.rememberChompassSheetState
 import app.chompass.ui.components.ChompassBottomSheet
+import app.chompass.ui.components.glassDialogColor
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -227,6 +229,9 @@ fun ExportDiarySheet(
         val dpState = rememberDatePickerState(initialSelectedDateMillis = initial)
         DatePickerDialog(
             onDismissRequest = { picking = null },
+            colors = DatePickerDefaults.colors(
+                containerColor = glassDialogColor(MaterialTheme.colorScheme.surfaceContainerHigh),
+            ),
             confirmButton = {
                 TextButton(onClick = {
                     dpState.selectedDateMillis?.let { millis ->

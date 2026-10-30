@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import app.chompass.R
 import app.chompass.ui.components.ChompassTextButton
 import app.chompass.ui.components.energyText
+import app.chompass.ui.components.glassDialogColor
 /**
  * Wheel-picker sheet for a single macro / calorie target. Mirrors iOS
  * NutritionPickerSheet exactly: optional title, wheel picker stepped at the
@@ -165,6 +166,7 @@ fun NutritionPickerSheet(
         val highAmount = confirmAbove != null && selected > confirmAbove
         AlertDialog(
             onDismissRequest = { pendingConfirm = false },
+            containerColor = glassDialogColor(MaterialTheme.colorScheme.surfaceContainerHigh),
             title = {
                 Text(
                     when {

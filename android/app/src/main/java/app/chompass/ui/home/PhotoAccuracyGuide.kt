@@ -17,6 +17,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import app.chompass.ui.components.glassDialogColor
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -133,6 +134,7 @@ fun PhotoAccuracyInfoButton(
 fun PhotoAccuracyGuideDialog(onDismiss: () -> Unit) {
     AlertDialog(
         onDismissRequest = onDismiss,
+        containerColor = glassDialogColor(MaterialTheme.colorScheme.surfaceContainerHigh),
         title = { Text(stringResource(R.string.photo_accuracy_guide_title)) },
         text = {
             Text(

@@ -1433,6 +1433,16 @@
     <string name="settings_system_date_time_pickers_subtitle">Usa i dialoghi data e ora del telefono quando modifichi un pasto.</string>
     <string name="settings_glass_blur">Vetro smerigliato</string>
     <string name="settings_glass_blur_subtitle">Sfoca il contenuto dietro ai pannelli mobili, come l’intestazione dei risultati quando aggiungi un cibo.</string>
+    <string name="settings_ambient_motion">Sfondo ambientale</string>
+    <string name="settings_ambient_motion_subtitle">Campi di colore morbidi che fluttuano dietro ogni schermata. Si mette in pausa con il risparmio energetico o quando le animazioni sono ridotte.</string>
+    <string name="settings_frost_strength">Intensità della smerigliatura</string>
+    <string name="frost_strength_light">Leggera</string>
+    <string name="frost_strength_medium">Media</string>
+    <string name="frost_strength_strong">Forte</string>
+    <string name="settings_ambient_intensity">Intensità ambientale</string>
+    <string name="ambient_intensity_subtle">Tenue</string>
+    <string name="ambient_intensity_balanced">Equilibrato</string>
+    <string name="ambient_intensity_vivid">Vivace</string>
     <string name="add_food_log_time">Ora del registro</string>
     <string name="add_food_log_time_now">Adesso</string>
     <string name="cd_clear_log_time">Usa l\'ora attuale</string>

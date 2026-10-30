@@ -119,6 +119,25 @@ internal suspend fun PreferencesStore.setGlassBlurEnabledImpl(v: Boolean) {
     dataStore.edit { it[Keys.GLASS_BLUR_ENABLED] = v }
 }
 
+    /** Ambient animated background behind every screen (Morphe traits); default ON. */
+internal val PreferencesStore.ambientMotionEnabledImpl: Flow<Boolean>
+    get() = dataStore.data.map { it[Keys.AMBIENT_MOTION_ENABLED] ?: true }
+internal suspend fun PreferencesStore.setAmbientMotionEnabledImpl(v: Boolean) {
+    dataStore.edit { it[Keys.AMBIENT_MOTION_ENABLED] = v }
+}
+
+internal val PreferencesStore.ambientIntensityImpl: Flow<String>
+    get() = dataStore.data.map { it[Keys.AMBIENT_INTENSITY] ?: "" }
+internal suspend fun PreferencesStore.setAmbientIntensityImpl(v: String) {
+    dataStore.edit { it[Keys.AMBIENT_INTENSITY] = v }
+}
+
+internal val PreferencesStore.glassStrengthImpl: Flow<String>
+    get() = dataStore.data.map { it[Keys.GLASS_STRENGTH] ?: "" }
+internal suspend fun PreferencesStore.setGlassStrengthImpl(v: String) {
+    dataStore.edit { it[Keys.GLASS_STRENGTH] = v }
+}
+
     /** false = Sunday, true = Monday (default). Kept for backup/legacy; prefer [weekStartDayImpl]. */
 internal val PreferencesStore.weekStartsOnMondayImpl: Flow<Boolean> get() =
     weekStartDayImpl.map { it == app.chompass.models.WeekStartDay.MONDAY }

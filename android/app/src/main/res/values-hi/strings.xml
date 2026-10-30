@@ -1471,6 +1471,16 @@
     <string name="settings_system_date_time_pickers_subtitle">भोजन संपादित करते समय फ़ोन के तारीख और समय संवाद इस्तेमाल करें।</string>
     <string name="settings_glass_blur">फ्रॉस्टेड ग्लास</string>
     <string name="settings_glass_blur_subtitle">तैरते पैनलों के पीछे की सामग्री को धुंधला करता है, जैसे भोजन जोड़ें परिणाम शीर्षक।</string>
+    <string name="settings_ambient_motion">एम्बिएंट बैकग्राउंड</string>
+    <string name="settings_ambient_motion_subtitle">हर स्क्रीन के पीछे धीरे-धीरे बहते रंगीन क्षेत्र। बैटरी सेवर या कम एनिमेशन पर रुक जाता है।</string>
+    <string name="settings_frost_strength">फ्रॉस्ट तीव्रता</string>
+    <string name="frost_strength_light">हल्का</string>
+    <string name="frost_strength_medium">मध्यम</string>
+    <string name="frost_strength_strong">मजबूत</string>
+    <string name="settings_ambient_intensity">एम्बिएंट तीव्रता</string>
+    <string name="ambient_intensity_subtle">सूक्ष्म</string>
+    <string name="ambient_intensity_balanced">संतुलित</string>
+    <string name="ambient_intensity_vivid">जीवंत</string>
     <string name="add_food_log_time">लॉग समय</string>
     <string name="add_food_log_time_now">अभी</string>
     <string name="cd_clear_log_time">अभी का समय इस्तेमाल करें</string>

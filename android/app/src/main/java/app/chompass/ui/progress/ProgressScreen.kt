@@ -1,7 +1,6 @@
 package app.chompass.ui.progress
 
 import androidx.annotation.StringRes
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,7 +26,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -42,9 +40,9 @@ import app.chompass.models.BodyMeasurement
 import app.chompass.services.health.DailyActivity
 import app.chompass.ui.components.ChompassDialog
 import app.chompass.ui.components.ChompassDialogActions
-import app.chompass.ui.components.LocalBottomBarHaze
-import app.chompass.ui.components.bottomBarHazeSource
+import app.chompass.ui.components.LocalBackdropHaze
 import app.chompass.ui.components.contentMaxWidth
+import app.chompass.ui.components.hazeGlassFill
 import app.chompass.ui.navigation.BottomNavScrollPadding
 import app.chompass.ui.theme.dayTypeColor
 import androidx.compose.ui.graphics.Color
@@ -136,9 +134,9 @@ fun ProgressScreen(container: AppContainer, onOpenCustomize: (() -> Unit)? = nul
         { id: String -> dayTypeColor(plan?.profileById(id)?.colorKey, id) }
     }
 
-    Scaffold(containerColor = MaterialTheme.colorScheme.background) { padding ->
+    Scaffold(containerColor = Color.Transparent) { padding ->
         LazyColumn(
-            modifier = Modifier.contentMaxWidth().bottomBarHazeSource(LocalBottomBarHaze.current).padding(padding),
+            modifier = Modifier.contentMaxWidth().padding(padding),
             contentPadding = androidx.compose.foundation.layout.PaddingValues(
                 start = 16.dp,
                 top = 16.dp,
@@ -160,12 +158,15 @@ fun ProgressScreen(container: AppContainer, onOpenCustomize: (() -> Unit)? = nul
                     Box(Modifier.weight(1f)) {
                         TimeRangePicker(selected = ui.timeRange, onSelect = vm::setTimeRange)
                     }
-                    // Plain Box: ChompassSurface's inner Box is fillMaxWidth,
-                    // which in a Row eats all width and zeroes the chips.
+                    // Plain Box: a fillMaxWidth card wrapper in a Row eats all
+                    // width and zeroes the chips.
                     Box(
                         modifier = Modifier
-                            .clip(RoundedCornerShape(14.dp))
-                            .background(MaterialTheme.colorScheme.surfaceContainerLow)
+                            .hazeGlassFill(
+                                MaterialTheme.colorScheme.surfaceContainerLow,
+                                RoundedCornerShape(14.dp),
+                                LocalBackdropHaze.current,
+                            )
                             .clickable(
                                 enabled = onOpenCustomize != null,
                                 role = Role.Button,
@@ -434,7 +435,7 @@ internal fun ProgressScreenPreviewContent(
         { id: String -> dayTypeColor(plan?.profileById(id)?.colorKey, id) }
     }
 
-    Scaffold(containerColor = MaterialTheme.colorScheme.background) { padding ->
+    Scaffold(containerColor = Color.Transparent) { padding ->
         LazyColumn(
             modifier = Modifier.contentMaxWidth().padding(padding),
             contentPadding = androidx.compose.foundation.layout.PaddingValues(

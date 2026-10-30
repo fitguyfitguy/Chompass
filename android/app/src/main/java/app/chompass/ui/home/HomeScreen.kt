@@ -111,8 +111,6 @@ import app.chompass.services.grounding.GroundedEntryFeature
 import app.chompass.ui.components.ChompassDialog
 import app.chompass.ui.components.ChompassDialogActions
 import app.chompass.ui.components.ChompassSnackbarHost
-import app.chompass.ui.components.LocalBottomBarHaze
-import app.chompass.ui.components.bottomBarHazeSource
 import app.chompass.ui.components.contentMaxWidth
 import app.chompass.ui.settings.RecalcResultSheet
 import app.chompass.ui.components.ChompassSurface
@@ -517,7 +515,7 @@ fun HomeScreen(
     // No topBar: the empty TopAppBar used to act as the status-bar spacer, but the
     // ad strip above this screen (TabWithBanner) now owns that inset.
     Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
+        containerColor = Color.Transparent,
         snackbarHost = {
             // Custom docked bottom nav overlays the Scaffold; lift the host so
             // snackbars (delete-undo, paste confirmation) are not hidden behind it.
@@ -530,8 +528,7 @@ fun HomeScreen(
         Box(Modifier.fillMaxSize().padding(padding)) {
         LazyColumn(
             modifier = Modifier
-                .contentMaxWidth()
-                .bottomBarHazeSource(LocalBottomBarHaze.current),
+                .contentMaxWidth(),
             contentPadding = androidx.compose.foundation.layout.PaddingValues(
                 top = if (inSelectionMode) 72.dp else 8.dp,
                 bottom = BottomNavScrollPadding
@@ -2307,7 +2304,7 @@ internal fun HomeScreenPreviewContent(
         foodLogMealGroups(ui.todayEntries, ui.foodLogSortOrder)
     }
 
-    Scaffold(containerColor = MaterialTheme.colorScheme.background) { padding ->
+    Scaffold(containerColor = Color.Transparent) { padding ->
         Box(Modifier.fillMaxSize().padding(padding)) {
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),

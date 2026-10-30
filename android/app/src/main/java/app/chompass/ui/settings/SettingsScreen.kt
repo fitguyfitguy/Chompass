@@ -48,6 +48,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -60,8 +61,6 @@ import app.chompass.AppContainer
 import app.chompass.R
 import app.chompass.ui.components.ChompassSurface
 import app.chompass.ui.components.ChompassIconBubble
-import app.chompass.ui.components.LocalBottomBarHaze
-import app.chompass.ui.components.bottomBarHazeSource
 import app.chompass.ui.navigation.BottomNavScrollPadding
 import app.chompass.ui.navigation.ChompassRoutes
 @Composable
@@ -70,13 +69,12 @@ fun SettingsScreen(container: AppContainer, nav: NavHostController) {
     val ui by vm.ui.collectAsState()
     var query by rememberSaveable { mutableStateOf("") }
 
-    Scaffold(containerColor = MaterialTheme.colorScheme.background) { padding ->
+    Scaffold(containerColor = Color.Transparent) { padding ->
         Column(
             Modifier
                 .fillMaxSize()
                 .padding(padding)
                 .verticalScroll(rememberScrollState())
-                .bottomBarHazeSource(LocalBottomBarHaze.current)
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {

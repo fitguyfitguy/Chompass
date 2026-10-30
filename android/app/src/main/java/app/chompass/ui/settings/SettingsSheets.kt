@@ -87,6 +87,7 @@ import app.chompass.services.KetoCarbRecommendationService
 import app.chompass.ui.components.DecimalWheelPicker
 import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.components.NumericWheelPicker
+import app.chompass.ui.components.glassDialogColor
 import app.chompass.ui.home.FoodLogSortOrder
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppThemeColor
@@ -179,6 +180,7 @@ internal fun SettingsSheets(
     if (confirmDiscardMeals) {
         AlertDialog(
             onDismissRequest = { confirmDiscardMeals = false },
+            containerColor = glassDialogColor(MaterialTheme.colorScheme.surfaceContainerHigh),
             title = { Text(stringResource(R.string.settings_meals_unsaved_title)) },
             text = { Text(stringResource(R.string.settings_meals_unsaved_body)) },
             confirmButton = {

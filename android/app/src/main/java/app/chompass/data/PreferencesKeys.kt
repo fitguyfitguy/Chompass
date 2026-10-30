@@ -180,6 +180,10 @@ internal object Keys {
         /** Frosted-glass blur behind floating panels (Morphe traits); default ON.
          *  Key survives from the iOS era, so stored `true` simply means enabled. */
         val GLASS_BLUR_ENABLED = booleanPreferencesKey("glassBlurEnabled")
+        /** Ambient animated background behind every screen (Morphe traits); default ON. */
+        val AMBIENT_MOTION_ENABLED = booleanPreferencesKey("ambientMotionEnabled")
+        val AMBIENT_INTENSITY = stringPreferencesKey("ambientIntensity")
+        val GLASS_STRENGTH = stringPreferencesKey("glassStrength")
         /** When ON the launcher icon stays the brand teal and never swaps activity aliases. */
         val FIXED_LAUNCHER_ICON = booleanPreferencesKey("fixedLauncherIcon")
         /** Codeberg #77: meal date/time uses the system pickers instead of wheels. */

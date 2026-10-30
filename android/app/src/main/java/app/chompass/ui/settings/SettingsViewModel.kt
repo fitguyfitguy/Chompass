@@ -246,6 +246,10 @@ data class SettingsUiState(
     val useSystemDateTimePickers: Boolean = false,
     /** Frosted glass behind floating panels (Morphe traits); default ON. */
     val glassBlurEnabled: Boolean = true,
+    /** Ambient animated background behind every screen; default ON. */
+    val ambientMotionEnabled: Boolean = true,
+    val ambientIntensity: app.chompass.ui.theme.AmbientIntensity = app.chompass.ui.theme.AmbientIntensity.DEFAULT,
+    val glassStrength: app.chompass.ui.theme.GlassStrength = app.chompass.ui.theme.GlassStrength.DEFAULT,
     val foodLogSortOrder: FoodLogSortOrder = FoodLogSortOrder.STANDARD,
     val weekStartsOnMonday: Boolean = true,
     val weekStartDay: app.chompass.models.WeekStartDay = app.chompass.models.WeekStartDay.MONDAY,
@@ -627,6 +631,9 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                     fixedLauncherIcon = snap.fixedLauncherIcon,
                     useSystemDateTimePickers = snap.useSystemDateTimePickers,
                     glassBlurEnabled = snap.glassBlurEnabled,
+                    ambientMotionEnabled = snap.ambientMotionEnabled,
+                    ambientIntensity = app.chompass.ui.theme.AmbientIntensity.fromStorage(snap.ambientIntensityRaw),
+                    glassStrength = app.chompass.ui.theme.GlassStrength.fromStorage(snap.glassStrengthRaw),
                     foodLogSortOrder = FoodLogSortOrder.fromStorage(snap.foodLogSortOrderRaw),
                     weekStartsOnMonday = snap.weekStartDay == app.chompass.models.WeekStartDay.MONDAY,
                     weekStartDay = snap.weekStartDay,
@@ -1050,6 +1057,21 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
     fun setGlassBlurEnabled(enabled: Boolean) = updateUiPref(
         { container.prefs.setGlassBlurEnabled(enabled) },
         { copy(glassBlurEnabled = enabled) },
+    )
+
+    fun setAmbientMotionEnabled(enabled: Boolean) = updateUiPref(
+        { container.prefs.setAmbientMotionEnabled(enabled) },
+        { copy(ambientMotionEnabled = enabled) },
+    )
+
+    fun setAmbientIntensity(intensity: app.chompass.ui.theme.AmbientIntensity) = updateUiPref(
+        { container.prefs.setAmbientIntensity(intensity.storage) },
+        { copy(ambientIntensity = intensity) },
+    )
+
+    fun setGlassStrength(strength: app.chompass.ui.theme.GlassStrength) = updateUiPref(
+        { container.prefs.setGlassStrength(strength.storage) },
+        { copy(glassStrength = strength) },
     )
 
     fun setWeekStartsOnMonday(monday: Boolean) = setWeekStartDay(
