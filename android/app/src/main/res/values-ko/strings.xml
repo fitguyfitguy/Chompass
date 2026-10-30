@@ -1470,6 +1470,16 @@
     <string name="settings_system_date_time_pickers_subtitle">식사를 편집할 때 휴대폰의 날짜와 시간 대화상자를 사용합니다.</string>
     <string name="settings_glass_blur">서리 낀 유리</string>
     <string name="settings_glass_blur_subtitle">음식 추가 결과 헤더처럼 떠 있는 패널 뒤의 콘텐츠를 흐리게 표시합니다.</string>
+    <string name="settings_ambient_motion">앰비언트 배경</string>
+    <string name="settings_ambient_motion_subtitle">모든 화면 뒤에서 부드럽게 떠다니는 색상입니다. 절전 모드나 애니메이션 축소 시 일시 중지됩니다.</string>
+    <string name="settings_frost_strength">서리 강도</string>
+    <string name="frost_strength_light">약하게</string>
+    <string name="frost_strength_medium">보통</string>
+    <string name="frost_strength_strong">강하게</string>
+    <string name="settings_ambient_intensity">배경 강도</string>
+    <string name="ambient_intensity_subtle">은은하게</string>
+    <string name="ambient_intensity_balanced">균형</string>
+    <string name="ambient_intensity_vivid">선명하게</string>
     <string name="add_food_log_time">기록 시간</string>
     <string name="add_food_log_time_now">지금</string>
     <string name="cd_clear_log_time">현재 시간 사용</string>

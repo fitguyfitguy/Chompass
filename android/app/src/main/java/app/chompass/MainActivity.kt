@@ -21,6 +21,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
+import app.chompass.ui.components.glassDialogColor
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -64,7 +65,9 @@ import app.chompass.ui.home.ImportSharedMealSheet
 import app.chompass.ui.navigation.ChompassNavHost
 import app.chompass.ui.navigation.ChompassRoutes
 import app.chompass.ui.theme.AppThemeColor
+import app.chompass.ui.theme.AmbientIntensity
 import app.chompass.ui.theme.ChompassTheme
+import app.chompass.ui.theme.GlassStrength
 import app.chompass.ui.theme.widgetAccentColors
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.Dispatchers
@@ -453,6 +456,9 @@ open class MainActivity : ComponentActivity() {
             val resolvedStartOnboarding = startOnboarding ?: return@setContent
             val appearance by container.prefs.appearanceMode.collectAsState(initial = initialAppearance)
             val glassBlur by container.prefs.glassBlurEnabled.collectAsState(initial = true)
+            val ambientMotion by container.prefs.ambientMotionEnabled.collectAsState(initial = true)
+            val ambientIntensity by container.prefs.ambientIntensity.collectAsState(initial = "")
+            val glassStrength by container.prefs.glassStrength.collectAsState(initial = "")
             val themeColorKey by container.prefs.appThemeColor.collectAsState(initial = initialThemeColorKey)
             val themeColor = AppThemeColor.fromKey(themeColorKey)
             val appLanguage by container.prefs.appLanguage.collectAsState(initial = appliedAppLanguage)
@@ -479,7 +485,7 @@ open class MainActivity : ComponentActivity() {
             // Codeberg #28: log the resolved theme inputs on every composition so
             // a device pass can tell a stale appearance value from a ROM that
             // delivers uiMode without recreating the activity.
-            Log.d("ChompassTheme", "appearance=$appearance systemDark=$systemDark darkTheme=$darkTheme oledTheme=$oledTheme themeColor=$themeColorKey glassBlur=$glassBlur")
+            Log.d("ChompassTheme", "appearance=$appearance systemDark=$systemDark darkTheme=$darkTheme oledTheme=$oledTheme themeColor=$themeColorKey glassBlur=$glassBlur ambientMotion=$ambientMotion")
             // Edge-to-edge draws behind the system bars, so their icon color must
             // follow the resolved app theme (not the launch-time system theme):
             // dark icons on the light palette, light icons on dark/oled.
@@ -497,6 +503,9 @@ open class MainActivity : ComponentActivity() {
                     oledTheme = oledTheme,
                     themeColor = themeColor,
                     glassBlur = glassBlur,
+                    ambientMotion = ambientMotion,
+                    glassStrength = GlassStrength.fromStorage(glassStrength),
+                    ambientIntensity = AmbientIntensity.fromStorage(ambientIntensity),
                 ) {
                     Surface(
                         // Device passes (Maestro/uiautomator): expose Compose
@@ -530,6 +539,7 @@ open class MainActivity : ComponentActivity() {
                         if (pendingRestoredBackupNotice) {
                             AlertDialog(
                                 onDismissRequest = { dismissRestoredBackupNotice(container) },
+                                containerColor = glassDialogColor(MaterialTheme.colorScheme.surfaceContainerHigh),
                                 title = { Text(stringResource(R.string.restore_notice_title)) },
                                 text = { Text(stringResource(R.string.restore_notice_message)) },
                                 confirmButton = {

@@ -430,8 +430,14 @@ class PreferencesStore(private val appContext: Context) : NutritionSyncStore {
     suspend fun setFixedLauncherIcon(v: Boolean) = setFixedLauncherIconImpl(v)
     val useSystemDateTimePickers: Flow<Boolean> get() = useSystemDateTimePickersImpl
     val glassBlurEnabled: Flow<Boolean> get() = glassBlurEnabledImpl
+    val ambientMotionEnabled: Flow<Boolean> get() = ambientMotionEnabledImpl
+    val ambientIntensity: Flow<String> get() = ambientIntensityImpl
+    val glassStrength: Flow<String> get() = glassStrengthImpl
     suspend fun setUseSystemDateTimePickers(v: Boolean) = setUseSystemDateTimePickersImpl(v)
     suspend fun setGlassBlurEnabled(v: Boolean) = setGlassBlurEnabledImpl(v)
+    suspend fun setAmbientMotionEnabled(v: Boolean) = setAmbientMotionEnabledImpl(v)
+    suspend fun setAmbientIntensity(v: String) = setAmbientIntensityImpl(v)
+    suspend fun setGlassStrength(v: String) = setGlassStrengthImpl(v)
     val weekStartsOnMonday: Flow<Boolean> get() = weekStartsOnMondayImpl
     suspend fun setWeekStartsOnMonday(v: Boolean) = setWeekStartsOnMondayImpl(v)
     val weekStartDay: Flow<app.chompass.models.WeekStartDay> get() = weekStartDayImpl

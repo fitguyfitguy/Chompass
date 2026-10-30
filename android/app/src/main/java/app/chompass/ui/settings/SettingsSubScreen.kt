@@ -28,14 +28,13 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.chompass.R
 import app.chompass.ui.components.ChompassIconBubble
-import app.chompass.ui.components.LocalBottomBarHaze
-import app.chompass.ui.components.bottomBarHazeSource
 import app.chompass.ui.components.contentMaxWidth
 import app.chompass.ui.navigation.BottomNavScrollPadding
 
@@ -61,7 +60,7 @@ internal fun SettingsTopBar(
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.background,
+            containerColor = Color.Transparent,
         ),
     )
 }
@@ -80,7 +79,7 @@ fun SettingsSubScreen(
     content: @Composable ColumnScope.() -> Unit,
 ) {
     Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
+        containerColor = Color.Transparent,
         snackbarHost = snackbarHost,
         topBar = { SettingsTopBar(title = title, onBack = onBack, backContentDescription = backLabel) },
     ) { padding ->
@@ -89,7 +88,6 @@ fun SettingsSubScreen(
                 .contentMaxWidth()
                 .padding(padding)
                 .verticalScroll(rememberScrollState())
-                .bottomBarHazeSource(LocalBottomBarHaze.current)
                 .padding(horizontal = 16.dp)
                 .padding(top = 8.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp),

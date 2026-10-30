@@ -71,6 +71,7 @@ import app.chompass.ui.components.SplitDecimalWheelPicker
 import app.chompass.ui.components.UnitToggle
 import app.chompass.ui.components.WheelPicker
 import app.chompass.ui.components.isDarkTheme
+import app.chompass.ui.components.glassDialogColor
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.util.formatMinutesOfDay
 import androidx.compose.ui.platform.LocalContext
@@ -371,6 +372,7 @@ internal fun ApiKeySheet(
     if (confirmClear) {
         AlertDialog(
             onDismissRequest = { confirmClear = false },
+            containerColor = glassDialogColor(MaterialTheme.colorScheme.surfaceContainerHigh),
             title = { Text(stringResource(R.string.settings_ai_key_remove_title)) },
             text = { Text(stringResource(R.string.settings_ai_key_remove_body)) },
             confirmButton = {
@@ -991,6 +993,7 @@ internal fun BirthdaySheet(current: Instant, onSave: (Instant) -> Unit, onDismis
     if (confirmMinor) {
         AlertDialog(
             onDismissRequest = { confirmMinor = false },
+            containerColor = glassDialogColor(MaterialTheme.colorScheme.surfaceContainerHigh),
             title = { Text(stringResource(R.string.onboarding_minor_title)) },
             text = { Text(stringResource(R.string.onboarding_minor_message)) },
             confirmButton = {

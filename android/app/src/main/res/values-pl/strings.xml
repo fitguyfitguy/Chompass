@@ -995,6 +995,16 @@
     <string name="settings_system_date_time_pickers_subtitle">Przy edycji posiłku używaj systemowych okien daty i godziny.</string>
     <string name="settings_glass_blur">Szkło matowe</string>
     <string name="settings_glass_blur_subtitle">Rozmywa zawartość za pływającymi panelami, np. nad listą wyników dodawania posiłku.</string>
+    <string name="settings_ambient_motion">Animowane tło</string>
+    <string name="settings_ambient_motion_subtitle">Miękkie, przesuwające się pola kolorów za każdym ekranem. Wstrzymuje się w trybie oszczędzania baterii lub przy ograniczonych animacjach.</string>
+    <string name="settings_frost_strength">Siła matowania</string>
+    <string name="frost_strength_light">Lekka</string>
+    <string name="frost_strength_medium">Średnia</string>
+    <string name="frost_strength_strong">Mocna</string>
+    <string name="settings_ambient_intensity">Intensywność tła</string>
+    <string name="ambient_intensity_subtle">Subtelne</string>
+    <string name="ambient_intensity_balanced">Zrównoważone</string>
+    <string name="ambient_intensity_vivid">Żywe</string>
     <string name="add_food_log_time">Czas wpisu</string>
     <string name="add_food_log_time_now">Teraz</string>
     <string name="cd_clear_log_time">Użyj bieżącej godziny</string>

@@ -29,6 +29,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import app.chompass.ui.components.glassDialogColor
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -341,6 +342,7 @@ fun OnboardingScreen(container: AppContainer, onComplete: () -> Unit) {
     if (showMinorDialog) {
         AlertDialog(
             onDismissRequest = { showMinorDialog = false },
+            containerColor = glassDialogColor(MaterialTheme.colorScheme.surfaceContainerHigh),
             title = { Text(stringResource(R.string.onboarding_minor_title)) },
             text = { Text(stringResource(R.string.onboarding_minor_message)) },
             confirmButton = {
@@ -358,6 +360,7 @@ fun OnboardingScreen(container: AppContainer, onComplete: () -> Unit) {
     if (showAiSkipDialog) {
         AlertDialog(
             onDismissRequest = { showAiSkipDialog = false },
+            containerColor = glassDialogColor(MaterialTheme.colorScheme.surfaceContainerHigh),
             title = { Text(stringResource(R.string.onboarding_skip_ai_title)) },
             text = {
                 Text(

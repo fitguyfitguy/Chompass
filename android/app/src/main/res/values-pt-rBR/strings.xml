@@ -1450,6 +1450,16 @@
     <string name="settings_system_date_time_pickers_subtitle">Use os diálogos de data e hora do telefone ao editar uma refeição.</string>
     <string name="settings_glass_blur">Vidro fosco</string>
     <string name="settings_glass_blur_subtitle">Desfoca o conteúdo atrás dos painéis flutuantes, como o cabeçalho de resultados ao adicionar comida.</string>
+    <string name="settings_ambient_motion">Fundo ambiente</string>
+    <string name="settings_ambient_motion_subtitle">Campos de cores suaves que flutuam atrás de cada tela. Pausa na economia de bateria ou quando as animações estão reduzidas.</string>
+    <string name="settings_frost_strength">Intensidade do fosco</string>
+    <string name="frost_strength_light">Leve</string>
+    <string name="frost_strength_medium">Média</string>
+    <string name="frost_strength_strong">Forte</string>
+    <string name="settings_ambient_intensity">Intensidade ambiente</string>
+    <string name="ambient_intensity_subtle">Discreto</string>
+    <string name="ambient_intensity_balanced">Equilibrado</string>
+    <string name="ambient_intensity_vivid">Vívido</string>
     <string name="add_food_log_time">Hora do registro</string>
     <string name="add_food_log_time_now">Agora</string>
     <string name="cd_clear_log_time">Usar a hora atual</string>

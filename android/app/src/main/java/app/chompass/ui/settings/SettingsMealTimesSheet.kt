@@ -55,6 +55,7 @@ import app.chompass.models.MealType
 import app.chompass.ui.components.ChompassSurface
 import app.chompass.ui.components.ChompassTextButton
 import app.chompass.ui.components.TimeWheelPicker
+import app.chompass.ui.components.glassDialogColor
 import app.chompass.ui.home.mealLabel
 import app.chompass.ui.util.formatMinutesOfDay
 
@@ -201,6 +202,7 @@ internal fun MealTimesSheet(
     if (remove != null) {
         AlertDialog(
             onDismissRequest = { pendingRemove = null },
+            containerColor = glassDialogColor(MaterialTheme.colorScheme.surfaceContainerHigh),
             title = { Text(stringResource(R.string.settings_meals_remove_title)) },
             text = { Text(stringResource(R.string.settings_meals_remove_body)) },
             confirmButton = {

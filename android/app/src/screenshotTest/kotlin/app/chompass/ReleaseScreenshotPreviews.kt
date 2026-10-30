@@ -8,6 +8,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.android.tools.screenshot.PreviewTest
 import app.chompass.models.HomeCalorieHeroLayout
@@ -21,8 +22,10 @@ import app.chompass.ui.home.HomeProgressiveMealScreenshotContent
 import app.chompass.ui.home.HomeRecipesScreenshotContent
 import app.chompass.ui.home.HomeScreenPreviewContent
 import app.chompass.ui.home.WhatIfMealImpactDialog
-import app.chompass.ui.navigation.ChompassBottomNavBar
+import app.chompass.ui.navigation.ChompassFloatingPillBar
 import app.chompass.ui.navigation.ChompassRoutes
+import app.chompass.ui.navigation.FloatingPillItem
+import app.chompass.ui.navigation.bottomTabs
 import app.chompass.ui.progress.ProgressScreenPreviewContent
 import app.chompass.ui.settings.SettingsScreenPreviewContent
 import app.chompass.ui.settings.SettingRowStressPreviewContent
@@ -59,9 +62,15 @@ private fun ReleaseScreenshotFrame(
             Box(Modifier.fillMaxSize()) {
                 content()
                 if (showNavBar) {
-                    ChompassBottomNavBar(
-                        currentRoute = currentRoute,
-                        onTap = {},
+                    ChompassFloatingPillBar(
+                        items = bottomTabs().map { tab ->
+                            FloatingPillItem(
+                                icon = tab.icon,
+                                label = stringResource(tab.labelRes),
+                                onClick = {},
+                                selected = tab.route == currentRoute,
+                            )
+                        },
                         modifier = Modifier.align(Alignment.BottomCenter),
                     )
                 }

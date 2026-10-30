@@ -55,6 +55,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -179,14 +180,14 @@ fun CoachScreen(container: AppContainer) {
     }
 
     Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
+        containerColor = Color.Transparent,
         topBar = {
             // iOS Coach: centered "Coach" title, with a small circular dark
             // chip on the right wrapping a counterclockwise arrow reset icon.
             CenterAlignedTopAppBar(
                 title = { Text(stringResource(R.string.coach_title), fontWeight = FontWeight.SemiBold) },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
+                    containerColor = Color.Transparent
                 ),
                 actions = {
                     val canReset = ui.messages.isNotEmpty()

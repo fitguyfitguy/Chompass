@@ -115,7 +115,7 @@ fun ChompassBottomSheet(
         onDismissRequest = onDismiss,
         modifier = modifier,
         sheetState = sheetState,
-        containerColor = containerColor,
+        containerColor = glassSheetColor(containerColor),
         shape = shape,
         contentWindowInsets = contentWindowInsets,
         content = content,

@@ -79,7 +79,7 @@ fun HomeDisplaySettingsScreen(
     var showFoodLogLayoutPicker by remember { mutableStateOf(false) }
 
     Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
+        containerColor = Color.Transparent,
         topBar = {
             SettingsTopBar(
                 title = stringResource(R.string.home_display_title),

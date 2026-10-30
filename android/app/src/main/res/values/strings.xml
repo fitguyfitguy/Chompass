@@ -1673,6 +1673,16 @@
     <string name="settings_system_date_time_pickers_subtitle">Use the phone’s date and time dialogs when editing a meal.</string>
     <string name="settings_glass_blur">Frosted glass</string>
     <string name="settings_glass_blur_subtitle">Blur the content behind floating panels like the Add Food results header.</string>
+    <string name="settings_ambient_motion">Ambient background</string>
+    <string name="settings_ambient_motion_subtitle">Soft drifting color fields behind every screen. Pauses on battery saver or when animations are reduced.</string>
+    <string name="settings_frost_strength">Frost strength</string>
+    <string name="frost_strength_light">Light</string>
+    <string name="frost_strength_medium">Medium</string>
+    <string name="frost_strength_strong">Strong</string>
+    <string name="settings_ambient_intensity">Ambient intensity</string>
+    <string name="ambient_intensity_subtle">Subtle</string>
+    <string name="ambient_intensity_balanced">Balanced</string>
+    <string name="ambient_intensity_vivid">Vivid</string>
     <string name="sheet_theme_color">Theme Color</string>
     <string name="sheet_theme_color_footer">Changes the main accent used for buttons, charts, and progress indicators.</string>
     <string name="theme_color_system">System</string>

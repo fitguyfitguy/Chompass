@@ -7,6 +7,7 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.Role
@@ -38,7 +39,8 @@ import androidx.compose.ui.unit.sp
 import app.chompass.BuildConfig
 import app.chompass.R
 import app.chompass.ui.components.AnimatedNumberText
-import app.chompass.ui.components.ChompassSurface
+import app.chompass.ui.components.LocalBackdropHaze
+import app.chompass.ui.components.hazeGlassFill
 import app.chompass.ui.components.pressScale
 
 /**
@@ -118,11 +120,20 @@ internal fun TimeRangePicker(selected: TimeRange, onSelect: (TimeRange) -> Unit)
 
 @Composable
 internal fun CardSection(content: @Composable () -> Unit) {
-    ChompassSurface(
-        modifier = Modifier.fillMaxWidth(),
-        cornerRadius = 16.dp,
-        padding = 16.dp,
-    ) { content() }
+    // Frosted over the ambient wax field; glass off (or no blur source)
+    // composites surfaceContainerLow over surfaceContainerLow — exactly the
+    // fill the old ChompassSurface card rendered.
+    Box(
+        Modifier
+            .fillMaxWidth()
+            .hazeGlassFill(
+                MaterialTheme.colorScheme.surfaceContainerLow,
+                RoundedCornerShape(16.dp),
+                LocalBackdropHaze.current,
+            ),
+    ) {
+        Box(Modifier.fillMaxWidth().padding(16.dp)) { content() }
+    }
 }
 
 @Composable

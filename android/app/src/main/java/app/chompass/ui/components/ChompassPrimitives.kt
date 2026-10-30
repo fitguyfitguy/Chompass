@@ -221,7 +221,7 @@ fun ChompassDialog(
                 .widthIn(max = 560.dp)
                 .padding(horizontal = 24.dp),
             shape = MaterialTheme.shapes.extraLarge,
-            color = MaterialTheme.colorScheme.surfaceContainerHigh,
+            color = glassDialogColor(MaterialTheme.colorScheme.surfaceContainerHigh),
         ) {
             BoxWithConstraints(Modifier.fillMaxWidth()) {
                 Column(

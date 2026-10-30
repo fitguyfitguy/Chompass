@@ -17,6 +17,8 @@ import androidx.compose.material.icons.outlined.Speed
 import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.MaterialTheme
+import app.chompass.ui.components.glassDialogColor
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -269,6 +271,7 @@ internal fun SettingsAiSection(
     if (confirmDeleteProfile) {
         AlertDialog(
             onDismissRequest = { confirmDeleteProfile = false },
+            containerColor = glassDialogColor(MaterialTheme.colorScheme.surfaceContainerHigh),
             title = { Text(stringResource(R.string.settings_profile_delete)) },
             text = { Text(stringResource(R.string.settings_profile_delete_confirm)) },
             confirmButton = {

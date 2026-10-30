@@ -1734,6 +1734,16 @@ für dich ein</string>
     <string name="settings_system_date_time_pickers_subtitle">Beim Bearbeiten einer Mahlzeit die Datums- und Zeitdialoge des Telefons nutzen.</string>
     <string name="settings_glass_blur">Mattes Glas</string>
     <string name="settings_glass_blur_subtitle">Inhalte hinter schwebenden Bereichen weichzeichnen, z. B. über der Ergebnisliste beim Essen hinzufügen.</string>
+    <string name="settings_ambient_motion">Ambient-Hintergrund</string>
+    <string name="settings_ambient_motion_subtitle">Weiche, treibende Farbflächen hinter jedem Bildschirm. Pausiert im Energiesparmodus oder wenn Animationen reduziert sind.</string>
+    <string name="settings_frost_strength">Froststärke</string>
+    <string name="frost_strength_light">Leicht</string>
+    <string name="frost_strength_medium">Mittel</string>
+    <string name="frost_strength_strong">Stark</string>
+    <string name="settings_ambient_intensity">Ambient-Intensität</string>
+    <string name="ambient_intensity_subtle">Dezent</string>
+    <string name="ambient_intensity_balanced">Ausgewogen</string>
+    <string name="ambient_intensity_vivid">Lebhaft</string>
     <string name="add_food_log_time">Log-Zeit</string>
     <string name="add_food_log_time_now">Jetzt</string>
     <string name="cd_clear_log_time">Aktuelle Uhrzeit verwenden</string>

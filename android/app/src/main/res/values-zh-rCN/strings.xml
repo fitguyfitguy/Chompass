@@ -1472,6 +1472,16 @@
     <string name="settings_system_date_time_pickers_subtitle">编辑餐次时使用手机的日期和时间对话框。</string>
     <string name="settings_glass_blur">磨砂玻璃</string>
     <string name="settings_glass_blur_subtitle">模糊悬浮面板（如添加食物结果栏）背后的内容。</string>
+    <string name="settings_ambient_motion">环境背景</string>
+    <string name="settings_ambient_motion_subtitle">每个屏幕背后柔和漂移的色彩。在省电模式或系统动画关闭时暂停。</string>
+    <string name="settings_frost_strength">磨砂强度</string>
+    <string name="frost_strength_light">轻</string>
+    <string name="frost_strength_medium">中</string>
+    <string name="frost_strength_strong">强</string>
+    <string name="settings_ambient_intensity">背景强度</string>
+    <string name="ambient_intensity_subtle">柔和</string>
+    <string name="ambient_intensity_balanced">均衡</string>
+    <string name="ambient_intensity_vivid">鲜艳</string>
     <string name="add_food_log_time">记录时间</string>
     <string name="add_food_log_time_now">现在</string>
     <string name="cd_clear_log_time">使用当前时间</string>
