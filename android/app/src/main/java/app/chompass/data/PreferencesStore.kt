@@ -692,6 +692,17 @@ class PreferencesStore(private val appContext: Context) : NutritionSyncStore {
     suspend fun setLastSyncAt(iso: String?) = setLastSyncAtImpl(iso)
     val lastSyncEtag: Flow<String?> get() = lastSyncEtagImpl
     suspend fun setLastSyncEtag(etag: String?) = setLastSyncEtagImpl(etag)
+    val localBackupTreeUri: Flow<String> get() = localBackupTreeUriImpl
+    val localBackupFolderName: Flow<String> get() = localBackupFolderNameImpl
+    suspend fun setLocalBackupFolder(treeUri: String, folderName: String) = setLocalBackupFolderImpl(treeUri, folderName)
+    val localBackupEnabled: Flow<Boolean> get() = localBackupEnabledImpl
+    suspend fun setLocalBackupEnabled(enabled: Boolean) = setLocalBackupEnabledImpl(enabled)
+    val localBackupAutoEnabled: Flow<Boolean> get() = localBackupAutoEnabledImpl
+    suspend fun setLocalBackupAutoEnabled(enabled: Boolean) = setLocalBackupAutoEnabledImpl(enabled)
+    val localBackupAutoDay: Flow<String?> get() = localBackupAutoDayImpl
+    suspend fun setLocalBackupAutoDay(day: String?) = setLocalBackupAutoDayImpl(day)
+    val lastLocalBackupAt: Flow<String?> get() = lastLocalBackupAtImpl
+    suspend fun setLastLocalBackupAt(iso: String?) = setLastLocalBackupAtImpl(iso)
     /** Last magnitude-wheel entry mode: "wheel" or "typed". */
     val numericPickerEntry: Flow<String> get() = numericPickerEntryImpl
     suspend fun setNumericPickerEntry(mode: String) = setNumericPickerEntryImpl(mode)

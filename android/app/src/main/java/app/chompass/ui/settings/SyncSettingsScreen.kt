@@ -1,5 +1,7 @@
 package app.chompass.ui.settings
 
+import android.content.Intent
+import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -17,6 +19,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import app.chompass.AppContainer
 import app.chompass.R
+import app.chompass.sync.LocalBackupFile
 import app.chompass.sync.SyncRepository
 import app.chompass.sync.normalizeWebDavUrl
 import app.chompass.ui.navigation.ChompassRoutes
@@ -40,7 +43,12 @@ fun SyncSettingsScreen(
     var webDavPhotosEnabled by remember { mutableStateOf(false) }
     var webDavPhotosWifiOnly by remember { mutableStateOf(true) }
     var lastSyncAt by remember { mutableStateOf<String?>(null) }
+    var localFolderName by remember { mutableStateOf("") }
+    var localBackupEnabled by remember { mutableStateOf(false) }
+    var localAutoBackup by remember { mutableStateOf(false) }
+    var lastLocalBackupAt by remember { mutableStateOf<String?>(null) }
     var syncMessage by remember { mutableStateOf<String?>(null) }
+    var localBackupMessage by remember { mutableStateOf<String?>(null) }
     val activityContext = LocalContext.current
     val scope = rememberCoroutineScope()
 
@@ -52,6 +60,36 @@ fun SyncSettingsScreen(
         webDavPhotosEnabled = container.prefs.webDavPhotosEnabled.first()
         webDavPhotosWifiOnly = container.prefs.webDavPhotosWifiOnly.first()
         lastSyncAt = container.prefs.lastSyncAt.first()
+        localFolderName = if (container.prefs.localBackupTreeUri.first().isNotBlank()) {
+            container.prefs.localBackupFolderName.first()
+        } else {
+            ""
+        }
+        localBackupEnabled = container.prefs.localBackupEnabled.first()
+        localAutoBackup = container.prefs.localBackupAutoEnabled.first()
+        lastLocalBackupAt = container.prefs.lastLocalBackupAt.first()
+    }
+
+    val localFolderLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocumentTree()
+    ) { uri ->
+        if (uri == null) return@rememberLauncherForActivityResult
+        val flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+        runCatching { activityContext.contentResolver.takePersistableUriPermission(uri, flags) }
+        scope.launch {
+            val previous = container.prefs.localBackupTreeUri.first()
+            val name = LocalBackupFile.folderName(activityContext, uri) ?: uri.lastPathSegment.orEmpty()
+            container.prefs.setLocalBackupFolder(uri.toString(), name)
+            container.prefs.setLocalBackupEnabled(true)
+            localBackupEnabled = true
+            if (previous.isNotBlank() && previous != uri.toString()) {
+                runCatching {
+                    activityContext.contentResolver.releasePersistableUriPermission(Uri.parse(previous), flags)
+                }
+            }
+            localFolderName = name
+            localBackupMessage = activityContext.getString(R.string.settings_local_backup_saved)
+        }
     }
 
     val importSyncLauncher = rememberLauncherForActivityResult(
@@ -146,6 +184,37 @@ fun SyncSettingsScreen(
                         }
                         is SyncRepository.SyncResult.Failed -> {
                             syncMessage = result.message
+                        }
+                    }
+                }
+            },
+        )
+
+        SettingsLocalBackupSection(
+            enabled = localBackupEnabled,
+            folderName = localFolderName,
+            autoBackup = localAutoBackup,
+            lastBackupAt = lastLocalBackupAt,
+            backupStatus = localBackupMessage,
+            onEnabledChange = { enabled ->
+                localBackupEnabled = enabled
+                scope.launch { container.prefs.setLocalBackupEnabled(enabled) }
+            },
+            onChooseFolder = { localFolderLauncher.launch(null) },
+            onAutoBackupChange = { enabled ->
+                localAutoBackup = enabled
+                scope.launch { container.prefs.setLocalBackupAutoEnabled(enabled) }
+            },
+            onBackupNow = {
+                scope.launch {
+                    localBackupMessage = "…"
+                    when (val result = container.syncRepository.backupLocalFileNow()) {
+                        is SyncRepository.SyncResult.Success -> {
+                            localBackupMessage = result.message
+                            lastLocalBackupAt = container.prefs.lastLocalBackupAt.first()
+                        }
+                        is SyncRepository.SyncResult.Failed -> {
+                            localBackupMessage = result.message
                         }
                     }
                 }

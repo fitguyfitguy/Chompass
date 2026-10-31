@@ -348,6 +348,17 @@ internal object Keys {
         val WEBDAV_SYNCED_PHOTOS_URL = stringPreferencesKey("webDavSyncedPhotosUrl")
         val LAST_SYNC_AT = stringPreferencesKey("lastSyncAt")
         val LAST_SYNC_ETAG = stringPreferencesKey("lastSyncEtag")
+        /** SAF tree URI of the folder that receives the local backup file. */
+        val LOCAL_BACKUP_TREE_URI = stringPreferencesKey("localBackupTreeUri")
+        /** Folder display name for the backup settings row; the tree URI stays authoritative. */
+        val LOCAL_BACKUP_FOLDER_NAME = stringPreferencesKey("localBackupFolderName")
+        /** Master switch for local backup: off means no backup runs, even manually. */
+        val LOCAL_BACKUP_ENABLED = booleanPreferencesKey("localBackupEnabled")
+        /** Opt-in: auto local backup once per day on app open (requires the master switch). */
+        val LOCAL_BACKUP_AUTO_ENABLED = booleanPreferencesKey("localBackupAutoEnabled")
+        /** Local calendar day (yyyy-MM-dd) of the last local auto-backup attempt. */
+        val LOCAL_BACKUP_AUTO_DAY = stringPreferencesKey("localBackupAutoDay")
+        val LAST_LOCAL_BACKUP_AT = stringPreferencesKey("lastLocalBackupAt")
         /** Serialized [app.chompass.services.ai.RecalcSheetData] of the latest goal change (AI Recalculate or Adaptive). */
         val LAST_GOAL_CHANGE_SHEET_JSON = stringPreferencesKey("lastGoalChangeSheetJson")
         /** Last magnitude-wheel entry mode: "wheel" | "typed" (Codeberg #62). */

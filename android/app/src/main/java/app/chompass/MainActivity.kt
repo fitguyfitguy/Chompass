@@ -292,6 +292,8 @@ open class MainActivity : ComponentActivity() {
             container.syncHealthConnectReads()
             // Opt-in WebDAV: at most once per local day on open (manual Sync now always available).
             container.syncRepository.maybeAutoSyncWebDav()
+            // Opt-in local backup: same once-a-day cadence into the chosen folder.
+            container.syncRepository.maybeAutoBackupLocalFile()
             foregroundSyncJob = null
         }
     }
