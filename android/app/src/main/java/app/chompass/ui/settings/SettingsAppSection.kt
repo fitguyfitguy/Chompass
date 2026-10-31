@@ -15,6 +15,7 @@ import androidx.compose.material.icons.outlined.Language
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.icons.outlined.Schedule
+import androidx.compose.material.icons.outlined.ScreenRotation
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -30,6 +31,8 @@ import app.chompass.ui.components.ChompassSegmentedTabs
 import app.chompass.ui.navigation.ChompassRoutes
 import app.chompass.ui.progress.TimeRange
 import app.chompass.ui.theme.AmbientIntensity
+import app.chompass.ui.theme.AmbientPalette
+import app.chompass.ui.theme.AmbientSpeed
 import app.chompass.ui.theme.GlassStrength
 
 /**
@@ -92,6 +95,27 @@ internal fun SettingsAppSection(
                         selected = ui.ambientIntensity,
                         onSelect = vm::setAmbientIntensity,
                     ) { stringResource(it.labelRes) }
+                    HorizontalDivider()
+                    SegmentedSettingRow(
+                        label = stringResource(R.string.settings_ambient_speed),
+                        options = AmbientSpeed.entries.toList(),
+                        selected = ui.ambientSpeed,
+                        onSelect = vm::setAmbientSpeed,
+                    ) { stringResource(it.labelRes) }
+                    HorizontalDivider()
+                    SegmentedSettingRow(
+                        label = stringResource(R.string.settings_ambient_palette),
+                        options = AmbientPalette.entries.toList(),
+                        selected = ui.ambientPalette,
+                        onSelect = vm::setAmbientPalette,
+                    ) { stringResource(it.labelRes) }
+                    HorizontalDivider()
+                    BusyToggleRow(
+                        label = stringResource(R.string.settings_ambient_tilt),
+                        checked = ui.ambientTiltEnabled,
+                        icon = Icons.Outlined.ScreenRotation,
+                        subtitle = stringResource(R.string.settings_ambient_tilt_subtitle),
+                    ) { vm.setAmbientTiltEnabled(it) }
                 }
                 HorizontalDivider()
                 SettingRow(

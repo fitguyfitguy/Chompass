@@ -249,6 +249,9 @@ data class SettingsUiState(
     /** Ambient animated background behind every screen; default ON. */
     val ambientMotionEnabled: Boolean = true,
     val ambientIntensity: app.chompass.ui.theme.AmbientIntensity = app.chompass.ui.theme.AmbientIntensity.DEFAULT,
+    val ambientSpeed: app.chompass.ui.theme.AmbientSpeed = app.chompass.ui.theme.AmbientSpeed.DEFAULT,
+    val ambientPalette: app.chompass.ui.theme.AmbientPalette = app.chompass.ui.theme.AmbientPalette.DEFAULT,
+    val ambientTiltEnabled: Boolean = true,
     val glassStrength: app.chompass.ui.theme.GlassStrength = app.chompass.ui.theme.GlassStrength.DEFAULT,
     val foodLogSortOrder: FoodLogSortOrder = FoodLogSortOrder.STANDARD,
     val weekStartsOnMonday: Boolean = true,
@@ -633,6 +636,9 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                     glassBlurEnabled = snap.glassBlurEnabled,
                     ambientMotionEnabled = snap.ambientMotionEnabled,
                     ambientIntensity = app.chompass.ui.theme.AmbientIntensity.fromStorage(snap.ambientIntensityRaw),
+                    ambientSpeed = app.chompass.ui.theme.AmbientSpeed.fromStorage(snap.ambientSpeedRaw),
+                    ambientPalette = app.chompass.ui.theme.AmbientPalette.fromStorage(snap.ambientPaletteRaw),
+                    ambientTiltEnabled = snap.ambientTiltEnabled,
                     glassStrength = app.chompass.ui.theme.GlassStrength.fromStorage(snap.glassStrengthRaw),
                     foodLogSortOrder = FoodLogSortOrder.fromStorage(snap.foodLogSortOrderRaw),
                     weekStartsOnMonday = snap.weekStartDay == app.chompass.models.WeekStartDay.MONDAY,
@@ -1067,6 +1073,21 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
     fun setAmbientIntensity(intensity: app.chompass.ui.theme.AmbientIntensity) = updateUiPref(
         { container.prefs.setAmbientIntensity(intensity.storage) },
         { copy(ambientIntensity = intensity) },
+    )
+
+    fun setAmbientSpeed(speed: app.chompass.ui.theme.AmbientSpeed) = updateUiPref(
+        { container.prefs.setAmbientSpeed(speed.storage) },
+        { copy(ambientSpeed = speed) },
+    )
+
+    fun setAmbientPalette(palette: app.chompass.ui.theme.AmbientPalette) = updateUiPref(
+        { container.prefs.setAmbientPalette(palette.storage) },
+        { copy(ambientPalette = palette) },
+    )
+
+    fun setAmbientTiltEnabled(enabled: Boolean) = updateUiPref(
+        { container.prefs.setAmbientTiltEnabled(enabled) },
+        { copy(ambientTiltEnabled = enabled) },
     )
 
     fun setGlassStrength(strength: app.chompass.ui.theme.GlassStrength) = updateUiPref(

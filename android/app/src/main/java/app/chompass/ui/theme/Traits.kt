@@ -44,6 +44,39 @@ enum class AmbientIntensity(
     }
 }
 
+/** Drift speed of the ambient wax field. STANDARD is the shipped look. */
+enum class AmbientSpeed(
+    val storage: String,
+    @param:StringRes val labelRes: Int,
+    /** Multiplier on accumulated wall time, so a live change never jumps the phase. */
+    val timeScale: Float,
+) {
+    CALM("calm", R.string.ambient_speed_calm, 0.6f),
+    STANDARD("standard", R.string.ambient_speed_standard, 1f),
+    LIVELY("lively", R.string.ambient_speed_lively, 1.6f);
+
+    companion object {
+        val DEFAULT = STANDARD
+        fun fromStorage(raw: String?): AmbientSpeed = entries.firstOrNull { it.storage == raw } ?: DEFAULT
+    }
+}
+
+/** Where the ambient field takes its three hues from. */
+enum class AmbientPalette(
+    val storage: String,
+    @param:StringRes val labelRes: Int,
+) {
+    /** The theme accent plus two hue-rotated counterpoints. */
+    ACCENT("accent", R.string.ambient_palette_accent),
+    /** The protein / carbs / fat swatches. */
+    MACRO("macro", R.string.ambient_palette_macro);
+
+    companion object {
+        val DEFAULT = ACCENT
+        fun fromStorage(raw: String?): AmbientPalette = entries.firstOrNull { it.storage == raw } ?: DEFAULT
+    }
+}
+
 /**
  * Cross-cutting visual traits a screen can opt into without threading booleans
  * through every call site. The theme resolves them from preferences; components
@@ -58,6 +91,12 @@ data class ChompassTraits(
     val ambientMotion: Boolean = true,
     val glassStrength: GlassStrength = GlassStrength.DEFAULT,
     val ambientIntensity: AmbientIntensity = AmbientIntensity.DEFAULT,
+    val ambientSpeed: AmbientSpeed = AmbientSpeed.DEFAULT,
+    val ambientPalette: AmbientPalette = AmbientPalette.DEFAULT,
+    /** Gyro parallax on the ambient field; OFF keeps the sensor unregistered. */
+    val ambientTilt: Boolean = true,
+    /** True-black neutrals: the ambient field auto-dims so "pixels off" stays pixels off. */
+    val oled: Boolean = false,
 )
 
 /** Provided by [ChompassTheme]; defaults keep previews and isolated hosts rendering. */
@@ -76,4 +115,16 @@ object ChompassTraitsDefaults {
 
     @Composable
     fun ambientIntensity(): AmbientIntensity = LocalChompassTraits.current.ambientIntensity
+
+    @Composable
+    fun ambientSpeed(): AmbientSpeed = LocalChompassTraits.current.ambientSpeed
+
+    @Composable
+    fun ambientPalette(): AmbientPalette = LocalChompassTraits.current.ambientPalette
+
+    @Composable
+    fun ambientTilt(): Boolean = LocalChompassTraits.current.ambientTilt
+
+    @Composable
+    fun oled(): Boolean = LocalChompassTraits.current.oled
 }

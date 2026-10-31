@@ -183,6 +183,10 @@ internal object Keys {
         /** Ambient animated background behind every screen (Morphe traits); default ON. */
         val AMBIENT_MOTION_ENABLED = booleanPreferencesKey("ambientMotionEnabled")
         val AMBIENT_INTENSITY = stringPreferencesKey("ambientIntensity")
+        val AMBIENT_SPEED = stringPreferencesKey("ambientSpeed")
+        val AMBIENT_PALETTE = stringPreferencesKey("ambientPalette")
+        /** Gyro parallax on the ambient field; default ON. */
+        val AMBIENT_TILT_ENABLED = booleanPreferencesKey("ambientTiltEnabled")
         val GLASS_STRENGTH = stringPreferencesKey("glassStrength")
         /** When ON the launcher icon stays the brand teal and never swaps activity aliases. */
         val FIXED_LAUNCHER_ICON = booleanPreferencesKey("fixedLauncherIcon")

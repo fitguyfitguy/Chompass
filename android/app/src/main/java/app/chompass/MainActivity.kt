@@ -66,6 +66,8 @@ import app.chompass.ui.navigation.ChompassNavHost
 import app.chompass.ui.navigation.ChompassRoutes
 import app.chompass.ui.theme.AppThemeColor
 import app.chompass.ui.theme.AmbientIntensity
+import app.chompass.ui.theme.AmbientPalette
+import app.chompass.ui.theme.AmbientSpeed
 import app.chompass.ui.theme.ChompassTheme
 import app.chompass.ui.theme.GlassStrength
 import app.chompass.ui.theme.widgetAccentColors
@@ -458,6 +460,9 @@ open class MainActivity : ComponentActivity() {
             val glassBlur by container.prefs.glassBlurEnabled.collectAsState(initial = true)
             val ambientMotion by container.prefs.ambientMotionEnabled.collectAsState(initial = true)
             val ambientIntensity by container.prefs.ambientIntensity.collectAsState(initial = "")
+            val ambientSpeed by container.prefs.ambientSpeed.collectAsState(initial = "")
+            val ambientPalette by container.prefs.ambientPalette.collectAsState(initial = "")
+            val ambientTiltEnabled by container.prefs.ambientTiltEnabled.collectAsState(initial = true)
             val glassStrength by container.prefs.glassStrength.collectAsState(initial = "")
             val themeColorKey by container.prefs.appThemeColor.collectAsState(initial = initialThemeColorKey)
             val themeColor = AppThemeColor.fromKey(themeColorKey)
@@ -506,6 +511,9 @@ open class MainActivity : ComponentActivity() {
                     ambientMotion = ambientMotion,
                     glassStrength = GlassStrength.fromStorage(glassStrength),
                     ambientIntensity = AmbientIntensity.fromStorage(ambientIntensity),
+                    ambientSpeed = AmbientSpeed.fromStorage(ambientSpeed),
+                    ambientPalette = AmbientPalette.fromStorage(ambientPalette),
+                    ambientTilt = ambientTiltEnabled,
                 ) {
                     Surface(
                         // Device passes (Maestro/uiautomator): expose Compose

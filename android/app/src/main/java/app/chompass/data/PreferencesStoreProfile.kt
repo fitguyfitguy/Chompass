@@ -132,6 +132,24 @@ internal suspend fun PreferencesStore.setAmbientIntensityImpl(v: String) {
     dataStore.edit { it[Keys.AMBIENT_INTENSITY] = v }
 }
 
+internal val PreferencesStore.ambientSpeedImpl: Flow<String>
+    get() = dataStore.data.map { it[Keys.AMBIENT_SPEED] ?: "" }
+internal suspend fun PreferencesStore.setAmbientSpeedImpl(v: String) {
+    dataStore.edit { it[Keys.AMBIENT_SPEED] = v }
+}
+
+internal val PreferencesStore.ambientPaletteImpl: Flow<String>
+    get() = dataStore.data.map { it[Keys.AMBIENT_PALETTE] ?: "" }
+internal suspend fun PreferencesStore.setAmbientPaletteImpl(v: String) {
+    dataStore.edit { it[Keys.AMBIENT_PALETTE] = v }
+}
+
+internal val PreferencesStore.ambientTiltEnabledImpl: Flow<Boolean>
+    get() = dataStore.data.map { it[Keys.AMBIENT_TILT_ENABLED] ?: true }
+internal suspend fun PreferencesStore.setAmbientTiltEnabledImpl(v: Boolean) {
+    dataStore.edit { it[Keys.AMBIENT_TILT_ENABLED] = v }
+}
+
 internal val PreferencesStore.glassStrengthImpl: Flow<String>
     get() = dataStore.data.map { it[Keys.GLASS_STRENGTH] ?: "" }
 internal suspend fun PreferencesStore.setGlassStrengthImpl(v: String) {

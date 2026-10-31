@@ -1683,6 +1683,15 @@
     <string name="ambient_intensity_subtle">Subtle</string>
     <string name="ambient_intensity_balanced">Balanced</string>
     <string name="ambient_intensity_vivid">Vivid</string>
+    <string name="settings_ambient_speed">Drift speed</string>
+    <string name="ambient_speed_calm">Calm</string>
+    <string name="ambient_speed_standard">Standard</string>
+    <string name="ambient_speed_lively">Lively</string>
+    <string name="settings_ambient_palette">Ambient palette</string>
+    <string name="ambient_palette_accent">Accent</string>
+    <string name="ambient_palette_macro">Macros</string>
+    <string name="settings_ambient_tilt">Tilt parallax</string>
+    <string name="settings_ambient_tilt_subtitle">The color field drifts as you tilt the phone. Uses the motion sensor only while a screen is open.</string>
     <string name="sheet_theme_color">Theme Color</string>
     <string name="sheet_theme_color_footer">Changes the main accent used for buttons, charts, and progress indicators.</string>
     <string name="theme_color_system">System</string>
