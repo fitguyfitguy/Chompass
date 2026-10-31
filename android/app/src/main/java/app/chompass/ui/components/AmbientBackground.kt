@@ -15,6 +15,7 @@ import android.os.Handler
 import android.os.Looper
 import android.os.PowerManager
 import android.provider.Settings
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
@@ -445,9 +446,14 @@ fun AmbientBackground(
     val softBrushes = remember(waxColors) { SoftWaxBrushes(waxColors) }
     // RuntimeShader compile can throw at runtime on some API 33+ devices; the
     // soft-oval path is the fallback either way (pre-13 has no RuntimeShader).
+    // The log line is the only trace: a silent fallback loses the merge, the
+    // dither and the palette weight with nothing in logcat to say why.
     val shader = remember {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            runCatching { WaxShader() }.getOrNull()
+            runCatching { WaxShader() }
+                .onSuccess { Log.d("AmbientWax", "AGSL wax shader compiled; shader path active") }
+                .onFailure { Log.w("AmbientWax", "AGSL wax shader unavailable; soft path in use", it) }
+                .getOrNull()
         } else {
             null
         }
