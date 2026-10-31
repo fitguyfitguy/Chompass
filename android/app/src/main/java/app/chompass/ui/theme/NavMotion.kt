@@ -27,7 +27,6 @@ import androidx.compose.animation.slideOutHorizontally
  * exit spec during the gesture).
  */
 object ChompassNavTransitions {
-
     /** Forward navigation: incoming page scales 0.8→1, fading in after the short fade. */
     fun pushEnter(): EnterTransition =
         fadeIn(tween(AppMotion.TweenNavMs, delayMillis = AppMotion.NavFadeShortMs, easing = AppMotion.EasingStandard)) +
