@@ -413,7 +413,12 @@ internal fun SheetPillRow(
 
 @Composable
 internal fun SheetPillCard(content: @Composable ColumnScope.() -> Unit) {
-    val shape = RoundedCornerShape(percent = 50)
+    // Grouped-list card: fixed 16dp radius (M3 large slot, same mapping as the
+    // other Home surfaces). percent = 50 scales each corner with the card's
+    // smaller side, so multi-row cards (macros, micros, expanded serving or
+    // micro wheel) grew 100-180dp circular corners that clipped the kcal label
+    // and number on the top rows (6.0.0 beta device pass 2026-10-31).
+    val shape = MaterialTheme.shapes.large
     val cardFill = MaterialTheme.colorScheme.surfaceContainerLow.copy(alpha = 0.92f)
     val cardBorder = MaterialTheme.colorScheme.outlineVariant
     Column(
