@@ -6,7 +6,12 @@ import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.Forum
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import app.chompass.R
 
@@ -23,8 +28,16 @@ val BottomTabs = listOf(
 fun bottomTabs(showCoachTab: Boolean = true): List<BottomTab> =
     if (showCoachTab) BottomTabs else BottomTabs.filter { it.route != ChompassRoutes.COACH }
 
-/** Content padding above the floating bottom pill (nav inset + 16 + 64 dp). */
-val BottomNavScrollPadding = 80.dp
+/**
+ * Content padding above the floating bottom pill: nav inset + 16 + 64 dp. The
+ * pill takes the navigation-bar inset itself, so this must repeat it — a plain
+ * constant left the last scroll item sitting `inset` low, its bottom corners
+ * hidden behind the pill and its straight edges cut at the screen bottom.
+ */
+val BottomNavScrollPadding: Dp
+    @Composable get() = 80.dp + with(LocalDensity.current) {
+        WindowInsets.navigationBars.getBottom(this).toDp()
+    }
 
 val BottomNavDockedControlPadding = 72.dp
 

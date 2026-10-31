@@ -73,6 +73,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 - **Updated Groq model list** (Android): the built-in fallback for fresh installs without a saved key now lists Groq's current ids (gpt-oss-120b, gpt-oss-20b, qwen3.8-27b) instead of the retired Qwen 3.6 id, so the Groq default works before you ever open the picker. The live model picker was already unaffected. Follows Codeberg [#132](https://codeberg.org/fitguy/Chompass/issues/132) by [@Yaroslav-Ch](https://codeberg.org/Yaroslav-Ch)
 - **Text search sees deeper into Open Food Facts results** (Android): search now fetches a wider result window before the app's own ranking picks the best matches, so brand-qualified products that Open Food Facts ranks just past the old cutoff can show up instead of being cut off. Closes Codeberg [#145](https://codeberg.org/fitguy/Chompass/issues/145)
 - **Nutrition cards keep their corners** (Android): the calorie, macro, micronutrient and quantity cards in the food sheets no longer round into giant circles that clipped the calorie row and the value pickers — grouped cards use the standard card rounding again, while single rows stay pill-shaped.
+- **Lists end at the navigation pill** (Android): on phones with a gesture bar, the last card on Home, Progress, Coach and Settings now rests fully above the floating pill with its rounded corners showing, instead of its side edges running straight down into the system gesture area at the bottom of the screen.
 
 ## [5.12.1] - 2026-10-28
 
