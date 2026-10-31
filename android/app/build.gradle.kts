@@ -140,6 +140,10 @@ android {
         }
         getByName("debug2") {
             assets.srcDir("src/debug/assets")
+            // initWith(debug) copies buildConfigFields, not srcDir overrides;
+            // without the debug java dir main's debug launchers (intent-extra
+            // hooks) fail to resolve their Runners on debug2.
+            kotlin.srcDir("src/debug/java")
             kotlin.srcDir("src/grounded/java")
         }
         getByName("release") {
