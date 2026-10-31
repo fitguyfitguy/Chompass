@@ -2243,6 +2243,28 @@ für dich ein</string>
 
     <string name="settings_sync_now">Jetzt synchronisieren</string>
 
+    <string name="settings_local_backup_section">Lokale Sicherung</string>
+
+    <string name="settings_local_backup_blurb">Sichere eine Kopie deines Tagebuchs und deiner Körperdaten in einer Datei auf deinem Gerät. Chompass schreibt Chompass-sync.json in den gewählten Ordner und ersetzt sie bei jeder Sicherung. Fotos sind nicht enthalten. Zum Wiederherstellen die Datei über „Synchronisierungs-JSON importieren“ einlesen.</string>
+
+    <string name="settings_local_backup_enable">Lokale Sicherung aktivieren</string>
+
+    <string name="settings_local_backup_folder">Ordner</string>
+
+    <string name="settings_local_backup_no_folder">Kein Ordner ausgewählt</string>
+
+    <string name="settings_local_backup_auto">Beim Öffnen sichern</string>
+
+    <string name="settings_local_backup_auto_desc">Einmal täglich beim Öffnen der App. Standardmäßig deaktiviert. Jetzt sichern funktioniert weiterhin jederzeit.</string>
+
+    <string name="settings_local_backup_now">Jetzt sichern</string>
+
+    <string name="settings_local_backup_saved">Ordner gespeichert.</string>
+
+    <string name="settings_local_backup_last">Letzte Sicherung: %1$s</string>
+
+    <string name="settings_local_backup_never">Noch nicht gesichert</string>
+
     <string name="settings_last_sync">Letzte Synchronisierung: %1$s</string>
 
     <string name="settings_not_synced">Noch nicht synchronisiert</string>
@@ -2483,13 +2505,21 @@ für dich ein</string>
 
     <string name="error_webdav_sync_failed">WebDAV-Synchronisierung fehlgeschlagen</string>
 
+    <string name="error_local_backup_failed">Sicherung in lokale Datei fehlgeschlagen</string>
+
     <string name="sync_error_unsupported_file">Nicht unterstützte Synchronisierungsdatei</string>
 
     <string name="sync_error_configure_webdav">Konfiguriere zunächst die WebDAV-URL, den Benutzernamen und das Passwort</string>
 
+    <string name="sync_error_configure_local">Wähle zuerst einen Ordner für die Sicherung aus</string>
+
+    <string name="sync_error_local_backup_disabled">Lokale Sicherung ist ausgeschaltet</string>
+
     <string name="sync_error_build_local_doc">Lokales Synchronisierungsdokument konnte nicht erstellt werden</string>
 
     <string name="sync_error_remote_invalid">Remote-Synchronisierungsdokument ist ungültig</string>
+
+    <string name="sync_error_local_file_unavailable">Chompass-sync.json konnte im gewählten Ordner nicht geöffnet werden</string>
 
     <string name="sync_error_local_rebuild_failed">Neuer Aufbau des lokalen Synchronisierungsdokuments nach Konflikt fehlgeschlagen</string>
 
@@ -2500,6 +2530,8 @@ für dich ein</string>
     <string name="sync_error_merged_invalid">Zusammengeführtes Synchronisierungsdokument ungültig</string>
 
     <string name="sync_success_synced">Mit WebDAV synchronisiert</string>
+
+    <string name="sync_success_local_backup">In lokale Datei gesichert</string>
 
     <string name="sync_success_applied">Synchronisierungsdokument angewendet</string>
 

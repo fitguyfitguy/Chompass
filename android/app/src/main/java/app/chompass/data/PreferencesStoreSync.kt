@@ -128,3 +128,55 @@ internal suspend fun PreferencesStore.setLastSyncEtagImpl(etag: String?) {
         else it[Keys.LAST_SYNC_ETAG] = etag
     }
 }
+
+internal val PreferencesStore.localBackupTreeUriImpl: Flow<String>
+    get() = dataStore.data.map { it[Keys.LOCAL_BACKUP_TREE_URI].orEmpty() }
+
+internal val PreferencesStore.localBackupFolderNameImpl: Flow<String>
+    get() = dataStore.data.map { it[Keys.LOCAL_BACKUP_FOLDER_NAME].orEmpty() }
+
+internal suspend fun PreferencesStore.setLocalBackupFolderImpl(treeUri: String, folderName: String) {
+    dataStore.edit {
+        if (treeUri.isBlank()) {
+            it.remove(Keys.LOCAL_BACKUP_TREE_URI)
+            it.remove(Keys.LOCAL_BACKUP_FOLDER_NAME)
+        } else {
+            it[Keys.LOCAL_BACKUP_TREE_URI] = treeUri
+            it[Keys.LOCAL_BACKUP_FOLDER_NAME] = folderName
+        }
+    }
+}
+
+internal val PreferencesStore.localBackupEnabledImpl: Flow<Boolean>
+    get() = dataStore.data.map { it[Keys.LOCAL_BACKUP_ENABLED] ?: false }
+
+internal suspend fun PreferencesStore.setLocalBackupEnabledImpl(enabled: Boolean) {
+    dataStore.edit { it[Keys.LOCAL_BACKUP_ENABLED] = enabled }
+}
+
+internal val PreferencesStore.localBackupAutoEnabledImpl: Flow<Boolean>
+    get() = dataStore.data.map { it[Keys.LOCAL_BACKUP_AUTO_ENABLED] ?: false }
+
+internal suspend fun PreferencesStore.setLocalBackupAutoEnabledImpl(enabled: Boolean) {
+    dataStore.edit { it[Keys.LOCAL_BACKUP_AUTO_ENABLED] = enabled }
+}
+
+internal val PreferencesStore.localBackupAutoDayImpl: Flow<String?>
+    get() = dataStore.data.map { it[Keys.LOCAL_BACKUP_AUTO_DAY] }
+
+internal suspend fun PreferencesStore.setLocalBackupAutoDayImpl(day: String?) {
+    dataStore.edit {
+        if (day.isNullOrBlank()) it.remove(Keys.LOCAL_BACKUP_AUTO_DAY)
+        else it[Keys.LOCAL_BACKUP_AUTO_DAY] = day
+    }
+}
+
+internal val PreferencesStore.lastLocalBackupAtImpl: Flow<String?>
+    get() = dataStore.data.map { it[Keys.LAST_LOCAL_BACKUP_AT] }
+
+internal suspend fun PreferencesStore.setLastLocalBackupAtImpl(iso: String?) {
+    dataStore.edit {
+        if (iso.isNullOrBlank()) it.remove(Keys.LAST_LOCAL_BACKUP_AT)
+        else it[Keys.LAST_LOCAL_BACKUP_AT] = iso
+    }
+}

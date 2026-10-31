@@ -5,10 +5,6 @@ import java.time.LocalDate
 import java.time.ZoneId
 
 /**
- * Decides whether opt-in WebDAV auto-sync should run on this app open.
- * At most once per local calendar day; skipped if a successful sync already happened today.
- */
-/**
  * True when a WebDAV URL is set, so touch/tombstone should record revisions.
  * Auto-sync is a separate toggle: Sync Now still runs without it, and deletes
  * must tombstone or the next pull re-injects the row (#39).
@@ -16,18 +12,22 @@ import java.time.ZoneId
 fun shouldTrackSyncRevisions(webDavUrl: String): Boolean =
     normalizeWebDavUrl(webDavUrl).isNotEmpty()
 
-fun shouldAutoSyncWebDav(
+/**
+ * Decides whether an opt-in auto sync or local backup should run on this app open.
+ * At most once per local calendar day; skipped if a successful run already happened today.
+ */
+fun shouldAutoRunOnOpen(
     enabled: Boolean,
     configured: Boolean,
     today: LocalDate,
-    lastSyncAtIso: String?,
-    lastAutoSyncDayIso: String?,
+    lastRunAtIso: String?,
+    lastAutoRunDayIso: String?,
     zone: ZoneId = ZoneId.systemDefault(),
 ): Boolean {
     if (!enabled || !configured) return false
-    if (lastAutoSyncDayIso == today.toString()) return false
-    val lastSyncDay = lastSyncAtIso
+    if (lastAutoRunDayIso == today.toString()) return false
+    val lastRunDay = lastRunAtIso
         ?.let { runCatching { Instant.parse(it).atZone(zone).toLocalDate() }.getOrNull() }
-    if (lastSyncDay == today) return false
+    if (lastRunDay == today) return false
     return true
 }
