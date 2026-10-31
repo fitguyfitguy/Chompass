@@ -41,6 +41,8 @@ import androidx.navigation.navArgument
 import app.chompass.AppContainer
 import app.chompass.models.EnergyUnit
 import app.chompass.ui.components.AmbientBackground
+import app.chompass.ui.components.AmbientTouchState
+import app.chompass.ui.components.ambientTouchObserver
 import app.chompass.ui.components.LocalBackdropHaze
 import app.chompass.ui.components.LocalBottomBarHaze
 import app.chompass.ui.components.bottomBarHazeSource
@@ -217,6 +219,9 @@ fun ChompassNavHost(
 
     val energyUnitRaw by container.prefs.energyUnit.collectAsState(initial = "kcal")
     val bottomBarHaze = rememberHazeState()
+    // Passive touch feed for the wax field. Recorded on the root container in the
+    // Initial pass and never consumed, so content keeps every gesture.
+    val ambientTouch = remember { AmbientTouchState() }
     // Source for the content panes' frost: the ambient wax field (see AmbientBackground
     // below). Panes are separate subtrees, so they never blur themselves.
     val backdropHaze = rememberHazeState()
@@ -284,17 +289,15 @@ fun ChompassNavHost(
         Box(
             Modifier
                 .fillMaxSize()
+                .ambientTouchObserver(ambientTouch)
                 .bottomBarHazeSource(bottomBarHaze)
         ) {
             AmbientBackground(
                 Modifier
                     .fillMaxSize()
-                    .graphicsLayer {
-                        scaleX = ChompassNavTransitions.TabParallaxOverscan
-                        scaleY = ChompassNavTransitions.TabParallaxOverscan
-                        translationX = size.width * waxPanFraction
-                    }
-                    .hazeSource(backdropHaze)
+                    .hazeSource(backdropHaze),
+                panFraction = waxPanFraction,
+                touch = ambientTouch,
             )
             NavHost(
                 navController = nav,

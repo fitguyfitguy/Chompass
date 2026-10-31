@@ -121,6 +121,9 @@ fun ChompassTheme(
     ambientMotion: Boolean = true,
     glassStrength: GlassStrength = GlassStrength.DEFAULT,
     ambientIntensity: AmbientIntensity = AmbientIntensity.DEFAULT,
+    ambientSpeed: AmbientSpeed = AmbientSpeed.DEFAULT,
+    ambientPalette: AmbientPalette = AmbientPalette.DEFAULT,
+    ambientTilt: Boolean = true,
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current
@@ -191,6 +194,10 @@ fun ChompassTheme(
                 ambientMotion = ambientMotion,
                 glassStrength = glassStrength,
                 ambientIntensity = ambientIntensity,
+                ambientSpeed = ambientSpeed,
+                ambientPalette = ambientPalette,
+                ambientTilt = ambientTilt,
+                oled = oledTheme,
             )
         ) {
             content()

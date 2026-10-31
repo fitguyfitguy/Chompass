@@ -81,6 +81,7 @@ object ChompassNavTransitions {
     const val TabParallaxStepFraction = 0.09f
 
     /** Uniform overscan for the wax field, sized to cover the ±(n−1)/2-step pan
-     *  (four tabs → ±13.5% width) with margin, so a panned field never exposes edges. */
-    const val TabParallaxOverscan = 1.29f
+     *  (four tabs → ±13.5% width) plus the ±3% tilt pan with margin, so the field
+     *  never exposes an edge. Keep tilt ≤ (overscan − 1)/2 − 0.135. */
+    const val TabParallaxOverscan = 1.40f
 }
