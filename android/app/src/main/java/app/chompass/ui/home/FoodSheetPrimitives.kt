@@ -3,7 +3,6 @@ package app.chompass.ui.home
 import androidx.compose.foundation.LocalOverscrollFactory
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.OverscrollEffect
@@ -90,7 +89,9 @@ import app.chompass.models.CurrentMealCatalog
 import app.chompass.models.MealType
 import app.chompass.models.ServingUnitOption
 import app.chompass.ui.components.isDarkTheme
+import app.chompass.ui.components.glassSheetColor
 import app.chompass.ui.components.pressScale
+import app.chompass.ui.theme.AppMotion
 import app.chompass.ui.components.MagnitudeDrafts
 import app.chompass.models.MacroValueFormatter
 import app.chompass.ui.components.SplitDecimalWheelPicker
@@ -564,7 +565,7 @@ internal fun ServingQuantityCard(
         }
         val rotation by animateFloatAsState(
             targetValue = if (expanded) 180f else 0f,
-            animationSpec = spring(dampingRatio = 0.75f),
+            animationSpec = AppMotion.pressSpring(),
         )
 
         Row(
@@ -630,8 +631,8 @@ internal fun ServingQuantityCard(
 
         AnimatedVisibility(
             visible = expanded,
-            enter = expandVertically(animationSpec = spring(dampingRatio = 0.75f)),
-            exit = shrinkVertically(animationSpec = spring(dampingRatio = 0.75f)),
+            enter = expandVertically(animationSpec = AppMotion.spatialSpring()),
+            exit = shrinkVertically(animationSpec = AppMotion.spatialSpring()),
         ) {
             Column {
                 Box(
@@ -871,7 +872,7 @@ internal fun SheetGlassDropdownMenu(
     val shape = MaterialTheme.shapes.large
     val sizedModifier = if (menuWidth != null) modifier.width(menuWidth) else modifier
     val isDark = isDarkTheme()
-    val menuContainer = MaterialTheme.colorScheme.surfaceContainerLow.copy(alpha = 0.92f)
+    val menuContainer = glassSheetColor(MaterialTheme.colorScheme.surfaceContainerLow)
     val borderColor = MaterialTheme.colorScheme.outlineVariant
 
     DropdownMenu(

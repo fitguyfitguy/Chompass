@@ -40,6 +40,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -57,6 +58,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import app.chompass.R
 import app.chompass.ui.theme.AppMotion
+
+/** Scrim alpha of the remove-photo X badge shown over image thumbnails. */
+const val PhotoRemoveBadgeScrimAlpha = 0.62f
 
 @Composable
 fun isDarkTheme(): Boolean = MaterialTheme.colorScheme.background.luminance() < 0.5f
@@ -258,6 +262,7 @@ fun ChompassPrimaryButton(
 ) {
     val haptics = androidx.compose.ui.platform.LocalHapticFeedback.current
     val label = text ?: androidx.compose.ui.res.stringResource(R.string.action_save)
+    val src = remember { MutableInteractionSource() }
     Button(
         onClick = {
             if (flushDrafts) {
@@ -267,7 +272,10 @@ fun ChompassPrimaryButton(
             onClick()
         },
         enabled = enabled,
-        modifier = modifier.height(height),
+        modifier = modifier
+            .pressScale(src, enabled = enabled)
+            .height(height),
+        interactionSource = src,
         shape = MaterialTheme.shapes.medium,
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.primary,

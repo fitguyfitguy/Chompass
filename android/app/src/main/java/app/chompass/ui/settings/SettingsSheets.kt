@@ -54,7 +54,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
@@ -132,7 +131,7 @@ private fun ProviderPickerChipLabel(chip: ProviderPickerChip) {
         fontSize = 11.sp,
         color = tone,
         modifier = Modifier
-            .border(1.dp, border, RoundedCornerShape(10.dp))
+            .border(1.dp, border, MaterialTheme.shapes.small)
             .padding(horizontal = 8.dp, vertical = 2.dp),
     )
 }

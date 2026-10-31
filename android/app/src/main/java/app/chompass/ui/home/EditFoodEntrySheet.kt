@@ -98,6 +98,7 @@ import app.chompass.ui.components.ChompassDialogActions
 import app.chompass.ui.components.ChompassPrimaryButton
 import app.chompass.ui.components.ChompassSegmentedTabs
 import app.chompass.ui.components.isDarkTheme
+import app.chompass.ui.components.PhotoRemoveBadgeScrimAlpha
 import app.chompass.ui.theme.AppColors
 import java.time.LocalDate
 import java.time.LocalTime
@@ -1522,7 +1523,7 @@ internal fun EditFoodEntryHero(
                             .align(Alignment.TopEnd)
                             .padding(4.dp)
                             .size(28.dp)
-                            .background(Color.Black.copy(alpha = 0.62f), CircleShape),
+                            .background(Color.Black.copy(alpha = PhotoRemoveBadgeScrimAlpha), CircleShape),
                     ) {
                         Icon(
                             Icons.Filled.Close,

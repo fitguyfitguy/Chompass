@@ -2,7 +2,6 @@ package app.chompass.ui.components
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
@@ -242,7 +241,7 @@ private fun DayTile(
         // §1.2–§1.3 (parameters reimplemented; reference is GPL-3.0).
         val circleColor by animateColorAsState(
             targetValue = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent,
-            animationSpec = tween(AppMotion.TweenDefaultMs, easing = AppMotion.EasingStandard),
+            animationSpec = AppMotion.spatialSpring(),
             label = "dayTileCircleColor",
         )
         val circleScale = animateFloatAsState(
@@ -256,7 +255,7 @@ private fun DayTile(
                 isToday -> MaterialTheme.colorScheme.primary
                 else -> MaterialTheme.colorScheme.onSurface
             },
-            animationSpec = tween(AppMotion.TweenDefaultMs, easing = AppMotion.EasingStandard),
+            animationSpec = AppMotion.spatialSpring(),
             label = "dayTileNumberColor",
         )
         Box(

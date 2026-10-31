@@ -95,7 +95,6 @@ internal fun CopyFromDaySheet(
     ChompassBottomSheet(
         onDismiss = { if (!isSaving) onDismiss() },
         sheetState = state,
-        containerColor = MaterialTheme.colorScheme.background,
     ) {
         SheetReviewToolbar(
             title = stringResource(R.string.home_menu_copy_from_day),

@@ -95,7 +95,6 @@ fun ProgressiveMealSheet(
     ChompassPinnedFooterSheet(
         onDismiss = { if (!isSaving) onDismiss() },
         sheetState = state,
-        containerColor = MaterialTheme.colorScheme.background,
         toolbar = { ProgressiveMealToolbar(isSaving = isSaving, onDismiss = onDismiss) },
         body = {
             ProgressiveMealContentList(

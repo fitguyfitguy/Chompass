@@ -130,7 +130,7 @@ fun ChompassFloatingPillBar(items: List<FloatingPillItem>, modifier: Modifier = 
                     )
                     .border(
                         0.5.dp,
-                        MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f),
+                        MaterialTheme.colorScheme.outlineVariant,
                         CircleShape,
                     ),
                 shape = CircleShape,

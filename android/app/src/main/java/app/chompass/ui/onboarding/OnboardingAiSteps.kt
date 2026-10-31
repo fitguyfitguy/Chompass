@@ -1,7 +1,6 @@
 package app.chompass.ui.onboarding
 
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -74,6 +73,7 @@ import app.chompass.ui.components.energyText
 import app.chompass.ui.components.energyUnitLabel
 import app.chompass.ui.navigation.LocalEnergyUnit
 import app.chompass.ui.theme.AppColors
+import app.chompass.ui.theme.AppMotion
 import app.chompass.ui.theme.warning
 
 @Composable
@@ -456,7 +456,7 @@ internal fun BuildingPlanStep(vm: OnboardingViewModel, onComplete: () -> Unit) {
     val targetProgress = checkedCount / items.size.toFloat()
     val animatedProgress by animateFloatAsState(
         targetValue = targetProgress,
-        animationSpec = tween(durationMillis = 400),
+        animationSpec = AppMotion.fillSpring(),
         label = "plan_progress"
     )
 

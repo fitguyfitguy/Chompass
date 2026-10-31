@@ -3,6 +3,7 @@ package app.chompass.ui.home
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
+import app.chompass.ui.theme.AppMotion
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -262,7 +263,7 @@ internal fun ProgressiveAnalysisCard(
     partial: PartialFoodAnalysis,
     animate: Boolean = true,
 ) {
-    ChompassSurface(modifier = Modifier.fillMaxWidth(), cornerRadius = 20.dp, padding = 16.dp) {
+    ChompassSurface(modifier = Modifier.fillMaxWidth(), padding = 16.dp) {
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             val nameFilled = partial.name != null
             val nameAlpha by animateFloatAsState(
@@ -459,7 +460,7 @@ internal fun CameraPairTransitionOverlay() {
     var entered by remember { mutableStateOf(false) }
     val scale by animateFloatAsState(
         targetValue = if (entered) 1f else 0.86f,
-        animationSpec = spring(dampingRatio = 0.72f, stiffness = Spring.StiffnessMediumLow),
+        animationSpec = AppMotion.spatialSpring(),
         label = "cameraPairTransitionScale"
     )
 

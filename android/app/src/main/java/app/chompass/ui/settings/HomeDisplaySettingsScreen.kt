@@ -59,6 +59,7 @@ import app.chompass.ui.navigation.BottomNavScrollPadding
 import app.chompass.ui.navigation.ChompassRoutes
 import app.chompass.ui.components.ChompassDialog
 import app.chompass.ui.components.MacroCard
+import app.chompass.ui.components.contentMaxWidth
 import app.chompass.ui.home.FoodLogMacroChipPickerDialog
 import app.chompass.ui.home.HomeLookPreview
 import app.chompass.ui.home.HomeTopNutrientPickerDialog
@@ -90,6 +91,7 @@ fun HomeDisplaySettingsScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
+                .contentMaxWidth()
                 .padding(padding)
                 .padding(horizontal = 16.dp),
             contentPadding = androidx.compose.foundation.layout.PaddingValues(

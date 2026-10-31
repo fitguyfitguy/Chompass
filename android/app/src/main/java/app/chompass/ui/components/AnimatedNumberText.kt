@@ -16,6 +16,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import app.chompass.ui.theme.AppMotion
 
 /**
@@ -36,6 +38,7 @@ fun AnimatedNumberText(
     maxLines: Int = 1,
     overflow: TextOverflow = TextOverflow.Clip,
     autoSize: TextAutoSize? = null,
+    contentDescription: String? = null,
 ) {
     AnimatedContent(
         targetState = value,
@@ -52,6 +55,11 @@ fun AnimatedNumberText(
     ) { v ->
         androidx.compose.material3.Text(
             text = v,
+            modifier = if (contentDescription != null) {
+                Modifier.semantics { this.contentDescription = contentDescription }
+            } else {
+                Modifier
+            },
             style = style,
             fontSize = fontSize,
             fontWeight = fontWeight,

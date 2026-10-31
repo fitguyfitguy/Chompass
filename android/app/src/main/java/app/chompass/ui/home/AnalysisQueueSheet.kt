@@ -84,6 +84,7 @@ import app.chompass.ui.components.rememberChompassSheetState
 import app.chompass.ui.components.rememberQueueThumbnail
 import app.chompass.ui.components.QueueThumb
 import app.chompass.ui.components.isDarkTheme
+import app.chompass.ui.components.PhotoRemoveBadgeScrimAlpha
 import java.time.Instant
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -756,7 +757,7 @@ private fun EditQueuedSheet(
                                 Box(
                                     Modifier
                                         .size(28.dp)
-                                        .background(Color.Black.copy(alpha = 0.62f), CircleShape),
+                                        .background(Color.Black.copy(alpha = PhotoRemoveBadgeScrimAlpha), CircleShape),
                                     contentAlignment = Alignment.Center,
                                 ) {
                                     Icon(

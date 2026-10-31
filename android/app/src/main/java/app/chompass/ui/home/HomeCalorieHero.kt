@@ -1,14 +1,7 @@
 package app.chompass.ui.home
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationVector1D
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.material3.HorizontalDivider
@@ -85,6 +78,7 @@ import app.chompass.ui.components.energyUnitLabel
 import app.chompass.ui.navigation.LocalLaunchFillEpoch
 import app.chompass.ui.navigation.LocalEnergyUnit
 import app.chompass.ui.components.pressScale
+import app.chompass.ui.components.AnimatedNumberText
 import app.chompass.ui.theme.AppMotion
 import app.chompass.ui.theme.success
 
@@ -461,12 +455,14 @@ private fun BudgetGoalLine(
     maxTextWidth: Dp = Dp.Unspecified,
 ) {
     val onClickLabel = stringResource(R.string.home_calorie_budget_info)
+    val src = remember { MutableInteractionSource() }
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(3.dp),
         modifier = modifier
+            .pressScale(src)
             .clickable(
-                interactionSource = remember { MutableInteractionSource() },
+                interactionSource = src,
                 indication = null,
                 onClickLabel = onClickLabel,
                 role = Role.Button,
@@ -627,36 +623,17 @@ private fun DefaultCalorieHero(input: CalorieHeroInput, modifier: Modifier = Mod
                     .padding(top = 30.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                // Counter swap: slide+fade when today's value changes
-                // (AppMotion tokens; recipe from the design teardown,
-                // docs/local/MORPHE_DESIGN_ANALYSIS.md §1.2).
-                AnimatedContent(
-                    targetState = LocaleFormat.integer(EnergyFormat.quantity(current, unit)),
-                    transitionSpec = {
-                        (fadeIn(tween(AppMotion.TweenDefaultMs, easing = AppMotion.EasingStandard)) +
-                            slideInVertically(tween(AppMotion.TweenDefaultMs, easing = AppMotion.EasingStandard)) { it / 2 })
-                            .togetherWith(
-                                fadeOut(tween(AppMotion.TweenFastMs, easing = AppMotion.EasingStandard)) +
-                                    slideOutVertically(tween(AppMotion.TweenFastMs, easing = AppMotion.EasingStandard)) { -it / 2 }
-                            )
-                    },
-                    label = "eatenNumber",
+                // Counter swap: slide+fade when today's value changes.
+                AnimatedNumberText(
+                    value = LocaleFormat.integer(EnergyFormat.quantity(current, unit)),
                     modifier = Modifier.widthIn(max = 140.dp),
-                ) { value ->
-                    Text(
-                        text = value,
-                        modifier = Modifier.semantics { contentDescription = eatenA11y },
-                        style = MaterialTheme.typography.displayMedium,
-                        color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.Bold,
-                        maxLines = 1,
-                        autoSize = TextAutoSize.StepBased(
-                            minFontSize = 30.sp,
-                            maxFontSize = 45.sp,
-                            stepSize = 1.sp,
-                        ),
-                    )
-                }
+                    contentDescription = eatenA11y,
+                    style = MaterialTheme.typography.displayMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1,
+                    autoSize = TextAutoSize.StepBased(minFontSize = 30.sp, maxFontSize = 45.sp, stepSize = 1.sp),
+                )
                 // Goal caption directly under the eaten number; the burn caption
                 // follows it (see CalorieBurnCaption below).
                 Box(
