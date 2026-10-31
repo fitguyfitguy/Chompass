@@ -933,8 +933,8 @@ fun ExpandableMacroPicker(
         // Expanded wheel picker
         AnimatedVisibility(
             visible = expanded,
-            enter = expandVertically(animationSpec = spring(dampingRatio = 0.75f)),
-            exit = shrinkVertically(animationSpec = spring(dampingRatio = 0.75f))
+            enter = expandVertically(animationSpec = AppMotion.spatialSpring()),
+            exit = shrinkVertically(animationSpec = AppMotion.spatialSpring())
         ) {
             NumericWheelPicker(
                 value = value,
@@ -1018,8 +1018,8 @@ fun ExpandableDecimalMacroPicker(
 
         AnimatedVisibility(
             visible = expanded,
-            enter = expandVertically(animationSpec = spring(dampingRatio = 0.75f)),
-            exit = shrinkVertically(animationSpec = spring(dampingRatio = 0.75f))
+            enter = expandVertically(animationSpec = AppMotion.spatialSpring()),
+            exit = shrinkVertically(animationSpec = AppMotion.spatialSpring())
         ) {
             SplitDecimalWheelPicker(
                 value = value,

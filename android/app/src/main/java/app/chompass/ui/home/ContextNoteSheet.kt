@@ -73,6 +73,7 @@ import app.chompass.ui.components.rememberDecodedBitmap
 import app.chompass.ui.components.ChompassPrimaryButton
 import app.chompass.ui.components.MagnitudeDrafts
 import app.chompass.ui.components.NumericWheelPicker
+import app.chompass.ui.components.PhotoRemoveBadgeScrimAlpha
 
 /**
  * Intermediate sheet after a photo is captured or picked. Shows the image and an
@@ -116,7 +117,6 @@ fun ContextNoteSheet(
     ChompassBottomSheet(
         onDismiss = { if (!busy) onDismiss() },
         sheetState = state,
-        containerColor = MaterialTheme.colorScheme.surface,
         // Codeberg #6/#14: zero the chrome insets — the default M3
         // consumeWindowInsets(0,0,0,max(0,offset)) plus the sticky footer's own
         // imePadding/navigationBarsPadding loops while the keyboard is open
@@ -448,7 +448,7 @@ fun MultiPhotoCaptureSheet(
                                     .align(Alignment.TopEnd)
                                     .padding(6.dp)
                                     .size(32.dp)
-                                    .background(Color.Black.copy(alpha = 0.62f), CircleShape),
+                                    .background(Color.Black.copy(alpha = PhotoRemoveBadgeScrimAlpha), CircleShape),
                             ) {
                                 Icon(
                                     Icons.Filled.Close,

@@ -23,6 +23,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DriveFileRenameOutline
 import androidx.compose.material.icons.filled.WaterDrop
 import app.chompass.services.grounding.GroundedEntryFeature
+import app.chompass.ui.components.pressScale
+import app.chompass.ui.theme.AppMotion
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
@@ -166,7 +168,7 @@ fun AddFoodSheet(
     // after it has already landed.
     val topCornerRadius by animateDpAsState(
         targetValue = if (sheetState.targetValue == SheetValue.Expanded) 0.dp else ChompassSheetCornerRadius,
-        animationSpec = tween(durationMillis = 220),
+        animationSpec = tween(AppMotion.TweenDefaultMs),
         label = "addFoodSheetCorner",
     )
     ChompassBottomSheet(
@@ -508,12 +510,14 @@ internal fun AddFoodSheetContent(
         // whole strip between the tool pills and the results is one target:
         // tapping it expands the sheet. Children with their own click handler
         // (the tabs) win, so only the dead space around them expands.
+        val src = remember { MutableInteractionSource() }
         Box(
             Modifier
                 .fillMaxWidth()
                 .height(if (searching) 16.dp else 64.dp)
+                .pressScale(src, enabled = sheetState != null)
                 .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
+                    interactionSource = src,
                     indication = null,
                     enabled = sheetState != null,
                     onClickLabel = expandLabel,

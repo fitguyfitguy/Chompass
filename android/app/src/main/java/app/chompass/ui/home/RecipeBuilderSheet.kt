@@ -144,7 +144,6 @@ fun RecipeBuilderSheet(
     ChompassBottomSheet(
         onDismiss = onDismiss,
         sheetState = state,
-        containerColor = MaterialTheme.colorScheme.background,
     ) {
         SheetReviewToolbar(
             title = stringResource(if (isNew) R.string.recipe_builder_title_new else R.string.recipe_builder_title_edit),
@@ -452,7 +451,6 @@ private fun FavoritesIngredientPickerSheet(
     ChompassBottomSheet(
         onDismiss = onDismiss,
         sheetState = state,
-        containerColor = MaterialTheme.colorScheme.background,
     ) {
         Text(
             stringResource(R.string.saved_meals_tab_favorites),

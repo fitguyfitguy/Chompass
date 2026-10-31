@@ -147,7 +147,6 @@ internal fun DailyNoteSheet(
     ChompassBottomSheet(
         onDismiss = onDismiss,
         sheetState = sheetState,
-        containerColor = MaterialTheme.colorScheme.surface,
         // Keyboard-safe: the footer pads itself; zero the chrome insets (same
         // reasoning as ContextNoteSheet — no wiggle while the IME opens).
         contentWindowInsets = { WindowInsets(0, 0, 0, 0) },

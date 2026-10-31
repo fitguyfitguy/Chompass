@@ -246,7 +246,7 @@ private fun IntentChip(intent: PhaseIntent) {
         fontWeight = FontWeight.Medium,
         color = content,
         modifier = Modifier
-            .clip(RoundedCornerShape(999.dp))
+            .clip(RoundedCornerShape(percent = 50))
             .background(background)
             .padding(horizontal = 8.dp, vertical = 3.dp),
     )

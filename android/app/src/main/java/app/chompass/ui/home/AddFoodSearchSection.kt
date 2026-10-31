@@ -9,7 +9,6 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.annotation.StringRes
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
@@ -22,6 +21,7 @@ import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import app.chompass.ui.components.pressScale
+import app.chompass.ui.theme.AppMotion
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -311,8 +311,8 @@ internal fun AddFoodQueryRow(
         trackersContent?.let { content ->
             AnimatedVisibility(
                 visible = trackersExpanded,
-                enter = expandVertically(animationSpec = spring(dampingRatio = 0.75f)),
-                exit = shrinkVertically(animationSpec = spring(dampingRatio = 0.75f)),
+                enter = expandVertically(animationSpec = AppMotion.spatialSpring()),
+                exit = shrinkVertically(animationSpec = AppMotion.spatialSpring()),
             ) {
                 content()
             }

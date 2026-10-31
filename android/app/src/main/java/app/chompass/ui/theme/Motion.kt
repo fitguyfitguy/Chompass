@@ -51,6 +51,9 @@ object AppMotion {
     /** Short fade split inside nav transitions (ms): outgoing window / incoming delay. */
     const val NavFadeShortMs = 90
 
+    /** Ambient record/listening pulse duration (ms). */
+    const val TweenPulseMs = 800
+
     /** Standard accelerate-decelerate curve for container/position transitions. */
     val EasingStandard = FastOutSlowInEasing
 

@@ -39,6 +39,7 @@ import app.chompass.ui.components.ChompassDialog
 import app.chompass.ui.components.ChompassDialogActions
 import app.chompass.ui.components.ChompassSurface
 import app.chompass.ui.components.ChompassIconBubble
+import app.chompass.ui.components.contentMaxWidth
 import app.chompass.ui.navigation.BottomNavScrollPadding
 import app.chompass.ui.theme.macroAccentColor
 
@@ -64,6 +65,7 @@ fun OptionalNutrientGoalsScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
+                .contentMaxWidth()
                 .padding(padding)
                 .padding(horizontal = 16.dp),
             contentPadding = androidx.compose.foundation.layout.PaddingValues(

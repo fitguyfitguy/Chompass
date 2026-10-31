@@ -339,7 +339,7 @@ fun CoachRecordingIndicator(controller: CoachVoiceController, modifier: Modifier
     val dotAlpha by pulse.animateFloat(
         initialValue = 1f,
         targetValue = 0.25f,
-        animationSpec = infiniteRepeatable(tween(700), RepeatMode.Reverse),
+        animationSpec = infiniteRepeatable(tween(AppMotion.TweenPulseMs), RepeatMode.Reverse),
         label = "dotAlpha"
     )
     Row(

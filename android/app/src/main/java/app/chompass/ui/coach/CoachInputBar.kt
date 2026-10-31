@@ -8,6 +8,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.runtime.remember
 import app.chompass.ui.components.pressScale
+import app.chompass.ui.components.PhotoRemoveBadgeScrimAlpha
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -157,7 +158,7 @@ internal fun InputBar(
                             Modifier
                                 .size(24.dp)
                                 .clip(CircleShape)
-                                .background(Color.Black.copy(alpha = 0.55f)),
+                                .background(Color.Black.copy(alpha = PhotoRemoveBadgeScrimAlpha)),
                             contentAlignment = Alignment.Center,
                         ) {
                             Icon(Icons.Filled.Close, contentDescription = stringResource(R.string.cd_remove_image), tint = Color.White, modifier = Modifier.size(14.dp))

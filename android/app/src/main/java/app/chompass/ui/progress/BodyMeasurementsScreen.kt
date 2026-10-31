@@ -55,6 +55,7 @@ import app.chompass.models.Gender
 import app.chompass.ui.components.ChompassDialog
 import app.chompass.ui.components.ChompassDialogActions
 import app.chompass.ui.components.ChompassSurface
+import app.chompass.ui.components.contentMaxWidth
 import app.chompass.ui.navigation.BottomNavScrollPadding
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -216,7 +217,7 @@ fun BodyMeasurementsScreen(container: AppContainer, onBack: () -> Unit) {
         },
     ) { padding ->
         LazyColumn(
-            modifier = Modifier.fillMaxSize().padding(padding).padding(horizontal = 16.dp),
+            modifier = Modifier.fillMaxSize().contentMaxWidth().padding(padding).padding(horizontal = 16.dp),
             contentPadding = androidx.compose.foundation.layout.PaddingValues(top = 14.dp, bottom = BottomNavScrollPadding),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {

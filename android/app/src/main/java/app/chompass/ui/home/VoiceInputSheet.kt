@@ -36,6 +36,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import app.chompass.ui.components.ChompassBottomSheet
 import app.chompass.ui.components.rememberChompassSheetState
+import app.chompass.ui.components.pressScale
+import app.chompass.ui.theme.AppMotion
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -245,7 +247,6 @@ fun VoiceInputSheet(
             }
         },
         sheetState = sheetState,
-        containerColor = MaterialTheme.colorScheme.surface,
     ) {
         Column(
             Modifier
@@ -433,14 +434,14 @@ private fun MicButton(phase: VoicePhase, onToggle: () -> Unit) {
         initialValue = 1f,
         targetValue = if (recording) 1.15f else 1f,
         animationSpec = infiniteRepeatable(
-            animation = tween(800),
+            animation = tween(AppMotion.TweenPulseMs),
             repeatMode = RepeatMode.Reverse
         ),
         label = "pulseScale"
     )
     val scale by animateFloatAsState(
         targetValue = if (recording) pulse else 1f,
-        animationSpec = tween(200),
+        animationSpec = tween(AppMotion.TweenDefaultMs),
         label = "micScale"
     )
     val bg = if (recording) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
@@ -451,6 +452,7 @@ private fun MicButton(phase: VoicePhase, onToggle: () -> Unit) {
             .size((80 * scale).dp)
             .clip(CircleShape)
             .background(bg)
+            .pressScale(interactionSource)
             .clickable(
                 interactionSource = interactionSource,
                 indication = null,

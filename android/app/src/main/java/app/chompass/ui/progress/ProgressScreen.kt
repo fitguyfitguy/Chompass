@@ -164,7 +164,7 @@ fun ProgressScreen(container: AppContainer, onOpenCustomize: (() -> Unit)? = nul
                         modifier = Modifier
                             .hazeGlassFill(
                                 MaterialTheme.colorScheme.surfaceContainerLow,
-                                RoundedCornerShape(14.dp),
+                                RoundedCornerShape(16.dp),
                                 LocalBackdropHaze.current,
                             )
                             .clickable(

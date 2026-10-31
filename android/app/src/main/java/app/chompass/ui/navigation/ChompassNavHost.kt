@@ -299,10 +299,19 @@ fun ChompassNavHost(
             NavHost(
                 navController = nav,
                 startDestination = if (startOnboarding) ChompassRoutes.ONBOARDING else ChompassRoutes.HOME,
-                enterTransition = { ChompassNavTransitions.pushEnter() },
-                exitTransition = { ChompassNavTransitions.pushExit() },
-                popEnterTransition = { ChompassNavTransitions.pushPopEnter() },
-                popExitTransition = { ChompassNavTransitions.pushPopExit() },
+                enterTransition = {
+                    if (targetState.destination.route in ChompassRoutes.bottomTabs) tabEnter()
+                    else ChompassNavTransitions.pushEnter()
+                },
+                exitTransition = {
+                    if (tabDelta() != null) tabExit() else ChompassNavTransitions.pushExit()
+                },
+                popEnterTransition = {
+                    if (tabDelta() != null) tabEnter() else ChompassNavTransitions.pushPopEnter()
+                },
+                popExitTransition = {
+                    if (tabDelta() != null) tabExit() else ChompassNavTransitions.pushPopExit()
+                },
             ) {
                 composable(ChompassRoutes.ONBOARDING) {
                     OnboardingScreen(container = container, onComplete = {
@@ -312,13 +321,7 @@ fun ChompassNavHost(
                         }
                     })
                 }
-                composable(
-                    ChompassRoutes.HOME,
-                    enterTransition = tabEnter,
-                    exitTransition = tabExit,
-                    popEnterTransition = tabEnter,
-                    popExitTransition = tabExit,
-                ) {
+                composable(ChompassRoutes.HOME) {
                     HomeScreen(
                         container = container,
                         onOpenSettings = {
@@ -354,13 +357,7 @@ fun ChompassNavHost(
                 composable(ChompassRoutes.PLAN_WEEK) {
                     PlanWeekScreen(container = container, nav = nav)
                 }
-                composable(
-                    ChompassRoutes.PROGRESS,
-                    enterTransition = tabEnter,
-                    exitTransition = tabExit,
-                    popEnterTransition = tabEnter,
-                    popExitTransition = tabExit,
-                ) {
+                composable(ChompassRoutes.PROGRESS) {
                     ProgressScreen(
                         container = container,
                         onOpenCustomize = {
@@ -368,13 +365,7 @@ fun ChompassNavHost(
                         },
                     )
                 }
-                composable(
-                    ChompassRoutes.COACH,
-                    enterTransition = tabEnter,
-                    exitTransition = tabExit,
-                    popEnterTransition = tabEnter,
-                    popExitTransition = tabExit,
-                ) {
+                composable(ChompassRoutes.COACH) {
                     if (showCoachTab) {
                         CoachScreen(container = container)
                     } else {
@@ -386,13 +377,7 @@ fun ChompassNavHost(
                         }
                     }
                 }
-                composable(
-                    ChompassRoutes.SETTINGS,
-                    enterTransition = tabEnter,
-                    exitTransition = tabExit,
-                    popEnterTransition = tabEnter,
-                    popExitTransition = tabExit,
-                ) { SettingsScreen(container = container, nav = nav) }
+                composable(ChompassRoutes.SETTINGS) { SettingsScreen(container = container, nav = nav) }
                 composable(ChompassRoutes.SETTINGS_PERSONAL) {
                     PersonalSettingsScreen(
                         container = container,

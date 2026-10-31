@@ -11,8 +11,6 @@ import app.chompass.ui.components.FoodReviewPositionalThreshold
 import app.chompass.ui.components.FoodReviewVelocityThreshold
 import app.chompass.ui.components.MagnitudeDrafts
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
@@ -1457,7 +1455,7 @@ internal fun ReviewNutritionValueRow(
                 Spacer(Modifier.width(8.dp))
                 val rotation by animateFloatAsState(
                     targetValue = if (expanded) 180f else 0f,
-                    animationSpec = spring(dampingRatio = 0.75f)
+                    animationSpec = AppMotion.pressSpring()
                 )
                 Icon(
                     Icons.Filled.KeyboardArrowDown,
@@ -1486,8 +1484,8 @@ internal fun ReviewNutritionValueRow(
         // Expanded wheel picker (Morphe: tweened disclosure, expand from top)
         AnimatedVisibility(
             visible = expanded && unlocked,
-            enter = expandVertically(expandFrom = Alignment.Top, animationSpec = tween(AppMotion.TweenDefaultMs, easing = AppMotion.EasingStandard)),
-            exit = shrinkVertically(shrinkTowards = Alignment.Top, animationSpec = tween(AppMotion.TweenDefaultMs, easing = AppMotion.EasingStandard)),
+            enter = expandVertically(expandFrom = Alignment.Top, animationSpec = AppMotion.spatialSpring()),
+            exit = shrinkVertically(shrinkTowards = Alignment.Top, animationSpec = AppMotion.spatialSpring()),
         ) {
             if (isCalories) {
                 val currentCalories = currentValue.roundToInt().coerceIn(0, calorieWheelMax)

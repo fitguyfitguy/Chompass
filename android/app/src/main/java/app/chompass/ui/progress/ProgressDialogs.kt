@@ -106,8 +106,8 @@ internal fun AddWeightDialog(
         }
         AnimatedVisibility(
             visible = advanced,
-            enter = expandVertically(expandFrom = Alignment.Top, animationSpec = tween(AppMotion.TweenDefaultMs, easing = AppMotion.EasingStandard)),
-            exit = shrinkVertically(shrinkTowards = Alignment.Top, animationSpec = tween(AppMotion.TweenDefaultMs, easing = AppMotion.EasingStandard)),
+            enter = expandVertically(expandFrom = Alignment.Top, animationSpec = AppMotion.spatialSpring()),
+            exit = shrinkVertically(shrinkTowards = Alignment.Top, animationSpec = AppMotion.spatialSpring()),
         ) {
             DateWheelPicker(
                 selected = pickedDate,
@@ -204,8 +204,8 @@ internal fun AddBodyFatDialog(
         }
         AnimatedVisibility(
             visible = advanced,
-            enter = expandVertically(expandFrom = Alignment.Top, animationSpec = tween(AppMotion.TweenDefaultMs, easing = AppMotion.EasingStandard)),
-            exit = shrinkVertically(shrinkTowards = Alignment.Top, animationSpec = tween(AppMotion.TweenDefaultMs, easing = AppMotion.EasingStandard)),
+            enter = expandVertically(expandFrom = Alignment.Top, animationSpec = AppMotion.spatialSpring()),
+            exit = shrinkVertically(shrinkTowards = Alignment.Top, animationSpec = AppMotion.spatialSpring()),
         ) {
             DateWheelPicker(
                 selected = pickedDate,
