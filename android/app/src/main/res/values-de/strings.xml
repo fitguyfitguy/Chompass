@@ -1756,6 +1756,7 @@ für dich ein</string>
     <string name="ambient_saturation_rich">Kräftig</string>
     <string name="settings_ambient_speed">Ambient-Geschwindigkeit</string>
     <string name="ambient_speed_calm">Ruhig</string>
+    <string name="ambient_speed_standard">Standard</string>
     <string name="ambient_speed_lively">Zügig</string>
     <string name="settings_ambient_palette">Ambient-Palette</string>
     <string name="ambient_palette_accent">Akzent</string>

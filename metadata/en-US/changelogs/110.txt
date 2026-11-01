@@ -1,0 +1,8 @@
+• A soft ambient background sits behind every screen, with intensity, drift, contrast, and saturation controls in Settings → Display (Android).
+• Frosted glass behind floating panels, sheets, and the bottom bar, with a strength choice (Android).
+• The bottom tab bar is a floating glass pill. Lists end above it (Android).
+• Progress shows scale body-composition metrics when a scale reports them, and a skeletal-muscle estimate from tape measurements (Android and PWA).
+• A fresh lean-mass reading drives calorie targets ahead of the body-fat estimate (Android and PWA).
+• The Claude picker adds opus 5.5, sonnet 5.5, and haiku 5.5. The Groq fallback list is current (Android).
+• Text search fetches a wider Open Food Facts window before ranking (Android).
+• Chompass is now licensed under the GNU GPL, version 3 or later.
