@@ -161,13 +161,16 @@ class SyncRepository(
         }
         return try {
             val tree = Uri.parse(treeUri)
-            val fileUri = LocalBackupFile.findOrCreate(appContext, tree)
-                ?: return SyncResult.Failed(appContext.getString(R.string.sync_error_local_file_unavailable))
-            LocalBackupFile.write(appContext, fileUri, exportDocumentJson(zone, emitPhotos = false))
+            LocalBackupFile.write(appContext, tree, exportDocumentJson(zone, emitPhotos = false))
             prefs.setLastLocalBackupAt(Instant.now().toString())
             SyncResult.Success(appContext.getString(R.string.sync_success_local_backup))
         } catch (t: Throwable) {
-            SyncResult.Failed(t.localizedMessage ?: appContext.getString(R.string.error_local_backup_failed))
+            SyncResult.Failed(
+                appContext.getString(
+                    R.string.error_local_backup_failed,
+                    t.localizedMessage ?: appContext.getString(R.string.error_unknown),
+                ),
+            )
         }
     }
 

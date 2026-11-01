@@ -75,7 +75,13 @@ fun SyncSettingsScreen(
     ) { uri ->
         if (uri == null) return@rememberLauncherForActivityResult
         val flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-        runCatching { activityContext.contentResolver.takePersistableUriPermission(uri, flags) }
+        val granted = runCatching {
+            activityContext.contentResolver.takePersistableUriPermission(uri, flags)
+        }.isSuccess
+        if (!granted) {
+            localBackupMessage = activityContext.getString(R.string.settings_local_backup_folder_failed)
+            return@rememberLauncherForActivityResult
+        }
         scope.launch {
             val previous = container.prefs.localBackupTreeUri.first()
             val name = LocalBackupFile.folderName(activityContext, uri) ?: uri.lastPathSegment.orEmpty()
