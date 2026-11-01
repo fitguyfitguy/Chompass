@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -28,6 +27,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -54,6 +55,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
@@ -63,6 +65,7 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import app.chompass.R
 import app.chompass.ui.components.LocalBottomBarHaze
 import app.chompass.ui.components.hazeGlassFill
 import app.chompass.ui.components.pressScale
@@ -220,12 +223,23 @@ private fun RowScope.PillAction(
     )
     val interactionSource = remember { MutableInteractionSource() }
     val icon: @Composable () -> Unit = {
-        Icon(
-            imageVector = item.icon,
-            contentDescription = null,
-            tint = iconColor,
-            modifier = Modifier.size(22.dp),
-        )
+        Box(contentAlignment = Alignment.Center) {
+            Icon(
+                imageVector = item.icon,
+                contentDescription = null,
+                tint = iconColor,
+                modifier = Modifier.size(22.dp),
+            )
+            // Filled settings cuts a 7.2/24 hub. On the glass pill the ambient
+            // field shows through it as a pink speck (#149).
+            if (item.icon == Icons.Filled.Settings) {
+                Box(
+                    Modifier
+                        .size(7.dp)
+                        .background(iconColor, CircleShape),
+                )
+            }
+        }
     }
 
     val action: @Composable () -> Unit = {
@@ -249,13 +263,16 @@ private fun RowScope.PillAction(
             verticalArrangement = Arrangement.Center,
         ) {
             if (item.badge) {
+                val updateLabel = stringResource(R.string.about_update_available)
                 BadgedBox(
                     badge = {
+                        // Default anchor is the icon's top-end corner. An inward
+                        // offset landed the dot in the gear hole (#149).
                         Badge(
                             modifier = Modifier
-                                .offset(x = (-4).dp, y = 4.dp)
                                 .size(8.dp)
-                                .clip(CircleShape),
+                                .clip(CircleShape)
+                                .semantics { contentDescription = updateLabel },
                         )
                     },
                 ) {
@@ -323,7 +340,7 @@ private fun pillLabelWeights(labels: List<String>, width: Dp): List<Float>? {
     }
 }
 
-private val FloatingPillHeight = 64.dp
+internal val FloatingPillHeight = 64.dp
 private val PillActionHeight = 52.dp
 private val PillInset = 6.dp
 private val PillSlotMaxWidth = 96.dp

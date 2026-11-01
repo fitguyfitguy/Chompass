@@ -9,6 +9,11 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 ### Added
 
 - **Back up to a local folder** (Android): Settings → Health & Data → Sync gains a Local backup section where you pick a folder. Chompass writes Chompass-sync.json there, replacing the previous backup only after the new copy is written and checked; with Back up on open it does that once a day when you start the app. Enable local backup turns the whole feature off at any time without losing the chosen folder. Photos stay out of the file. Closes Codeberg [#150](https://codeberg.org/fitguy/Chompass/issues/150) by [@DontBlameMe](https://codeberg.org/DontBlameMe)
+- **Save a photo to favorites without logging it** (Android): a photo review now has the same Save to favorites action as a barcode review, so a packaged food the scanner misses can be kept for later and logged when you eat it. Follows Codeberg [#126](https://codeberg.org/fitguy/Chompass/issues/126) by [@burdick-ryan](https://codeberg.org/burdick-ryan)
+
+### Changed
+
+- **Coach input lines up with the navigation pill** (Android): the message field is the same height as the bottom pill, and the space under it matches the space above it, between the field and the suggestion chips. The update mark on Settings sits on the corner of the gear, and the gear's center no longer shows the background through as a pink speck. Closes Codeberg [#149](https://codeberg.org/fitguy/Chompass/issues/149) by [@Spacellary](https://codeberg.org/Spacellary)
 
 ## [6.0.0] - 2026-11-01
 

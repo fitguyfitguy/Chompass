@@ -92,6 +92,7 @@ import app.chompass.models.MacroPlanResolver
 import app.chompass.services.grounding.FoodSuggestion
 import app.chompass.models.CurrentMealCatalog
 import app.chompass.models.FoodSource
+import app.chompass.models.offersFavoriteSave
 import app.chompass.models.CaffeineEntry
 import app.chompass.models.NicotineEntry
 import app.chompass.models.WaterAmountFormat
@@ -2143,10 +2144,10 @@ fun HomeScreen(
                     logTime = logTime,
                 )
             },
-            // Fresh barcode reviews only — a saved-meals relog review or
-            // an in-progress progressive meal keeps its own flows.
+            // Fresh barcode or photo reviews only — a saved-meals relog
+            // review or an in-progress progressive meal keeps its own flows.
             onSaveFavorite = if (
-                ui.pendingFoodSource == FoodSource.BARCODE &&
+                ui.pendingFoodSource?.offersFavoriteSave() == true &&
                 ui.pendingReviewSource == null
             ) {
                 { name, grams, scale, mealType, selectedServingUnit, selectedServingQuantity, editedAnalysis, logTime ->
