@@ -35,6 +35,12 @@ class AmbientShaderCompileTest {
         shader.setFloatUniform("alpha", 0.14f)
         shader.setFloatUniform("resolution", floatArrayOf(540f, 1200f))
         shader.setFloatUniform("touch", floatArrayOf(1f, 2f, 3f, 0f))
+        shader.setFloatUniform("bodyLo", 0.85f)
+        shader.setFloatUniform("bodyHi", 1.15f)
+        shader.setFloatUniform("haloLo", 0.3f)
+        shader.setFloatUniform("haloHi", 0.9f)
+        shader.setFloatUniform("haloGain", 0.3f)
+        shader.setFloatUniform("midFloor", 0.75f)
     }
 
     @Test(expected = IllegalArgumentException::class)

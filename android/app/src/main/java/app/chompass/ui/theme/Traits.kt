@@ -44,6 +44,76 @@ enum class AmbientIntensity(
     }
 }
 
+/**
+ * How hard the ambient field reads against the background. BALANCED is the
+ * shipped look, including the OLED dim that keeps true black close to off.
+ * STRONG is the opt-in for a sharper, brighter field on that black.
+ */
+enum class AmbientContrast(
+    val storage: String,
+    @param:StringRes val labelRes: Int,
+    /** Multiplier on wax alpha, stacked with [AmbientIntensity]. 1 keeps today's brightness. */
+    val alphaScale: Float,
+    /** OLED dim. BALANCED is the shipped 0.55 so black stays black until the user asks. */
+    val oledAlphaScale: Float,
+    /** Metaball body smoothstep edges. BALANCED is the shipped 0.85–1.15. */
+    val bodyLo: Float,
+    val bodyHi: Float,
+    /** Halo smoothstep edges and gain. BALANCED is the shipped 0.3–0.9 at 0.3. */
+    val haloLo: Float,
+    val haloHi: Float,
+    val haloGain: Float,
+    /** Middle-band alpha floor. 0.75 is the shipped recess behind the primary card. */
+    val midFloor: Float,
+    /** Soft-oval fallback radius scale. 1 keeps the authored size. */
+    val softRadiusScale: Float,
+    /** Dark-background value floor. 0 leaves authored brightness untouched. */
+    val darkValueFloor: Float,
+) {
+    SOFT(
+        "soft", R.string.ambient_contrast_soft,
+        0.72f, 0.40f, 0.70f, 1.35f, 0.15f, 1.05f, 0.42f, 0.55f, 1.12f, 0f,
+    ),
+    BALANCED(
+        "balanced", R.string.ambient_contrast_balanced,
+        1f, 0.55f, 0.85f, 1.15f, 0.3f, 0.9f, 0.3f, 0.75f, 1f, 0f,
+    ),
+    STRONG(
+        "strong", R.string.ambient_contrast_strong,
+        1.55f, 0.95f, 0.96f, 1.06f, 0.55f, 0.95f, 0.14f, 0.92f, 0.86f, 0.58f,
+    );
+
+    companion object {
+        val DEFAULT = BALANCED
+        fun fromStorage(raw: String?): AmbientContrast =
+            entries.firstOrNull { it.storage == raw } ?: DEFAULT
+    }
+}
+
+/**
+ * Chroma of the ambient field. NATURAL leaves the authored hues untouched.
+ * RICH pushes them away from gray and, on a dark background, lifts muddy
+ * colors enough to read on black.
+ */
+enum class AmbientSaturation(
+    val storage: String,
+    @param:StringRes val labelRes: Int,
+    /** Multiplier on HSV saturation. 1 is the authored chroma. */
+    val chromaScale: Float,
+    /** Dark-background value floor. 0 leaves authored brightness untouched. */
+    val darkValueFloor: Float,
+) {
+    MUTED("muted", R.string.ambient_saturation_muted, 0.62f, 0f),
+    NATURAL("natural", R.string.ambient_saturation_natural, 1f, 0f),
+    RICH("rich", R.string.ambient_saturation_rich, 1.4f, 0.68f);
+
+    companion object {
+        val DEFAULT = NATURAL
+        fun fromStorage(raw: String?): AmbientSaturation =
+            entries.firstOrNull { it.storage == raw } ?: DEFAULT
+    }
+}
+
 /** Drift speed of the ambient wax field. STANDARD is the shipped look. */
 enum class AmbientSpeed(
     val storage: String,
@@ -91,11 +161,13 @@ data class ChompassTraits(
     val ambientMotion: Boolean = true,
     val glassStrength: GlassStrength = GlassStrength.DEFAULT,
     val ambientIntensity: AmbientIntensity = AmbientIntensity.DEFAULT,
+    val ambientContrast: AmbientContrast = AmbientContrast.DEFAULT,
+    val ambientSaturation: AmbientSaturation = AmbientSaturation.DEFAULT,
     val ambientSpeed: AmbientSpeed = AmbientSpeed.DEFAULT,
     val ambientPalette: AmbientPalette = AmbientPalette.DEFAULT,
     /** Gyro parallax on the ambient field; OFF keeps the sensor unregistered. */
     val ambientTilt: Boolean = true,
-    /** True-black neutrals: the ambient field auto-dims so "pixels off" stays pixels off. */
+    /** True-black neutrals. Balanced contrast dims the ambient field so black stays nearly off; Strong eases that dim. */
     val oled: Boolean = false,
 )
 
@@ -115,6 +187,12 @@ object ChompassTraitsDefaults {
 
     @Composable
     fun ambientIntensity(): AmbientIntensity = LocalChompassTraits.current.ambientIntensity
+
+    @Composable
+    fun ambientContrast(): AmbientContrast = LocalChompassTraits.current.ambientContrast
+
+    @Composable
+    fun ambientSaturation(): AmbientSaturation = LocalChompassTraits.current.ambientSaturation
 
     @Composable
     fun ambientSpeed(): AmbientSpeed = LocalChompassTraits.current.ambientSpeed
