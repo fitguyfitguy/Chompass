@@ -2344,6 +2344,8 @@
     <string name="progress_log_scale_metrics_title">Записать данные весов</string>
     <string name="progress_estimated_smm">Оценка скелетных мышц (Lee)</string>
     <string name="progress_estimated_smm_note">Антропометрическая оценка по плечу, бедру и голени · ± ~3 кг</string>
+    <string name="progress_scale_metrics_muscle_estimated">Мышечная масса (оценка)</string>
+    <string name="progress_estimated_smm_body_note">Антропометрическая оценка по весу, росту, возрасту и полу · ± ~3 кг</string>
     <string name="progress_overlay_off">Выкл.</string>
     <string name="progress_no_entries_in_range">Нет записей за этот период</string>
     <string name="progress_no_series_selected">Нажмите на показатель выше, чтобы отобразить его здесь</string>

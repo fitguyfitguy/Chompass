@@ -99,6 +99,33 @@ data class UserProfile(
         return Period.between(birthDate, LocalDate.now()).years.coerceAtLeast(0)
     }
 
+    /**
+     * Skeletal muscle mass estimate from body weight — Lee et al. 2000 model 2
+     * (*AJCN* 72:796–803; R² 0.86, SEE 2.8 kg):
+     *
+     *   SM(kg) = 0.244·weight(kg) + 7.80·height(m) + 6.6·sex − 0.098·age − 3.3
+     *
+     * The girth model (model 1, SEE 2.2 kg) lives in
+     * [BodyMeasurement.estimatedSkeletalMuscleMassKg]; this variant needs no tape, so
+     * a scale-only user still gets a muscle trend. Height is in METRES. The `race`
+     * term is 0 (no race field) and [Gender.OTHER] takes the female coefficient,
+     * matching the rest of the profile math. Both models were fitted on nonobese
+     * adults (BMI < 30), so treat a value above that as a rough trend, not a reading.
+     *
+     * Display-only: never feeds BMR, TDEE, macros or the protein cap. Returns null
+     * when an input is unusable or the result falls outside the plausible 10–80 kg.
+     */
+    val estimatedSkeletalMuscleMassKg: Double?
+        get() {
+            if (!weightKg.isFinite() || weightKg <= 0) return null
+            if (!heightCm.isFinite() || heightCm <= 0) return null
+            val sex = if (gender == Gender.MALE) 1.0 else 0.0
+            val kg = 0.244 * weightKg + 7.80 * (heightCm / 100.0) + 6.6 * sex -
+                0.098 * age - 3.3
+            if (!kg.isFinite() || kg < 10.0 || kg > 80.0) return null
+            return kg
+        }
+
     /** True when BMR uses Katch-McArdle. Default on whenever a VALID body-fat fraction
      *  (3–65%) is set and the reading is fresh; [useBodyFatInBMR] false falls back to
      *  Mifflin-St Jeor without clearing BF%, and a stale reading

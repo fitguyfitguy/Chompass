@@ -2250,6 +2250,8 @@ makrolar yeni kalori cəminə uyğun yenidən tarazlaşdırılır</string>
     <string name="progress_log_scale_metrics_title">Tərəzi göstəricilərini qeyd et</string>
     <string name="progress_estimated_smm">Təxmini skelet əzələsi (Lee)</string>
     <string name="progress_estimated_smm_note">Qol, bud və baldırdan antropometrik təxmin · ± ~3 kq</string>
+    <string name="progress_scale_metrics_muscle_estimated">Əzələ kütləsi (təxmini)</string>
+    <string name="progress_estimated_smm_body_note">Çəki, boy, yaş və cinsdən antropometrik təxmin · ± ~3 kq</string>
     <string name="progress_overlay_off">Bağlı</string>
     <string name="progress_no_entries_in_range">Bu aralıqda qeyd yoxdur</string>
     <string name="progress_no_series_selected">Burada göstərmək üçün yuxarıda bir ölçüyə toxunun</string>

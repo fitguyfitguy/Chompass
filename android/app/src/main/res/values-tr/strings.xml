@@ -2269,6 +2269,8 @@ makrolar yeni kalori toplamına göre yeniden dengelenir</string>
     <string name="progress_log_scale_metrics_title">Tartı ölçümlerini kaydet</string>
     <string name="progress_estimated_smm">Tahmini iskelet kası (Lee)</string>
     <string name="progress_estimated_smm_note">Kol, uyluk ve baldırdan antropometrik tahmin · ± ~3 kg</string>
+    <string name="progress_scale_metrics_muscle_estimated">Kas kütlesi (tahmini)</string>
+    <string name="progress_estimated_smm_body_note">Kilo, boy, yaş ve cinsiyetten antropometrik tahmin · ± ~3 kg</string>
     <string name="progress_overlay_off">Kapalı</string>
     <string name="progress_no_entries_in_range">Bu aralıkta kayıt yok</string>
     <string name="progress_no_series_selected">Burada göstermek için yukarıdaki bir metriğe dokunun</string>

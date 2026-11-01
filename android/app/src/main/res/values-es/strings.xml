@@ -2275,6 +2275,8 @@ macros reequilibradas al nuevo total calórico</string>
     <string name="progress_log_scale_metrics_title">Registrar métricas de báscula</string>
     <string name="progress_estimated_smm">Músculo esquelético estimado (Lee)</string>
     <string name="progress_estimated_smm_note">Estimación antropométrica con brazo, muslo y pantorrilla · ± ~3 kg</string>
+    <string name="progress_scale_metrics_muscle_estimated">Masa muscular (estimada)</string>
+    <string name="progress_estimated_smm_body_note">Estimación antropométrica con peso, altura, edad y sexo · ± ~3 kg</string>
     <string name="progress_overlay_off">Apagado</string>
     <string name="progress_no_entries_in_range">No hay registros en este periodo</string>
     <string name="progress_no_series_selected">Toca una métrica arriba para mostrarla aquí</string>

@@ -249,6 +249,8 @@ fun ProgressScreen(container: AppContainer, onOpenCustomize: (() -> Unit)? = nul
                         // legitimately reach a weigh-in just outside the selected range.
                         weights = allWeights,
                         useMetric = weightMetric,
+                        profile = ui.profile,
+                        hasMeasuredMuscle = ui.hasMeasuredMuscle,
                         dayTypeByDay = ui.dayTypeByDay,
                         untrackedDays = ui.untrackedDays,
                         typeColorOf = typeColorOf,
@@ -500,6 +502,8 @@ internal fun ProgressScreenPreviewContent(
                         compositions = ui.filteredCompositions,
                         weights = ui.filteredWeights,
                         useMetric = weightMetric,
+                        profile = ui.profile,
+                        hasMeasuredMuscle = ui.hasMeasuredMuscle,
                         chartsImmediate = chartsImmediate,
                         dayTypeByDay = ui.dayTypeByDay,
                         untrackedDays = ui.untrackedDays,

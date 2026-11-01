@@ -32,6 +32,7 @@ import app.chompass.R
 import app.chompass.models.BodyCompositionEntry
 import app.chompass.models.BodyCompositionEntry.CompositionMetric
 import app.chompass.models.UnitFormat
+import app.chompass.models.UserProfile
 import app.chompass.models.WeightEntry
 
 /** How far a weigh-in may sit from a composition row and still supply the TBW% denominator. */
@@ -97,6 +98,9 @@ internal fun CompositionSection(
     compositions: List<BodyCompositionEntry>,
     weights: List<WeightEntry>,
     useMetric: Boolean,
+    profile: UserProfile? = null,
+    /** True when the scale ever reported muscle mass — the estimate then stays hidden. */
+    hasMeasuredMuscle: Boolean = false,
     chartsImmediate: Boolean = false,
     dayTypeByDay: Map<String, String> = emptyMap(),
     untrackedDays: Set<String> = emptySet(),
@@ -157,7 +161,46 @@ internal fun CompositionSection(
                     typeColorOf = typeColorOf,
                 )
             }
+            // Health Connect has no muscle-mass record type, so a scale that measures
+            // muscle cannot sync it. Fall back to the Lee estimate from the profile's
+            // weight/height/age/sex only when the scale never reported a real value.
+            val estimatedMuscleKg = remember(profile, hasMeasuredMuscle) {
+                if (hasMeasuredMuscle) null else profile?.estimatedSkeletalMuscleMassKg
+            }
+            if (estimatedMuscleKg != null) {
+                EstimatedMuscleRow(kg = estimatedMuscleKg, useMetric = useMetric)
+            }
         }
+    }
+}
+
+/**
+ * Muscle mass for scale users whose scale never delivers one: Lee et al. 2000
+ * model 2, from the profile's weight, height, age and sex. Display-only, no chart —
+ * a single estimate is not a measurement and must not look like one.
+ */
+@Composable
+private fun EstimatedMuscleRow(kg: Double, useMetric: Boolean) {
+    val context = LocalContext.current
+    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                stringResource(R.string.progress_scale_metrics_muscle_estimated),
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Medium,
+            )
+            Spacer(Modifier.weight(1f))
+            Text(
+                formatCompositionValue(context, CompositionMetric.MUSCLE_MASS, kg, useMetric),
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        Text(
+            stringResource(R.string.progress_estimated_smm_body_note),
+            fontSize = 11.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }
 

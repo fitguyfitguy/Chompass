@@ -2291,6 +2291,8 @@ makro rebalansowane do nowej sumy kalorii</string>
     <string name="progress_log_scale_metrics_title">Zapisz pomiary wagi</string>
     <string name="progress_estimated_smm">Szacowana masa mięśni szkieletowych (Lee)</string>
     <string name="progress_estimated_smm_note">Szacunek antropometryczny z ramienia, uda i łydki · ± ~3 kg</string>
+    <string name="progress_scale_metrics_muscle_estimated">Masa mięśniowa (szacowana)</string>
+    <string name="progress_estimated_smm_body_note">Szacunek antropometryczny z wagi, wzrostu, wieku i płci · ± ~3 kg</string>
     <string name="progress_overlay_off">Wył.</string>
     <string name="progress_no_entries_in_range">Brak wpisów w tym zakresie</string>
     <string name="progress_no_series_selected">Dotknij metryki powyżej, aby wyświetlić ją tutaj</string>

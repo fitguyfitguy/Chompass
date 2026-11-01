@@ -2277,6 +2277,8 @@ macros rééquilibrées au nouveau total calorique</string>
     <string name="progress_log_scale_metrics_title">Enregistrer les mesures de balance</string>
     <string name="progress_estimated_smm">Muscle squelettique estimé (Lee)</string>
     <string name="progress_estimated_smm_note">Estimation anthropométrique (bras, cuisse, mollet) · ± ~3 kg</string>
+    <string name="progress_scale_metrics_muscle_estimated">Masse musculaire (estimée)</string>
+    <string name="progress_estimated_smm_body_note">Estimation anthropométrique (poids, taille, âge, sexe) · ± ~3 kg</string>
     <string name="progress_overlay_off">Désactivé</string>
     <string name="progress_no_entries_in_range">Aucune entrée sur cette période</string>
     <string name="progress_no_series_selected">Touchez une métrique ci-dessus pour l\'afficher ici</string>

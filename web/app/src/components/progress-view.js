@@ -1,6 +1,6 @@
 // @ts-check
 import { weights, foodEntries, profile as profileStore, bodyFat, bodyComposition, prefs, goalJournal, untrackedDays } from "../lib/db.js";
-import { dailyTargets } from "../lib/chompass-core/formulas.js";
+import { dailyTargets, estimatedSkeletalMuscleMassKgFromBody } from "../lib/chompass-core/formulas.js";
 import { journalAverage } from "../lib/chompass-core/macro-plan.js";
 import { computeWeightForecast, suggestAdaptiveCalories } from "../lib/chompass-core/forecast.js";
 import {
@@ -279,6 +279,21 @@ export class ProgressView extends HTMLElement {
         .map((c) => ({ label: shortDate(c.date), value: c[metric.key], day: c.date.slice(0, 10) }));
       return { metric, points };
     }).filter(({ points }) => points.length > 0);
+    // Health Connect has no muscle-mass record type, so a scale that measures muscle
+    // cannot sync it. Fall back to the Lee estimate from the profile only when the
+    // scale never delivered a real reading.
+    const hasMuscleReading = allComp.some(
+      (c) => typeof c.muscleMassKg === "number" && Number.isFinite(c.muscleMassKg),
+    );
+    const estimatedMuscleKg =
+      !hasMuscleReading && prof
+        ? estimatedSkeletalMuscleMassKgFromBody({
+            weightKg: prof.weightKg,
+            heightCm: prof.heightCm,
+            age: prof.age,
+            sex: prof.sex,
+          })
+        : null;
     if (compBlocks.length === 0) this.showCompositionHistory = false;
     const compositionSection = compBlocks.length === 0
       ? ""
@@ -314,6 +329,18 @@ export class ProgressView extends HTMLElement {
             })}`;
           })
           .join("")}
+        ${
+          estimatedMuscleKg != null
+            ? `
+        <div class="progress-head" style="margin-top:0.75rem;">
+          <h3 class="progress-title" style="font-size:1rem;">${t("progress.scale_muscle_estimated")}</h3>
+        </div>
+        <p class="legend-hint">${t("progress.scale_muscle_estimated_note")}</p>
+        <div class="stat-badges">
+          <div class="stat-badge"><strong>${fmt(toDisplay(estimatedMuscleKg))} ${weightUnit}</strong>${t("progress.stat_current")}</div>
+        </div>`
+            : ""
+        }
         <button type="button" class="history-link" data-toggle-comph>
           <span class="history-link__icon">${ICONS.listAlt}</span>
           <span class="history-link__text">

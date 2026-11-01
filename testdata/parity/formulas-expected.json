@@ -423,6 +423,61 @@
       "expect": {
         "kg": null
       }
+    },
+    {
+      "id": "lee_smm_body_male",
+      "kind": "leeSmmBody",
+      "input": {
+        "sex": "male",
+        "age": 30,
+        "heightCm": 180,
+        "weightKg": 80
+      },
+      "expect": {
+        "kg": 33.92,
+        "tol": 1e-9
+      }
+    },
+    {
+      "id": "lee_smm_body_female",
+      "kind": "leeSmmBody",
+      "input": {
+        "sex": "female",
+        "age": 35,
+        "heightCm": 165,
+        "weightKg": 62
+      },
+      "expect": {
+        "kg": 21.268,
+        "tol": 1e-9
+      }
+    },
+    {
+      "id": "lee_smm_body_otherUsesFemaleCoefficient",
+      "kind": "leeSmmBody",
+      "input": {
+        "sex": "other",
+        "age": 35,
+        "heightCm": 165,
+        "weightKg": 62
+      },
+      "expect": {
+        "kg": 21.268,
+        "tol": 1e-9
+      }
+    },
+    {
+      "id": "lee_smm_body_invalidWeight",
+      "kind": "leeSmmBody",
+      "input": {
+        "sex": "male",
+        "age": 30,
+        "heightCm": 180,
+        "weightKg": 0
+      },
+      "expect": {
+        "kg": null
+      }
     }
   ]
 }

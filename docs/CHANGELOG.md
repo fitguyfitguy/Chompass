@@ -4,6 +4,12 @@ All notable changes to Chompass are documented here.
 
 Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no internals). The version section is pasted verbatim onto the Codeberg release.
 
+## [Unreleased]
+
+### Added
+
+- **Muscle mass from your profile when your scale can't send it** (Android and PWA): Health Connect has no muscle-mass record, so a scale that measures muscle — a Beurer BF 105, for example — can never deliver it. Progress now shows an estimated muscle mass next to the other scale readings, worked out from your weight, height, age and sex, whenever your scale has never sent a real muscle reading. It is within about 3 kg and never changes your calorie or protein targets. A muscle mass you log or import still wins over the estimate.
+
 ## [6.0.1] - 2026-11-01
 
 ### Added
