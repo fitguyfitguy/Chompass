@@ -188,6 +188,8 @@ export const en = Object.freeze({
   "progress.scale_lean": "Lean mass",
   "progress.scale_visceral": "Visceral fat",
   "progress.scale_metrics_note": "Consumer scale estimate — the trend is more reliable than the absolute value",
+  "progress.scale_muscle_estimated": "Muscle mass (estimated)",
+  "progress.scale_muscle_estimated_note": "Anthropometric estimate from weight, height, age and sex · ± ~3 kg",
   "progress.scale_tbw_percent": "{pct}% of body weight · typical range 45–65%",
   "progress.scale_metrics_history": "Scale Metrics History",
   "progress.delete_scale_title": "Delete scale metrics?",

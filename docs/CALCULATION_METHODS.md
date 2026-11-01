@@ -45,6 +45,7 @@ Deterministic formulas are the **reference layer**. AI recalculation and adaptiv
 | WHR     | Waist-to-hip             | Deterministic | `BodyMeasurement.waistToHipRatio`              | ratio    |
 | WTH     | Waist-to-height          | Deterministic | `BodyMeasurement.waistToHeightRatio`           | ratio    |
 | SMM-LEE | Skeletal muscle mass est. | Deterministic | `BodyMeasurement.estimatedSkeletalMuscleMassKg` / `formulas.estimatedSkeletalMuscleMassKg` | kg (display only) |
+| SMM-LEE-BODY | Skeletal muscle est. from body weight | Deterministic | `UserProfile.estimatedSkeletalMuscleMassKg` / `formulas.estimatedSkeletalMuscleMassKgFromBody` | kg (display only) |
 | TBW-PCT | Total body water %        | Display        | `ProgressCompositionSection` (TBW kg ÷ nearest weight ±12 h) | % |
 | WATER-DYN-A | Dynamic gross water goal | Heuristic     | `WaterGoalCalculator.grossGoalMl`              | ml/day   |
 | WATER-DYN-B | Food-water subtraction   | Heuristic     | `WaterGoalCalculator.foodWaterMl` / `netGoalMl` | ml/day  |
@@ -524,6 +525,29 @@ SM(kg) = Ht(m) × (0.00744×arm(cm)² + 0.00088×thigh(cm)² + 0.00441×calf(cm)
 - **Never logged, never fed into BMR, TDEE or macros** — it is a trend companion to the tape
   measurements, labeled “± ~3 kg”.
 
+#### SMM-LEE-BODY: skeletal muscle estimate from body weight (display only)
+
+The same paper's model 2 — the weight/height variant (R² 0.86, SEE 2.8 kg):
+
+```
+sex = 1 male, 0 female/other
+SM(kg) = 0.244×weight(kg) + 7.80×height(m) + 6.6×sex − 0.098×age − 3.3
+```
+
+- Exists because Health Connect has **no muscle-mass record type**: a scale that measures
+  muscle (Beurer BF 105 and similar) cannot sync it. The Progress scale card falls back to
+  this estimate from the profile (weight, height, age, sex) and shows it only when the scale
+  never delivered a real reading.
+- Model 1 (girths, SEE 2.2 kg) is the better estimate when upper arm, thigh and calf are
+  logged; this variant needs no tape. Different inputs, so the two numbers can differ by a
+  couple of kg.
+- Height in **metres**; race term 0 (the app has no race field — the source's ±1.2/1.4 kg
+  Asian/African-American terms are skipped); gender OTHER uses the female coefficient.
+- Both models were fitted on nonobese adults (BMI < 30) — above that, read the number as a
+  direction, not a level.
+- Rejects non-finite inputs and results outside 10–80 kg. **Never logged, never fed into BMR,
+  TDEE, macros or the protein cap.**
+
 #### TBW-PCT: total body water percentage (display only)
 
 `totalBodyWaterKg ÷ nearest weigh-in within ±12 h × 100`, one decimal. Shown as a badge on the
@@ -552,6 +576,7 @@ within ±12 h simply shows no percentage.
 | RFM BF%                          | **Keep (display)**              | Waist + height when neck is missing; optional confirm to log as BF%       |
 | Measured lean mass for BMR       | **Keep (priority)**             | Scale BIA lean mass feeds Katch-McArdle directly (no BF inversion); 90-day recency + 20–250 kg guard keeps a stale/typo reading out |
 | SMM-LEE estimate                 | **Keep (display only)**         | Validated limb-circumference model, but SEE ≈ 2.9 kg — a trend companion, never a target driver |
+| SMM-LEE-BODY estimate            | **Keep (display only)**         | Weight/height variant of the same paper (SEE ≈ 2.8 kg) for scales whose muscle mass cannot sync through Health Connect; shown only when no measured muscle reading exists |
 | TBW % badge                      | **Keep (display only)**         | Derived from one composition row + one weigh-in; the water goal is intake, not body water |
 | Water base 35 ml/kg              | **Keep**                        | Midpoint of 30–40 ml/kg clinical range; between EFSA (2.0/2.5 L) and IOM (2.7/3.7 L) totals |
 | Temp factor +4 %/°C ≥ 25 °C, cap 1.6 | **Keep (heuristic)**         | AIs apply only to temperate climates; +0.5–1.0 L on hot days matches guidance |
@@ -572,7 +597,7 @@ within ±12 h simply shows no percentage.
 6. AI meal and micronutrient estimates vary by provider and input quality.
 7. Water math is a hydration **heuristic**, not a clinical prescription; it assumes healthy adults with normal kidney function. Temperature is entered manually (no location permission by design); food-water is a coarse 60 % estimate capped at 1 L.
 8. Scale composition metrics (bone mass, total body water, muscle/lean mass) are consumer-BIA estimates: absolute error of several kg versus DEXA, and it moves with hydration, time of day and skin temperature. Read the trend, not the number. The visceral-fat rating is vendor-specific (no cross-brand scale) and is display-only.
-9. The Lee skeletal-muscle estimate carries a ~2.9 kg standard error, uses uncorrected tape girths, and assumes an average race term; it is shown as “± ~3 kg” and never feeds a target.
+9. The Lee skeletal-muscle estimate carries a ~2.9 kg standard error, uses uncorrected tape girths, and assumes an average race term; it is shown as “± ~3 kg” and never feeds a target. Without tape girths the weight/height variant (SMM-LEE-BODY, ~2.8 kg) is shown instead; both were fitted on nonobese adults, so at BMI ≥ 30 the number is a direction, not a level.
 
 ---
 

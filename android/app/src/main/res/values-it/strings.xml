@@ -2250,6 +2250,8 @@ macro riequilibrate al nuovo totale calorico</string>
     <string name="progress_log_scale_metrics_title">Registra misure della bilancia</string>
     <string name="progress_estimated_smm">Muscolo scheletrico stimato (Lee)</string>
     <string name="progress_estimated_smm_note">Stima antropometrica da braccio, coscia e polpaccio · ± ~3 kg</string>
+    <string name="progress_scale_metrics_muscle_estimated">Massa muscolare (stimata)</string>
+    <string name="progress_estimated_smm_body_note">Stima antropometrica da peso, altezza, età e sesso · ± ~3 kg</string>
     <string name="progress_overlay_off">Off</string>
     <string name="progress_no_entries_in_range">Nessuna voce in questo periodo</string>
     <string name="progress_no_series_selected">Tocca una metrica qui sopra per mostrarla qui</string>

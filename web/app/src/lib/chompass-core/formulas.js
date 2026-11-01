@@ -347,6 +347,31 @@ export function estimatedSkeletalMuscleMassKg(input) {
 }
 
 /**
+ * SMM-LEE-BODY: skeletal muscle mass estimate from body weight — Lee et al. 2000
+ * model 2 (AJCN 72:796-803). Mirrors UserProfile.estimatedSkeletalMuscleMassKg.
+ *
+ *   SM = 0.244·weight(kg) + 7.80·height(m) + 6.6·sex − 0.098·age − 3.3
+ *
+ * R² 0.86, SEE 2.8 kg. Needs no tape girths, so a scale-only user still gets a
+ * muscle trend; `estimatedSkeletalMuscleMassKg` is the girth model (SEE 2.2 kg).
+ * Height in METRES, `race` is 0, sex "other" uses the female coefficient.
+ * Display-only — never feeds BMR or macros.
+ * @param {{weightKg?: number|null, heightCm?: number|null, age?: number|null, sex?: string}} input
+ * @returns {number|null} null when an input is unusable or the result is implausible
+ */
+export function estimatedSkeletalMuscleMassKgFromBody(input) {
+  const { weightKg, heightCm, age, sex } = input ?? {};
+  for (const v of [weightKg, heightCm, age]) {
+    if (v == null || !Number.isFinite(Number(v))) return null;
+  }
+  if (weightKg <= 0 || heightCm <= 0 || age < 0) return null;
+  const sexTerm = sex === "male" ? 1 : 0;
+  const kg = 0.244 * weightKg + 7.8 * (heightCm / 100) + 6.6 * sexTerm - 0.098 * age - 3.3;
+  if (!Number.isFinite(kg) || kg < 10 || kg > 80) return null;
+  return kg;
+}
+
+/**
  * MACRO-F standard fat target (g/day): at least max(0.6 g/kg bodyweight,
  * 20% of calories) (UserProfile.kt standardFatGoal).
  * @param {UserProfile} profile

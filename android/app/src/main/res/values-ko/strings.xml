@@ -2248,6 +2248,8 @@
     <string name="progress_log_scale_metrics_title">체중계 지표 기록</string>
     <string name="progress_estimated_smm">추정 골격근량(Lee)</string>
     <string name="progress_estimated_smm_note">팔·허벅지·종아리 인체계측 추정 · ± ~3 kg</string>
+    <string name="progress_scale_metrics_muscle_estimated">근육량(추정)</string>
+    <string name="progress_estimated_smm_body_note">체중·신장·나이·성별 인체계측 추정 · ± ~3 kg</string>
     <string name="progress_overlay_off">끄기</string>
     <string name="progress_no_entries_in_range">이 기간에 기록 없음</string>
     <string name="progress_no_series_selected">표시하려면 위에서 항목을 탭하세요</string>

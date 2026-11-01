@@ -3835,6 +3835,8 @@ für dich ein</string>
     <string name="progress_log_scale_metrics_title">Waagen-Werte erfassen</string>
     <string name="progress_estimated_smm">Geschätzte Skelettmuskulatur (Lee)</string>
     <string name="progress_estimated_smm_note">Anthropometrische Schätzung aus Arm, Oberschenkel und Wade · ± ~3 kg</string>
+    <string name="progress_scale_metrics_muscle_estimated">Muskelmasse (geschätzt)</string>
+    <string name="progress_estimated_smm_body_note">Anthropometrische Schätzung aus Gewicht, Größe, Alter und Geschlecht · ± ~3 kg</string>
     <string name="progress_overlay_off">Aus</string>
     <string name="progress_no_entries_in_range">Keine Einträge in diesem Zeitraum</string>
     <string name="progress_no_series_selected">Tippe oben auf eine Metrik, um sie hier anzuzeigen</string>

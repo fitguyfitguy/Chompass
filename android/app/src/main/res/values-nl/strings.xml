@@ -2248,6 +2248,8 @@ macro\'s opnieuw verdeeld over het nieuwe calorieëntotaal</string>
     <string name="progress_log_scale_metrics_title">Waalmetingen vastleggen</string>
     <string name="progress_estimated_smm">Geschatte skeletspiermassa (Lee)</string>
     <string name="progress_estimated_smm_note">Antropometrische schatting uit arm, dij en kuit · ± ~3 kg</string>
+    <string name="progress_scale_metrics_muscle_estimated">Spiermassa (geschat)</string>
+    <string name="progress_estimated_smm_body_note">Antropometrische schatting uit gewicht, lengte, leeftijd en geslacht · ± ~3 kg</string>
     <string name="progress_overlay_off">Uit</string>
     <string name="progress_no_entries_in_range">Geen registraties in deze periode</string>
     <string name="progress_no_series_selected">Tik hierboven op een meetwaarde om deze hier te tonen</string>

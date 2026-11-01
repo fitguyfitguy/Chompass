@@ -2249,6 +2249,8 @@
     <string name="progress_log_scale_metrics_title">स्केल मेट्रिक्स लॉग करें</string>
     <string name="progress_estimated_smm">अनुमानित कंकाल मांसपेशी (Lee)</string>
     <string name="progress_estimated_smm_note">बांह, जांघ और पिंडली से एंथ्रोपोमेट्रिक अनुमान · ± ~3 किग्रा</string>
+    <string name="progress_scale_metrics_muscle_estimated">मांसपेशी द्रव्यमान (अनुमानित)</string>
+    <string name="progress_estimated_smm_body_note">वज़न, लंबाई, उम्र और लिंग से एंथ्रोपोमेट्रिक अनुमान · ± ~3 किग्रा</string>
     <string name="progress_overlay_off">बंद</string>
     <string name="progress_no_entries_in_range">इस अवधि में कोई एंट्री नहीं</string>
     <string name="progress_no_series_selected">इसे यहाँ दिखाने के लिए ऊपर किसी मीट्रिक पर टैप करें</string>

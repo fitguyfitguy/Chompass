@@ -2293,6 +2293,8 @@
     <string name="progress_log_scale_metrics_title">تسجيل مقاييس الميزان</string>
     <string name="progress_estimated_smm">العضلات الهيكلية المقدَّرة (Lee)</string>
     <string name="progress_estimated_smm_note">تقدير قياسي من الذراع والفخذ والسمانة · ± ~3 كغم</string>
+    <string name="progress_scale_metrics_muscle_estimated">الكتلة العضلية (تقديرية)</string>
+    <string name="progress_estimated_smm_body_note">تقدير قياسي من الوزن والطول والعمر والجنس · ± ~3 كغم</string>
     <string name="progress_overlay_off">إيقاف</string>
     <string name="progress_no_entries_in_range">لا توجد إدخالات في هذه الفترة</string>
     <string name="progress_no_series_selected">انقر على مقياس أعلاه لعرضه هنا</string>

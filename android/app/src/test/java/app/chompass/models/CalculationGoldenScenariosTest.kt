@@ -69,6 +69,35 @@ class CalculationGoldenScenariosTest(
             }
             return
         }
+        if (scenario.optString("kind") == "leeSmmBody") {
+            val input = scenario.getJSONObject("input")
+            val expect = scenario.getJSONObject("expect")
+            val gender = when (input.optString("sex", "male")) {
+                "female" -> Gender.FEMALE
+                "male" -> Gender.MALE
+                else -> Gender.OTHER
+            }
+            // Profile age is derived from the birthday, so pin the birthday to
+            // whole years before today to reproduce the fixture's `age`.
+            val birthday = LocalDate.now()
+                .minusYears(input.getInt("age").toLong())
+                .atStartOfDay(ZoneId.systemDefault())
+                .toInstant()
+            val profile = UserProfile(
+                gender = gender,
+                birthday = birthday,
+                heightCm = input.getDouble("heightCm"),
+                weightKg = input.getDouble("weightKg"),
+            )
+            val actual = profile.estimatedSkeletalMuscleMassKg
+            if (expect.isNull("kg")) {
+                assertEquals(scenarioId, null, actual)
+            } else {
+                requireNotNull(actual) { scenarioId }
+                assertEquals(scenarioId, expect.getDouble("kg"), actual, expect.optDouble("tol", 1e-9))
+            }
+            return
+        }
         if (scenario.optString("kind") == "averageDailyIntake") {
             val input = scenario.getJSONObject("input")
             val expect = scenario.getJSONObject("expect")

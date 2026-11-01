@@ -2260,6 +2260,8 @@ macro-urile reechilibrate la noul total caloric</string>
     <string name="progress_log_scale_metrics_title">Înregistrează măsurători de cântar</string>
     <string name="progress_estimated_smm">Masă musculară scheletică estimată (Lee)</string>
     <string name="progress_estimated_smm_note">Estimare antropometrică din braț, coapsă și gambă · ± ~3 kg</string>
+    <string name="progress_scale_metrics_muscle_estimated">Masă musculară (estimată)</string>
+    <string name="progress_estimated_smm_body_note">Estimare antropometrică din greutate, înălțime, vârstă și sex · ± ~3 kg</string>
     <string name="progress_overlay_off">Dezactivat</string>
     <string name="progress_no_entries_in_range">Nicio înregistrare în această perioadă</string>
     <string name="progress_no_series_selected">Atinge o metrică de mai sus pentru a o afișa aici</string>

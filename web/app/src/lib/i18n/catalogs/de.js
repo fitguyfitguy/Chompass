@@ -140,6 +140,8 @@ export const de = Object.freeze({
   "progress.scale_lean": "Fettfreie Masse",
   "progress.scale_visceral": "Viszeralfett",
   "progress.scale_metrics_note": "Schätzung einer Körperwaage — der Trend ist verlässlicher als der Absolutwert",
+  "progress.scale_muscle_estimated": "Muskelmasse (geschätzt)",
+  "progress.scale_muscle_estimated_note": "Anthropometrische Schätzung aus Gewicht, Größe, Alter und Geschlecht · ± ~3 kg",
   "progress.scale_tbw_percent": "{pct}% des Körpergewichts · typischer Bereich 45–65%",
   "progress.scale_metrics_history": "Verlauf der Waagen-Werte",
   "progress.delete_scale_title": "Waagen-Werte löschen?",

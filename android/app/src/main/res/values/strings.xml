@@ -1044,6 +1044,8 @@
     <string name="progress_log_scale_metrics_title">Log Scale Metrics</string>
     <string name="progress_estimated_smm">Estimated skeletal muscle (Lee)</string>
     <string name="progress_estimated_smm_note">Anthropometric estimate from arm, thigh and calf · ± ~3 kg</string>
+    <string name="progress_scale_metrics_muscle_estimated">Muscle mass (estimated)</string>
+    <string name="progress_estimated_smm_body_note">Anthropometric estimate from weight, height, age and sex · ± ~3 kg</string>
     <string name="progress_overlay_off">Off</string>
     <string name="progress_log_weight">Log Weight</string>
     <string name="progress_log_measurement_format">Log %1$s</string>

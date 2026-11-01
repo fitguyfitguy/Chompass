@@ -2248,6 +2248,8 @@
     <string name="progress_log_scale_metrics_title">体重計の指標を記録</string>
     <string name="progress_estimated_smm">推定骨格筋量（Lee）</string>
     <string name="progress_estimated_smm_note">上腕・大腿・下腿からの人体計測推定 · ± ~3 kg</string>
+    <string name="progress_scale_metrics_muscle_estimated">筋肉量（推定）</string>
+    <string name="progress_estimated_smm_body_note">体重・身長・年齢・性別からの人体計測推定 · ± ~3 kg</string>
     <string name="progress_overlay_off">オフ</string>
     <string name="progress_no_entries_in_range">この期間の記録はありません</string>
     <string name="progress_no_series_selected">表示するには上の項目をタップしてください</string>
