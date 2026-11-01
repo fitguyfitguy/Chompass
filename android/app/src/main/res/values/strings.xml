@@ -1976,7 +1976,7 @@
     <string name="import_sync_title">Import sync JSON</string>
     <string name="settings_sync_now">Sync now</string>
     <string name="settings_local_backup_section">Local backup</string>
-    <string name="settings_local_backup_blurb">Save a copy of your diary and body data to a file on your device. Chompass writes Chompass-sync.json in the folder you choose and replaces it on each backup. Photos are not included. Use Import sync JSON to restore it.</string>
+    <string name="settings_local_backup_blurb">Save a copy of your diary and body data to a file. Chompass writes Chompass-sync.json in the folder you choose and replaces it on each backup. Photos are not included. Use Import sync JSON to restore it.</string>
     <string name="settings_local_backup_enable">Enable local backup</string>
     <string name="settings_local_backup_folder">Folder</string>
     <string name="settings_local_backup_no_folder">No folder chosen</string>
@@ -1984,6 +1984,7 @@
     <string name="settings_local_backup_auto_desc">Once a day when you open the app. Off by default. Back up now still works anytime.</string>
     <string name="settings_local_backup_now">Back up now</string>
     <string name="settings_local_backup_saved">Folder saved.</string>
+    <string name="settings_local_backup_folder_failed">Could not keep access to that folder. Choose it again.</string>
     <string name="settings_local_backup_last">Last backup: %1$s</string>
     <string name="settings_local_backup_never">Not backed up yet</string>
     <string name="settings_last_sync">Last sync: %1$s</string>
@@ -2128,7 +2129,7 @@
     <string name="error_invalid_json">Invalid JSON</string>
     <string name="error_unknown">Unknown error</string>
     <string name="error_webdav_sync_failed">WebDAV sync failed</string>
-    <string name="error_local_backup_failed">Local backup failed</string>
+    <string name="error_local_backup_failed">Local backup failed: %1$s. Choose the folder again if access was lost.</string>
 
     <!-- Sync (WebDAV / sync document) messages -->
     <string name="sync_error_unsupported_file">Unsupported sync file</string>
@@ -2137,7 +2138,6 @@
     <string name="sync_error_local_backup_disabled">Local backup is turned off</string>
     <string name="sync_error_build_local_doc">Could not build local sync document</string>
     <string name="sync_error_remote_invalid">Remote sync document is invalid</string>
-    <string name="sync_error_local_file_unavailable">Could not open Chompass-sync.json in the chosen folder</string>
     <string name="sync_error_local_rebuild_failed">Local sync rebuild failed after conflict</string>
     <string name="sync_error_remote_invalid_conflict">Remote sync document invalid after conflict</string>
     <string name="sync_error_conflict_persisted">WebDAV conflict persisted; try again</string>

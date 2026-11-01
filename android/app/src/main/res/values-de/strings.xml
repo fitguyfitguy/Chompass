@@ -2245,7 +2245,7 @@ für dich ein</string>
 
     <string name="settings_local_backup_section">Lokale Sicherung</string>
 
-    <string name="settings_local_backup_blurb">Sichere eine Kopie deines Tagebuchs und deiner Körperdaten in einer Datei auf deinem Gerät. Chompass schreibt Chompass-sync.json in den gewählten Ordner und ersetzt sie bei jeder Sicherung. Fotos sind nicht enthalten. Zum Wiederherstellen die Datei über „Synchronisierungs-JSON importieren“ einlesen.</string>
+    <string name="settings_local_backup_blurb">Sichere eine Kopie deines Tagebuchs und deiner Körperdaten in einer Datei. Chompass schreibt Chompass-sync.json in den gewählten Ordner und ersetzt sie bei jeder Sicherung. Fotos sind nicht enthalten. Zum Wiederherstellen die Datei über „Synchronisierungs-JSON importieren“ einlesen.</string>
 
     <string name="settings_local_backup_enable">Lokale Sicherung aktivieren</string>
 
@@ -2260,6 +2260,8 @@ für dich ein</string>
     <string name="settings_local_backup_now">Jetzt sichern</string>
 
     <string name="settings_local_backup_saved">Ordner gespeichert.</string>
+
+    <string name="settings_local_backup_folder_failed">Der Zugriff auf den Ordner konnte nicht gespeichert werden. Wähle ihn erneut.</string>
 
     <string name="settings_local_backup_last">Letzte Sicherung: %1$s</string>
 
@@ -2505,7 +2507,7 @@ für dich ein</string>
 
     <string name="error_webdav_sync_failed">WebDAV-Synchronisierung fehlgeschlagen</string>
 
-    <string name="error_local_backup_failed">Sicherung in lokale Datei fehlgeschlagen</string>
+    <string name="error_local_backup_failed">Sicherung fehlgeschlagen: %1$s. Wähle den Ordner erneut, falls der Zugriff verloren ging.</string>
 
     <string name="sync_error_unsupported_file">Nicht unterstützte Synchronisierungsdatei</string>
 
@@ -2518,8 +2520,6 @@ für dich ein</string>
     <string name="sync_error_build_local_doc">Lokales Synchronisierungsdokument konnte nicht erstellt werden</string>
 
     <string name="sync_error_remote_invalid">Remote-Synchronisierungsdokument ist ungültig</string>
-
-    <string name="sync_error_local_file_unavailable">Chompass-sync.json konnte im gewählten Ordner nicht geöffnet werden</string>
 
     <string name="sync_error_local_rebuild_failed">Neuer Aufbau des lokalen Synchronisierungsdokuments nach Konflikt fehlgeschlagen</string>
 
