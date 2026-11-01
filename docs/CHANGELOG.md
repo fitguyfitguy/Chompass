@@ -15,6 +15,10 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 - **Coach input lines up with the navigation pill** (Android): the message field is the same height as the bottom pill, and the space under it matches the space above it, between the field and the suggestion chips. The update mark on Settings sits on the corner of the gear, and the gear's center no longer shows the background through as a pink speck. Closes Codeberg [#149](https://codeberg.org/fitguy/Chompass/issues/149) by [@Spacellary](https://codeberg.org/Spacellary)
 
+### Fixed
+
+- **Scale body-composition readings from Health Connect show up** (Android): bone mass, total body water and lean mass that your scale already wrote to Health Connect were never readable, so Progress stayed empty for them. The next time you open Chompass, Health Connect asks for those reads if you were already connected. Muscle mass and the visceral-fat rating still only arrive from a scale export or manual entry. Health Connect has no record for either.
+
 ## [6.0.0] - 2026-11-01
 
 ### Added

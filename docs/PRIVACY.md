@@ -47,7 +47,7 @@ Chompass may contact external services only when you use a feature that requires
 | Food photos (barcode hint) | Barcodes decoded from food photos are looked up on Open Food Facts | Open Food Facts public API |
 | Weather widget | Your chosen city name and its coordinates | Open-Meteo (openweather-style forecast API, no account) |
 | Voice entry (cloud STT providers) | The recorded audio clip, only when you select Whisper / Gemini / Deepgram / AssemblyAI in Settings | Your configured STT provider. **Default voice input is on-device and sends nothing.** |
-| Health Connect | Nutrition, weight, body fat, height (write); sleep, resting heart rate, hydration, steps, energy (read) if you enable sync | Google Health Connect **on-device** (Android 14+: system module; Android 13 and lower: optional Play Store APK). No Chompass cloud. |
+| Health Connect | Nutrition, weight, body fat, height (write); bone mass, body water, lean body mass, sleep, resting heart rate, hydration, steps, energy (read) if you enable sync | Google Health Connect **on-device** (Android 14+: system module; Android 13 and lower: optional Play Store APK). No Chompass cloud. |
 | User-hosted sync | Sync document (diary, metrics, water, favorites, recipes; not API keys or food photos) | WebDAV URL you configure |
 | App update check | Nothing app-specific: one anonymous request for the latest release tag, compared locally. Runs at app start and when you open Settings → About | Codeberg releases API |
 
