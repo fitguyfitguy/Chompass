@@ -3,6 +3,7 @@ package app.chompass.sync
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import android.net.Uri
 import app.chompass.R
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.json.Json
@@ -107,12 +108,12 @@ class SyncRepository(
         val user = prefs.webDavUsername.first().trim()
         val password = keyStore.webDavPassword().orEmpty()
         val today = LocalDate.now(zone)
-        if (!shouldAutoSyncWebDav(
+        if (!shouldAutoRunOnOpen(
                 enabled = prefs.webDavEnabled.first(),
                 configured = url.isNotEmpty() && user.isNotEmpty() && password.isNotEmpty(),
                 today = today,
-                lastSyncAtIso = prefs.lastSyncAt.first(),
-                lastAutoSyncDayIso = prefs.webDavAutoSyncDay.first(),
+                lastRunAtIso = prefs.lastSyncAt.first(),
+                lastAutoRunDayIso = prefs.webDavAutoSyncDay.first(),
                 zone = zone,
             )
         ) {
@@ -120,6 +121,57 @@ class SyncRepository(
         }
         prefs.setWebDavAutoSyncDay(today.toString())
         return syncNow(zone)
+    }
+
+    /**
+     * Opt-in foreground local backup: at most once per local calendar day when a
+     * folder is chosen. Returns null when skipped; otherwise the result of [backupLocalFileNow].
+     */
+    suspend fun maybeAutoBackupLocalFile(zone: ZoneId = ZoneId.systemDefault()): SyncResult? {
+        val treeUri = prefs.localBackupTreeUri.first()
+        val today = LocalDate.now(zone)
+        val enabled = prefs.localBackupEnabled.first() && prefs.localBackupAutoEnabled.first()
+        if (!shouldAutoRunOnOpen(
+                enabled = enabled,
+                configured = treeUri.isNotBlank(),
+                today = today,
+                lastRunAtIso = prefs.lastLocalBackupAt.first(),
+                lastAutoRunDayIso = prefs.localBackupAutoDay.first(),
+                zone = zone,
+            )
+        ) {
+            return null
+        }
+        prefs.setLocalBackupAutoDay(today.toString())
+        return backupLocalFileNow(zone)
+    }
+
+    /**
+     * Writes the current document to Chompass-sync.json in the chosen folder,
+     * replacing the previous backup. Photos stay out: their bytes live in app
+     * storage, so a file outside it must not advertise refs it does not carry.
+     */
+    suspend fun backupLocalFileNow(zone: ZoneId = ZoneId.systemDefault()): SyncResult {
+        val treeUri = prefs.localBackupTreeUri.first()
+        if (treeUri.isBlank()) {
+            return SyncResult.Failed(appContext.getString(R.string.sync_error_configure_local))
+        }
+        if (!prefs.localBackupEnabled.first()) {
+            return SyncResult.Failed(appContext.getString(R.string.sync_error_local_backup_disabled))
+        }
+        return try {
+            val tree = Uri.parse(treeUri)
+            LocalBackupFile.write(appContext, tree, exportDocumentJson(zone, emitPhotos = false))
+            prefs.setLastLocalBackupAt(Instant.now().toString())
+            SyncResult.Success(appContext.getString(R.string.sync_success_local_backup))
+        } catch (t: Throwable) {
+            SyncResult.Failed(
+                appContext.getString(
+                    R.string.error_local_backup_failed,
+                    t.localizedMessage ?: appContext.getString(R.string.error_unknown),
+                ),
+            )
+        }
     }
 
     suspend fun syncNow(

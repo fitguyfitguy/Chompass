@@ -6,7 +6,7 @@ import org.junit.Test
 import java.time.LocalDate
 import java.time.ZoneOffset
 
-class WebDavAutoSyncTest {
+class AutoSyncTest {
     private val zone = ZoneOffset.UTC
     private val today = LocalDate.of(2026, 7, 31)
 
@@ -21,22 +21,22 @@ class WebDavAutoSyncTest {
     @Test
     fun skipsWhenDisabledOrNotConfigured() {
         assertFalse(
-            shouldAutoSyncWebDav(
+            shouldAutoRunOnOpen(
                 enabled = false,
                 configured = true,
                 today = today,
-                lastSyncAtIso = null,
-                lastAutoSyncDayIso = null,
+                lastRunAtIso = null,
+                lastAutoRunDayIso = null,
                 zone = zone,
             ),
         )
         assertFalse(
-            shouldAutoSyncWebDav(
+            shouldAutoRunOnOpen(
                 enabled = true,
                 configured = false,
                 today = today,
-                lastSyncAtIso = null,
-                lastAutoSyncDayIso = null,
+                lastRunAtIso = null,
+                lastAutoRunDayIso = null,
                 zone = zone,
             ),
         )
@@ -45,22 +45,22 @@ class WebDavAutoSyncTest {
     @Test
     fun runsOncePerDayWhenEnabled() {
         assertTrue(
-            shouldAutoSyncWebDav(
+            shouldAutoRunOnOpen(
                 enabled = true,
                 configured = true,
                 today = today,
-                lastSyncAtIso = null,
-                lastAutoSyncDayIso = null,
+                lastRunAtIso = null,
+                lastAutoRunDayIso = null,
                 zone = zone,
             ),
         )
         assertFalse(
-            shouldAutoSyncWebDav(
+            shouldAutoRunOnOpen(
                 enabled = true,
                 configured = true,
                 today = today,
-                lastSyncAtIso = null,
-                lastAutoSyncDayIso = "2026-07-31",
+                lastRunAtIso = null,
+                lastAutoRunDayIso = "2026-07-31",
                 zone = zone,
             ),
         )
@@ -69,12 +69,12 @@ class WebDavAutoSyncTest {
     @Test
     fun skipsWhenAlreadySyncedToday() {
         assertFalse(
-            shouldAutoSyncWebDav(
+            shouldAutoRunOnOpen(
                 enabled = true,
                 configured = true,
                 today = today,
-                lastSyncAtIso = "2026-07-31T08:00:00Z",
-                lastAutoSyncDayIso = null,
+                lastRunAtIso = "2026-07-31T08:00:00Z",
+                lastAutoRunDayIso = null,
                 zone = zone,
             ),
         )
@@ -83,12 +83,12 @@ class WebDavAutoSyncTest {
     @Test
     fun allowsNextDayAfterYesterdayAttempt() {
         assertTrue(
-            shouldAutoSyncWebDav(
+            shouldAutoRunOnOpen(
                 enabled = true,
                 configured = true,
                 today = today,
-                lastSyncAtIso = "2026-07-30T22:00:00Z",
-                lastAutoSyncDayIso = "2026-07-30",
+                lastRunAtIso = "2026-07-30T22:00:00Z",
+                lastAutoRunDayIso = "2026-07-30",
                 zone = zone,
             ),
         )
