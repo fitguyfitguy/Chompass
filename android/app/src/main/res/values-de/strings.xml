@@ -2219,7 +2219,7 @@ für dich ein</string>
 
     <string name="notif_body_fat_log_text">Trage deinen heutigen Körperfettanteil ein, um die Entwicklung deiner Körperzusammensetzung zu verfolgen.</string>
 
-    <string name="settings_health_companions">Synchronisiert sich mit allen Geräten, die Health Connect unterstützen: Gadgetbridge (Huawei, Honor, Amazfit, Mi Band und andere Wearables), openScale (Bluetooth-Waagen), Samsung Health, Fitbit und mehr. Gewicht und Körperfett werden automatisch importiert; von dir erfasste Mahlzeiten und Wasseraufnahme werden exportiert, und Mahlzeiten aus anderen Apps werden importiert. Schlaf, Ruhepuls und Flüssigkeitszufuhr werden auf dem Reiter „Fortschritt“ angezeigt.</string>
+    <string name="settings_health_companions">Synchronisiert sich mit allen Geräten, die Health Connect unterstützen: Gadgetbridge (Huawei, Honor, Amazfit, Mi Band und andere Wearables), openScale (Bluetooth-Waagen), Samsung Health, Fitbit und mehr. Gewicht, Körperfett, Knochenmasse, Körperwasser und Magermasse werden automatisch importiert; von dir erfasste Mahlzeiten und Wasseraufnahme werden exportiert, und Mahlzeiten aus anderen Apps werden importiert. Schlaf, Ruhepuls und Flüssigkeitszufuhr werden auf dem Reiter „Fortschritt“ angezeigt.</string>
 
     <string name="settings_health_background_sync">Hintergrundsynchronisierung</string>
 

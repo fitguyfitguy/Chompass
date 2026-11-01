@@ -388,7 +388,9 @@ class HealthConnectManager(private val context: Context) {
          *  v6 = added Height write + Sleep/RestingHeartRate/Hydration reads (wellness card).
          *  v7 = added READ_HEALTH_DATA_HISTORY when the module supports it.
          *  v8 = added HydrationRecord write permission (water sync).
-         *  v9 = added BoneMass/BodyWaterMass/LeanBodyMass read permissions (composition card). */
-        const val CURRENT_TYPES_VERSION = 9
+         *  v9 = added BoneMass/BodyWaterMass/LeanBodyMass read calls. The manifest
+         *  declarations were missing, so the system never offered those toggles and
+         *  the version stamp skipped the re-ask. v10 declares the reads and prompts. */
+        const val CURRENT_TYPES_VERSION = 10
     }
 }

@@ -16,7 +16,9 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.health.connect.client.PermissionController
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import app.chompass.services.health.HealthConnectManager
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.AlertDialog
@@ -132,6 +134,26 @@ open class MainActivity : ComponentActivity() {
                         session.stageFromImport(imported)
                     }
                 }
+            }
+        }
+
+    /**
+     * One-shot re-ask when an update adds Health Connect record types. Registered
+     * here, not in a composable, so the sheet survives a settings-screen dispose.
+     * The callback stamps the types version even if the new reads are denied, so
+     * a dismissed sheet does not return on every launch. A later grant from
+     * Manage access still backfills: read sync drops its changes token when a
+     * newly granted type is missing from it.
+     */
+    private val healthPermissionUpgrade =
+        registerForActivityResult(PermissionController.createRequestPermissionResultContract()) { granted ->
+            val container = (application as ChompassApp).container
+            lifecycleScope.launch {
+                if (granted.any { it in container.health.permissions }) {
+                    container.prefs.setHealthConnectEnabled(true)
+                    container.syncHealthConnectReads()
+                }
+                container.prefs.setHealthPermissionsVersion(HealthConnectManager.CURRENT_TYPES_VERSION)
             }
         }
 
@@ -280,6 +302,7 @@ open class MainActivity : ComponentActivity() {
     override fun onStart() {
         super.onStart()
         registerWallpaperColorsListener()
+        maybeRequestHealthPermissionUpgrade()
         val now = SystemClock.elapsedRealtime()
         if (foregroundSyncJob?.isActive == true) return
         if (now - lastForegroundSyncAtMs < FOREGROUND_SYNC_MIN_INTERVAL_MS) return
@@ -605,10 +628,37 @@ open class MainActivity : ComponentActivity() {
         const val FOREGROUND_SYNC_MIN_INTERVAL_MS = 60_000L
         const val RESTORE_FINGERPRINT_SLACK_MS = 60_000L
         const val PHOTO_IMPORT_TAG = "Chompass"
+        /** Survives recreation so a sheet already up is not launched twice. */
+        val healthUpgradePromptLaunched = java.util.concurrent.atomic.AtomicBoolean(false)
         /** Per-image ingest cap (bytes) for share-in / gallery photos. */
         const val MAX_IMPORT_IMAGE_BYTES = 25 * 1024 * 1024
         /** Total staging cap for one share/gallery batch (10 photos ÷ cap each). */
         const val MAX_IMPORT_BATCH_BYTES = 150 * 1024 * 1024
+    }
+
+    /**
+     * Health Connect does not grant permissions added in an app update. Ask once
+     * when a connected, onboarded install is behind [HealthConnectManager.CURRENT_TYPES_VERSION].
+     */
+    private fun maybeRequestHealthPermissionUpgrade() {
+        if (healthUpgradePromptLaunched.get()) return
+        lifecycleScope.launch {
+            val container = (application as ChompassApp).container
+            val shouldPrompt = container.prefs.hasCompletedOnboarding.first() &&
+                container.prefs.healthConnectEnabled.first() &&
+                container.health.isAvailable() &&
+                container.health.hasAnyPermission() &&
+                container.prefs.healthPermissionsVersion.first() <
+                HealthConnectManager.CURRENT_TYPES_VERSION
+            if (!shouldPrompt || !lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
+                return@launch
+            }
+            if (!healthUpgradePromptLaunched.compareAndSet(false, true)) return@launch
+            val launched = runCatching {
+                healthPermissionUpgrade.launch(container.health.permissions)
+            }.isSuccess
+            if (!launched) healthUpgradePromptLaunched.set(false)
+        }
     }
 
     /** Handles debug extras from cold start ([onCreate]) or warm relaunch ([onNewIntent]). */

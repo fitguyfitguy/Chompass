@@ -2252,9 +2252,11 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             container.prefs.clearHealthEnergyMeasuredActive()
         }
 
+        // The types version is stamped only after the permission sheet returns
+        // (MainActivity, or the connect toggle). Stamping here would skip the
+        // re-ask that an update adding record types depends on.
         if (granted && (!stored || version < HealthConnectManager.CURRENT_TYPES_VERSION)) {
             backfillHealthConnect()
-            container.prefs.setHealthPermissionsVersion(HealthConnectManager.CURRENT_TYPES_VERSION)
         }
 
         // Pull external weigh-ins / body-fat readings whenever Settings reloads while connected.
@@ -2281,7 +2283,6 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                     return@launch
                 }
                 container.prefs.setHealthConnectEnabled(true)
-                container.prefs.setHealthPermissionsVersion(HealthConnectManager.CURRENT_TYPES_VERSION)
                 val energySummary = container.health.readRecentEnergySummary(days = 14)
                 if (energySummary == null) {
                     showHealthEnergyGoalAlert(

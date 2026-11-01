@@ -42,7 +42,7 @@ Chompass contacts external services only when you use a feature that needs them:
 |---------|----------------|-------|
 | AI food analysis / Coach | Meal text, images, or chat context you submit | Your configured AI provider |
 | Barcode scan | Scanned barcode. When Open Food Facts has a front product photo, it is also fetched from Open Food Facts' image CDN for display on your device | Open Food Facts public API / image CDN |
-| Health Connect | Nutrition, weight, body fat, height (write); sleep, HR, hydration, steps, energy (read) if enabled | Google Health Connect on-device (Android 14+: system module; ≤13: optional Play Store APK). No Chompass cloud. |
+| Health Connect | Nutrition, weight, body fat, height (write); bone mass, body water, lean body mass, sleep, HR, hydration, steps, energy (read) if enabled | Google Health Connect on-device (Android 14+: system module; ≤13: optional Play Store APK). No Chompass cloud. |
 | User-hosted sync | Sync document (diary, metrics, water, favorites, recipes; not API keys or food photos) | WebDAV URL you configure |
 | App updates | (none) | Manual via Codeberg releases |
 
