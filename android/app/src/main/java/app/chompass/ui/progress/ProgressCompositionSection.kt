@@ -168,10 +168,27 @@ internal fun CompositionSection(
                 if (hasMeasuredMuscle) null else profile?.estimatedSkeletalMuscleMassKg
             }
             if (estimatedMuscleKg != null) {
-                EstimatedMuscleRow(kg = estimatedMuscleKg, useMetric = useMetric)
+                EstimatedMuscleRow(
+                    kg = estimatedMuscleKg,
+                    weightKg = profile?.weightKg,
+                    useMetric = useMetric,
+                )
             }
         }
     }
+}
+
+/**
+ * Muscle as a share of body weight — the way a scale's "muscle %" is reported.
+ * Hidden outside 10–70 %: the import boundary uses the same ceiling, and an
+ * impossible fraction means the weight or the estimate is wrong, not that the
+ * user is unusual.
+ */
+internal fun muscleMassPercent(kg: Double, weightKg: Double?): Double? {
+    val weight = weightKg ?: return null
+    if (!weight.isFinite() || weight <= 0 || !kg.isFinite()) return null
+    val percent = kg / weight * 100.0
+    return percent.takeIf { it in 10.0..70.0 }
 }
 
 /**
@@ -180,7 +197,7 @@ internal fun CompositionSection(
  * a single estimate is not a measurement and must not look like one.
  */
 @Composable
-private fun EstimatedMuscleRow(kg: Double, useMetric: Boolean) {
+private fun EstimatedMuscleRow(kg: Double, weightKg: Double?, useMetric: Boolean) {
     val context = LocalContext.current
     Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -191,7 +208,13 @@ private fun EstimatedMuscleRow(kg: Double, useMetric: Boolean) {
             )
             Spacer(Modifier.weight(1f))
             Text(
-                formatCompositionValue(context, CompositionMetric.MUSCLE_MASS, kg, useMetric),
+                buildString {
+                    append(formatCompositionValue(context, CompositionMetric.MUSCLE_MASS, kg, useMetric))
+                    muscleMassPercent(kg, weightKg)?.let {
+                        append(" · ")
+                        append(String.format(java.util.Locale.getDefault(), "%.0f%%", it))
+                    }
+                },
                 fontSize = 14.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )

@@ -294,6 +294,17 @@ export class ProgressView extends HTMLElement {
             sex: prof.sex,
           })
         : null;
+    // Muscle as a share of body weight, the way a scale's "muscle %" is reported.
+    // Hidden outside 10-70 % — the import boundary uses the same ceiling, so an
+    // impossible fraction means a bad weight/estimate rather than an odd user.
+    const estimatedMusclePct =
+      estimatedMuscleKg != null && prof?.weightKg > 0
+        ? Math.round((estimatedMuscleKg / prof.weightKg) * 100)
+        : null;
+    const estimatedMusclePctShown =
+      estimatedMusclePct != null && estimatedMusclePct >= 10 && estimatedMusclePct <= 70
+        ? estimatedMusclePct
+        : null;
     if (compBlocks.length === 0) this.showCompositionHistory = false;
     const compositionSection = compBlocks.length === 0
       ? ""
@@ -337,7 +348,7 @@ export class ProgressView extends HTMLElement {
         </div>
         <p class="legend-hint">${t("progress.scale_muscle_estimated_note")}</p>
         <div class="stat-badges">
-          <div class="stat-badge"><strong>${fmt(toDisplay(estimatedMuscleKg))} ${weightUnit}</strong>${t("progress.stat_current")}</div>
+          <div class="stat-badge"><strong>${fmt(toDisplay(estimatedMuscleKg))} ${weightUnit}${estimatedMusclePctShown != null ? ` · ${estimatedMusclePctShown}%` : ""}</strong>${t("progress.stat_current")}</div>
         </div>`
             : ""
         }
