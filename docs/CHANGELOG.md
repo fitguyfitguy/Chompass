@@ -4,11 +4,15 @@ All notable changes to Chompass are documented here.
 
 Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no internals). The version section is pasted verbatim onto the Codeberg release.
 
-## [6.0.0] - 2026-11-01
+## [Unreleased]
 
 ### Added
 
 - **Back up to a local folder** (Android): Settings → Health & Data → Sync gains a Local backup section where you pick a folder. Chompass writes Chompass-sync.json there, replacing the previous backup only after the new copy is written and checked; with Back up on open it does that once a day when you start the app. Enable local backup turns the whole feature off at any time without losing the chosen folder. Photos stay out of the file. Closes Codeberg [#150](https://codeberg.org/fitguy/Chompass/issues/150) by [@DontBlameMe](https://codeberg.org/DontBlameMe)
+
+## [6.0.0] - 2026-11-01
+
+### Added
 
 - **A soft ambient background behind every screen** (Android): color fields that slowly rise and sink like lava-lamp wax, merging and parting as they drift, now sit behind Home, Progress, Coach, Settings and every pushed screen, and the bottom bar frosts them like the rest of your content. Follows the new Ambient background toggle in Settings → Display (on by default), with a Subtle/Balanced/Vivid intensity choice; the drift pauses itself in battery saver and when system animations are off.
 
