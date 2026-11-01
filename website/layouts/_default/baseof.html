@@ -4,6 +4,7 @@
   {{ partial "head.html" . }}
 </head>
 <body>
+  <canvas class="ambient" id="ambient" aria-hidden="true"></canvas>
   <a class="skip-link" href="#main">Skip to content</a>
   {{ partial "header.html" . }}
   <main id="main">
@@ -14,5 +15,7 @@
   <script src="{{ $siteJs.RelPermalink }}" defer></script>
   {{ $heroJs := resources.Get "js/hero.js" | minify | fingerprint }}
   <script src="{{ $heroJs.RelPermalink }}" defer></script>
+  {{ $ambientJs := resources.Get "js/ambient.js" | minify | fingerprint }}
+  <script src="{{ $ambientJs.RelPermalink }}" defer></script>
 </body>
 </html>
