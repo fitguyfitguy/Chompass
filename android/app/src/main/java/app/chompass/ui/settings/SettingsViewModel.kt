@@ -249,6 +249,8 @@ data class SettingsUiState(
     /** Ambient animated background behind every screen; default ON. */
     val ambientMotionEnabled: Boolean = true,
     val ambientIntensity: app.chompass.ui.theme.AmbientIntensity = app.chompass.ui.theme.AmbientIntensity.DEFAULT,
+    val ambientContrast: app.chompass.ui.theme.AmbientContrast = app.chompass.ui.theme.AmbientContrast.DEFAULT,
+    val ambientSaturation: app.chompass.ui.theme.AmbientSaturation = app.chompass.ui.theme.AmbientSaturation.DEFAULT,
     val ambientSpeed: app.chompass.ui.theme.AmbientSpeed = app.chompass.ui.theme.AmbientSpeed.DEFAULT,
     val ambientPalette: app.chompass.ui.theme.AmbientPalette = app.chompass.ui.theme.AmbientPalette.DEFAULT,
     val ambientTiltEnabled: Boolean = true,
@@ -636,6 +638,8 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                     glassBlurEnabled = snap.glassBlurEnabled,
                     ambientMotionEnabled = snap.ambientMotionEnabled,
                     ambientIntensity = app.chompass.ui.theme.AmbientIntensity.fromStorage(snap.ambientIntensityRaw),
+                    ambientContrast = app.chompass.ui.theme.AmbientContrast.fromStorage(snap.ambientContrastRaw),
+                    ambientSaturation = app.chompass.ui.theme.AmbientSaturation.fromStorage(snap.ambientSaturationRaw),
                     ambientSpeed = app.chompass.ui.theme.AmbientSpeed.fromStorage(snap.ambientSpeedRaw),
                     ambientPalette = app.chompass.ui.theme.AmbientPalette.fromStorage(snap.ambientPaletteRaw),
                     ambientTiltEnabled = snap.ambientTiltEnabled,
@@ -1073,6 +1077,16 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
     fun setAmbientIntensity(intensity: app.chompass.ui.theme.AmbientIntensity) = updateUiPref(
         { container.prefs.setAmbientIntensity(intensity.storage) },
         { copy(ambientIntensity = intensity) },
+    )
+
+    fun setAmbientContrast(contrast: app.chompass.ui.theme.AmbientContrast) = updateUiPref(
+        { container.prefs.setAmbientContrast(contrast.storage) },
+        { copy(ambientContrast = contrast) },
+    )
+
+    fun setAmbientSaturation(saturation: app.chompass.ui.theme.AmbientSaturation) = updateUiPref(
+        { container.prefs.setAmbientSaturation(saturation.storage) },
+        { copy(ambientSaturation = saturation) },
     )
 
     fun setAmbientSpeed(speed: app.chompass.ui.theme.AmbientSpeed) = updateUiPref(

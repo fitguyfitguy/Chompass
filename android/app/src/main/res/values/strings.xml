@@ -1683,6 +1683,16 @@
     <string name="ambient_intensity_subtle">Subtle</string>
     <string name="ambient_intensity_balanced">Balanced</string>
     <string name="ambient_intensity_vivid">Vivid</string>
+    <string name="settings_ambient_contrast">Contrast</string>
+    <string name="settings_ambient_contrast_subtitle">How sharply the field stands out. Strong eases the dim on OLED black.</string>
+    <string name="ambient_contrast_soft">Soft</string>
+    <string name="ambient_contrast_balanced">Balanced</string>
+    <string name="ambient_contrast_strong">Strong</string>
+    <string name="settings_ambient_saturation">Saturation</string>
+    <string name="settings_ambient_saturation_subtitle">How far the colors sit from gray.</string>
+    <string name="ambient_saturation_muted">Muted</string>
+    <string name="ambient_saturation_natural">Natural</string>
+    <string name="ambient_saturation_rich">Rich</string>
     <string name="settings_ambient_speed">Drift speed</string>
     <string name="ambient_speed_calm">Calm</string>
     <string name="ambient_speed_standard">Standard</string>

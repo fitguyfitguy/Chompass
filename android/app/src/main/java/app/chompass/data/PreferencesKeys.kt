@@ -183,6 +183,8 @@ internal object Keys {
         /** Ambient animated background behind every screen (Morphe traits); default ON. */
         val AMBIENT_MOTION_ENABLED = booleanPreferencesKey("ambientMotionEnabled")
         val AMBIENT_INTENSITY = stringPreferencesKey("ambientIntensity")
+        val AMBIENT_CONTRAST = stringPreferencesKey("ambientContrast")
+        val AMBIENT_SATURATION = stringPreferencesKey("ambientSaturation")
         val AMBIENT_SPEED = stringPreferencesKey("ambientSpeed")
         val AMBIENT_PALETTE = stringPreferencesKey("ambientPalette")
         /** Gyro parallax on the ambient field; default ON. */

@@ -65,8 +65,10 @@ import app.chompass.ui.home.ImportSharedMealSheet
 import app.chompass.ui.navigation.ChompassNavHost
 import app.chompass.ui.navigation.ChompassRoutes
 import app.chompass.ui.theme.AppThemeColor
+import app.chompass.ui.theme.AmbientContrast
 import app.chompass.ui.theme.AmbientIntensity
 import app.chompass.ui.theme.AmbientPalette
+import app.chompass.ui.theme.AmbientSaturation
 import app.chompass.ui.theme.AmbientSpeed
 import app.chompass.ui.theme.ChompassTheme
 import app.chompass.ui.theme.GlassStrength
@@ -460,6 +462,8 @@ open class MainActivity : ComponentActivity() {
             val glassBlur by container.prefs.glassBlurEnabled.collectAsState(initial = true)
             val ambientMotion by container.prefs.ambientMotionEnabled.collectAsState(initial = true)
             val ambientIntensity by container.prefs.ambientIntensity.collectAsState(initial = "")
+            val ambientContrast by container.prefs.ambientContrast.collectAsState(initial = "")
+            val ambientSaturation by container.prefs.ambientSaturation.collectAsState(initial = "")
             val ambientSpeed by container.prefs.ambientSpeed.collectAsState(initial = "")
             val ambientPalette by container.prefs.ambientPalette.collectAsState(initial = "")
             val ambientTiltEnabled by container.prefs.ambientTiltEnabled.collectAsState(initial = true)
@@ -511,6 +515,8 @@ open class MainActivity : ComponentActivity() {
                     ambientMotion = ambientMotion,
                     glassStrength = GlassStrength.fromStorage(glassStrength),
                     ambientIntensity = AmbientIntensity.fromStorage(ambientIntensity),
+                    ambientContrast = AmbientContrast.fromStorage(ambientContrast),
+                    ambientSaturation = AmbientSaturation.fromStorage(ambientSaturation),
                     ambientSpeed = AmbientSpeed.fromStorage(ambientSpeed),
                     ambientPalette = AmbientPalette.fromStorage(ambientPalette),
                     ambientTilt = ambientTiltEnabled,

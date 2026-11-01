@@ -51,7 +51,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
+import app.chompass.ui.theme.AmbientContrast
 import app.chompass.ui.theme.AmbientPalette
+import app.chompass.ui.theme.AmbientSaturation
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.ChompassNavTransitions
 import app.chompass.ui.theme.ChompassTraitsDefaults
@@ -120,8 +122,9 @@ private const val WAX_BLOB_COUNT = 8
 //  - color is weighted as c² and square-rooted back, which averages the
 //    overlapping blobs in roughly linear light: two hues crossing keep their
 //    own color instead of desaturating toward gray;
-//  - a vertical mask thins the field behind the dense middle band (the primary
-//    card) so the strongest wax sits in the breathing room around it;
+//  - a vertical mask (midFloor) thins the field behind the dense middle band
+//    (the primary card) so the strongest wax sits in the breathing room around
+//    it; Strong contrast raises that floor so OLED black does not swallow it;
 //  - a hash offset of ±½ 8-bit step dithers the alpha ramp, which otherwise
 //    bands visibly at 0.11–0.14.
 internal const val WAX_SHADER = """
@@ -130,6 +133,12 @@ uniform float4 colors[8];
 uniform float alpha;
 uniform float2 resolution;
 uniform float4 touch;   // x, y, radius in canvas px; w = heat 0..1
+uniform float bodyLo;
+uniform float bodyHi;
+uniform float haloLo;
+uniform float haloHi;
+uniform float haloGain;
+uniform float midFloor;
 
 half4 main(float2 p) {
     float field = 0.0;
@@ -149,11 +158,11 @@ half4 main(float2 p) {
         color += c * c * f;
     }
     color = sqrt(color / max(field, 0.0001));
-    float body = smoothstep(0.85, 1.15, field);
-    float halo = smoothstep(0.3, 0.9, field) * 0.3;
+    float body = smoothstep(bodyLo, bodyHi, field);
+    float halo = smoothstep(haloLo, haloHi, field) * haloGain;
     float a = max(body, halo) * alpha;
     float vy = abs(p.y / max(resolution.y, 1.0) - 0.5) * 2.0;
-    a *= mix(0.75, 1.0, smoothstep(0.15, 0.85, vy));
+    a *= mix(midFloor, 1.0, smoothstep(0.15, 0.85, vy));
     float n = fract(sin(dot(p, float2(12.9898, 78.233))) * 43758.5453);
     a += (n - 0.5) * (1.0 / 255.0);
     a = clamp(a, 0.0, 1.0);
@@ -180,10 +189,6 @@ private const val IdleFrameIntervalMs = 66L
  * scaled by the same factor so blob sizes stay at their authored dp.
  */
 private const val WaxRasterScale = 0.5f
-
-/** OLED forfeits the pixels-off win if wax sits over the black: the field keeps
- *  its shape but spends a little over half the light. */
-private const val AmbientOledAlphaScale = 0.55f
 
 /** How long a finger keeps the wax around it swelled, and how fast that decays. */
 private const val TouchHeatWindowNs = 1_500_000_000L
@@ -328,7 +333,8 @@ private data class TouchInfluence(
  * Publishes ~30 fps while RESUMED and untouched for less than [IdleAfterNs],
  * ~15 fps after that; halts when backgrounded and freezes to a single frame in
  * battery saver or when system animations are disabled. Finger proximity
- * swells the wax around it and device tilt pans the field. Auto-dims on OLED.
+ * swells the wax around it and device tilt pans the field. Balanced contrast
+ * dims the field on OLED so black stays nearly off; Strong eases that dim.
  * Absent entirely when the Ambient background trait is off.
  *
  * @param panFraction Tab parallax offset, in screen fractions. Applied here
@@ -423,25 +429,33 @@ fun AmbientBackground(
 
     val colorScheme = MaterialTheme.colorScheme
     val palette = ChompassTraitsDefaults.ambientPalette()
+    val contrast = ChompassTraitsDefaults.ambientContrast()
+    val saturation = ChompassTraitsDefaults.ambientSaturation()
+    val darkBackground = colorScheme.background.luminance() < 0.5f
     // Accent-derived triad: the theme accent plus two hue-rotated counterpoints,
     // so single-hue themes still read as a multi-color field. The macro palette
-    // drops the accent for the three semantic hues instead.
-    val waxColors = remember(colorScheme, palette) {
-        when (palette) {
+    // drops the accent for the three semantic hues instead. Natural saturation
+    // and Balanced contrast leave those colors untouched.
+    val waxColors = remember(colorScheme, palette, saturation, contrast, darkBackground) {
+        val base = when (palette) {
             AmbientPalette.MACRO -> listOf(AppColors.Protein, AppColors.Carbs, AppColors.Fat)
             AmbientPalette.ACCENT -> {
-                val base = colorScheme.primary
-                listOf(base, base.hueShift(60f, 0.85f), base.hueShift(-75f, 0.9f))
+                val accent = colorScheme.primary
+                listOf(accent, accent.hueShift(60f, 0.85f), accent.hueShift(-75f, 0.9f))
             }
         }
+        base.map { waxDisplayColor(it, saturation, contrast, darkBackground) }
     }
     // Morphe's wax alpha: slightly stronger on dark backgrounds. Saturated color
-    // at this alpha reads as a field without washing out content. OLED pulls it
-    // back so the black the user picked stays black.
-    val waxAlpha =
-        (if (colorScheme.background.luminance() < 0.5f) 0.14f else 0.11f) *
-            ChompassTraitsDefaults.ambientIntensity().alphaScale *
-            (if (ChompassTraitsDefaults.oled()) AmbientOledAlphaScale else 1f)
+    // at this alpha reads as a field without washing out content. Balanced
+    // contrast keeps the OLED dim; Strong is the opt-in that lets the field
+    // read on true black.
+    val waxAlpha = waxFieldAlpha(
+        backgroundLuminance = colorScheme.background.luminance(),
+        intensityScale = ChompassTraitsDefaults.ambientIntensity().alphaScale,
+        contrast = contrast,
+        oled = ChompassTraitsDefaults.oled(),
+    )
     val wax = remember { WaxBlobs() }
     val softBrushes = remember(waxColors) { SoftWaxBrushes(waxColors) }
     // RuntimeShader compile can throw at runtime on some API 33+ devices; the
@@ -497,9 +511,11 @@ fun AmbientBackground(
                 heat = heat,
             )
             if (shader != null) {
-                drawRect(shader.brushFor(wax, waxColors, waxAlpha, size, influence))
+                drawRect(shader.brushFor(wax, waxColors, waxAlpha, size, influence, contrast))
             } else {
-                drawSoftWax(wax, waxColors, waxAlpha, softBrushes, influence)
+                drawSoftWax(
+                    wax, waxColors, waxAlpha, softBrushes, influence, contrast.softRadiusScale,
+                )
             }
         }
     }
@@ -547,6 +563,7 @@ private class WaxShader {
         alpha: Float,
         size: Size,
         touch: TouchInfluence,
+        contrast: AmbientContrast,
     ): Brush {
         for (i in 0 until WAX_BLOB_COUNT) {
             blobUniform[i * 4] = blobs.x[i]
@@ -568,6 +585,12 @@ private class WaxShader {
         shader.setFloatUniform("alpha", alpha)
         shader.setFloatUniform("resolution", floatArrayOf(size.width, size.height))
         shader.setFloatUniform("touch", touchUniform)
+        shader.setFloatUniform("bodyLo", contrast.bodyLo)
+        shader.setFloatUniform("bodyHi", contrast.bodyHi)
+        shader.setFloatUniform("haloLo", contrast.haloLo)
+        shader.setFloatUniform("haloHi", contrast.haloHi)
+        shader.setFloatUniform("haloGain", contrast.haloGain)
+        shader.setFloatUniform("midFloor", contrast.midFloor)
         return brush
     }
 }
@@ -608,10 +631,11 @@ private fun DrawScope.drawSoftWax(
     alpha: Float,
     brushes: SoftWaxBrushes,
     touch: TouchInfluence,
+    radiusScale: Float,
 ) {
     for (i in 0 until WAX_BLOB_COUNT) {
         val color = colors[WAX_BLOBS[i].colorIndex]
-        val radius = blobs.radius[i] * 1.3f * touchInflate(blobs, i, touch)
+        val radius = blobs.radius[i] * 1.3f * radiusScale * touchInflate(blobs, i, touch)
         val height = radius * blobs.stretch[i]
         withTransform({
             translate(blobs.x[i], blobs.y[i])
@@ -649,12 +673,18 @@ private fun Color.toHsv(out: FloatArray) {
 private fun Color.hueShift(hueDeltaDeg: Float, saturationScale: Float): Color {
     val hsv = FloatArray(3)
     toHsv(hsv)
-    hsv[0] = (hsv[0] + hueDeltaDeg).mod(360f)
-    hsv[1] = (hsv[1] * saturationScale).coerceIn(0f, 1f)
-    val chroma = hsv[2] * hsv[1]
-    val sector = hsv[0] / 60f
+    return hsvToColor(
+        (hsv[0] + hueDeltaDeg).mod(360f),
+        (hsv[1] * saturationScale).coerceIn(0f, 1f),
+        hsv[2],
+    )
+}
+
+private fun hsvToColor(h: Float, s: Float, v: Float): Color {
+    val chroma = v * s
+    val sector = h / 60f
     val x = chroma * (1f - abs(sector % 2f - 1f))
-    val m = hsv[2] - chroma
+    val m = v - chroma
     val (r, g, b) = when (sector.toInt()) {
         0 -> Triple(chroma, x, 0f)
         1 -> Triple(x, chroma, 0f)
@@ -664,4 +694,41 @@ private fun Color.hueShift(hueDeltaDeg: Float, saturationScale: Float): Color {
         else -> Triple(chroma, 0f, x)
     }
     return Color(r + m, g + m, b + m)
+}
+
+/** Alpha of the wax field. Balanced contrast on OLED is the shipped 0.55 dim. */
+internal fun waxFieldAlpha(
+    backgroundLuminance: Float,
+    intensityScale: Float,
+    contrast: AmbientContrast,
+    oled: Boolean,
+): Float {
+    val base = if (backgroundLuminance < 0.5f) 0.14f else 0.11f
+    val oledScale = if (oled) contrast.oledAlphaScale else 1f
+    return base * intensityScale * contrast.alphaScale * oledScale
+}
+
+/**
+ * Chroma and dark-background value adjustment. Natural saturation with no
+ * value floor returns [color] unchanged, so the shipped look stays bit-identical.
+ * Gray inputs stay gray.
+ */
+internal fun waxDisplayColor(
+    color: Color,
+    saturation: AmbientSaturation,
+    contrast: AmbientContrast,
+    darkBackground: Boolean,
+): Color {
+    val floor = if (darkBackground) {
+        maxOf(saturation.darkValueFloor, contrast.darkValueFloor)
+    } else {
+        0f
+    }
+    if (saturation.chromaScale == 1f && floor <= 0f) return color
+    val hsv = FloatArray(3)
+    color.toHsv(hsv)
+    val nextSat = (hsv[1] * saturation.chromaScale).coerceIn(0f, 1f)
+    val nextVal = if (floor > 0f) maxOf(hsv[2], floor) else hsv[2]
+    if (nextSat == hsv[1] && nextVal == hsv[2]) return color
+    return hsvToColor(hsv[0], nextSat, nextVal)
 }

@@ -1744,6 +1744,16 @@ für dich ein</string>
     <string name="ambient_intensity_subtle">Dezent</string>
     <string name="ambient_intensity_balanced">Ausgewogen</string>
     <string name="ambient_intensity_vivid">Lebhaft</string>
+    <string name="settings_ambient_contrast">Kontrast</string>
+    <string name="settings_ambient_contrast_subtitle">Wie klar sich das Feld abhebt. Stark mildert die Abdunklung auf OLED-Schwarz.</string>
+    <string name="ambient_contrast_soft">Weich</string>
+    <string name="ambient_contrast_balanced">Ausgewogen</string>
+    <string name="ambient_contrast_strong">Stark</string>
+    <string name="settings_ambient_saturation">Sättigung</string>
+    <string name="settings_ambient_saturation_subtitle">Wie weit die Farben von Grau entfernt sind.</string>
+    <string name="ambient_saturation_muted">Gedämpft</string>
+    <string name="ambient_saturation_natural">Natürlich</string>
+    <string name="ambient_saturation_rich">Kräftig</string>
     <string name="settings_ambient_speed">Ambient-Geschwindigkeit</string>
     <string name="ambient_speed_calm">Ruhig</string>
     <string name="ambient_speed_lively">Zügig</string>

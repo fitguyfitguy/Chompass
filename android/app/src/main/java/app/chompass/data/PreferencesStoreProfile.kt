@@ -132,6 +132,18 @@ internal suspend fun PreferencesStore.setAmbientIntensityImpl(v: String) {
     dataStore.edit { it[Keys.AMBIENT_INTENSITY] = v }
 }
 
+internal val PreferencesStore.ambientContrastImpl: Flow<String>
+    get() = dataStore.data.map { it[Keys.AMBIENT_CONTRAST] ?: "" }
+internal suspend fun PreferencesStore.setAmbientContrastImpl(v: String) {
+    dataStore.edit { it[Keys.AMBIENT_CONTRAST] = v }
+}
+
+internal val PreferencesStore.ambientSaturationImpl: Flow<String>
+    get() = dataStore.data.map { it[Keys.AMBIENT_SATURATION] ?: "" }
+internal suspend fun PreferencesStore.setAmbientSaturationImpl(v: String) {
+    dataStore.edit { it[Keys.AMBIENT_SATURATION] = v }
+}
+
 internal val PreferencesStore.ambientSpeedImpl: Flow<String>
     get() = dataStore.data.map { it[Keys.AMBIENT_SPEED] ?: "" }
 internal suspend fun PreferencesStore.setAmbientSpeedImpl(v: String) {

@@ -432,6 +432,8 @@ class PreferencesStore(private val appContext: Context) : NutritionSyncStore {
     val glassBlurEnabled: Flow<Boolean> get() = glassBlurEnabledImpl
     val ambientMotionEnabled: Flow<Boolean> get() = ambientMotionEnabledImpl
     val ambientIntensity: Flow<String> get() = ambientIntensityImpl
+    val ambientContrast: Flow<String> get() = ambientContrastImpl
+    val ambientSaturation: Flow<String> get() = ambientSaturationImpl
     val ambientSpeed: Flow<String> get() = ambientSpeedImpl
     val ambientPalette: Flow<String> get() = ambientPaletteImpl
     val ambientTiltEnabled: Flow<Boolean> get() = ambientTiltEnabledImpl
@@ -440,6 +442,8 @@ class PreferencesStore(private val appContext: Context) : NutritionSyncStore {
     suspend fun setGlassBlurEnabled(v: Boolean) = setGlassBlurEnabledImpl(v)
     suspend fun setAmbientMotionEnabled(v: Boolean) = setAmbientMotionEnabledImpl(v)
     suspend fun setAmbientIntensity(v: String) = setAmbientIntensityImpl(v)
+    suspend fun setAmbientContrast(v: String) = setAmbientContrastImpl(v)
+    suspend fun setAmbientSaturation(v: String) = setAmbientSaturationImpl(v)
     suspend fun setAmbientSpeed(v: String) = setAmbientSpeedImpl(v)
     suspend fun setAmbientPalette(v: String) = setAmbientPaletteImpl(v)
     suspend fun setAmbientTiltEnabled(v: Boolean) = setAmbientTiltEnabledImpl(v)

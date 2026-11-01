@@ -30,8 +30,10 @@ import app.chompass.R
 import app.chompass.ui.components.ChompassSegmentedTabs
 import app.chompass.ui.navigation.ChompassRoutes
 import app.chompass.ui.progress.TimeRange
+import app.chompass.ui.theme.AmbientContrast
 import app.chompass.ui.theme.AmbientIntensity
 import app.chompass.ui.theme.AmbientPalette
+import app.chompass.ui.theme.AmbientSaturation
 import app.chompass.ui.theme.AmbientSpeed
 import app.chompass.ui.theme.GlassStrength
 
@@ -94,6 +96,22 @@ internal fun SettingsAppSection(
                         options = AmbientIntensity.entries.toList(),
                         selected = ui.ambientIntensity,
                         onSelect = vm::setAmbientIntensity,
+                    ) { stringResource(it.labelRes) }
+                    HorizontalDivider()
+                    SegmentedSettingRow(
+                        label = stringResource(R.string.settings_ambient_contrast),
+                        options = AmbientContrast.entries.toList(),
+                        selected = ui.ambientContrast,
+                        onSelect = vm::setAmbientContrast,
+                        subtitle = stringResource(R.string.settings_ambient_contrast_subtitle),
+                    ) { stringResource(it.labelRes) }
+                    HorizontalDivider()
+                    SegmentedSettingRow(
+                        label = stringResource(R.string.settings_ambient_saturation),
+                        options = AmbientSaturation.entries.toList(),
+                        selected = ui.ambientSaturation,
+                        onSelect = vm::setAmbientSaturation,
+                        subtitle = stringResource(R.string.settings_ambient_saturation_subtitle),
                     ) { stringResource(it.labelRes) }
                     HorizontalDivider()
                     SegmentedSettingRow(
@@ -170,6 +188,7 @@ private fun <T> SegmentedSettingRow(
     options: List<T>,
     selected: T,
     onSelect: (T) -> Unit,
+    subtitle: String? = null,
     labelFor: @Composable (T) -> String,
 ) {
     Column(
@@ -178,6 +197,14 @@ private fun <T> SegmentedSettingRow(
             .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
         Text(label, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium)
+        if (subtitle != null) {
+            Spacer(Modifier.height(2.dp))
+            Text(
+                subtitle,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
         Spacer(Modifier.height(8.dp))
         ChompassSegmentedTabs(
             options = options,
