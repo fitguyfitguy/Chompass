@@ -46,6 +46,7 @@ Deterministic formulas are the **reference layer**. AI recalculation and adaptiv
 | WTH     | Waist-to-height          | Deterministic | `BodyMeasurement.waistToHeightRatio`           | ratio    |
 | SMM-LEE | Skeletal muscle mass est. | Deterministic | `BodyMeasurement.estimatedSkeletalMuscleMassKg` / `formulas.estimatedSkeletalMuscleMassKg` | kg (display only) |
 | SMM-LEE-BODY | Skeletal muscle est. from body weight | Deterministic | `UserProfile.estimatedSkeletalMuscleMassKg` / `formulas.estimatedSkeletalMuscleMassKgFromBody` | kg (display only) |
+| SMM-PCT | Muscle % of body weight | Display | `muscleMassPercent` (estimate ÷ profile weight) | % (display only, 10–70) |
 | TBW-PCT | Total body water %        | Display        | `ProgressCompositionSection` (TBW kg ÷ nearest weight ±12 h) | % |
 | WATER-DYN-A | Dynamic gross water goal | Heuristic     | `WaterGoalCalculator.grossGoalMl`              | ml/day   |
 | WATER-DYN-B | Food-water subtraction   | Heuristic     | `WaterGoalCalculator.foodWaterMl` / `netGoalMl` | ml/day  |
@@ -547,6 +548,10 @@ SM(kg) = 0.244×weight(kg) + 7.80×height(m) + 6.6×sex − 0.098×age − 3.3
   direction, not a level.
 - Rejects non-finite inputs and results outside 10–80 kg. **Never logged, never fed into BMR,
   TDEE, macros or the protein cap.**
+- The card also shows muscle as a share of body weight (`estimate ÷ profile weight × 100`, whole
+  percent), the convention scales use for “muscle %”. It is suppressed outside 10–70 % — the
+  import boundary's muscle ceiling — because a fraction that far out means the weight or the
+  estimate is wrong, not that the user is unusual.
 
 #### TBW-PCT: total body water percentage (display only)
 
