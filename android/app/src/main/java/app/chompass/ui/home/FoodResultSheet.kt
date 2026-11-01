@@ -75,6 +75,7 @@ import androidx.compose.ui.unit.sp
 import app.chompass.R
 import app.chompass.models.FoodEntry
 import app.chompass.models.FoodSource
+import app.chompass.models.offersFavoriteSave
 import app.chompass.models.microsCompositionSignature
 import app.chompass.models.microsStaleFor
 import app.chompass.models.MacroValueFormatter
@@ -181,8 +182,8 @@ fun FoodResultSheet(
         logTime: LocalTime,
     ) -> Unit,
     /**
-     * Save this review to favorites without a diary row. Only passed
-     * for a fresh barcode review — the text action slot would otherwise
+     * Save this review to favorites without a diary row. Only passed for a
+     * fresh barcode or photo review — the text action slot would otherwise
      * collide with the progressive "add next" action.
      */
     onSaveFavorite: ((
@@ -1193,16 +1194,16 @@ fun FoodResultSheet(
                 primaryLabel = busyPrimaryLabel,
                 primaryEnabled = analysisReady && !isSaving && analysis != null,
                 onPrimary = { commitLog() },
-                // A fresh barcode review offers Save to favorites in the
-                // text slot; with a progressive meal in progress that slot is
-                // "add next" and favorites save is not offered.
+                // A fresh barcode or photo review offers Save to favorites
+                // in the text slot; with a progressive meal in progress that
+                // slot is "add next" and favorites save is not offered.
                 textActionLabel = when {
                     onAddToProgressiveMeal != null && analysisReady && !isSaving ->
                         stringResource(R.string.progressive_meal_add_next)
                     // Reviewed saved template → fix it in the library (Codeberg #142).
                     onSaveToLibrary != null && analysisReady && !isSaving ->
                         stringResource(R.string.action_save_to_library)
-                    onSaveFavorite != null && source == FoodSource.BARCODE && analysisReady && !isSaving ->
+                    onSaveFavorite != null && source.offersFavoriteSave() && analysisReady && !isSaving ->
                         stringResource(R.string.action_save_to_favorites)
                     else -> null
                 },
@@ -1213,7 +1214,7 @@ fun FoodResultSheet(
                     onSaveToLibrary != null && analysisReady -> {
                         { commitSaveLibrary() }
                     }
-                    onSaveFavorite != null && source == FoodSource.BARCODE && analysisReady -> {
+                    onSaveFavorite != null && source.offersFavoriteSave() && analysisReady -> {
                         { commitSaveFavorite() }
                     }
                     else -> null
