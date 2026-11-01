@@ -4,6 +4,7 @@
     <div class="lander__content">
 
       <section class="lander__hero" aria-labelledby="hero-brand">
+        <div class="hero-glass">
         <div class="hero-banner">
           <span class="hero-banner__badge">v{{ .Site.Params.version }}</span>
           <div class="hero-banner__content">
@@ -49,6 +50,7 @@
         <p class="install-note">
           The web app installs like a native app on desktop, phone, and tablet. It covers diary, progress charts, AI entry with your own key, and shared JSON export. The Android app adds Health Connect, widgets, notifications, and on-device Gemma&nbsp;4.
         </p>
+        </div>
       </section>
 
       {{- $usageMp4 := fileExists "static/video/chompass-usage.mp4" -}}
