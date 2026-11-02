@@ -170,7 +170,8 @@ internal fun SettingsSheets(
         if (sheet == SettingsSheet.AI_MODEL && ui.activeProvider == AIProvider.CUSTOM_OPENAI) {
             vm.fetchCustomModels()
         }
-        if ((sheet == SettingsSheet.AI_MODEL || sheet == SettingsSheet.VISION_MODEL) &&
+        if ((sheet == SettingsSheet.AI_MODEL || sheet == SettingsSheet.VISION_MODEL ||
+                sheet == SettingsSheet.COACH_MODEL) &&
             ui.activeProvider.supportsRuntimeLineup
         ) {
             vm.fetchRuntimeModels()
@@ -328,6 +329,67 @@ internal fun SettingsSheets(
                     },
                     customField = if (ui.activeProvider.supportsCustomModelName) {
                         { m -> vm.setProfileModel(m); onDismiss() }
+                    } else null,
+                    onDismiss = onDismiss
+                )
+                SettingsSheet.COACH_MODEL -> ListSheet(
+                    title = stringResource(R.string.settings_ai_coach_model),
+                    // Same lineup as the main model picker — a Coach pin reads
+                    // from the host's real catalog, not the vision list.
+                    items = listOf("") + when {
+                        ui.activeProvider == AIProvider.OLLAMA && !ui.ollamaModels.isNullOrEmpty() ->
+                            ui.ollamaModels!!.map { it.id }
+                        ui.activeProvider == AIProvider.CUSTOM_OPENAI ->
+                            app.chompass.services.ai.OpenAiModelsClient.mergeOverCurated(
+                                ui.directoryEntry?.visionModels ?: emptyList(),
+                                ui.customModels,
+                                sortRuntime = true,
+                            )
+                        ui.activeProvider == AIProvider.ON_DEVICE && ui.onDeviceModels.isNotEmpty() ->
+                            ui.onDeviceModels
+                        ui.activeProvider == AIProvider.OLLAMA_CLOUD ->
+                            app.chompass.services.ai.OpenAiModelsClient.catalogLineup(ui.runtimeModels)
+                        ui.activeProvider.supportsRuntimeLineup ->
+                            app.chompass.services.ai.OpenAiModelsClient.mergeOverCurated(
+                                ui.activeProvider.models,
+                                ui.runtimeModels,
+                                sortRuntime = true,
+                            )
+                        else -> ui.activeProvider.models
+                    },
+                    searchable = true,
+                    filterText = { it },
+                    label = { if (it.isEmpty()) stringResource(R.string.settings_ai_vision_model_unset) else it },
+                    subtitle = { model ->
+                        when {
+                            ui.activeProvider == AIProvider.OLLAMA ->
+                                ui.ollamaModels?.find { it.id == model }?.subtitle
+                            model in ui.directoryEntry?.visionModels.orEmpty() ->
+                                stringResource(R.string.ai_model_accepts_images)
+                            else -> when (ui.activeProvider.modelTiers[model]) {
+                                "paid" -> stringResource(R.string.ai_model_tier_paid)
+                                "varies" -> stringResource(R.string.ai_model_tier_varies)
+                                else -> null
+                            }
+                        }
+                    },
+                    selected = { it == ui.activeProfile?.coachModel.orEmpty() },
+                    onSelect = { vm.setProfileCoachModel(it.ifEmpty { null }); onDismiss() },
+                    footer = when {
+                        ui.activeProvider == AIProvider.OLLAMA && ui.ollamaModelsLoading ->
+                            stringResource(R.string.settings_ollama_models_loading)
+                        ui.activeProvider == AIProvider.OLLAMA && ui.ollamaModelsError ->
+                            stringResource(R.string.settings_ollama_models_error)
+                        ui.activeProvider == AIProvider.OLLAMA_CLOUD && ui.runtimeModelsLoading ->
+                            stringResource(R.string.settings_ollama_models_loading)
+                        ui.activeProvider == AIProvider.CUSTOM_OPENAI && ui.customModelsLoading ->
+                            stringResource(R.string.settings_custom_models_loading)
+                        ui.activeProvider == AIProvider.CUSTOM_OPENAI && ui.customModelsError ->
+                            stringResource(R.string.settings_custom_models_error)
+                        else -> stringResource(R.string.settings_ai_coach_model_footer)
+                    },
+                    customField = if (ui.activeProvider.supportsCustomModelName) {
+                        { m -> vm.setProfileCoachModel(m); onDismiss() }
                     } else null,
                     onDismiss = onDismiss
                 )

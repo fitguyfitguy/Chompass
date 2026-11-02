@@ -1276,14 +1276,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             val active = _ui.value.activeProfile ?: return@launch
             val write = planOpenAiEndpointWrite(active, rawUrl, container.providerDirectory)
             if (!write.changed) return@launch
-            container.prefs.editActiveProfile {
-                it.copy(
-                    provider = write.provider,
-                    baseUrl = write.baseUrl,
-                    model = write.model,
-                    visionModel = if (write.clearVision) null else it.visionModel,
-                )
-            }
+            container.prefs.editActiveProfile { it.withOpenAiEndpointWrite(write) }
             if (write.clearKey) container.keyStore.setProfileApiKey(active.id, null)
             refreshAiState()
         }
@@ -1388,6 +1381,16 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             val active = _ui.value.activeProfile ?: return@launch
             val model = m?.takeIf { it.isNotBlank() }?.let { active.provider.supportedModelOrDefault(it) }
             container.prefs.editActiveProfile { it.copy(visionModel = model) }
+            refreshAiState()
+        }
+    }
+
+    /** Sets the per-profile Coach slot; null/blank clears it back to "same as Model". */
+    fun setProfileCoachModel(m: String?) {
+        viewModelScope.launch {
+            val active = _ui.value.activeProfile ?: return@launch
+            val model = m?.takeIf { it.isNotBlank() }?.let { active.provider.supportedModelOrDefault(it) }
+            container.prefs.editActiveProfile { it.copy(coachModel = model) }
             refreshAiState()
         }
     }

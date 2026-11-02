@@ -26,6 +26,14 @@ data class DayTypeAdherence(
     val avgDelta: Int?,
 )
 
+/**
+ * Row label for a [DayTypeAdherence]: the current plan's name wins, then the
+ * journal's write-time snapshot. Null means neither knows the profile, so the
+ * caller shows a generic label — never the raw [DayTypeAdherence.profileId].
+ */
+internal fun adherenceDayTypeName(planName: String?, journalName: String?): String? =
+    planName?.takeIf { it.isNotBlank() } ?: journalName?.takeIf { it.isNotBlank() }
+
 /** One phase's overlap with the analyzed range. */
 data class PhaseAdherence(
     val phase: GoalPhase,

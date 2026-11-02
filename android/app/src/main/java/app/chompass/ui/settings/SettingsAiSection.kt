@@ -196,14 +196,23 @@ internal fun SettingsAiSection(
                 val showGoalTier = ui.activeProvider.usesConfigurableRequestTimeout
                 val showGeminiSearch = ui.activeProvider == AIProvider.GEMINI
                 val showFillMissing = FillGapsFeature.ENABLED && ui.aiFeaturesEnabled
-                // Vision-model slot: routing is provider-generic (resolveModelForRequest),
-                // so any non-on-device provider can pin a separate vision model.
+                // Per-feature model slots: routing is provider-generic
+                // (resolveModelForRequest / coachSelectedModel), so any
+                // non-on-device provider can pin a vision and a Coach model.
                 if (showVisionModel) {
                     SettingRow(
                         stringResource(R.string.settings_ai_vision_model),
                         ui.activeProfile?.visionModel.orEmpty().ifEmpty { stringResource(R.string.settings_ai_vision_model_unset) },
                         icon = Icons.Outlined.Tune,
                     ) { onOpenSheet(SettingsSheet.VISION_MODEL) }
+                    // Coach slot: same routing freedom, scoped to chat so a
+                    // cheap model can log food while Coach stays on the good one.
+                    HorizontalDivider()
+                    SettingRow(
+                        stringResource(R.string.settings_ai_coach_model),
+                        ui.activeProfile?.coachModel.orEmpty().ifEmpty { stringResource(R.string.settings_ai_vision_model_unset) },
+                        icon = Icons.Outlined.Tune,
+                    ) { onOpenSheet(SettingsSheet.COACH_MODEL) }
                 }
                 if (showReasoningEffort) {
                     if (showVisionModel) HorizontalDivider()

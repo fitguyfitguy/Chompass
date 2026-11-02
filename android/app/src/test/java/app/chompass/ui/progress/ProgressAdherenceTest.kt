@@ -198,8 +198,8 @@ class ProgressAdherenceTest {
         assertEquals(missedId, row.profileId)
         assertEquals("Cut (old)", row.profileName)
 
-        // No snapshot journaled → the name stays null and the UI falls back
-        // to the raw id.
+        // No snapshot journaled → the name stays null, so the row label falls
+        // back to the generic day-type title, never the raw id.
         val unnamed = ProgressAdherence.computeAdherence(
             slots = slots,
             goals = goals,
@@ -210,6 +210,14 @@ class ProgressAdherenceTest {
             today = today,
         )
         assertNull(unnamed.byDayType.single().profileName)
+
+        // Label resolution: the plan name wins, the journal snapshot rescues a
+        // plan miss, blank counts as missing, and null is the signal for the
+        // composable to use the generic day-type title instead of the id.
+        assertEquals("Lean bulk", adherenceDayTypeName("Lean bulk", null))
+        assertEquals("Cut (old)", adherenceDayTypeName(null, "Cut (old)"))
+        assertNull(adherenceDayTypeName(null, null))
+        assertEquals("Cut (old)", adherenceDayTypeName("  ", "Cut (old)"))
     }
 
     @Test
