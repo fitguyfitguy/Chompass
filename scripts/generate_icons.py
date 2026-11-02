@@ -405,9 +405,14 @@ def write_splash_marks(color_raster: Image.Image, noir_raster: Image.Image) -> N
 def write_pwa_icons(
     rounded_mask: Image.Image,
     color_raster: Image.Image,
+    noir_raster: Image.Image,
     logo_mask: Image.Image,
 ) -> None:
-    """PWA, store-listing, and website icons (cream tile brand mark)."""
+    """PWA, store-listing, and website icons.
+
+    Tiles carry the light mark on cream; the bare site mark is the noir variant,
+    because every ground it sits on is plum.
+    """
     PWA_ICONS.mkdir(parents=True, exist_ok=True)
     for name, px in (
         ("icon-192.png", 192),
@@ -424,9 +429,11 @@ def write_pwa_icons(
     METADATA_ICON.parent.mkdir(parents=True, exist_ok=True)
     compose_brand_icon(512, rounded_mask, color_raster).save(METADATA_ICON, optimize=True)
 
-    # Website header/OG art: transparent mark, no tile. Browser tab: cream tile.
+    # Website header/OG art: transparent mark, no tile. Both grounds on the site are
+    # plum, so this is the noir (glow) mark with a transparent hub — the light mark
+    # only ever sits on cream. Browser tab: cream tile, so the light mark.
     WEBSITE_IMG.mkdir(parents=True, exist_ok=True)
-    compose_mark_image(LOGO_SIZE, color_raster, 1.0).save(WEBSITE_IMG / "logo.png", optimize=True)
+    compose_mark_image(LOGO_SIZE, noir_raster, 1.0).save(WEBSITE_IMG / "logo.png", optimize=True)
     compose_brand_icon(64, rounded_mask, color_raster).save(
         WEBSITE_IMG / "favicon.png", optimize=True
     )
@@ -446,7 +453,7 @@ def main() -> None:
     write_density_icons(color_raster, logo_mask, rounded_mask, circle_mask)
     write_adaptive_icons(color_raster, logo_mask)
     write_splash_marks(color_raster, noir_raster)
-    write_pwa_icons(rounded_mask, color_raster, logo_mask)
+    write_pwa_icons(rounded_mask, color_raster, noir_raster, logo_mask)
 
     print(
         f"Generated icons from {MARK_SVG.relative_to(ROOT)} "

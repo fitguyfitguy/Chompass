@@ -21,6 +21,9 @@ The Chompass mark — a bitten compass ring with a two-facet needle pointing int
 
 `scripts/assets/build_icon_mark.py` emits the three mark SVGs (light, noir, mask) plus the BIMI logo `website/static/bimi/logo.svg`; `scripts/generate_icons.py` then emits the launcher density set, adaptive layers, splash marks, and the PWA/website/store-listing icons (via `resvg`). The script also writes a generated brand preview (`scripts/chompass_icon_master.png`); edit the SVG, not the PNG. The default brand is a cream `#FFF6EC` tile carrying the Ripened ring `#FFD9C2 → #FF9A6C → #E0685E → #8C2E4A` with the ink needle. Plum (the default accent) and Peach share that icon, so changing the default accent needs no asset regeneration.
 
+The noir (glow) variant is the dark-ground asset: app dark scheme, night splash, and the site
+header/OG mark. Tiles — launcher, favicon, PWA, BIMI — carry the light mark on cream.
+
 On Android API 26+, home-screen icons use adaptive XML (`mipmap-anydpi-v26`) with a cream or theme-gradient background, a safe-zone foreground logo, and a monochrome layer so the system icon-shape mask and Material You themed icons apply. PWA and store listing icons remain pre-shaped squircles.
 
 ## Display numerals

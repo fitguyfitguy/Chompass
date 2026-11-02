@@ -9,6 +9,9 @@ coordinate box:
   by two 34-radius scallops between 1 and 3 o'clock — the "chomp".
 * `NEEDLE_A` / `NEEDLE_B` are the two facets of a needle whose tip sits in the
   bite and whose pivot is the dial centre (100, 100).
+* The hub is an opaque disc over the needle, matching the ground it sits on
+  (cream on cream, plum on plum) so the pivot reads as a hole; the pin in its
+  centre keeps the needle legible.
 
 The wordmark's bitten "o" (60-unit box, stroke 8) is not emitted here: its two
 consumers are Compose (`ChompassMark.kt`) and the Hugo partial
