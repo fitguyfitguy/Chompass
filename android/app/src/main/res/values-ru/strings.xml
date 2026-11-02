@@ -817,6 +817,8 @@
     <string name="sheet_theme_color">Цвет темы</string>
     <string name="sheet_theme_color_footer">Меняет основной акцент: кнопки, графики и индикаторы прогресса.</string>
     <string name="theme_color_system">Системный</string>
+    <string name="theme_color_plum">Слива</string>
+    <string name="theme_color_peach">Персик</string>
     <string name="theme_color_teal">Бирюзовый</string>
     <string name="theme_color_blue">Синий</string>
     <string name="theme_color_green">Зелёный</string>
@@ -1765,7 +1767,7 @@
     <string name="settings_danger_zone">Опасная зона</string>
     <string name="settings_danger_zone_caption">Эти действия безвозвратно удаляют данные.</string>
     <string name="settings_fixed_launcher_icon">Фиксированный значок приложения</string>
-    <string name="settings_fixed_launcher_icon_subtitle">Значок остаётся бирюзовым и не меняется под цвет темы и обоев.</string>
+    <string name="settings_fixed_launcher_icon_subtitle">Значок остаётся фирменным и не меняется под цвет темы и обоев.</string>
     <string name="settings_system_date_time_pickers">Системный выбор даты и времени</string>
     <string name="settings_system_date_time_pickers_subtitle">При правке приёма пищи использовать системные окна даты и времени.</string>
     <string name="settings_glass_blur">Матированное стекло</string>

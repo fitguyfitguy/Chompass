@@ -1,21 +1,38 @@
 #!/usr/bin/env python3
-"""Generate Chompass launcher, PWA, and splash logos from the SVG brand mark."""
+"""Generate Chompass launcher, PWA, splash, and site icons from the mark SVGs.
+
+The mark SVGs are emitted by scripts/assets/build_icon_mark.py; edit geometry
+there (or in docs/brand/logo-system.html), never here.
+
+Two icon languages come out of this script:
+
+* **brand** — cream tile (`#FFF6EC`) with the full-colour Ripened mark. Every
+  brand accent (Plum default, Peach) shares this icon, so changing the default
+  accent never requires regenerating assets.
+* **themed** — a gradient tile with the white mask silhouette, one per fixed
+  accent that still offers a launcher icon (`AppThemeColor` in Color.kt).
+"""
 
 from __future__ import annotations
 
 import shutil
 import subprocess
 import tempfile
+from dataclasses import dataclass
 from pathlib import Path
 
 from PIL import Image, ImageDraw
 
 ROOT = Path(__file__).resolve().parents[1]
-MASTER_SVG = ROOT / "scripts" / "assets" / "chompass_icon_mark.svg"
-# Generated preview (teal squircle) — not an editable source.
+ASSETS = ROOT / "scripts" / "assets"
+MARK_SVG = ASSETS / "chompass_icon_mark.svg"
+MARK_NOIR_SVG = ASSETS / "chompass_icon_mark_noir.svg"
+MARK_MASK_SVG = ASSETS / "chompass_icon_mark_mask.svg"
+# Generated preview (brand tile) — not an editable source.
 MASTER_PREVIEW = ROOT / "scripts" / "chompass_icon_master.png"
 RES = ROOT / "android" / "app" / "src" / "main" / "res"
 PWA_ICONS = ROOT / "web" / "app" / "icons"
+WEBSITE_IMG = ROOT / "website" / "static" / "img"
 METADATA_ICON = ROOT / "metadata" / "en-US" / "images" / "icon.png"
 
 # Rasterize the SVG well above the largest consumer size, then LANCZOS-down.
@@ -36,30 +53,38 @@ DENSITIES = {
 ADAPTIVE_PX = 432
 SAFE_ZONE_RATIO = 0.66
 
-# Matches AppThemeColor in Color.kt: (suffix, start_rgb, end_rgb, ic_logo_name or None)
-# Unsuffixed theme is the default brand (teal), same as AppThemeColor.TEAL / PWA / website.
-THEMES: list[tuple[str, tuple[int, int, int], tuple[int, int, int], str | None]] = [
-    ("", (0x00, 0x6B, 0x5E), (0x5C, 0xC4, 0x8F), "ic_logo.png"),
-    ("_red", (0xFF, 0x3B, 0x30), (0xFF, 0x69, 0x61), "ic_logo_red.png"),
-    ("_orange", (0xFF, 0x95, 0x00), (0xFF, 0xB3, 0x40), "ic_logo_orange.png"),
-    ("_green", (0x34, 0xC7, 0x59), (0x62, 0xD4, 0x6F), "ic_logo_green.png"),
-    ("_mint", (0x00, 0xC7, 0xBE), (0x66, 0xD4, 0xCF), "ic_logo_mint.png"),
-    ("_teal", (0x00, 0x6B, 0x5E), (0x5C, 0xC4, 0x8F), "ic_logo_teal.png"),
-    ("_blue", (0x0A, 0x84, 0xFF), (0x5E, 0xAE, 0xFF), "ic_logo_blue.png"),
-    ("_purple", (0xAF, 0x52, 0xDE), (0xBF, 0x5A, 0xF2), "ic_logo_purple.png"),
-    ("_yellow", (0xFF, 0xCC, 0x00), (0xFF, 0xD6, 0x0A), None),
-    ("_coral", (0xFF, 0x7F, 0x50), (0xFF, 0xA3, 0x82), None),
-    ("_rose_gold", (0xC9, 0x80, 0x7C), (0xE8, 0xB4, 0xB0), None),
-    ("_mocha_brown", (0xA2, 0x84, 0x5E), (0xC9, 0xA5, 0x7E), None),
-    ("_indigo", (0x58, 0x56, 0xD6), (0x7D, 0x7A, 0xFF), None),
-    ("_lavender", (0xB5, 0x7E, 0xDC), (0xD0, 0xA9, 0xF5), None),
-    ("_sky_cyan", (0x32, 0xAD, 0xE6), (0x70, 0xCF, 0xFF), None),
-    ("_graphite", (0x8E, 0x8E, 0x93), (0xB8, 0xB8, 0xBE), None),
-    ("_baby_pink", (0xFF, 0x8F, 0xAB), (0xFF, 0xB3, 0xC6), None),
-    ("_lime", (0xA0, 0xD9, 0x11), (0xC3, 0xE9, 0x56), None),
-]
+# Brand tile: cream background, mark box as a fraction of the canvas.
+CREAM = (0xFF, 0xF6, 0xEC)
+BRAND_BOX_RATIO = 0.76
+MASKABLE_CONTENT_RATIO = 0.70
+SPLASH_BOX_RATIO = 0.88
 
 LOGO_SIZE = 512
+
+
+@dataclass(frozen=True)
+class ThemeSpec:
+    """One launcher-icon variant. `brand` uses the cream tile, not the gradient."""
+
+    suffix: str
+    start: tuple[int, int, int]
+    end: tuple[int, int, int]
+    brand: bool = False
+
+
+# Matches AppThemeColor in Color.kt. The brand entry is the shared cream tile;
+# the rest are the fixed accents that still offer a colored launcher icon.
+THEMES: list[ThemeSpec] = [
+    ThemeSpec("_brand", CREAM, CREAM, brand=True),
+    ThemeSpec("_teal", (0x00, 0x6B, 0x5E), (0x5C, 0xC4, 0x8F)),
+    ThemeSpec("_blue", (0x0A, 0x84, 0xFF), (0x5E, 0xAE, 0xFF)),
+    ThemeSpec("_green", (0x34, 0xC7, 0x59), (0x62, 0xD4, 0x6F)),
+    ThemeSpec("_purple", (0xAF, 0x52, 0xDE), (0xBF, 0x5A, 0xF2)),
+    ThemeSpec("_baby_pink", (0xFF, 0x8F, 0xAB), (0xFF, 0xB3, 0xC6)),
+    ThemeSpec("_orange", (0xFF, 0x95, 0x00), (0xFF, 0xB3, 0x40)),
+    ThemeSpec("_indigo", (0x58, 0x56, 0xD6), (0x7D, 0x7A, 0xFF)),
+    ThemeSpec("_graphite", (0x8E, 0x8E, 0x93), (0xB8, 0xB8, 0xBE)),
+]
 
 
 def lerp(a: int, b: int, t: float) -> int:
@@ -99,9 +124,9 @@ def _resvg_command() -> list[str]:
 
 
 def rasterize_svg(svg_path: Path, size: int) -> Image.Image:
-    """Render the brand-mark SVG to an RGBA PIL image at `size` px."""
+    """Render a mark SVG to an RGBA PIL image at `size` px."""
     if not svg_path.is_file():
-        raise SystemExit(f"Master SVG missing: {svg_path}")
+        raise SystemExit(f"Mark SVG missing: {svg_path}")
 
     with tempfile.TemporaryDirectory(prefix="chompass-icon-") as tmp:
         out = Path(tmp) / "mark.png"
@@ -139,7 +164,42 @@ def make_squircle_mask(size: int, corner_ratio: float = SQUIRCLE_CORNER_RATIO) -
     return mask.resize((size, size), Image.Resampling.LANCZOS)
 
 
-def compose_icon(
+def make_circle_mask(size: int) -> Image.Image:
+    """True-circle mask with the same supersampled edge treatment as the squircle."""
+    scale = 4
+    big = size * scale
+    mask = Image.new("L", (big, big), 0)
+    ImageDraw.Draw(mask).ellipse((0, 0, big - 1, big - 1), fill=255)
+    return mask.resize((size, size), Image.Resampling.LANCZOS)
+
+
+def compose_mark_image(size: int, color_raster: Image.Image, box_ratio: float) -> Image.Image:
+    """Transparent canvas with the full-colour mark centred at `box_ratio`."""
+    out = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    content = max(1, int(round(size * box_ratio)))
+    mark = color_raster.resize((content, content), Image.Resampling.LANCZOS)
+    offset = (size - content) // 2
+    out.alpha_composite(mark, (offset, offset))
+    return out
+
+
+def compose_brand_icon(
+    size: int,
+    mask: Image.Image,
+    color_raster: Image.Image,
+    box_ratio: float = BRAND_BOX_RATIO,
+) -> Image.Image:
+    """Cream tile + full-colour mark, intersected with the launcher mask."""
+    tile = compose_mark_image(size, color_raster, box_ratio)
+    base = Image.new("RGBA", (size, size), (*CREAM, 255))
+    base.alpha_composite(tile)
+
+    out = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    out.paste(base, mask=mask.resize((size, size), Image.Resampling.LANCZOS))
+    return out
+
+
+def compose_themed_icon(
     size: int,
     rounded_mask: Image.Image,
     logo_mask: Image.Image,
@@ -155,19 +215,17 @@ def compose_icon(
     white = Image.new("RGBA", (size, size), (255, 255, 255, 255))
     layer = Image.new("RGBA", (size, size), (0, 0, 0, 0))
     layer.paste(white, mask=logo)
-    out = Image.alpha_composite(out, layer)
-    return out
+    return Image.alpha_composite(out, layer)
 
 
-def compose_round_icon(
+def compose_themed_round_icon(
     size: int,
     logo_mask: Image.Image,
     start: tuple[int, int, int],
     end: tuple[int, int, int],
 ) -> Image.Image:
     """True circle: full gradient disk + logo (no squircle intersection)."""
-    circle = Image.new("L", (size, size), 0)
-    ImageDraw.Draw(circle).ellipse((0, 0, size - 1, size - 1), fill=255)
+    circle = make_circle_mask(size)
 
     bg = make_gradient(size, start, end).convert("RGBA")
     out = Image.new("RGBA", (size, size), (0, 0, 0, 0))
@@ -187,43 +245,49 @@ def compose_round_icon(
 def compose_maskable(
     size: int,
     rounded_mask: Image.Image,
-    logo_mask: Image.Image,
-    icon_start: tuple[int, int, int],
-    icon_end: tuple[int, int, int],
-    bleed: tuple[int, int, int],
-    content_ratio: float = 0.70,
+    color_raster: Image.Image,
+    content_ratio: float = MASKABLE_CONTENT_RATIO,
 ) -> Image.Image:
-    """Full-bleed maskable icon: solid bleed + inset squircle (safe zone)."""
-    out = Image.new("RGBA", (size, size), (*bleed, 255))
-    inset = compose_icon(size, rounded_mask, logo_mask, icon_start, icon_end)
+    """Full-bleed cream maskable icon with an inset brand tile (safe zone)."""
+    out = Image.new("RGBA", (size, size), (*CREAM, 255))
+    tile = compose_brand_icon(size, rounded_mask, color_raster)
     content = max(1, int(round(size * content_ratio)))
-    scaled = inset.resize((content, content), Image.Resampling.LANCZOS)
-    offset = (size - content) // 2
-    out.alpha_composite(scaled, (offset, offset))
+    scaled = tile.resize((content, content), Image.Resampling.LANCZOS)
+    out.alpha_composite(scaled, ((size - content) // 2, (size - content) // 2))
     return out
 
 
 def compose_adaptive_foreground(
     size: int,
-    logo_mask: Image.Image,
+    source: Image.Image,
+    *,
+    as_mask: bool = False,
     content_ratio: float = SAFE_ZONE_RATIO,
 ) -> Image.Image:
-    """White logo on transparent canvas, inset to the adaptive safe zone."""
+    """Transparent adaptive layer, inset to the OEM safe zone.
+
+    `as_mask` paints the source's alpha white (the themed/monochrome layer);
+    otherwise the full-colour mark is used as-is (the brand layer).
+    """
     out = Image.new("RGBA", (size, size), (0, 0, 0, 0))
     content = max(1, int(round(size * content_ratio)))
-    logo = logo_mask.resize((content, content), Image.Resampling.LANCZOS)
-    white = Image.new("RGBA", (content, content), (255, 255, 255, 255))
-    layer = Image.new("RGBA", (content, content), (0, 0, 0, 0))
-    layer.paste(white, mask=logo)
-    offset = (size - content) // 2
-    out.alpha_composite(layer, (offset, offset))
+    if as_mask:
+        mask = source.resize((content, content), Image.Resampling.LANCZOS)
+        layer = Image.new("RGBA", (content, content), (0, 0, 0, 0))
+        white = Image.new("RGBA", (content, content), (255, 255, 255, 255))
+        layer.paste(white, mask=mask)
+    else:
+        layer = source.resize((content, content), Image.Resampling.LANCZOS)
+    out.alpha_composite(layer, ((size - content) // 2, (size - content) // 2))
     return out
 
 
-def background_drawable_name(suffix: str) -> str:
-    if not suffix:
-        return "ic_launcher_background"
-    return f"ic_launcher_background{suffix}"
+def background_drawable_name(theme: ThemeSpec) -> str:
+    return "ic_launcher_background_cream" if theme.brand else f"ic_launcher_background{theme.suffix}"
+
+
+def foreground_drawable_name(theme: ThemeSpec) -> str:
+    return "ic_launcher_foreground_brand" if theme.brand else "ic_launcher_foreground"
 
 
 def write_gradient_background_xml(
@@ -246,19 +310,52 @@ def write_gradient_background_xml(
     )
 
 
-def write_adaptive_icon_xml(path: Path, background_name: str) -> None:
+def write_solid_background_xml(path: Path, color: tuple[int, int, int]) -> None:
+    path.write_text(
+        '<?xml version="1.0" encoding="utf-8"?>\n'
+        '<shape xmlns:android="http://schemas.android.com/apk/res/android"\n'
+        '    android:shape="rectangle">\n'
+        f'    <solid android:color="{rgb_hex(color)}" />\n'
+        "</shape>\n",
+        encoding="utf-8",
+    )
+
+
+def write_adaptive_icon_xml(path: Path, background_name: str, foreground_name: str) -> None:
     path.write_text(
         '<?xml version="1.0" encoding="utf-8"?>\n'
         '<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">\n'
         f'    <background android:drawable="@drawable/{background_name}" />\n'
-        '    <foreground android:drawable="@drawable/ic_launcher_foreground" />\n'
+        f'    <foreground android:drawable="@drawable/{foreground_name}" />\n'
         '    <monochrome android:drawable="@drawable/ic_launcher_monochrome" />\n'
         "</adaptive-icon>\n",
         encoding="utf-8",
     )
 
 
-def write_adaptive_icons(logo_mask: Image.Image) -> None:
+def write_density_icons(
+    color_raster: Image.Image,
+    logo_mask: Image.Image,
+    rounded_mask: Image.Image,
+    circle_mask: Image.Image,
+) -> None:
+    """Legacy pre-masked density PNGs (API < 26 / launcher shortcuts)."""
+    for theme in THEMES:
+        base = "ic_launcher" + theme.suffix
+        for folder, px in DENSITIES.items():
+            out_dir = RES / folder
+            out_dir.mkdir(parents=True, exist_ok=True)
+            if theme.brand:
+                square = compose_brand_icon(px, rounded_mask, color_raster)
+                round_icon = compose_brand_icon(px, circle_mask, color_raster)
+            else:
+                square = compose_themed_icon(px, rounded_mask, logo_mask, theme.start, theme.end)
+                round_icon = compose_themed_round_icon(px, logo_mask, theme.start, theme.end)
+            square.save(out_dir / f"{base}.png", optimize=True)
+            round_icon.save(out_dir / f"{base}_round.png", optimize=True)
+
+
+def write_adaptive_icons(color_raster: Image.Image, logo_mask: Image.Image) -> None:
     """Emit adaptive layers + anydpi-v26 XML so the system icon mask applies."""
     drawable = RES / "drawable"
     drawable.mkdir(parents=True, exist_ok=True)
@@ -267,98 +364,95 @@ def write_adaptive_icons(logo_mask: Image.Image) -> None:
     anydpi = RES / "mipmap-anydpi-v26"
     anydpi.mkdir(parents=True, exist_ok=True)
 
-    foreground = compose_adaptive_foreground(ADAPTIVE_PX, logo_mask)
-    foreground.save(nodpi / "ic_launcher_foreground.png", optimize=True)
+    # Brand layer keeps the palette; themed layers are white silhouettes.
+    compose_adaptive_foreground(ADAPTIVE_PX, color_raster).save(
+        nodpi / "ic_launcher_foreground_brand.png", optimize=True
+    )
+    compose_adaptive_foreground(ADAPTIVE_PX, logo_mask, as_mask=True).save(
+        nodpi / "ic_launcher_foreground.png", optimize=True
+    )
     # Same silhouette; Android themed icons tint via the alpha channel.
-    foreground.save(nodpi / "ic_launcher_monochrome.png", optimize=True)
+    compose_adaptive_foreground(ADAPTIVE_PX, logo_mask, as_mask=True).save(
+        nodpi / "ic_launcher_monochrome.png", optimize=True
+    )
 
-    for suffix, start, end, _logo_name in THEMES:
-        bg_name = background_drawable_name(suffix)
-        write_gradient_background_xml(drawable / f"{bg_name}.xml", start, end)
-        base = "ic_launcher" + suffix
-        write_adaptive_icon_xml(anydpi / f"{base}.xml", bg_name)
+    for theme in THEMES:
+        bg_name = background_drawable_name(theme)
+        if theme.brand:
+            write_solid_background_xml(drawable / f"{bg_name}.xml", CREAM)
+        else:
+            write_gradient_background_xml(drawable / f"{bg_name}.xml", theme.start, theme.end)
+        write_adaptive_icon_xml(
+            anydpi / f"ic_launcher{theme.suffix}.xml",
+            bg_name,
+            foreground_drawable_name(theme),
+        )
 
 
-def write_pwa_icons(rounded_mask: Image.Image, logo_mask: Image.Image) -> None:
-    """Write PWA / store icons with transparent corners (no white canvas padding).
+def write_splash_marks(color_raster: Image.Image, noir_raster: Image.Image) -> None:
+    """Android 12+ splash icon source: transparent mark, no tile, no inset.
 
-    Default brand matches Android teal (#006B5E → #5CC48F), same as AppThemeColor.TEAL
-    and the website / F-Droid listing icons.
+    drawable/splash_icon.xml applies the 25% inset the SplashScreen API needs.
     """
-    PWA_ICONS.mkdir(parents=True, exist_ok=True)
-    teal = next(t for t in THEMES if t[0] == "_teal")
-    teal_start, teal_end = teal[1], teal[2]
-    bleed = teal_start  # matches manifest theme_color
+    for folder, raster in (("drawable-nodpi", color_raster), ("drawable-night-nodpi", noir_raster)):
+        out_dir = RES / folder
+        out_dir.mkdir(parents=True, exist_ok=True)
+        compose_mark_image(LOGO_SIZE, raster, SPLASH_BOX_RATIO).save(
+            out_dir / "ic_splash_mark.png", optimize=True
+        )
 
+
+def write_pwa_icons(
+    rounded_mask: Image.Image,
+    color_raster: Image.Image,
+    logo_mask: Image.Image,
+) -> None:
+    """PWA, store-listing, and website icons (cream tile brand mark)."""
+    PWA_ICONS.mkdir(parents=True, exist_ok=True)
     for name, px in (
         ("icon-192.png", 192),
         ("icon-512.png", 512),
         ("apple-touch-icon.png", 180),
     ):
-        compose_icon(px, rounded_mask, logo_mask, teal_start, teal_end).save(
-            PWA_ICONS / name, optimize=True
-        )
+        compose_brand_icon(px, rounded_mask, color_raster).save(PWA_ICONS / name, optimize=True)
 
-    compose_maskable(
-        512,
-        rounded_mask,
-        logo_mask,
-        teal_start,
-        teal_end,
-        bleed,
-    ).save(PWA_ICONS / "icon-maskable-512.png", optimize=True)
-
-    # F-Droid / store listing: teal brand squircle, transparent corners.
-    METADATA_ICON.parent.mkdir(parents=True, exist_ok=True)
-    compose_icon(512, rounded_mask, logo_mask, teal_start, teal_end).save(
-        METADATA_ICON, optimize=True
+    compose_maskable(512, rounded_mask, color_raster).save(
+        PWA_ICONS / "icon-maskable-512.png", optimize=True
     )
 
-    # Hugo / Codeberg Pages favicon + header logo (same teal brand mark).
-    website_logo = ROOT / "website" / "static" / "img" / "logo.png"
-    website_logo.parent.mkdir(parents=True, exist_ok=True)
-    compose_icon(512, rounded_mask, logo_mask, teal_start, teal_end).save(
-        website_logo, optimize=True
+    # F-Droid / store listing: cream brand squircle, transparent corners.
+    METADATA_ICON.parent.mkdir(parents=True, exist_ok=True)
+    compose_brand_icon(512, rounded_mask, color_raster).save(METADATA_ICON, optimize=True)
+
+    # Website header/OG art: transparent mark, no tile. Browser tab: cream tile.
+    WEBSITE_IMG.mkdir(parents=True, exist_ok=True)
+    compose_mark_image(LOGO_SIZE, color_raster, 1.0).save(WEBSITE_IMG / "logo.png", optimize=True)
+    compose_brand_icon(64, rounded_mask, color_raster).save(
+        WEBSITE_IMG / "favicon.png", optimize=True
     )
 
 
 def main() -> None:
-    raster = rasterize_svg(MASTER_SVG, RASTER_PX)
-    logo_mask = logo_mask_from_raster(raster)
+    color_raster = rasterize_svg(MARK_SVG, RASTER_PX)
+    noir_raster = rasterize_svg(MARK_NOIR_SVG, RASTER_PX)
+    mask_raster = rasterize_svg(MARK_MASK_SVG, RASTER_PX)
+    logo_mask = logo_mask_from_raster(mask_raster)
     rounded_mask = make_squircle_mask(RASTER_PX)
+    circle_mask = make_circle_mask(RASTER_PX)
 
-    teal = next(t for t in THEMES if t[0] == "_teal")
     # Generated preview for quick eyeballing; edit the SVG, not this PNG.
-    compose_icon(1024, rounded_mask, logo_mask, teal[1], teal[2]).save(
-        MASTER_PREVIEW, optimize=True
-    )
+    compose_brand_icon(1024, rounded_mask, color_raster).save(MASTER_PREVIEW, optimize=True)
 
-    drawable = RES / "drawable-nodpi"
-    drawable.mkdir(parents=True, exist_ok=True)
+    write_density_icons(color_raster, logo_mask, rounded_mask, circle_mask)
+    write_adaptive_icons(color_raster, logo_mask)
+    write_splash_marks(color_raster, noir_raster)
+    write_pwa_icons(rounded_mask, color_raster, logo_mask)
 
-    for suffix, start, end, logo_name in THEMES:
-        icon_512 = compose_icon(LOGO_SIZE, rounded_mask, logo_mask, start, end)
-        if logo_name:
-            icon_512.save(drawable / logo_name, optimize=True)
-
-        base = "ic_launcher" + suffix
-        for folder, px in DENSITIES.items():
-            out_dir = RES / folder
-            out_dir.mkdir(parents=True, exist_ok=True)
-            # Legacy density PNGs (pre-masked) remain as fallbacks; API 26+
-            # prefers mipmap-anydpi-v26 adaptive XML written below.
-            square = compose_icon(px, rounded_mask, logo_mask, start, end)
-            round_icon = compose_round_icon(px, logo_mask, start, end)
-            square.save(out_dir / f"{base}.png", optimize=True)
-            round_icon.save(out_dir / f"{base}_round.png", optimize=True)
-
-    write_adaptive_icons(logo_mask)
-    write_pwa_icons(rounded_mask, logo_mask)
     print(
-        f"Generated icons from {MASTER_SVG.relative_to(ROOT)} "
+        f"Generated icons from {MARK_SVG.relative_to(ROOT)} "
         f"({RASTER_PX}px raster) for {len(THEMES)} themes across "
-        f"{len(DENSITIES)} densities + adaptive anydpi-v26 + PWA icons in "
-        f"{PWA_ICONS.relative_to(ROOT)}."
+        f"{len(DENSITIES)} densities + adaptive anydpi-v26, splash marks, and "
+        f"PWA/website icons."
     )
 
 

@@ -1464,7 +1464,7 @@
     <string name="settings_dinner_starts">Începutul cinei</string>
     <string name="settings_energy_goals">Obiective de cheltuială energetică</string>
     <string name="settings_fixed_launcher_icon">Pictogramă fixă a aplicației</string>
-    <string name="settings_fixed_launcher_icon_subtitle">Păstrează pictograma aplicației turcoaz. Nu mai urmează culoarea temei și a fundalului.</string>
+    <string name="settings_fixed_launcher_icon_subtitle">Păstrează pictograma mărcii. Nu mai urmează culoarea temei și a fundalului.</string>
     <string name="settings_system_date_time_pickers">Selectoare de dată și oră ale sistemului</string>
     <string name="settings_system_date_time_pickers_subtitle">Folosește dialogurile de dată și oră ale telefonului la editarea unei mese.</string>
     <string name="settings_glass_blur">Sticlă mată</string>
@@ -1765,6 +1765,8 @@
     <string name="theme_color_pink">Roz</string>
     <string name="theme_color_purple">Violet</string>
     <string name="theme_color_system">Sistem</string>
+    <string name="theme_color_plum">Prună</string>
+    <string name="theme_color_peach">Piersică</string>
     <string name="theme_color_teal">Turcoaz</string>
     <string name="unit_serving">porție</string>
     <string name="unit_serving_plural">porții</string>

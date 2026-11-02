@@ -1528,7 +1528,7 @@
     <string name="settings_dinner_starts">Le dîner commence</string>
     <string name="settings_energy_goals">Objectifs d\'énergie brûlée</string>
     <string name="settings_fixed_launcher_icon">Icône de lanceur fixe</string>
-    <string name="settings_fixed_launcher_icon_subtitle">Garde l\'icône du lanceur en sarcelle. Elle ne suit plus la couleur du thème ni le fond d\'écran.</string>
+    <string name="settings_fixed_launcher_icon_subtitle">Garde l\'icône de la marque. Elle ne suit plus la couleur du thème ni le fond d\'écran.</string>
     <string name="settings_system_date_time_pickers">Sélecteurs date et heure du système</string>
     <string name="settings_system_date_time_pickers_subtitle">Utiliser les dialogues date et heure du téléphone pour modifier un repas.</string>
     <string name="settings_glass_blur">Verre dépoli</string>
@@ -1843,6 +1843,8 @@
     <string name="theme_color_pink">Rose</string>
     <string name="theme_color_purple">Violet</string>
     <string name="theme_color_system">Système</string>
+    <string name="theme_color_plum">Prune</string>
+    <string name="theme_color_peach">Pêche</string>
     <string name="theme_color_teal">Sarcelle</string>
     <string name="unit_celsius">°C</string>
     <string name="unit_cm">cm</string>

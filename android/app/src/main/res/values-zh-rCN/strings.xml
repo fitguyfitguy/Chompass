@@ -1467,7 +1467,7 @@
     <string name="settings_dinner_starts">晚餐开始</string>
     <string name="settings_energy_goals">能量消耗目标</string>
     <string name="settings_fixed_launcher_icon">固定启动器图标</string>
-    <string name="settings_fixed_launcher_icon_subtitle">保持启动器图标为青色，不再跟随主题色和壁纸。</string>
+    <string name="settings_fixed_launcher_icon_subtitle">保持品牌图标，不再跟随主题色和壁纸。</string>
     <string name="settings_system_date_time_pickers">系统日期和时间选择器</string>
     <string name="settings_system_date_time_pickers_subtitle">编辑餐次时使用手机的日期和时间对话框。</string>
     <string name="settings_glass_blur">磨砂玻璃</string>
@@ -1762,6 +1762,8 @@
     <string name="theme_color_pink">粉色</string>
     <string name="theme_color_purple">紫色</string>
     <string name="theme_color_system">系统</string>
+    <string name="theme_color_plum">李子</string>
+    <string name="theme_color_peach">蜜桃</string>
     <string name="theme_color_teal">青色</string>
     <string name="unit_serving">份</string>
     <string name="unit_serving_plural">份</string>

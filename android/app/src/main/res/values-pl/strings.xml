@@ -990,7 +990,7 @@
     <string name="settings_appearance_oled">OLED</string>
     <string name="settings_theme_color">Kolor motywu</string>
     <string name="settings_fixed_launcher_icon">Stała ikona launchera</string>
-    <string name="settings_fixed_launcher_icon_subtitle">Utrzymuje ikonę launchera w kolorze morskim. Przestaje podążać za kolorem motywu i tapetą.</string>
+    <string name="settings_fixed_launcher_icon_subtitle">Utrzymuje ikonę marki. Przestaje podążać za kolorem motywu i tapetą.</string>
     <string name="settings_system_date_time_pickers">Systemowe wybieranie daty i godziny</string>
     <string name="settings_system_date_time_pickers_subtitle">Przy edycji posiłku używaj systemowych okien daty i godziny.</string>
     <string name="settings_glass_blur">Szkło matowe</string>
@@ -1012,6 +1012,8 @@
     <string name="sheet_theme_color">Kolor motywu</string>
     <string name="sheet_theme_color_footer">Zmienia główny kolor akcentu używany do przycisków, wykresów i wskaźników postępu.</string>
     <string name="theme_color_system">Systemowy</string>
+    <string name="theme_color_plum">Śliwka</string>
+    <string name="theme_color_peach">Brzoskwinia</string>
     <string name="theme_color_teal">Morski</string>
     <string name="theme_color_blue">Niebieski</string>
     <string name="theme_color_green">Zielony</string>

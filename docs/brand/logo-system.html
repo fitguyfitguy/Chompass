@@ -1,0 +1,1839 @@
+<!doctype html>
+<!-- Status: reference (2026-11). Source of truth for the mark geometry, palette and mark motion transcribed into code. -->
+<html lang="en" data-grad="ripened" data-accent="fig">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Chompass — Logo System · Peach / Fig</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     0. PALETTE TOKENS
+     ============================================================ */
+  :root{
+    --peach-100:#FFF0E4; --peach-200:#FFD9C2; --peach-300:#FFB994;
+    --peach-400:#FF9A6C; --peach-500:#FF7A4D; --peach-600:#E85D3A;
+    --peach-700:#C44428; --peach-800:#8C2E18; --peach-900:#3D1608;
+
+    --fig-100:#F7E9F0; --fig-200:#EBCDDD; --fig-300:#D6A2BE;
+    --fig-400:#B8759C; --fig-500:#8F4B78; --fig-600:#6E2F5C;
+    --fig-700:#512046; --fig-800:#371430; --fig-900:#1F0C1B;
+
+    --ink:#1C131A; --ink-2:#2A1E27; --cream:#FFF6EC; --blush:#FBF0F4;
+
+    --bg:var(--cream); --fg:var(--ink);
+    --muted:rgba(28,19,26,.56);
+    --line:rgba(28,19,26,.10);
+    --card:#FFFFFF; --card-2:#FFFAF6;
+
+    --needle-a:#1C131A; --needle-b:#4A3346;
+    --hub:#FFF6EC; --pin:#1C131A; --ring-w:16;
+
+    --accent:#B8F2C9; --accent-ink:#1c5a2c;
+
+    --glow-1:255,154,108; --glow-2:224,104,94;
+  }
+
+  html.noir{
+    --bg:#170E16; --fg:var(--blush);
+    --muted:rgba(251,240,244,.55);
+    --line:rgba(251,240,244,.12);
+    --card:#221621; --card-2:#2A1B28;
+    --needle-a:#FFF6EC; --needle-b:#FFC9A8;
+    --hub:#170E16; --pin:#FFF6EC;
+  }
+
+  /* ============================================================
+     1. GRADIENT ROUTING
+     ============================================================ */
+  html                       { --ring:url(#cpRipened);      --disc:url(#cpRipened); }
+  html[data-grad="classic"]  { --ring:url(#cpPeach);        --disc:url(#cpPeach); }
+  html[data-grad="fig"]      { --ring:url(#cpFig);          --disc:url(#cpFig); }
+
+  html.noir                       { --ring:url(#cpRipenedGlow); --disc:url(#cpRipenedGlow); }
+  html.noir[data-grad="classic"]  { --ring:url(#cpPeachGlow);   --disc:url(#cpPeachGlow); }
+  html.noir[data-grad="fig"]      { --ring:url(#cpFigGlow);     --disc:url(#cpFigGlow); }
+
+  html                       { --glow-1:255,154,108; --glow-2:224,104,94; }
+  html[data-grad="classic"]  { --glow-1:255,154,108; --glow-2:255,122,77; }
+  html[data-grad="fig"]      { --glow-1:184,117,156; --glow-2:143,75,120; }
+  html.noir                  { --glow-1:255,160,122; --glow-2:217,85,92; }
+  html.noir[data-grad="classic"] { --glow-1:255,184,148; --glow-2:255,122,77; }
+  html.noir[data-grad="fig"]     { --glow-1:214,162,190; --glow-2:110,47,92; }
+
+  html[data-accent="fig"]{ --accent:var(--fig-300); --accent-ink:var(--fig-700); }
+
+  /* ============================================================
+     2. BASE
+     ============================================================ */
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0; padding-bottom:120px;
+    background:var(--bg); color:var(--fg);
+    font-family:'Inter',ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+    line-height:1.5;
+    transition:background .45s ease,color .45s ease;
+  }
+  html.vt body{transition:none!important}
+  ::selection{background:var(--peach-300);color:var(--ink)}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 28px}
+  @media(max-width:640px){.wrap{padding:0 20px}}
+
+  /* ============================================================
+     3. TOPBAR
+     ============================================================ */
+  .topbar{
+    position:sticky;top:0;z-index:50;
+    backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+    background:color-mix(in srgb,var(--bg) 82%,transparent);
+    border-bottom:1px solid var(--line);
+    transition:background .45s ease,border-color .45s ease;
+  }
+  .topbar .wrap{display:flex;align-items:center;gap:12px;height:60px}
+  .topbar .mark{width:26px;height:26px;flex:none}
+  .topbar b{font-weight:600;letter-spacing:-.01em;font-size:14px}
+  .topbar span{font-size:12px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+  .topbar .spacer{flex:1}
+
+  .pill{
+    font:500 12px/1 'Inter',sans-serif;letter-spacing:.02em;
+    padding:9px 14px;border-radius:999px;border:1px solid var(--line);
+    background:transparent;color:var(--fg);cursor:pointer;
+    transition:background .2s ease,transform .2s ease,border-color .2s ease,color .2s ease;
+    white-space:nowrap;
+  }
+  .pill:hover{background:rgba(255,122,77,.14);border-color:rgba(255,122,77,.45)}
+  .pill:active{transform:scale(.97)}
+  .pill--accent{
+    background:linear-gradient(135deg,var(--peach-300),var(--peach-600));
+    color:#fff;border-color:transparent;
+    box-shadow:0 2px 10px rgba(232,93,58,.28);
+  }
+  .pill--accent:hover{filter:brightness(1.05)}
+
+  /* ============================================================
+     4. MARK — shared geometry
+     ============================================================ */
+  .mark{display:block;overflow:visible}
+  .mark .ring{
+    stroke:var(--ring); stroke-width:var(--ring-w,16); fill:none;
+    stroke-linecap:round; stroke-linejoin:round;
+    stroke-dasharray:1; stroke-dashoffset:0;
+  }
+  .mark .disc{fill:var(--disc);display:none}
+  .mark .needle-a{fill:var(--needle-a)}
+  .mark .needle-b{fill:var(--needle-b)}
+  .mark .hub{fill:var(--hub)}
+  .mark .pin{fill:var(--pin)}
+
+  .mark--mono{
+    --ring:currentColor; --needle-a:currentColor; --needle-b:currentColor;
+    --hub:var(--bg,var(--cream)); --pin:currentColor;
+  }
+  .mark--solid .disc{display:block}
+  .mark--solid .ring{display:none}
+
+  .mark--glow{
+    --ring:var(--disc);
+    --needle-a:#FFF6EC; --needle-b:#FFC9A8;
+    --hub:var(--bg); --pin:#FFF6EC;
+  }
+  html[data-grad="fig"] .mark--glow{ --needle-a:#F7E9F0; --needle-b:#D6A2BE; }
+
+  .mark--tiny .hub,.mark--tiny .pin{display:none}
+
+  [data-grad="classic"] .pin-grad,
+  .card[data-grad="classic"]{ --ring:url(#cpPeach); --disc:url(#cpPeach); }
+  .card[data-grad="ripened"]{ --ring:url(#cpRipened); --disc:url(#cpRipened); }
+  .card[data-grad="fig"]    { --ring:url(#cpFig); --disc:url(#cpFig); }
+  .card[data-grad="mud"]    { --ring:url(#cpMud); --disc:url(#cpMud); }
+
+  /* ============================================================
+     5. HERO
+     ============================================================ */
+  .hero{position:relative;padding:84px 0 72px;text-align:center;overflow:hidden}
+  .hero::before{
+    content:"";position:absolute;inset:-20% -10% auto -10%;height:780px;
+    background:
+      radial-gradient(48% 42% at 50% 42%,rgba(var(--glow-1),.30),transparent 72%),
+      radial-gradient(30% 28% at 74% 28%,rgba(var(--glow-2),.16),transparent 70%),
+      radial-gradient(28% 26% at 26% 66%,rgba(var(--glow-1),.10),transparent 70%);
+    pointer-events:none;transition:background .5s ease;
+  }
+  html.noir .hero::before{opacity:.62}
+  .hero .inner{position:relative;z-index:1}
+  .hero-glow{
+    position:absolute;
+    width:min(740px,88vw);height:min(740px,88vw);
+    left:50%;top:44%;transform:translate(-50%,-50%);
+    background:radial-gradient(circle,rgba(var(--glow-1),.34) 0%,rgba(var(--glow-2),.12) 42%,transparent 70%);
+    filter:blur(26px);pointer-events:none;z-index:0;
+    animation:glowPulse 5.5s ease-in-out infinite;
+    transition:background .5s ease;
+  }
+
+  .hero .mark{
+    width:clamp(180px,32vw,282px);height:auto;margin:0 auto;
+    position:relative;z-index:1;
+  }
+  .hero-mark{opacity:0}
+
+  .hero h1{
+    margin:34px 0 0;font-size:clamp(46px,8.2vw,92px);font-weight:600;
+    letter-spacing:-.045em;line-height:1;
+    position:relative;z-index:1;
+  }
+  .hero p.tag{
+    margin:18px 0 0;
+    font-family:'Fraunces',serif;font-style:italic;font-weight:400;
+    font-size:clamp(17px,2.4vw,24px);
+    letter-spacing:-.005em;color:var(--muted);
+    position:relative;z-index:1;
+  }
+  .hero .btn-row{
+    margin-top:36px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;
+    position:relative;z-index:1;
+  }
+
+  /* ============================================================
+     6. SECTION CHROME
+     ============================================================ */
+  section{padding:66px 0;border-top:1px solid var(--line);transition:border-color .45s ease}
+  .eyebrow{
+    display:flex;align-items:center;gap:10px;
+    font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--peach-600);font-weight:600;margin:0 0 10px;
+    transition:color .45s ease;
+  }
+  html[data-grad="fig"] .eyebrow{color:var(--fig-500)}
+  html.noir .eyebrow{color:var(--peach-300)}
+  html.noir[data-grad="fig"] .eyebrow{color:var(--fig-300)}
+  .eyebrow::before{content:"";width:22px;height:2px;background:currentColor;border-radius:2px}
+  h2{font-size:clamp(23px,3.5vw,32px);letter-spacing:-.025em;margin:0 0 8px;font-weight:600}
+  .lede{color:var(--muted);margin:0 0 36px;max-width:64ch;font-size:15px;line-height:1.65}
+
+  /* ============================================================
+     7. CARDS / GRIDS
+     ============================================================ */
+  .grid{display:grid;gap:18px}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  .g2{grid-template-columns:repeat(2,1fr)}
+  @media(max-width:860px){.g3{grid-template-columns:1fr 1fr}}
+  @media(max-width:560px){.g3,.g2{grid-template-columns:1fr}}
+
+  .card{
+    border:1px solid var(--line);border-radius:20px;background:var(--card);
+    padding:26px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    min-height:206px;gap:18px;position:relative;overflow:hidden;
+    transition:background .45s ease,border-color .45s ease,
+               transform .34s cubic-bezier(.16,1,.3,1),
+               box-shadow .34s cubic-bezier(.16,1,.3,1);
+  }
+  .card:hover{transform:translateY(-3px);box-shadow:0 18px 40px rgba(28,19,26,.10)}
+  .card .cap{
+    position:absolute;left:16px;top:14px;font-size:10px;letter-spacing:.13em;
+    text-transform:uppercase;color:var(--muted);font-weight:600;
+  }
+  .card .mark{width:102px;height:102px;transition:transform .6s cubic-bezier(.16,1,.3,1)}
+  .card:hover .mark{transform:scale(1.07)}
+
+  .card.dark{background:var(--ink);border-color:var(--ink);--bg:var(--ink);color:var(--cream)}
+  .card.dark .cap{color:rgba(255,246,236,.5)}
+
+  .card.noircard{
+    background:#170E16;border-color:#170E16;
+    background-image:radial-gradient(80% 80% at 50% 38%,rgba(255,122,77,.22),transparent 72%);
+    color:var(--blush);
+  }
+  .card.noircard .cap{color:rgba(251,240,244,.5)}
+  html[data-grad="fig"] .card.noircard{
+    background-image:radial-gradient(80% 80% at 50% 38%,rgba(184,117,156,.24),transparent 72%);
+  }
+
+  .card.peachbg{background:linear-gradient(140deg,#FFD9C2,#FF9A6C 48%,#E85D3A);border-color:transparent}
+  .card.figbg{background:linear-gradient(140deg,#D6A2BE,#8F4B78 48%,#371430);border-color:transparent}
+
+  /* ============================================================
+     8. GRADIENT ANATOMY
+     ============================================================ */
+  .anatomy{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media(max-width:720px){.anatomy{grid-template-columns:1fr}}
+  .anatomy-cell{
+    border:1px solid var(--line);border-radius:20px;background:var(--card);
+    padding:32px 24px;display:flex;flex-direction:column;align-items:center;gap:20px;
+    transition:background .45s ease,border-color .45s ease;position:relative;
+  }
+  .anatomy-cell .mark{width:150px;height:150px}
+  .anatomy-cell .badge{
+    position:absolute;top:14px;left:16px;
+    font-size:10px;letter-spacing:.13em;text-transform:uppercase;font-weight:700;
+    padding:5px 10px;border-radius:999px;
+  }
+  .badge--bad{background:#FFD9D0;color:#a12d12}
+  .badge--good{background:#B8F2C9;color:#1c5a2c}
+  .stops{display:flex;width:100%;border-radius:10px;overflow:hidden;height:34px}
+  .stops i{flex:1;display:block}
+
+  /* ============================================================
+     9. SCALE LADDER
+     ============================================================ */
+  .ladder{
+    display:flex;align-items:flex-end;gap:34px;flex-wrap:wrap;
+    padding:32px 28px;border:1px solid var(--line);border-radius:20px;
+    background:var(--card);
+    transition:background .45s ease,border-color .45s ease;
+  }
+  .ladder .step{display:flex;flex-direction:column;align-items:center;gap:12px}
+  .ladder .step span{font-size:10px;letter-spacing:.1em;color:var(--muted);font-weight:600}
+
+  /* ============================================================
+     10. DETAIL STAGE
+     ============================================================ */
+  .detail-stage{
+    display:flex;justify-content:center;align-items:center;
+    padding:32px;border:1px solid var(--line);border-radius:20px;
+    background:var(--card);
+    background-image:radial-gradient(70% 70% at 50% 40%,rgba(var(--glow-1),.10),transparent 72%);
+    transition:background .45s ease,border-color .45s ease;
+  }
+  .detail-mark{width:clamp(220px,40vw,340px);height:auto}
+
+  /* ============================================================
+     11. WORDMARK
+     ============================================================ */
+  .wordmark{
+    font-family:'Inter',sans-serif;font-weight:600;
+    letter-spacing:-.035em;line-height:1;
+    display:inline-flex;align-items:baseline;margin:0;
+    color:var(--fg);
+  }
+  .wordmark svg{
+    width:.58em;height:.58em;vertical-align:-.012em;
+    display:inline-block;overflow:visible;
+    color:var(--peach-600);
+    transition:color .45s ease;
+  }
+  html[data-grad="fig"] .wordmark svg{color:var(--fig-500)}
+  html.noir .wordmark svg{color:var(--peach-300)}
+  html.noir[data-grad="fig"] .wordmark svg{color:var(--fig-300)}
+  .wordmark svg path{stroke:currentColor;stroke-width:8;fill:none;stroke-linecap:round;stroke-linejoin:round}
+
+  /* hero wordmark — per-letter choreography */
+  .hero h1.wordmark{display:block;text-align:center}
+  .hero-word .ltr{display:inline-block}
+  .hero-word .ltr-o{display:inline-block;vertical-align:baseline}
+  .stage:not(.run) .hero-word .ltr{opacity:0}
+
+  .lockup{
+    display:flex;align-items:center;justify-content:center;gap:22px;
+    padding:48px 26px;border:1px solid var(--line);border-radius:20px;
+    background:var(--card);flex-wrap:wrap;
+    transition:background .45s ease,border-color .45s ease;
+  }
+  .lockup .mark{width:82px;height:82px;flex:none}
+  .lockup .wordmark{font-size:clamp(32px,5vw,54px)}
+
+  .lockup-vert{
+    display:flex;flex-direction:column;align-items:center;gap:20px;
+    padding:48px 26px;border:1px solid var(--line);border-radius:20px;
+    background:var(--card);
+    transition:background .45s ease,border-color .45s ease;
+  }
+  .lockup-vert .mark{width:92px;height:92px}
+  .lockup-vert .wordmark{font-size:42px}
+  .lockup-vert .tagline{
+    font-family:'Fraunces',serif;font-style:italic;font-weight:400;
+    font-size:14px;letter-spacing:.02em;color:var(--muted);margin:0;
+  }
+
+  /* ============================================================
+     12. APP ICONS
+     ============================================================ */
+  .icons{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+  @media(max-width:900px){.icons{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:520px){.icons{grid-template-columns:1fr}}
+
+  .icon-cell{
+    border-radius:20px;border:1px solid var(--line);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:16px;padding:34px 18px;background:var(--card);
+    transition:background .45s ease,border-color .45s ease;
+  }
+  .icon-cell.dark{background:var(--ink);border-color:var(--ink);--bg:var(--ink)}
+  .icon-cell.grad-peach{background:linear-gradient(140deg,#FFD9C2,#FF9A6C 48%,#E85D3A);border-color:transparent}
+  .icon-cell.grad-fig{background:linear-gradient(140deg,#D6A2BE,#8F4B78 48%,#371430);border-color:transparent}
+
+  .icon-tile{
+    width:112px;height:112px;border-radius:22.37%;display:grid;place-items:center;
+    box-shadow:0 14px 32px rgba(28,19,26,.16), 0 2px 4px rgba(28,19,26,.08);
+    transition:transform .55s cubic-bezier(.16,1,.3,1), box-shadow .55s cubic-bezier(.16,1,.3,1);
+  }
+  .icon-cell:hover .icon-tile{transform:translateY(-4px) scale(1.05);box-shadow:0 22px 44px rgba(28,19,26,.2)}
+  .icon-tile.cream{background:var(--cream)}
+  .icon-tile.ink{background:var(--ink);--bg:var(--ink)}
+  .icon-tile.peach{background:linear-gradient(140deg,#FFD9C2,#FF9A6C 48%,#E85D3A)}
+  .icon-tile.fig{background:linear-gradient(140deg,#D6A2BE,#8F4B78 48%,#371430)}
+  .icon-tile .mark{width:76%}
+
+  .icon-label{
+    font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+    font-weight:600;color:var(--muted);
+  }
+  .icon-cell.dark .icon-label{color:rgba(255,246,236,.6)}
+  .icon-cell.grad-peach .icon-label{color:rgba(33,26,23,.55)}
+  .icon-cell.grad-fig .icon-label{color:rgba(255,246,236,.7)}
+
+  /* ============================================================
+     13. SPLASH PHONE
+     ============================================================ */
+  .splash-stage{
+    display:flex;justify-content:center;gap:44px;flex-wrap:wrap;align-items:center;
+    padding:48px 24px;border:1px solid var(--line);border-radius:20px;
+    background:var(--card);
+    transition:background .45s ease,border-color .45s ease;
+  }
+  .phone{
+    width:268px;height:556px;border-radius:44px;background:var(--ink);
+    padding:9px;flex:none;
+    box-shadow:0 26px 64px rgba(28,19,26,.24),0 6px 16px rgba(28,19,26,.12);
+  }
+  .phone-screen{
+    width:100%;height:100%;border-radius:36px;background:var(--cream);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:24px;padding:30px;overflow:hidden;position:relative;
+  }
+  .phone-screen::before{
+    content:"";position:absolute;inset:0;
+    background:radial-gradient(70% 50% at 50% 32%,rgba(var(--glow-1),.22),transparent 72%);
+    pointer-events:none;
+  }
+  .phone-screen .mark{width:136px;height:136px;position:relative;z-index:1}
+  .phone-screen .wordmark{font-size:30px;position:relative;z-index:1}
+  .phone-screen .tagline{
+    font-family:'Fraunces',serif;font-style:italic;font-weight:400;
+    font-size:12px;letter-spacing:.03em;color:rgba(28,19,26,.56);
+    margin:0;text-align:center;position:relative;z-index:1;
+  }
+  .phone-screen .notch{
+    position:absolute;top:12px;left:50%;transform:translateX(-50%);
+    width:76px;height:20px;border-radius:999px;background:var(--ink);
+    opacity:.92;z-index:2;
+  }
+  .splash-notes{max-width:360px}
+  .splash-notes ul{margin:0;padding-left:18px;color:var(--muted);font-size:14px;line-height:1.8}
+  .splash-notes li strong{color:var(--fg);font-weight:600}
+
+  /* ============================================================
+     14. PALETTE
+     ============================================================ */
+  .scale-label{
+    display:flex;align-items:baseline;gap:10px;
+    font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+    font-weight:700;color:var(--muted);margin:0 0 10px;
+  }
+  .scale-label b{font-size:13px;letter-spacing:0;text-transform:none;color:var(--fg)}
+  .scale-label span{margin-left:auto;font-weight:500;letter-spacing:.04em;text-transform:none}
+
+  .palette-scale{display:grid;grid-template-columns:repeat(9,1fr);gap:8px;margin-bottom:26px}
+  @media(max-width:820px){.palette-scale{grid-template-columns:repeat(5,1fr)}}
+  @media(max-width:480px){.palette-scale{grid-template-columns:repeat(3,1fr)}}
+
+  .swatch-scale{border-radius:12px;overflow:hidden;border:1px solid var(--line)}
+  .swatch-scale .chip{height:70px}
+  .swatch-scale .meta{padding:8px 10px;background:var(--card)}
+  .swatch-scale .meta b{display:block;font-size:11px;font-weight:600;letter-spacing:.02em}
+  .swatch-scale .meta code{
+    font-size:10px;color:var(--muted);
+    font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  }
+
+  .palette-2{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:8px}
+  @media(max-width:860px){.palette-2{grid-template-columns:1fr 1fr}}
+  @media(max-width:480px){.palette-2{grid-template-columns:1fr}}
+  .swatch{border-radius:16px;border:1px solid var(--line);overflow:hidden;background:var(--card)}
+  .swatch .chip{height:88px;display:grid;place-items:center}
+  .swatch .meta{padding:12px 14px}
+  .swatch .meta b{display:block;font-size:13px;font-weight:600}
+  .swatch .meta code{
+    font-size:11px;color:var(--muted);
+    font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  }
+  .swatch .chip .aaa{font-size:22px;font-weight:700;letter-spacing:-.02em}
+
+  /* ============================================================
+     15. MOTION TIMELINE
+     ============================================================ */
+  .timeline{
+    border:1px solid var(--line);border-radius:20px;background:var(--card);
+    padding:28px;transition:background .45s ease,border-color .45s ease;
+  }
+  .tracks{position:relative}
+  .playhead{position:absolute;inset:0;pointer-events:none;opacity:0;z-index:2}
+  .playhead i{
+    position:absolute;top:0;bottom:0;left:0;width:2px;margin-left:-1px;
+    background:linear-gradient(180deg,transparent,var(--peach-500) 14%,var(--peach-500) 86%,transparent);
+    border-radius:2px;
+    box-shadow:0 0 14px rgba(255,122,77,.55);
+    transform:translateX(0);
+  }
+  .timeline.playing .playhead{opacity:1}
+  .timeline.playing .playhead i{animation:cp-sweep 2.05s cubic-bezier(.4,0,.2,1) both}
+
+  .track{margin-bottom:20px}
+  .track:last-child{margin-bottom:0}
+  .track .label{
+    display:flex;justify-content:space-between;font-size:11px;
+    letter-spacing:.1em;text-transform:uppercase;color:var(--muted);
+    font-weight:600;margin-bottom:8px;
+  }
+  .bar-area{
+    position:relative;height:28px;background:rgba(28,19,26,.05);
+    border-radius:8px;overflow:hidden;
+  }
+  html.noir .bar-area{background:rgba(251,240,244,.06)}
+  .bar{
+    position:absolute;top:0;height:100%;border-radius:8px;
+    background:linear-gradient(90deg,var(--peach-300),var(--peach-600));
+    display:flex;align-items:center;padding:0 10px;
+    font-size:10px;font-weight:600;color:#fff;letter-spacing:.04em;white-space:nowrap;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.25);
+    clip-path:inset(0 0 0 0);
+  }
+  .bar.ink{background:var(--ink);color:var(--cream);box-shadow:none}
+  .bar.accent{background:var(--accent);color:var(--accent-ink);box-shadow:none}
+  .timeline.playing .bar{
+    animation:cp-barGrow var(--t,600ms) linear var(--d,0ms) both;
+  }
+  .ruler{
+    display:flex;justify-content:space-between;margin-top:14px;
+    font-size:10px;color:var(--muted);font-variant-numeric:tabular-nums;
+    border-top:1px solid var(--line);padding-top:10px;
+  }
+
+  /* ============================================================
+     16. PEACH NOIR SHOWCASE
+     ============================================================ */
+  .section-noir{
+    background:#170E16;color:var(--blush);
+    border-top:none;padding:90px 0;position:relative;overflow:hidden;
+  }
+  .section-noir::before{
+    content:"";position:absolute;inset:0;
+    background:radial-gradient(60% 50% at 50% 30%,rgba(var(--glow-1),.24),transparent 72%);
+    pointer-events:none;transition:background .5s ease;
+  }
+  .section-noir .eyebrow{color:var(--peach-300)}
+  html[data-grad="fig"] .section-noir .eyebrow{color:var(--fig-300)}
+  .section-noir h2{color:var(--blush)}
+  .section-noir .lede{color:rgba(251,240,244,.6)}
+
+  .noir-stage{
+    display:flex;flex-direction:column;align-items:center;gap:26px;
+    padding:66px 24px;
+    border:1px solid rgba(251,240,244,.10);border-radius:24px;
+    background:rgba(251,240,244,.02);
+    backdrop-filter:blur(8px);
+    position:relative;z-index:1;
+  }
+  .noir-stage .mark{
+    width:clamp(160px,28vw,224px);height:auto;
+    --ring:url(#cpRipenedGlow); --disc:url(#cpRipenedGlow);
+    --needle-a:#FFF6EC; --needle-b:#FFC9A8;
+    --hub:#170E16; --pin:#FFF6EC;
+    filter:drop-shadow(0 0 44px rgba(var(--glow-1),.38));
+  }
+  html[data-grad="classic"] .noir-stage .mark{--ring:url(#cpPeachGlow);--disc:url(#cpPeachGlow)}
+  html[data-grad="fig"] .noir-stage .mark{
+    --ring:url(#cpFigGlow);--disc:url(#cpFigGlow);
+    --needle-a:#F7E9F0;--needle-b:#D6A2BE;
+  }
+  .noir-stage .wordmark{font-size:clamp(36px,6vw,64px);color:var(--blush)}
+  .noir-stage .wordmark svg{color:var(--peach-300)}
+  html[data-grad="fig"] .noir-stage .wordmark svg{color:var(--fig-300)}
+  .noir-stage .tagline{
+    font-family:'Fraunces',serif;font-style:italic;font-weight:400;
+    font-size:clamp(15px,2vw,19px);
+    color:rgba(251,240,244,.62);margin:0;
+  }
+  .noir-trio{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:22px;position:relative;z-index:1}
+  @media(max-width:720px){.noir-trio{grid-template-columns:1fr}}
+  .noir-trio .cell{
+    border:1px solid rgba(251,240,244,.10);border-radius:18px;
+    padding:26px 16px;display:flex;flex-direction:column;align-items:center;gap:14px;
+    background:rgba(251,240,244,.025);
+  }
+  .noir-trio .mark{width:88px;height:88px}
+  .noir-trio small{
+    font-size:10px;letter-spacing:.13em;text-transform:uppercase;
+    font-weight:600;color:rgba(251,240,244,.55);
+  }
+
+  /* ============================================================
+     17. DO / DON'T
+     ============================================================ */
+  .dd{
+    border:1px solid var(--line);border-radius:20px;background:var(--card);
+    padding:26px;display:flex;gap:18px;align-items:flex-start;
+    transition:background .45s ease,border-color .45s ease;
+  }
+  .dd .ico{
+    width:32px;height:32px;border-radius:50%;display:grid;place-items:center;
+    flex:none;font-size:15px;font-weight:700;
+  }
+  .dd.do .ico{background:#B8F2C9;color:#1c5a2c}
+  .dd.dont .ico{background:#FFD9D0;color:#a12d12}
+  .dd h4{margin:0 0 6px;font-size:15px;font-weight:600}
+  .dd p{margin:0;font-size:14px;color:var(--muted);line-height:1.6}
+
+  /* ============================================================
+     18. FOOTER
+     ============================================================ */
+  footer{padding:60px 0 40px;border-top:1px solid var(--line);text-align:center}
+  footer .mark{width:42px;height:42px;margin:0 auto 18px;opacity:.92}
+  footer p{margin:0;font-size:13px;color:var(--muted)}
+  footer em{font-family:'Fraunces',serif;font-style:italic}
+
+  /* ============================================================
+     19. CONTROL BAR
+     ============================================================ */
+  .controls{
+    position:fixed;left:50%;bottom:20px;transform:translateX(-50%);
+    z-index:60;display:flex;gap:10px;flex-wrap:wrap;justify-content:center;
+    padding:10px;border-radius:22px;
+    background:color-mix(in srgb,var(--bg) 88%,transparent);
+    backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+    border:1px solid var(--line);
+    box-shadow:0 16px 44px rgba(28,19,26,.16);
+    max-width:calc(100vw - 24px);
+    transition:background .45s ease,border-color .45s ease;
+  }
+  .controls .group{display:flex;flex-direction:column;gap:5px;align-items:center}
+  .controls .group > label{
+    font-size:9px;letter-spacing:.14em;text-transform:uppercase;
+    font-weight:700;color:var(--muted);
+  }
+
+  .seg{
+    display:inline-flex;background:var(--card);border:1px solid var(--line);
+    border-radius:999px;padding:3px;gap:2px;position:relative;isolation:isolate;
+  }
+  .seg-thumb{
+    position:absolute;top:3px;bottom:3px;left:0;width:0;
+    border-radius:999px;background:var(--fg);
+    transition:transform .44s cubic-bezier(.16,1,.3,1),
+               width .44s cubic-bezier(.16,1,.3,1),
+               background .45s ease;
+    z-index:0;pointer-events:none;
+  }
+  .seg button{
+    position:relative;z-index:1;
+    border:none;background:transparent;color:var(--muted);
+    font:500 11px/1 'Inter',sans-serif;letter-spacing:.02em;
+    padding:7px 12px;border-radius:999px;cursor:pointer;
+    transition:color .22s ease;
+    white-space:nowrap;
+  }
+  .seg button:hover{color:var(--fg)}
+  .seg button[aria-pressed="true"]{background:transparent;color:var(--bg)}
+  .seg button[aria-pressed="true"]:hover{color:var(--bg)}
+  .seg .dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px;vertical-align:1px}
+
+  @media(max-width:640px){
+    body{padding-bottom:190px}
+    .controls{border-radius:18px;gap:8px;padding:9px}
+    .controls .group > label{display:none}
+  }
+
+  /* ============================================================
+     20. MOTION — transform origins
+     ============================================================ */
+  .anim .dial,
+  .anim .needle,
+  .anim .needle-sway,
+  .anim .needle-track{ transform-box:view-box; }
+
+  .anim .dial{ transform-origin:142px 56px; }        /* hinge on the bite */
+  .anim .needle,
+  .anim .needle-sway,
+  .anim .needle-track{ transform-origin:100px 100px; }
+
+  /* ============================================================
+     21. KEYFRAMES
+     ============================================================ */
+  @keyframes cp-draw{ from{stroke-dashoffset:1} to{stroke-dashoffset:0} }
+
+  @keyframes cp-markIn{ from{opacity:0} to{opacity:1} }
+
+  @keyframes cp-needleIntro{
+    0%   { transform:rotate(-1080deg); }
+    55%  { transform:rotate(26deg); }
+    70%  { transform:rotate(-11deg); }
+    82%  { transform:rotate(5deg); }
+    92%  { transform:rotate(-2deg); }
+    100% { transform:rotate(0deg); }
+  }
+
+  @keyframes cp-chomp{
+    0%  { transform:scale(1,1); }
+    22% { transform:scale(.955,1.042); }
+    50% { transform:scale(1.028,.976); }
+    74% { transform:scale(.993,1.006); }
+    100%{ transform:scale(1,1); }
+  }
+
+  @keyframes cp-ringPulse{
+    0%   { stroke-width:16; }
+    30%  { stroke-width:18.4; }
+    62%  { stroke-width:15.2; }
+    100% { stroke-width:16; }
+  }
+
+  @keyframes cp-letter{
+    from{ opacity:0; transform:translateY(.42em); filter:blur(5px); }
+    to  { opacity:1; transform:translateY(0);     filter:blur(0);   }
+  }
+
+  @keyframes cp-oChomp{
+    0%,100%{ transform:scale(1,1); }
+    36%    { transform:scale(.87,1.09); }
+    70%    { transform:scale(1.055,.965); }
+  }
+
+  @keyframes cp-tag{
+    from{ opacity:0; transform:translateY(12px); filter:blur(8px); }
+    to  { opacity:1; transform:translateY(0);    filter:blur(0);   }
+  }
+
+  @keyframes cp-sway{
+    0%,100%{ transform:rotate(0deg); }
+    28%    { transform:rotate(2.4deg); }
+    62%    { transform:rotate(-2.1deg); }
+  }
+
+  @keyframes cp-loopSpin{
+    0%       { transform:rotate(-1080deg); }
+    22%      { transform:rotate(24deg); }
+    30%      { transform:rotate(-9deg); }
+    38%      { transform:rotate(4deg); }
+    44%,100% { transform:rotate(0deg); }
+  }
+
+  @keyframes cp-loopChomp{
+    0%,46%  { transform:scale(1,1); }
+    52%     { transform:scale(.96,1.035); }
+    60%     { transform:scale(1.024,.986); }
+    68%,100%{ transform:scale(1,1); }
+  }
+
+  @keyframes cp-sweep{
+    0%   { transform:translateX(0); opacity:0; }
+    4%   { opacity:1; }
+    94%  { opacity:1; }
+    100% { transform:translateX(var(--pw,600px)); opacity:0; }
+  }
+
+  @keyframes cp-barGrow{
+    from{ clip-path:inset(0 100% 0 0); }
+    to  { clip-path:inset(0 0 0 0); }
+  }
+
+  @keyframes cp-reveal{
+    from{ opacity:0; translate:0 26px; }
+    to  { opacity:1; translate:0 0; }
+  }
+
+  @keyframes cp-themeReveal{
+    from{ clip-path:circle(0px at var(--vt-x,50%) var(--vt-y,50%)); }
+    to  { clip-path:circle(var(--vt-r,120vmax) at var(--vt-x,50%) var(--vt-y,50%)); }
+  }
+
+  @keyframes float{
+    0%,100%{ transform:translateY(0); }
+    50%    { transform:translateY(-10px); }
+  }
+  @keyframes glowPulse{
+    0%,100%{ opacity:.78; }
+    50%    { opacity:1; }
+  }
+
+  /* ============================================================
+     22. INTRO ORCHESTRATION
+     ============================================================ */
+  .stage.run .hero-mark{
+    animation:cp-markIn .45s ease both, float 7s ease-in-out infinite;
+  }
+
+  .hero-mark .ring{ stroke-dashoffset:1; }   /* hidden until intro runs */
+  .stage.run .hero-mark .ring{
+    animation:
+      cp-draw      .9s  cubic-bezier(.65,0,.35,1)      .12s both,
+      cp-ringPulse .55s cubic-bezier(.34,1.56,.64,1)   1.08s both;
+  }
+
+  .stage.run .hero-mark .needle{
+    animation:cp-needleIntro 1.45s cubic-bezier(.22,1,.36,1) .18s both;
+  }
+
+  .stage.run .hero-mark .dial{
+    animation:cp-chomp .55s cubic-bezier(.34,1.56,.64,1) 1.08s both;
+  }
+
+  .stage.run .hero-mark .needle-sway{
+    animation:cp-sway 7s ease-in-out 2.1s infinite;
+  }
+  .hero-mark.is-tracking .needle-sway{ animation:none; }
+
+  .stage.run .hero-word .ltr{
+    animation:cp-letter .75s cubic-bezier(.16,1,.3,1) both;
+    animation-delay:calc(1.05s + var(--i) * 45ms);
+  }
+  .stage.run .hero-word .ltr-o svg{
+    animation:cp-oChomp .5s cubic-bezier(.34,1.56,.64,1) 1.72s both;
+    transform-origin:50% 58%;
+  }
+  .stage.run .hero-tag{
+    animation:cp-tag .85s cubic-bezier(.16,1,.3,1) 1.55s both;
+  }
+
+  /* ============================================================
+     23. SPLASH LOOP
+     ============================================================ */
+  .loop .ring{ animation:cp-draw .9s cubic-bezier(.65,0,.35,1) both; }
+  .loop .needle{ animation:cp-loopSpin 6s cubic-bezier(.22,1,.36,1) .2s infinite; }
+  .loop .dial{ animation:cp-loopChomp 6s cubic-bezier(.34,1.56,.64,1) .2s infinite; }
+  .loop .needle-sway{ animation:cp-sway 5s ease-in-out 1s infinite; }
+
+  /* ============================================================
+     24. SCROLL REVEALS
+     ============================================================ */
+  [data-reveal]{ opacity:0; }
+  [data-reveal].in{
+    animation:cp-reveal .9s cubic-bezier(.16,1,.3,1) both;
+    animation-delay:calc(var(--i,0) * 65ms);
+  }
+
+  /* ============================================================
+     25. VIEW TRANSITIONS
+     ============================================================ */
+  ::view-transition-old(root),
+  ::view-transition-new(root){
+    animation:none;
+    mix-blend-mode:normal;
+  }
+  ::view-transition-new(root){
+    animation:cp-themeReveal .72s cubic-bezier(.65,0,.35,1) both;
+  }
+
+  /* ============================================================
+     26. REDUCED MOTION
+     ============================================================ */
+  @media (prefers-reduced-motion: reduce){
+    *,*::before,*::after{
+      animation-duration:.001ms!important;
+      animation-iteration-count:1!important;
+      transition-duration:.001ms!important;
+      scroll-behavior:auto!important;
+    }
+    .hero-mark{opacity:1}
+    .hero-mark .ring{stroke-dashoffset:0}
+    [data-reveal]{opacity:1}
+    ::view-transition-new(root){animation:none}
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== shared gradient defs ===== -->
+<svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute;overflow:hidden">
+  <defs>
+    <linearGradient id="cpPeach" x1="20" y1="10" x2="180" y2="190" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFD9C2"/><stop offset=".30" stop-color="#FFB994"/>
+      <stop offset=".62" stop-color="#FF8A5B"/><stop offset="1" stop-color="#D94A28"/>
+    </linearGradient>
+
+    <linearGradient id="cpRipened" x1="20" y1="10" x2="180" y2="190" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFD9C2"/><stop offset=".32" stop-color="#FF9A6C"/>
+      <stop offset=".68" stop-color="#E0685E"/><stop offset="1" stop-color="#8C2E4A"/>
+    </linearGradient>
+
+    <linearGradient id="cpFig" x1="20" y1="10" x2="180" y2="190" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#C98BB0"/><stop offset=".45" stop-color="#8F4B78"/>
+      <stop offset="1" stop-color="#371430"/>
+    </linearGradient>
+
+    <linearGradient id="cpPeachGlow" x1="20" y1="10" x2="180" y2="190" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFE8D6"/><stop offset=".38" stop-color="#FFB994"/>
+      <stop offset=".72" stop-color="#FF7A4D"/><stop offset="1" stop-color="#C44428"/>
+    </linearGradient>
+
+    <linearGradient id="cpRipenedGlow" x1="20" y1="10" x2="180" y2="190" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFE8D6"/><stop offset=".38" stop-color="#FFA07A"/>
+      <stop offset=".70" stop-color="#D9555C"/><stop offset="1" stop-color="#5E1F45"/>
+    </linearGradient>
+
+    <linearGradient id="cpFigGlow" x1="20" y1="10" x2="180" y2="190" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#EBCDDD"/><stop offset=".40" stop-color="#B8759C"/>
+      <stop offset=".74" stop-color="#6E2F5C"/><stop offset="1" stop-color="#2A0F26"/>
+    </linearGradient>
+
+    <linearGradient id="cpMud" x1="20" y1="10" x2="180" y2="190" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FF8A5B"/><stop offset=".50" stop-color="#C56A6A"/>
+      <stop offset="1" stop-color="#8A4A78"/>
+    </linearGradient>
+  </defs>
+</svg>
+
+<!-- ===== topbar ===== -->
+<div class="topbar">
+  <div class="wrap">
+    <svg class="mark mark--tiny" viewBox="0 0 200 200" role="img" aria-label="Chompass">
+      <path class="ring" pathLength="1" d="M171.7 106.3A72 72 0 1 1 118.6 30.5A34 34 0 0 0 159 58.7A34 34 0 0 0 171.7 106.3Z"/>
+      <path class="needle-a" d="M151.6 63.9L104.3 106.1L83.6 111.5Z"/>
+      <path class="needle-b" d="M151.6 63.9L83.6 111.5L95.7 93.9Z"/>
+    </svg>
+    <b>Chompass</b>
+    <span>Logo System</span>
+    <div class="spacer"></div>
+    <button class="pill" id="themeToggle">Peach noir</button>
+    <button class="pill" id="replayTop">Replay motion</button>
+  </div>
+</div>
+
+<!-- ===== hero ===== -->
+<div class="hero">
+  <div class="hero-glow"></div>
+  <div class="wrap inner">
+    <div class="stage" id="stage">
+      <svg class="mark hero-mark anim" viewBox="0 0 200 200" role="img" aria-label="Chompass compass mark">
+        <g class="dial">
+          <path class="ring" pathLength="1"
+                d="M171.7 106.3A72 72 0 1 1 118.6 30.5A34 34 0 0 0 159 58.7A34 34 0 0 0 171.7 106.3Z"/>
+        </g>
+        <g class="needle-sway">
+          <g class="needle-track">
+            <g class="needle">
+              <path class="needle-a" d="M151.6 63.9L104.3 106.1L83.6 111.5Z"/>
+              <path class="needle-b" d="M151.6 63.9L83.6 111.5L95.7 93.9Z"/>
+              <circle class="hub" cx="100" cy="100" r="7"/>
+              <circle class="pin" cx="100" cy="100" r="2.5"/>
+            </g>
+          </g>
+        </g>
+      </svg>
+
+      <h1 class="wordmark hero-word" aria-label="chompass"><span class="ltr" aria-hidden="true" style="--i:0">c</span><span class="ltr" aria-hidden="true" style="--i:1">h</span><span class="ltr ltr-o" aria-hidden="true" style="--i:2"><svg viewBox="0 0 60 60"><path d="M54.15 23.53A25 25 0 1 1 40.57 7.34A9 9 0 0 0 41.49 20.36A9 9 0 0 0 54.15 23.53Z"/></svg></span><span class="ltr" aria-hidden="true" style="--i:3">m</span><span class="ltr" aria-hidden="true" style="--i:4">p</span><span class="ltr" aria-hidden="true" style="--i:5">a</span><span class="ltr" aria-hidden="true" style="--i:6">s</span><span class="ltr" aria-hidden="true" style="--i:7">s</span></h1>
+      <p class="tag hero-tag">Every bite, on course.</p>
+    </div>
+
+    <div class="btn-row">
+      <button class="pill pill--accent" id="replay">▶ Replay the intro</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     01 — THE MARK
+     ============================================================ -->
+<section>
+  <div class="wrap">
+    <p class="eyebrow">01 — The mark</p>
+    <h2>One ring. One bite. One heading.</h2>
+    <p class="lede">The dial is bitten, and a faceted needle points straight into the bite. It reads as an instrument, a piece of fruit, and a wink — all from the same geometry. Below: the four colour treatments, each complete in itself.</p>
+
+    <div class="grid g3">
+      <div class="card">
+        <span class="cap">Primary · live</span>
+        <svg class="mark" viewBox="0 0 200 200" role="img" aria-label="Chompass primary mark">
+          <path class="ring" pathLength="1" d="M171.7 106.3A72 72 0 1 1 118.6 30.5A34 34 0 0 0 159 58.7A34 34 0 0 0 171.7 106.3Z"/>
+          <path class="needle-a" d="M151.6 63.9L104.3 106.1L83.6 111.5Z"/>
+          <path class="needle-b" d="M151.6 63.9L83.6 111.5L95.7 93.9Z"/>
+          <circle class="hub" cx="100" cy="100" r="7"/><circle class="pin" cx="100" cy="100" r="2.5"/>
+        </svg>
+      </div>
+
+      <div class="card" data-grad="classic">
+        <span class="cap">Classic peach</span>
+        <svg class="mark" viewBox="0 0 200 200" role="img" aria-label="Classic peach mark">
+          <path class="ring" pathLength="1" d="M171.7 106.3A72 72 0 1 1 118.6 30.5A34 34 0 0 0 159 58.7A34 34 0 0 0 171.7 106.3Z"/>
+          <path class="needle-a" d="M151.6 63.9L104.3 106.1L83.6 111.5Z"/>
+          <path class="needle-b" d="M151.6 63.9L83.6 111.5L95.7 93.9Z"/>
+          <circle class="hub" cx="100" cy="100" r="7"/><circle class="pin" cx="100" cy="100" r="2.5"/>
+        </svg>
+      </div>
+
+      <div class="card" data-grad="ripened">
+        <span class="cap">Ripened · peach → plum</span>
+        <svg class="mark" viewBox="0 0 200 200" role="img" aria-label="Ripened mark">
+          <path class="ring" pathLength="1" d="M171.7 106.3A72 72 0 1 1 118.6 30.5A34 34 0 0 0 159 58.7A34 34 0 0 0 171.7 106.3Z"/>
+          <path class="needle-a" d="M151.6 63.9L104.3 106.1L83.6 111.5Z"/>
+          <path class="needle-b" d="M151.6 63.9L83.6 111.5L95.7 93.9Z"/>
+          <circle class="hub" cx="100" cy="100" r="7"/><circle class="pin" cx="100" cy="100" r="2.5"/>
+        </svg>
+      </div>
+
+      <div class="card" data-grad="fig">
+        <span class="cap">Fig · secondary</span>
+        <svg class="mark" viewBox="0 0 200 200" role="img" aria-label="Fig mark">
+          <path class="ring" pathLength="1" d="M171.7 106.3A72 72 0 1 1 118.6 30.5A34 34 0 0 0 159 58.7A34 34 0 0 0 171.7 106.3Z"/>
+          <path class="needle-a" d="M151.6 63.9L104.3 106.1L83.6 111.5Z"/>
+          <path class="needle-b" d="M151.6 63.9L83.6 111.5L95.7 93.9Z"/>
+          <circle class="hub" cx="100" cy="100" r="7"/><circle class="pin" cx="100" cy="100" r="2.5"/>
+        </svg>
+      </div>
+
+      <div class="card dark">
+        <span class="cap">Mono / reversed</span>
+        <svg class="mark mark--mono" viewBox="0 0 200 200" role="img" aria-label="Chompass mono mark">
+          <path class="ring" pathLength="1" d="M171.7 106.3A72 72 0 1 1 118.6 30.5A34 34 0 0 0 159 58.7A34 34 0 0 0 171.7 106.3Z"/>
+          <path class="needle-a" d="M151.6 63.9L104.3 106.1L83.6 111.5Z"/>
+          <path class="needle-b" d="M151.6 63.9L83.6 111.5L95.7 93.9Z"/>
+          <circle class="hub" cx="100" cy="100" r="7"/><circle class="pin" cx="100" cy="100" r="2.5"/>
+        </svg>
+      </div>
+
+      <div class="card noircard">
+        <span class="cap">Peach noir · live</span>
+        <svg class="mark mark--glow" viewBox="0 0 200 200" role="img" aria-label="Chompass noir mark">
+          <path class="ring" pathLength="1" d="M171.7 106.3A72 72 0 1 1 118.6 30.5A34 34 0 0 0 159 58.7A34 34 0 0 0 171.7 106.3Z"/>
+          <path class="needle-a" d="M151.6 63.9L104.3 106.1L83.6 111.5Z"/>
+          <path class="needle-b" d="M151.6 63.9L83.6 111.5L95.7 93.9Z"/>
+          <circle class="hub" cx="100" cy="100" r="7"/><circle class="pin" cx="100" cy="100" r="2.5"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     02 — GRADIENT ANATOMY
+     ============================================================ -->
+<section>
+  <div class="wrap">
+    <p class="eyebrow">02 — Gradient anatomy</p>
+    <h2>Never interpolate peach → plum through grey.</h2>
+    <p class="lede">A two-stop blend in RGB passes through a dusty rose-brown that reads as a bruise. The fix is routing the hue <em>down through red</em> instead: coral, then rose, then wine. Same destination, alive the whole way.</p>
+
+    <div class="anatomy">
+      <div class="anatomy-cell">
+        <span class="badge badge--bad">✕ Through grey</span>
+        <svg class="mark" viewBox="0 0 200 200" role="img" aria-label="Muddy gradient mark">
+          <path class="ring" pathLength="1" d="M171.7 106.3A72 72 0 1 1 118.6 30.5A34 34 0 0 0 159 58.7A34 34 0 0 0 171.7 106.3Z" style="stroke:url(#cpMud)"/>
+          <path class="needle-a" d="M151.6 63.9L104.3 106.1L83.6 111.5Z"/>
+          <path class="needle-b" d="M151.6 63.9L83.6 111.5L95.7 93.9Z"/>
+          <circle class="hub" cx="100" cy="100" r="7"/><circle class="pin" cx="100" cy="100" r="2.5"/>
+        </svg>
+        <div class="stops">
+          <i style="background:#FF8A5B"></i><i style="background:#C56A6A"></i><i style="background:#8A4A78"></i>
+        </div>
+      </div>
+
+      <div class="anatomy-cell">
+        <span class="badge badge--good">✓ Through red</span>
+        <svg class="mark" viewBox="0 0 200 200" role="img" aria-label="Ripened gradient mark">
+          <path class="ring" pathLength="1" d="M171.7 106.3A72 72 0 1 1 118.6 30.5A34 34 0 0 0 159 58.7A34 34 0 0 0 171.7 106.3Z" style="stroke:url(#cpRipened)"/>
+          <path class="needle-a" d="M151.6 63.9L104.3 106.1L83.6 111.5Z"/>
+          <path class="needle-b" d="M151.6 63.9L83.6 111.5L95.7 93.9Z"/>
+          <circle class="hub" cx="100" cy="100" r="7"/><circle class="pin" cx="100" cy="100" r="2.5"/>
+        </svg>
+        <div class="stops">
+          <i style="background:#FFD9C2"></i><i style="background:#FF9A6C"></i>
+          <i style="background:#E0685E"></i><i style="background:#8C2E4A"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     03 — SCALE
+     ============================================================ -->
+<section>
+  <div class="wrap">
+    <p class="eyebrow">03 — Scale</p>
+    <h2>It survives at 16 px.</h2>
+    <p class="lede">The silhouette is one thick ring with one obvious gap plus one dark wedge. Nothing depends on fine detail. The needle's two facets merge into a single shape as the mark shrinks.</p>
+
+    <div class="ladder">
+      <div class="step">
+        <svg class="mark mark--tiny" style="width:16px;height:16px" viewBox="0 0 200 200" role="img" aria-label="16px">
+          <path class="ring" style="--ring-w:20" pathLength="1" d="M171.7 106.3A72 72 0 1 1 118.6 30.5A34 34 0 0 0 159 58.7A34 34 0 0 0 171.7 106.3Z"/>
+          <path class="needle-a" d="M151.6 63.9L104.3 106.1L83.6 111.5Z"/>
+          <path class="needle-b" d="M151.6 63.9L83.6 111.5L95.7 93.9Z"/>
+        </svg>
+        <span>16</span>
+      </div>
+      <div class="step">
+        <svg class="mark mark--tiny" style="width:24px;height:24px" viewBox="0 0 200 200" role="img" aria-label="24px">
+          <path class="ring" style="--ring-w:18" pathLength="1" d="M171.7 106.3A72 72 0 1 1 118.6 30.5A34 34 0 0 0 159 58.7A34 34 0 0 0 171.7 106.3Z"/>
+          <path class="needle-a" d="M151.6 63.9L104.3 106.1L83.6 111.5Z"/>
+          <path class="needle-b" d="M151.6 63.9L83.6 111.5L95.7 93.9Z"/>
+        </svg>
+        <span>24</span>
+      </div>
+      <div class="step">
+        <svg class="mark mark--tiny" style="width:32px;height:32px" viewBox="0 0 200 200" role="img" aria-label="32px">
+          <path class="ring" pathLength="1" d="M171.7 106.3A72 72 0 1 1 118.6 30.5A34 34 0 0 0 159 58.7A34 34 0 0 0 171.7 106.3Z"/>
+          <path class="needle-a" d="M151.6 63.9L104.3 106.1L83.6 111.5Z"/>
+          <path class="needle-b" d="M151.6 63.9L83.6 111.5L95.7 93.9Z"/>
+        </svg>
+        <span>32</span>
+      </div>
+      <div class="step">
+        <svg class="mark" style="width:48px;height:48px" viewBox="0 0 200 200" role="img" aria-label="48px">
+          <path class="ring" pathLength="1" d="M171.7 106.3A72 72 0 1 1 118.6 30.5A34 34 0 0 0 159 58.7A34 34 0 0 0 171.7 106.3Z"/>
+          <path class="needle-a" d="M151.6 63.9L104.3 106.1L83.6 111.5Z"/>
+          <path class="needle-b" d="M151.6 63.9L83.6 111.5L95.7 93.9Z"/>
+          <circle class="hub" cx="100" cy="100" r="7"/><circle class="pin" cx="100" cy="100" r="2.5"/>
+        </svg>
+        <span>48</span>
+      </div>
+      <div class="step">
+        <svg class="mark" style="width:72px;height:72px" viewBox="0 0 200 200" role="img" aria-label="72px">
+          <path class="ring" pathLength="1" d="M171.7 106.3A72 72 0 1 1 118.6 30.5A34 34 0 0 0 159 58.7A34 34 0 0 0 171.7 106.3Z"/>
+          <path class="needle-a" d="M151.6 63.9L104.3 106.1L83.6 111.5Z"/>
+          <path class="needle-b" d="M151.6 63.9L83.6 111.5L95.7 93.9Z"/>
+          <circle class="hub" cx="100" cy="100" r="7"/><circle class="pin" cx="100" cy="100" r="2.5"/>
+        </svg>
+        <span>72</span>
+      </div>
+      <div class="step">
+        <svg class="mark" style="width:104px;height:104px" viewBox="0 0 200 200" role="img" aria-label="104px">
+          <path class="ring" pathLength="1" d="M171.7 106.3A72 72 0 1 1 118.6 30.5A34 34 0 0 0 159 58.7A34 34 0 0 0 171.7 106.3Z"/>
+          <path class="needle-a" d="M151.6 63.9L104.3 106.1L83.6 111.5Z"/>
+          <path class="needle-b" d="M151.6 63.9L83.6 111.5L95.7 93.9Z"/>
+          <circle class="hub" cx="100" cy="100" r="7"/><circle class="pin" cx="100" cy="100" r="2.5"/>
+        </svg>
+        <span>104</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     04 — THE BITE
+     ============================================================ -->
+<section>
+  <div class="wrap">
+    <p class="eyebrow">04 — The bite</p>
+    <h2>Two scallops. One direction.</h2>
+    <p class="lede">The bite is two arcs of the same radius — teeth, not damage. The needle points at the centre of the bite, always. This is the entire joke; don't explain it further.</p>
+
+    <div class="detail-stage">
+      <svg class="detail-mark" viewBox="50 20 150 150" role="img" aria-label="Detail of the bite and needle">
+        <path class="ring" pathLength="1" d="M171.7 106.3A72 72 0 1 1 118.6 30.5A34 34 0 0 0 159 58.7A34 34 0 0 0 171.7 106.3Z"/>
+        <path class="needle-a" d="M151.6 63.9L104.3 106.1L83.6 111.5Z"/>
+        <path class="needle-b" d="M151.6 63.9L83.6 111.5L95.7 93.9Z"/>
+        <circle class="hub" cx="100" cy="100" r="7"/><circle class="pin" cx="100" cy="100" r="2.5"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     05 — WORDMARK
+     ============================================================ -->
+<section>
+  <div class="wrap">
+    <p class="eyebrow">05 — Wordmark</p>
+    <h2>The "o" has been bitten.</h2>
+    <p class="lede">Geometric grotesque, lowercase, tracking −3.5%. One letter carries two scalloped notches — that's the whole detail. The bitten "o" takes the accent colour; the rest stays ink or blush.</p>
+
+    <div class="grid g2">
+      <div class="lockup">
+        <svg class="mark" viewBox="0 0 200 200" role="img" aria-label="">
+          <path class="ring" pathLength="1" d="M171.7 106.3A72 72 0 1 1 118.6 30.5A34 34 0 0 0 159 58.7A34 34 0 0 0 171.7 106.3Z"/>
+          <path class="needle-a" d="M151.6 63.9L104.3 106.1L83.6 111.5Z"/>
+          <path class="needle-b" d="M151.6 63.9L83.6 111.5L95.7 93.9Z"/>
+          <circle class="hub" cx="100" cy="100" r="7"/><circle class="pin" cx="100" cy="100" r="2.5"/>
+        </svg>
+        <span class="wordmark">ch<svg viewBox="0 0 60 60" aria-hidden="true"><path d="M54.15 23.53A25 25 0 1 1 40.57 7.34A9 9 0 0 0 41.49 20.36A9 9 0 0 0 54.15 23.53Z"/></svg>mpass</span>
+      </div>
+
+      <div class="lockup-vert">
+        <svg class="mark" viewBox="0 0 200 200" role="img" aria-label="">
+          <path class="ring" pathLength="1" d="M171.7 106.3A72 72 0 1 1 118.6 30.5A34 34 0 0 0 159 58.7A34 34 0 0 0 171.7 106.3Z"/>
+          <path class="needle-a" d="M151.6 63.9L104.3 106.1L83.6 111.5Z"/>
+          <path class="needle-b" d="M151.6 63.9L83.6 111.5L95.7 93.9Z"/>
+          <circle class="hub" cx="100" cy="100" r="7"/><circle class="pin" cx="100" cy="100" r="2.5"/>
+        </svg>
+        <span class="wordmark">ch<svg viewBox="0 0 60 60" aria-hidden="true"><path d="M54.15 23.53A25 25 0 1 1 40.57 7.34A9 9 0 0 0 41.49 20.36A9 9 0 0 0 54.15 23.53Z"/></svg>mpass</span>
+        <p class="tagline">Every bite, on course.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     06 — APP ICONS
+     ============================================================ -->
+<section>
+  <div class="wrap">
+    <p class="eyebrow">06 — App icon</p>
+    <h2>Built for the dock.</h2>
+    <p class="lede">The bite sits at 1–2 o'clock so it never clips on iOS's squircle. Cream and ink are the safe defaults; the peach and fig badges are the ones people screenshot.</p>
+
+    <div class="icons">
+      <div class="icon-cell">
+        <div class="icon-tile cream">
+          <svg class="mark" viewBox="0 0 200 200" role="img" aria-label="Chompass app icon">
+            <path class="ring" pathLength="1" d="M171.7 106.3A72 72 0 1 1 118.6 30.5A34 34 0 0 0 159 58.7A34 34 0 0 0 171.7 106.3Z"/>
+            <path class="needle-a" d="M151.6 63.9L104.3 106.1L83.6 111.5Z"/>
+            <path class="needle-b" d="M151.6 63.9L83.6 111.5L95.7 93.9Z"/>
+            <circle class="hub" cx="100" cy="100" r="7"/><circle class="pin" cx="100" cy="100" r="2.5"/>
+          </svg>
+        </div>
+        <span class="icon-label">Cream</span>
+      </div>
+
+      <div class="icon-cell dark">
+        <div class="icon-tile ink">
+          <svg class="mark mark--glow" viewBox="0 0 200 200" role="img" aria-label="Chompass app icon noir">
+            <path class="ring" pathLength="1" d="M171.7 106.3A72 72 0 1 1 118.6 30.5A34 34 0 0 0 159 58.7A34 34 0 0 0 171.7 106.3Z"/>
+            <path class="needle-a" d="M151.6 63.9L104.3 106.1L83.6 111.5Z"/>
+            <path class="needle-b" d="M151.6 63.9L83.6 111.5L95.7 93.9Z"/>
+            <circle class="hub" cx="100" cy="100" r="7"/><circle class="pin" cx="100" cy="100" r="2.5"/>
+          </svg>
+        </div>
+        <span class="icon-label">Peach noir</span>
+      </div>
+
+      <div class="icon-cell grad-peach">
+        <div class="icon-tile peach">
+          <svg class="mark" viewBox="0 0 200 200" role="img" aria-label="Chompass peach badge">
+            <path class="disc" d="M171.7 106.3A72 72 0 1 1 118.6 30.5A34 34 0 0 0 159 58.7A34 34 0 0 0 171.7 106.3Z" fill="#FFF6EC" fill-opacity=".22" style="display:block"/>
+            <path class="needle-a" d="M151.6 63.9L104.3 106.1L83.6 111.5Z" style="fill:#211A17"/>
+            <path class="needle-b" d="M151.6 63.9L83.6 111.5L95.7 93.9Z" style="fill:#3D2A22"/>
+            <circle class="hub" cx="100" cy="100" r="7" style="fill:#FFF6EC"/>
+            <circle class="pin" cx="100" cy="100" r="2.5" style="fill:#211A17"/>
+          </svg>
+        </div>
+        <span class="icon-label">Peach badge</span>
+      </div>
+
+      <div class="icon-cell grad-fig">
+        <div class="icon-tile fig">
+          <svg class="mark" viewBox="0 0 200 200" role="img" aria-label="Chompass fig badge">
+            <path class="disc" d="M171.7 106.3A72 72 0 1 1 118.6 30.5A34 34 0 0 0 159 58.7A34 34 0 0 0 171.7 106.3Z" fill="#F7E9F0" fill-opacity=".20" style="display:block"/>
+            <path class="needle-a" d="M151.6 63.9L104.3 106.1L83.6 111.5Z" style="fill:#F7E9F0"/>
+            <path class="needle-b" d="M151.6 63.9L83.6 111.5L95.7 93.9Z" style="fill:#D6A2BE"/>
+            <circle class="hub" cx="100" cy="100" r="7" style="fill:#371430"/>
+            <circle class="pin" cx="100" cy="100" r="2.5" style="fill:#F7E9F0"/>
+          </svg>
+        </div>
+        <span class="icon-label">Fig badge</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     07 — SPLASH
+     ============================================================ -->
+<section>
+  <div class="wrap">
+    <p class="eyebrow">07 — Splash screen</p>
+    <h2>The needle is the loading state.</h2>
+    <p class="lede">No spinner. The compass wobbles while data loads, then snaps to 35° when ready. The dial flinches once — the chomp.</p>
+
+    <div class="splash-stage">
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="notch"></div>
+          <svg class="mark anim loop" viewBox="0 0 200 200" role="img" aria-label="Chompass splash mark">
+            <g class="dial">
+              <path class="ring" pathLength="1" d="M171.7 106.3A72 72 0 1 1 118.6 30.5A34 34 0 0 0 159 58.7A34 34 0 0 0 171.7 106.3Z"/>
+            </g>
+            <g class="needle-sway">
+              <g class="needle">
+                <path class="needle-a" d="M151.6 63.9L104.3 106.1L83.6 111.5Z"/>
+                <path class="needle-b" d="M151.6 63.9L83.6 111.5L95.7 93.9Z"/>
+                <circle class="hub" cx="100" cy="100" r="7"/><circle class="pin" cx="100" cy="100" r="2.5"/>
+              </g>
+            </g>
+          </svg>
+          <span class="wordmark">ch<svg viewBox="0 0 60 60" aria-hidden="true"><path d="M54.15 23.53A25 25 0 1 1 40.57 7.34A9 9 0 0 0 41.49 20.36A9 9 0 0 0 54.15 23.53Z"/></svg>mpass</span>
+          <p class="tagline">Every bite, on course.</p>
+        </div>
+      </div>
+
+      <div class="splash-notes">
+        <ul>
+          <li><strong>0–900 ms</strong> — the ring draws itself clockwise from the bite's lower lip.</li>
+          <li><strong>180–1630 ms</strong> — the needle spins three turns, overshoots, rocks, settles.</li>
+          <li><strong>1080–1630 ms</strong> — the chomp, hinged at the bite. The dial flinches softly, like flesh.</li>
+          <li><strong>1050 ms+</strong> — the wordmark resolves letter by letter; the bitten "o" chomps last.</li>
+          <li><strong>Idle</strong> — the needle sways ±2.4° on a 7 s loop, like a real compass near a magnet.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     08 — COLOUR
+     ============================================================ -->
+<section>
+  <div class="wrap">
+    <p class="eyebrow">08 — Colour</p>
+    <h2>Peach for appetite. Fig for shadow.</h2>
+    <p class="lede">Two nine-step scales. Peach does the food work and carries the brand; fig is the shadow side of peach, used for depth, dark surfaces, and one secondary accent. The neutrals are warm plum-black and blush-white — never grey.</p>
+
+    <div class="scale-label"><b>Peach</b><span>appetite · primary</span></div>
+    <div class="palette-scale">
+      <div class="swatch-scale"><div class="chip" style="background:#FFF0E4"></div><div class="meta"><b>100</b><code>#FFF0E4</code></div></div>
+      <div class="swatch-scale"><div class="chip" style="background:#FFD9C2"></div><div class="meta"><b>200</b><code>#FFD9C2</code></div></div>
+      <div class="swatch-scale"><div class="chip" style="background:#FFB994"></div><div class="meta"><b>300</b><code>#FFB994</code></div></div>
+      <div class="swatch-scale"><div class="chip" style="background:#FF9A6C"></div><div class="meta"><b>400</b><code>#FF9A6C</code></div></div>
+      <div class="swatch-scale"><div class="chip" style="background:#FF7A4D"></div><div class="meta"><b>500</b><code>#FF7A4D</code></div></div>
+      <div class="swatch-scale"><div class="chip" style="background:#E85D3A"></div><div class="meta"><b>600</b><code>#E85D3A</code></div></div>
+      <div class="swatch-scale"><div class="chip" style="background:#C44428"></div><div class="meta"><b>700</b><code>#C44428</code></div></div>
+      <div class="swatch-scale"><div class="chip" style="background:#8C2E18"></div><div class="meta"><b>800</b><code>#8C2E18</code></div></div>
+      <div class="swatch-scale"><div class="chip" style="background:#3D1608"></div><div class="meta"><b>900</b><code>#3D1608</code></div></div>
+    </div>
+
+    <div class="scale-label"><b>Fig</b><span>shadow · secondary</span></div>
+    <div class="palette-scale">
+      <div class="swatch-scale"><div class="chip" style="background:#F7E9F0"></div><div class="meta"><b>100</b><code>#F7E9F0</code></div></div>
+      <div class="swatch-scale"><div class="chip" style="background:#EBCDDD"></div><div class="meta"><b>200</b><code>#EBCDDD</code></div></div>
+      <div class="swatch-scale"><div class="chip" style="background:#D6A2BE"></div><div class="meta"><b>300</b><code>#D6A2BE</code></div></div>
+      <div class="swatch-scale"><div class="chip" style="background:#B8759C"></div><div class="meta"><b>400</b><code>#B8759C</code></div></div>
+      <div class="swatch-scale"><div class="chip" style="background:#8F4B78"></div><div class="meta"><b>500</b><code>#8F4B78</code></div></div>
+      <div class="swatch-scale"><div class="chip" style="background:#6E2F5C"></div><div class="meta"><b>600</b><code>#6E2F5C</code></div></div>
+      <div class="swatch-scale"><div class="chip" style="background:#512046"></div><div class="meta"><b>700</b><code>#512046</code></div></div>
+      <div class="swatch-scale"><div class="chip" style="background:#371430"></div><div class="meta"><b>800</b><code>#371430</code></div></div>
+      <div class="swatch-scale"><div class="chip" style="background:#1F0C1B"></div><div class="meta"><b>900</b><code>#1F0C1B</code></div></div>
+    </div>
+
+    <div class="scale-label" style="margin-top:26px"><b>Semantic pairs</b><span>contrast-tested</span></div>
+    <div class="palette-2">
+      <div class="swatch">
+        <div class="chip" style="background:linear-gradient(140deg,#FFD9C2,#FF9A6C,#E85D3A)"><span class="aaa" style="color:#1C131A">Aa</span></div>
+        <div class="meta"><b>Peach / ink</b><code>primary lockup · 8.4:1</code></div>
+      </div>
+      <div class="swatch">
+        <div class="chip" style="background:#1C131A"><span class="aaa" style="color:#FFF6EC">Aa</span></div>
+        <div class="meta"><b>Ink / cream</b><code>#1C131A · body text · 14.2:1</code></div>
+      </div>
+      <div class="swatch">
+        <div class="chip" style="background:linear-gradient(140deg,#D6A2BE,#8F4B78,#371430)"><span class="aaa" style="color:#F7E9F0">Aa</span></div>
+        <div class="meta"><b>Fig / blush</b><code>secondary lockup · 6.1:1</code></div>
+      </div>
+      <div class="swatch">
+        <div class="chip" style="background:var(--accent)"><span class="aaa" style="color:var(--accent-ink)">Aa</span></div>
+        <div class="meta"><b>Accent / ink</b><code>“in range” · semantic only</code></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     09 — MOTION
+     ============================================================ -->
+<section>
+  <div class="wrap">
+    <p class="eyebrow">09 — Motion</p>
+    <h2>Spin, point, bite.</h2>
+    <p class="lede">1.6 seconds, four beats, runs once on launch. Everything is CSS — no library, no Lottie. The chomp is soft; the needle settles with a little tension.</p>
+
+    <div class="timeline" id="timeline">
+      <div class="tracks">
+        <div class="playhead"><i></i></div>
+
+        <div class="track">
+          <div class="label"><span>Ring draws</span><span>0 – 900 ms</span></div>
+          <div class="bar-area"><div class="bar" style="left:0%;width:44%;--d:0ms;--t:900ms">draw · clockwise</div></div>
+        </div>
+
+        <div class="track">
+          <div class="label"><span>Needle spin</span><span>180 – 1630 ms</span></div>
+          <div class="bar-area"><div class="bar ink" style="left:8.8%;width:70.7%;--d:180ms;--t:1450ms">−1080° → +26° → −11° → 0°</div></div>
+        </div>
+
+        <div class="track">
+          <div class="label"><span>The chomp</span><span>1080 – 1630 ms</span></div>
+          <div class="bar-area"><div class="bar accent" style="left:52.7%;width:26.8%;--d:1080ms;--t:550ms">hinged at the bite</div></div>
+        </div>
+
+        <div class="track">
+          <div class="label"><span>Wordmark up</span><span>1050 – 2050 ms</span></div>
+          <div class="bar-area">
+            <div class="bar" style="left:51.2%;width:48.8%;--d:1050ms;--t:1000ms;opacity:.4"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ruler">
+        <span>0 ms</span><span>500</span><span>1000</span><span>1500</span><span>2000 ms</span>
+      </div>
+    </div>
+
+    <div style="margin-top:24px;text-align:center">
+      <button class="pill pill--accent" id="replay2">▶ Replay the intro</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     10 — PEACH NOIR
+     ============================================================ -->
+<section class="section-noir">
+  <div class="wrap">
+    <p class="eyebrow">10 — Peach noir</p>
+    <h2>After dark.</h2>
+    <p class="lede">The same mark, lit from within. Peach glows on aubergine; the needle reads as cream and pale peach. The bitten "o" keeps its blush. This is the theme for late-night scouting, low-light kitchens, and anything that needs to feel a little more intimate.</p>
+
+    <div class="noir-stage">
+      <svg class="mark" viewBox="0 0 200 200" role="img" aria-label="Chompass noir mark">
+        <path class="ring" pathLength="1" d="M171.7 106.3A72 72 0 1 1 118.6 30.5A34 34 0 0 0 159 58.7A34 34 0 0 0 171.7 106.3Z"/>
+        <path class="needle-a" d="M151.6 63.9L104.3 106.1L83.6 111.5Z"/>
+        <path class="needle-b" d="M151.6 63.9L83.6 111.5L95.7 93.9Z"/>
+        <circle class="hub" cx="100" cy="100" r="7"/><circle class="pin" cx="100" cy="100" r="2.5"/>
+      </svg>
+      <span class="wordmark">ch<svg viewBox="0 0 60 60" aria-hidden="true"><path d="M54.15 23.53A25 25 0 1 1 40.57 7.34A9 9 0 0 0 41.49 20.36A9 9 0 0 0 54.15 23.53Z"/></svg>mpass</span>
+      <p class="tagline">Every bite, on course.</p>
+    </div>
+
+    <div class="noir-trio">
+      <div class="cell">
+        <svg class="mark" style="--ring:url(#cpPeachGlow);--disc:url(#cpPeachGlow)" viewBox="0 0 200 200" role="img" aria-label="Classic noir">
+          <path class="ring" pathLength="1" d="M171.7 106.3A72 72 0 1 1 118.6 30.5A34 34 0 0 0 159 58.7A34 34 0 0 0 171.7 106.3Z"/>
+          <path class="needle-a" d="M151.6 63.9L104.3 106.1L83.6 111.5Z"/>
+          <path class="needle-b" d="M151.6 63.9L83.6 111.5L95.7 93.9Z"/>
+          <circle class="hub" cx="100" cy="100" r="7"/><circle class="pin" cx="100" cy="100" r="2.5"/>
+        </svg>
+        <small>Classic glow</small>
+      </div>
+      <div class="cell">
+        <svg class="mark" style="--ring:url(#cpRipenedGlow);--disc:url(#cpRipenedGlow)" viewBox="0 0 200 200" role="img" aria-label="Ripened noir">
+          <path class="ring" pathLength="1" d="M171.7 106.3A72 72 0 1 1 118.6 30.5A34 34 0 0 0 159 58.7A34 34 0 0 0 171.7 106.3Z"/>
+          <path class="needle-a" d="M151.6 63.9L104.3 106.1L83.6 111.5Z"/>
+          <path class="needle-b" d="M151.6 63.9L83.6 111.5L95.7 93.9Z"/>
+          <circle class="hub" cx="100" cy="100" r="7"/><circle class="pin" cx="100" cy="100" r="2.5"/>
+        </svg>
+        <small>Ripened glow</small>
+      </div>
+      <div class="cell">
+        <svg class="mark" style="--ring:url(#cpFigGlow);--disc:url(#cpFigGlow);--needle-a:#F7E9F0;--needle-b:#D6A2BE;--hub:#170E16;--pin:#F7E9F0" viewBox="0 0 200 200" role="img" aria-label="Fig noir">
+          <path class="ring" pathLength="1" d="M171.7 106.3A72 72 0 1 1 118.6 30.5A34 34 0 0 0 159 58.7A34 34 0 0 0 171.7 106.3Z"/>
+          <path class="needle-a" d="M151.6 63.9L104.3 106.1L83.6 111.5Z"/>
+          <path class="needle-b" d="M151.6 63.9L83.6 111.5L95.7 93.9Z"/>
+          <circle class="hub" cx="100" cy="100" r="7"/><circle class="pin" cx="100" cy="100" r="2.5"/>
+        </svg>
+        <small>Fig glow</small>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     11 — GUARDRAILS
+     ============================================================ -->
+<section>
+  <div class="wrap">
+    <p class="eyebrow">11 — Guardrails</p>
+    <h2>The restraint is the sophistication.</h2>
+    <p class="lede">The moment you illustrate the joke, you lose the App Store, the brand deal, and the cool.</p>
+
+    <div class="grid g2">
+      <div class="dd do">
+        <div class="ico">✓</div>
+        <div>
+          <h4>Keep the needle pointing into the bite</h4>
+          <p>That's the entire joke. If it points away, the mark becomes a diet app with a chip in it.</p>
+        </div>
+      </div>
+      <div class="dd do">
+        <div class="ico">✓</div>
+        <div>
+          <h4>Keep the bite at two scallops</h4>
+          <p>Two notches read as teeth. Three read as a gear. One reads as damage.</p>
+        </div>
+      </div>
+      <div class="dd do">
+        <div class="ico">✓</div>
+        <div>
+          <h4>Let fig live in the shadow, not the mass</h4>
+          <p>Plum belongs in the deepest gradient stop, the noir surface, and one secondary accent. Past roughly 40% of the ring, it stops reading as fruit.</p>
+        </div>
+      </div>
+      <div class="dd do">
+        <div class="ico">✓</div>
+        <div>
+          <h4>Route peach → plum through red</h4>
+          <p>Coral and rose in the middle stops keep the transition alive. A straight two-stop blend lands in mud.</p>
+        </div>
+      </div>
+      <div class="dd dont">
+        <div class="ico">✕</div>
+        <div>
+          <h4>Don't add a face, a tongue, or a wink</h4>
+          <p>The innuendo is carried by a piece of fruit and a bite mark. Literal illustration kills it.</p>
+        </div>
+      </div>
+      <div class="dd dont">
+        <div class="ico">✕</div>
+        <div>
+          <h4>Don't rotate the mark</h4>
+          <p>The bite lives at 1–2 o'clock. That's the fixed position across every application.</p>
+        </div>
+      </div>
+      <div class="dd dont">
+        <div class="ico">✕</div>
+        <div>
+          <h4>Don't put plum in the wordmark's bitten "o"</h4>
+          <p>It's the smallest, most literal joke in the system. Peach there; plum would over-explain it.</p>
+        </div>
+      </div>
+      <div class="dd dont">
+        <div class="ico">✕</div>
+        <div>
+          <h4>Don't use purple-grey as a neutral</h4>
+          <p>The neutrals are warm plum-black and blush-white. Desaturated lavender-grey reads cosmetic, not edible.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== footer ===== -->
+<footer>
+  <div class="wrap">
+    <svg class="mark" viewBox="0 0 200 200" role="img" aria-label="Chompass">
+      <path class="ring" pathLength="1" d="M171.7 106.3A72 72 0 1 1 118.6 30.5A34 34 0 0 0 159 58.7A34 34 0 0 0 171.7 106.3Z"/>
+      <path class="needle-a" d="M151.6 63.9L104.3 106.1L83.6 111.5Z"/>
+      <path class="needle-b" d="M151.6 63.9L83.6 111.5L95.7 93.9Z"/>
+      <circle class="hub" cx="100" cy="100" r="7"/><circle class="pin" cx="100" cy="100" r="2.5"/>
+    </svg>
+    <p>Chompass — logo system concept · <em>Every bite, on course.</em></p>
+  </div>
+</footer>
+
+<!-- ============================================================
+     CONTROL BAR
+     ============================================================ -->
+<div class="controls" role="group" aria-label="Design options">
+
+  <div class="group">
+    <label>Surface</label>
+    <div class="seg" data-seg="surface">
+      <button data-value="cream" aria-pressed="true">Cream</button>
+      <button data-value="noir" aria-pressed="false">Noir</button>
+    </div>
+  </div>
+
+  <div class="group">
+    <label>Mark gradient</label>
+    <div class="seg" data-seg="grad">
+      <button data-value="classic" aria-pressed="false">Classic</button>
+      <button data-value="ripened" aria-pressed="true">Ripened</button>
+      <button data-value="fig" aria-pressed="false">Fig</button>
+    </div>
+  </div>
+
+  <div class="group">
+    <label>Accent</label>
+    <div class="seg" data-seg="accent">
+      <button data-value="mint" aria-pressed="false"><span class="dot" style="background:#B8F2C9"></span>Mint</button>
+      <button data-value="fig" aria-pressed="true"><span class="dot" style="background:#D6A2BE"></span>Fig</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var root     = document.documentElement;
+  var stage    = document.getElementById('stage');
+  var hero     = document.querySelector('.hero');
+  var heroMark = document.querySelector('.hero-mark');
+  var trackEl  = document.querySelector('.hero-mark .needle-track');
+
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var finePointer  = window.matchMedia('(hover:hover) and (pointer:fine)').matches;
+
+  /* ============================================================
+     1. NEEDLE TRACKING — critically damped spring
+     ============================================================ */
+  var tTarget = 0, tCurrent = 0, tVel = 0, tRaf = null, introDone = false;
+  var REST_ANGLE = -40;      // where the needle points at rest (deg)
+  var MAX_LEAD   = 26;       // clamp
+
+  function trackFrame () {
+    var stiffness = 0.12, damping = 0.78;
+    tVel     = (tVel + (tTarget - tCurrent) * stiffness) * damping;
+    tCurrent += tVel;
+
+    if (Math.abs(tTarget - tCurrent) > 0.04 || Math.abs(tVel) > 0.04) {
+      trackEl.style.transform = 'rotate(' + tCurrent.toFixed(2) + 'deg)';
+      tRaf = requestAnimationFrame(trackFrame);
+    } else {
+      tCurrent = tTarget;
+      trackEl.style.transform = 'rotate(' + tTarget.toFixed(2) + 'deg)';
+      tRaf = null;
+      if (tTarget === 0) heroMark.classList.remove('is-tracking');
+    }
+  }
+
+  function trackKick () { if (!tRaf) tRaf = requestAnimationFrame(trackFrame); }
+
+  function resetTrack () {
+    if (!trackEl) return;
+    if (tRaf) cancelAnimationFrame(tRaf);
+    tRaf = null; tTarget = tCurrent = tVel = 0;
+    trackEl.style.transform = '';
+    heroMark.classList.remove('is-tracking');
+  }
+
+  if (finePointer && !reduceMotion && hero && heroMark && trackEl) {
+    hero.addEventListener('pointermove', function (e) {
+      if (!introDone) return;
+      var r  = heroMark.getBoundingClientRect();
+      var cx = r.left + r.width  / 2;
+      var cy = r.top  + r.height / 2;
+      var a  = Math.atan2(e.clientY - cy, e.clientX - cx) * 180 / Math.PI;
+      var d  = a - REST_ANGLE;
+      d = ((d + 180) % 360 + 360) % 360 - 180;         // wrap to [-180,180]
+      tTarget = Math.max(-MAX_LEAD, Math.min(MAX_LEAD, d));
+      heroMark.classList.add('is-tracking');
+      trackKick();
+    }, { passive: true });
+
+    hero.addEventListener('pointerleave', function () {
+      tTarget = 0;
+      trackKick();
+    });
+  }
+
+  /* ============================================================
+     2. INTRO ORCHESTRATION
+     ============================================================ */
+  var introTimer = null;
+
+  function playTimeline () {
+    var tl = document.getElementById('timeline');
+    if (!tl) return;
+    var ph = tl.querySelector('.playhead');
+    if (ph) ph.style.setProperty('--pw', ph.clientWidth + 'px');
+    tl.classList.remove('playing');
+    void tl.offsetWidth;
+    tl.classList.add('playing');
+  }
+
+  function playSplash () {
+    var loop = document.querySelector('.loop');
+    if (!loop) return;
+    loop.classList.remove('loop');
+    void loop.offsetWidth;
+    loop.classList.add('loop');
+  }
+
+  function play () {
+    if (!stage) return;
+
+    clearTimeout(introTimer);
+    introDone = false;
+    stage.classList.remove('run');
+    resetTrack();
+    void stage.offsetWidth;
+    stage.classList.add('run');
+
+    introTimer = setTimeout(function () { introDone = true; }, 2300);
+
+    playTimeline();
+    playSplash();
+  }
+
+  ['replay', 'replayTop', 'replay2'].forEach(function (id) {
+    var el = document.getElementById(id);
+    if (el) el.addEventListener('click', play);
+  });
+
+  window.addEventListener('load', function () {
+    if (reduceMotion) {
+      if (stage) stage.classList.add('run');
+      introDone = true;
+      return;
+    }
+    setTimeout(play, 220);
+  });
+
+  /* ============================================================
+     3. SEGMENTED CONTROL — sliding thumb
+     ============================================================ */
+  function positionThumb (seg) {
+    var thumb  = seg.querySelector('.seg-thumb');
+    var active = seg.querySelector('button[aria-pressed="true"]');
+    if (!thumb || !active) return;
+
+    var segRect = seg.getBoundingClientRect();
+    var btnRect = active.getBoundingClientRect();
+
+    thumb.style.width     = btnRect.width + 'px';
+    thumb.style.transform = 'translateX(' + (btnRect.left - segRect.left) + 'px)';
+  }
+
+  function setPressed (seg, value) {
+    seg.querySelectorAll('button[data-value]').forEach(function (b) {
+      b.setAttribute('aria-pressed', b.dataset.value === value ? 'true' : 'false');
+    });
+  }
+
+  document.querySelectorAll('.seg[data-seg]').forEach(function (seg) {
+    if (!seg.querySelector('.seg-thumb')) {
+      var t = document.createElement('span');
+      t.className = 'seg-thumb';
+      seg.insertBefore(t, seg.firstChild);
+    }
+    positionThumb(seg);
+
+    if ('ResizeObserver' in window) {
+      new ResizeObserver(function () { positionThumb(seg); }).observe(seg);
+    }
+  });
+
+  window.addEventListener('resize', function () {
+    document.querySelectorAll('.seg[data-seg]').forEach(positionThumb);
+  });
+
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(function () {
+      document.querySelectorAll('.seg[data-seg]').forEach(positionThumb);
+    });
+  }
+
+  /* ============================================================
+     4. SURFACE — circular View Transition reveal
+     ============================================================ */
+  function applySurface (value) {
+    root.classList.toggle('noir', value === 'noir');
+
+    var seg = document.querySelector('[data-seg="surface"]');
+    if (seg) {
+      setPressed(seg, value);
+      positionThumb(seg);
+    }
+
+    var t = document.getElementById('themeToggle');
+    if (t) t.textContent = value === 'noir' ? 'Peach cream' : 'Peach noir';
+  }
+
+  function setSurface (value, ev) {
+    var current = root.classList.contains('noir') ? 'noir' : 'cream';
+    if (current === value) return;
+
+    if (!document.startViewTransition || !ev || reduceMotion) {
+      applySurface(value);
+      return;
+    }
+
+    var x = ev.clientX, y = ev.clientY;
+    var r = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+
+    root.style.setProperty('--vt-x', x + 'px');
+    root.style.setProperty('--vt-y', y + 'px');
+    root.style.setProperty('--vt-r', r + 'px');
+    root.classList.add('vt');
+
+    var vt = document.startViewTransition(function () { applySurface(value); });
+    if (vt.finished) vt.finished.finally(function () { root.classList.remove('vt'); });
+    else setTimeout(function () { root.classList.remove('vt'); }, 800);
+  }
+
+  /* ============================================================
+     5. OPTION CONTROLS
+     ============================================================ */
+  document.querySelectorAll('.seg[data-seg]').forEach(function (seg) {
+    seg.addEventListener('click', function (e) {
+      var btn = e.target.closest('button[data-value]');
+      if (!btn) return;
+
+      var group = seg.dataset.seg;
+      var value = btn.dataset.value;
+
+      if (group === 'surface') {
+        setSurface(value, e);
+      } else if (group === 'grad') {
+        root.setAttribute('data-grad', value);
+        setPressed(seg, value);
+        positionThumb(seg);
+      } else if (group === 'accent') {
+        root.setAttribute('data-accent', value);
+        setPressed(seg, value);
+        positionThumb(seg);
+      }
+    });
+  });
+
+  var toggle = document.getElementById('themeToggle');
+  if (toggle) {
+    toggle.addEventListener('click', function (e) {
+      setSurface(root.classList.contains('noir') ? 'cream' : 'noir', e);
+    });
+  }
+
+  /* ============================================================
+     6. SCROLL REVEALS — staggered, animation-based
+     ============================================================ */
+  var revealSelectors = [
+    '.eyebrow', 'section h2', '.lede',
+    '.card', '.anatomy-cell', '.icon-cell', '.dd',
+    '.lockup', '.lockup-vert', '.noir-stage', '.noir-trio .cell',
+    '.detail-stage', '.ladder', '.timeline', '.splash-stage',
+    '.swatch-scale', '.swatch', '.scale-label'
+  ].join(',');
+
+  var revealEls = Array.prototype.slice.call(document.querySelectorAll(revealSelectors));
+  var counts = new Map();
+
+  revealEls.forEach(function (el) {
+    var parent = el.parentNode;
+    var i = counts.get(parent) || 0;
+    counts.set(parent, i + 1);
+    el.style.setProperty('--i', Math.min(i, 8));
+    el.setAttribute('data-reveal', '');
+  });
+
+  if (reduceMotion) {
+    revealEls.forEach(function (el) { el.classList.add('in'); });
+  } else if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { rootMargin: '0px 0px -6% 0px', threshold: 0.05 });
+
+    revealEls.forEach(function (el) { io.observe(el); });
+  } else {
+    revealEls.forEach(function (el) { el.classList.add('in'); });
+  }
+
+  /* ============================================================
+     7. TIMELINE AUTO-PLAY ON VIEW
+     ============================================================ */
+  var timelineEl = document.getElementById('timeline');
+  if (timelineEl && 'IntersectionObserver' in window && !reduceMotion) {
+    var tio = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          playTimeline();
+          tio.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.35 });
+    tio.observe(timelineEl);
+  }
+
+})();
+</script>
+
+</body>
+</html>

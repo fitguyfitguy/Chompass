@@ -1428,7 +1428,7 @@
     <string name="settings_dinner_starts">Inizio cena</string>
     <string name="settings_energy_goals">Obiettivi dispendio energetico</string>
     <string name="settings_fixed_launcher_icon">Icona fissa dell\'app</string>
-    <string name="settings_fixed_launcher_icon_subtitle">Mantiene l\'icona dell\'app di colore teal. Smette di seguire il colore del tema e dello sfondo.</string>
+    <string name="settings_fixed_launcher_icon_subtitle">Mantiene l\'icona del marchio. Smette di seguire il colore del tema e dello sfondo.</string>
     <string name="settings_system_date_time_pickers">Selettori data e ora di sistema</string>
     <string name="settings_system_date_time_pickers_subtitle">Usa i dialoghi data e ora del telefono quando modifichi un pasto.</string>
     <string name="settings_glass_blur">Vetro smerigliato</string>
@@ -1690,6 +1690,8 @@
     <string name="theme_color_pink">Rosa</string>
     <string name="theme_color_purple">Viola</string>
     <string name="theme_color_system">Sistema</string>
+    <string name="theme_color_plum">Prugna</string>
+    <string name="theme_color_peach">Pesca</string>
     <string name="theme_color_teal">Verde acqua</string>
     <string name="unit_serving">porzione</string>
     <string name="unit_serving_plural">porzioni</string>

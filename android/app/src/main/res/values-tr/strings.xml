@@ -986,7 +986,7 @@
     <string name="settings_appearance_oled">OLED</string>
     <string name="settings_theme_color">Tema Rengi</string>
     <string name="settings_fixed_launcher_icon">Sabit Başlatıcı Simgesi</string>
-    <string name="settings_fixed_launcher_icon_subtitle">Başlatıcı simgesini turkuaz tutar. Tema rengini ve duvar kâğıdını takip etmeyi bırakır.</string>
+    <string name="settings_fixed_launcher_icon_subtitle">Marka simgesini korur. Tema rengini ve duvar kâğıdını takip etmeyi bırakır.</string>
     <string name="settings_system_date_time_pickers">Sistem tarih ve saat seçicileri</string>
     <string name="settings_system_date_time_pickers_subtitle">Öğün düzenlerken telefonun tarih ve saat pencerelerini kullan.</string>
     <string name="settings_glass_blur">Buzlu cam</string>
@@ -1008,6 +1008,8 @@
     <string name="sheet_theme_color">Tema Rengi</string>
     <string name="sheet_theme_color_footer">Düğmeler, grafikler ve ilerleme göstergeleri için kullanılan ana vurgu rengini değiştirir.</string>
     <string name="theme_color_system">Sistem</string>
+    <string name="theme_color_plum">Erik</string>
+    <string name="theme_color_peach">Şeftali</string>
     <string name="theme_color_teal">Turkuaz</string>
     <string name="theme_color_blue">Mavi</string>
     <string name="theme_color_green">Yeşil</string>

@@ -1478,7 +1478,7 @@
     <string name="settings_dinner_starts">بداية العشاء</string>
     <string name="settings_energy_goals">أهداف إنفاق الطاقة</string>
     <string name="settings_fixed_launcher_icon">أيقونة ثابتة للتطبيق</string>
-    <string name="settings_fixed_launcher_icon_subtitle">تبقي أيقونة التطبيق بلون تركوازي. تتوقف عن متابعة لون السمة والخلفية.</string>
+    <string name="settings_fixed_launcher_icon_subtitle">تبقي أيقونة العلامة التجارية. تتوقف عن متابعة لون السمة والخلفية.</string>
     <string name="settings_system_date_time_pickers">منتقي التاريخ والوقت للنظام</string>
     <string name="settings_system_date_time_pickers_subtitle">استخدم نوافذ التاريخ والوقت في الهاتف عند تعديل وجبة.</string>
     <string name="settings_glass_blur">زجاج مصنفر</string>
@@ -1774,6 +1774,8 @@
     <string name="theme_color_pink">وردي</string>
     <string name="theme_color_purple">بنفسجي</string>
     <string name="theme_color_system">النظام</string>
+    <string name="theme_color_plum">برقوق</string>
+    <string name="theme_color_peach">خوخ</string>
     <string name="theme_color_teal">تركوازي</string>
     <string name="unit_serving">حصة</string>
     <string name="unit_serving_plural">حصص</string>

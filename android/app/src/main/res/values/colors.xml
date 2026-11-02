@@ -1,23 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FF99F6E4</color>
-    <color name="purple_500">#FF006B5E</color>
-    <color name="purple_700">#FF004D43</color>
-    <color name="teal_200">#FF6750A4</color>
-    <color name="teal_700">#FF4F378B</color>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
-    <color name="app_splash_background">#FFFEF7FF</color>
+    <!-- Pre-Compose window chrome + splash. Mirrors BrandPalette / AppColors.
+         Only the splash background gets a night variant; the rest is
+         mode-neutral light so the window layer never contradicts the in-app
+         Appearance setting (Codeberg #28). -->
+    <color name="app_splash_background">#FFFFF6EC</color>
 
-    <color name="chompass_primary">#FF006B5E</color>
-    <color name="chompass_on_primary">#FFFFFFFF</color>
-    <color name="chompass_primary_dark">#FF004D43</color>
-    <color name="chompass_secondary">#FF49454F</color>
-    <color name="chompass_on_secondary">#FFFFFFFF</color>
-    <color name="chompass_background">#FFFEF7FF</color>
-    <color name="chompass_on_background">#FF1C1B1F</color>
-    <color name="chompass_surface">#FFFFFBFE</color>
-    <color name="chompass_on_surface">#FF1C1B1F</color>
-    <color name="chompass_accent">#FF6750A4</color>
-    <color name="chompass_error">#FFB3261E</color>
+    <color name="chompass_primary">#FF8F4B78</color>
+    <color name="chompass_on_primary">#FFFFF6EC</color>
+    <color name="chompass_primary_dark">#FF512046</color>
+    <color name="chompass_background">#FFFFF6EC</color>
+    <color name="chompass_on_background">#FF1C131A</color>
+    <color name="chompass_surface">#FFFFFFFF</color>
+    <color name="chompass_on_surface">#FF1C131A</color>
+    <color name="chompass_accent">#FF8F4B78</color>
 </resources>

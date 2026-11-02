@@ -1445,7 +1445,7 @@
     <string name="settings_dinner_starts">Início do jantar</string>
     <string name="settings_energy_goals">Metas de gasto energético</string>
     <string name="settings_fixed_launcher_icon">Ícone fixo do app</string>
-    <string name="settings_fixed_launcher_icon_subtitle">Mantém o ícone do app azul-petróleo. Ele deixa de seguir a cor do tema e do papel de parede.</string>
+    <string name="settings_fixed_launcher_icon_subtitle">Mantém o ícone da marca. Ele deixa de seguir a cor do tema e do papel de parede.</string>
     <string name="settings_system_date_time_pickers">Seletores de data e hora do sistema</string>
     <string name="settings_system_date_time_pickers_subtitle">Use os diálogos de data e hora do telefone ao editar uma refeição.</string>
     <string name="settings_glass_blur">Vidro fosco</string>
@@ -1744,6 +1744,8 @@
     <string name="theme_color_pink">Rosa</string>
     <string name="theme_color_purple">Roxo</string>
     <string name="theme_color_system">Sistema</string>
+    <string name="theme_color_plum">Ameixa</string>
+    <string name="theme_color_peach">Pêssego</string>
     <string name="theme_color_teal">Azul-petróleo</string>
     <string name="unit_serving">porção</string>
     <string name="unit_serving_plural">porções</string>

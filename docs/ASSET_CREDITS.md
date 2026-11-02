@@ -17,11 +17,11 @@ The Add Food sheet reads two bundled offline databases, each under its own licen
 
 ## App icon
 
-Chompass launcher icons and splash logos are original artwork by fitguy, distinct from upstream Fud AI artwork (which was provided by the original project owner). The master source is the SVG brand mark `scripts/assets/chompass_icon_mark.svg` (compass ring + cardinal diamonds by fitguy; needle path from the CC0 fork below); regenerate the mark with `uv run python scripts/assets/build_icon_mark.py`, then themed and density variants with `uv run --with pillow python scripts/generate_icons.py` (via `resvg`). The icon script also writes a generated teal preview (`scripts/chompass_icon_master.png`); edit the SVG, not the PNG. Default brand (Android teal launcher, PWA install icons, website favicon, F-Droid listing) uses the teal gradient `#006B5E` → `#5CC48F`.
+The Chompass mark — a bitten compass ring with a two-facet needle pointing into the bite — is original artwork by fitguy, distinct from upstream Fud AI artwork (which was provided by the original project owner). Geometry, palette, and motion are transcribed from the design study [`brand/logo-system.html`](brand/logo-system.html), which is the reference for the mark.
 
-The compass-needle silhouette is adapted from [Fork SVG](https://www.svgrepo.com/svg/203809/fork) on SVG Repo (`scripts/assets/fork_needle_svgrepo.svg`), dedicated to the public domain under [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/).
+`scripts/assets/build_icon_mark.py` emits the three mark SVGs (light, noir, mask) plus the BIMI logo `website/static/bimi/logo.svg`; `scripts/generate_icons.py` then emits the launcher density set, adaptive layers, splash marks, and the PWA/website/store-listing icons (via `resvg`). The script also writes a generated brand preview (`scripts/chompass_icon_master.png`); edit the SVG, not the PNG. The default brand is a cream `#FFF6EC` tile carrying the Ripened ring `#FFD9C2 → #FF9A6C → #E0685E → #8C2E4A` with the ink needle. Plum (the default accent) and Peach share that icon, so changing the default accent needs no asset regeneration.
 
-On Android API 26+, home-screen icons use adaptive XML (`mipmap-anydpi-v26`) with a full-bleed theme background, a safe-zone foreground logo, and a monochrome layer so the system icon-shape mask and Material You themed icons apply. PWA and store listing icons remain pre-shaped squircles.
+On Android API 26+, home-screen icons use adaptive XML (`mipmap-anydpi-v26`) with a cream or theme-gradient background, a safe-zone foreground logo, and a monochrome layer so the system icon-shape mask and Material You themed icons apply. PWA and store listing icons remain pre-shaped squircles.
 
 ## Display numerals
 
