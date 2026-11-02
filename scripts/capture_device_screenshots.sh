@@ -427,10 +427,11 @@ capture() { # capture <stage-file>
   echo "    ${file#"${ROOT}"/} (${w}x${h})"
 }
 
-# Home is the anchor for every sheet flow.
+# Home is the anchor for every sheet flow. The deep link can land behind a
+# lingering sheet or IME after Coach, so back out and retry like wait_home.
 goto_home() {
   goto_route home
-  wait_desc "Add food" 25
+  wait_home
 }
 
 # A completed analysis (or a saved draft) can restore a review sheet on launch,
