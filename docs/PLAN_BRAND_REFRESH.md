@@ -9,6 +9,20 @@ glass blur/strength, ambient controls, fixed-icon toggle and launcher-alias swit
 Plum (fig) is the **temporary** default; Peach ships alongside so the default can be flipped without
 a redesign (the swap steps are enumerated in `AppThemeColor.DEFAULT_KEY`'s call sites).
 
+## Brand defaults (decided 2026-11-02)
+
+- **Mark**: Ripened. Light ground cream `#FFF6EC` with ink needle (`#1C131A` / `#4A3346`) and cream
+  hub; dark ground plum `#170E16` with the `RipenedGlow` ring, blush needle (`#FFF6EC` / `#FFC9A8`)
+  and plum hub. The hub is an opaque disc that matches the ground, so the pivot reads as a hole.
+- **Rule**: the light mark never sits on plum. Everything switches with its ground — in-app Canvas by
+  background luminance, Android splash by `drawable-night`, and the static art explicitly: the site
+  header logo and OG image use the noir asset; launcher/favicon/PWA/BIMI tiles carry the light mark
+  on cream.
+- **Accents**: decoupled. Plum and Peach change chrome only; one cream launcher icon serves both, so
+  flipping `AppThemeColor.DEFAULT_KEY` needs no asset regeneration.
+- Rejected for now: Classic (peach) and Fig (plum) mark gradients — both stay in the study
+  (`docs/brand/logo-system.html`, Mark gradient switch) and in the local preview page.
+
 ## Commits
 
 - **1 — reference**: study copied to `docs/brand/logo-system.html`, docs index row, this file.
