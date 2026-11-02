@@ -20,6 +20,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ### Fixed
 
+- **Bitten "o"** (Android): the bitten "o" in the About wordmark now sits on the baseline like it does on the website, instead of riding a little high.
 - **The web app and site now carry the new brand properly** (web app and site): the web app's welcome screen and About page show the mark — the welcome plays the same draw, needle spin and chomp as the app — and the bitten "o" wordmark. In the light theme, links, icons, the selected day and the main buttons used the pale pink accent on cream and were hard to read; they now use the deeper plum. The browser toolbar follows the page instead of showing the old teal band. On the site, the header mark is drawn as crisp vector art, the wordmark uses the brand type, and the glow behind the page is plum and peach instead of the old teal-green.
 
 ## [6.0.1] - 2026-11-02

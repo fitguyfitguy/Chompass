@@ -386,6 +386,12 @@ private const val WordmarkTailMixLight = 0.035f
 private const val WordmarkTailMixDark = 0.07f
 private const val WordmarkSplitGap = 0.045f
 
+/** Compose's inline placeholder rides above the baseline, while the site's
+ *  bitten-o SVG box sits on it, so the drawn "o" reads ~3 px high at 26 sp.
+ *  Drop the path by this many wordmark units (1 unit = 0.01 em) to put its ink
+ *  bottom on the baseline like the site. */
+private const val BittenOBaselineDrop = 5f
+
 @Composable
 fun ChompassWordmark(
     modifier: Modifier = Modifier,
@@ -434,15 +440,17 @@ fun ChompassWordmark(
                 Canvas(Modifier.fillMaxSize()) {
                     val unit = size.minDimension / ChompassMarkGeometry.BittenOBox
                     scale(unit, unit, pivot = Offset.Zero) {
-                        drawPath(
-                            path = bitePath,
-                            color = biteColor,
-                            style = Stroke(
-                                width = ChompassMarkGeometry.BittenOStroke,
-                                cap = StrokeCap.Round,
-                                join = StrokeJoin.Round,
-                            ),
-                        )
+                        translate(top = BittenOBaselineDrop) {
+                            drawPath(
+                                path = bitePath,
+                                color = biteColor,
+                                style = Stroke(
+                                    width = ChompassMarkGeometry.BittenOStroke,
+                                    cap = StrokeCap.Round,
+                                    join = StrokeJoin.Round,
+                                ),
+                            )
+                        }
                     }
                 }
             },
