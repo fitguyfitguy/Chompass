@@ -16,6 +16,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 - **A warmer palette across the app** (Android and web app): light mode is cream instead of lavender-white, dark mode is plum instead of gray-violet, and text is ink on cream or blush on plum. A fixed theme color now keeps those warm surfaces; only System still follows your wallpaper's colors. The launcher icon is a cream tile with the mark, shown with your launcher's themed-icon treatment when that is on.
 - **Fixed Launcher Icon** (Android): the switch still keeps the brand icon, and its description now says so instead of naming teal.
 - **A smoother ambient background** (Android and site): the wax keeps drifting at about 24 frames a second once you stop touching the screen, instead of dropping to 15, so it stops looking stepped. Battery saver and animations-off still freeze it.
+- **A wink in the wordmark** (Android, web app, site): the name's last three letters pick up a whisper of the mark's peach. Most people will never notice; that is the point.
 
 ### Fixed
 

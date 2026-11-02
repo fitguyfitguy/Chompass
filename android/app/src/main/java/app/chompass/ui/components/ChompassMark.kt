@@ -38,13 +38,16 @@ import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.vector.PathParser
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.Placeholder
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.PlaceholderVerticalAlign as VerticalAlign
@@ -375,6 +378,12 @@ fun ChompassMark(
  * uses Peach700 (4.67:1 on cream) where the study's CSS uses Peach600 (3.24:1) — the
  * glyph is small and stroke-only, so the extra step keeps it legible at 13sp.
  */
+// The "chomp | ass" easter egg: the tail mixes toward the bitten-o peach just
+// enough to find when you look (dE00 ~2.0 light, ~2.1 dark), not enough to read
+// as a second accent. The web and site wordmarks use the same pair of mixes.
+private const val WordmarkTailMixLight = 0.035f
+private const val WordmarkTailMixDark = 0.07f
+
 @Composable
 fun ChompassWordmark(
     modifier: Modifier = Modifier,
@@ -383,12 +392,14 @@ fun ChompassWordmark(
 ) {
     val dark = MaterialTheme.colorScheme.background.luminance() < 0.5f
     val biteColor = if (dark) BrandPalette.Peach300 else BrandPalette.Peach700
+    val tailColor = lerp(color, biteColor, if (dark) WordmarkTailMixDark else WordmarkTailMixLight)
     val biteId = "chompass-bite"
-    val text = remember {
+    val text = remember(tailColor) {
         buildAnnotatedString {
             append("ch")
             appendInlineContent(biteId, "o")
-            append("mpass")
+            append("mp")
+            withStyle(SpanStyle(color = tailColor)) { append("ass") }
         }
     }
     val bitePath = remember {
