@@ -13,7 +13,7 @@ object AndroidAppIconManager {
     private const val MANIFEST_NAMESPACE = "app.chompass"
 
     /**
-     * @param fixedIcon when true the brand teal alias is always used and no aliases
+     * @param fixedIcon when true the brand icon alias is always used and no aliases
      *   ever move (opt-in workaround for launchers that misbehave on alias swaps, #21).
      *   Call only when the activity is not in the foreground: disabling the alias a
      *   running task was launched through makes some launchers tear the task down or
@@ -65,7 +65,7 @@ object AndroidAppIconManager {
         val pm = context.packageManager
         val enabled = AppThemeColor.iconSelectableColors().firstOrNull { color ->
             isAliasEnabled(pm, context, color)
-        } ?: AppThemeColor.TEAL
+        } ?: AppThemeColor.fromKey(AppThemeColor.DEFAULT_KEY)
         return ComponentName(
             context.packageName,
             "$MANIFEST_NAMESPACE.${enabled.launcherAliasSimpleName}",
@@ -84,13 +84,17 @@ object AndroidAppIconManager {
         return when (pm.getComponentEnabledSetting(component)) {
             PackageManager.COMPONENT_ENABLED_STATE_ENABLED -> true
             PackageManager.COMPONENT_ENABLED_STATE_DISABLED -> false
-            // Manifest default: only Teal starts enabled.
-            else -> color == AppThemeColor.TEAL
+            // Manifest default: only the brand default alias starts enabled.
+            else -> color == AppThemeColor.fromKey(AppThemeColor.DEFAULT_KEY)
         }
     }
 
     private val AppThemeColor.launcherAliasSimpleName: String
         get() = when (this) {
+            // Plum and Peach are separate aliases with the same cream brand icon, so
+            // flipping the default is a manifest flag swap, not an icon regeneration.
+            AppThemeColor.PLUM -> "LauncherPlum"
+            AppThemeColor.PEACH -> "LauncherPeach"
             AppThemeColor.TEAL -> "LauncherTeal"
             AppThemeColor.BLUE -> "LauncherBlue"
             AppThemeColor.GREEN -> "LauncherGreen"
@@ -99,6 +103,6 @@ object AndroidAppIconManager {
             AppThemeColor.ORANGE -> "LauncherOrange"
             AppThemeColor.INDIGO -> "LauncherIndigo"
             AppThemeColor.NEUTRAL -> "LauncherGraphite"
-            AppThemeColor.SYSTEM -> "LauncherTeal"
+            AppThemeColor.SYSTEM -> "LauncherPlum"
         }
 }

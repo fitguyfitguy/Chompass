@@ -1,6 +1,5 @@
 package app.chompass.ui.onboarding
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -31,34 +30,33 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
 import app.chompass.models.Gender
+import app.chompass.ui.components.ChompassMark
 import app.chompass.ui.components.DateWheelPicker
 import app.chompass.ui.components.DecimalWheelPicker
 import app.chompass.ui.components.UnitToggle
-import app.chompass.ui.theme.AppColors
-import app.chompass.ui.theme.AppThemeColor
 import java.time.LocalDate
 
 @Composable
 internal fun WelcomeStep() {
-    // 1:1 port of iOS OnboardingView.welcomeStep — broccoli logo, two-line
+    // 1:1 port of iOS OnboardingView.welcomeStep — brand mark, two-line
     // "Eat Smart, / Live Better" headline (second line uses the pink gradient),
-    // and a centered two-line subheading.
+    // and a centered two-line subheading. This is the only surface that plays the
+    // mark's full intro (ring draw → needle turns → chomp → sway).
     Column(
         Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Image(
-            painter = painterResource(id = onboardingLogoRes(AppColors.ThemeColor)),
+        ChompassMark(
+            modifier = Modifier.size(120.dp),
+            playIntro = true,
             contentDescription = stringResource(R.string.onboarding_logo_description),
-            modifier = Modifier.size(120.dp)
         )
         Spacer(Modifier.height(20.dp))
         Text(
@@ -91,9 +89,6 @@ internal fun WelcomeStep() {
         }
     }
 }
-
-internal fun onboardingLogoRes(@Suppress("UNUSED_PARAMETER") themeColor: AppThemeColor): Int =
-    R.drawable.ic_logo_teal
 
 @Composable
 private fun WelcomeFeatureRow(icon: ImageVector, text: String) {
