@@ -6,6 +6,16 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## [Unreleased]
 
+### Added
+
+- **A new Chompass mark** (Android, web app and site): the compass ring now has a bite taken out of it, and the needle points into the bite. It is the launcher icon, the splash screen and the welcome screen; on the welcome screen it draws itself, spins the needle three turns, and settles into a gentle sway. About gains the mark above the wordmark, whose "o" is a bite of its own.
+- **Plum, the new default theme** (Android and web app): a warm plum accent replaces teal as the default, with Peach beside it in Settings → Display → Theme Color for anyone who prefers the warmer end of the palette. Every existing theme color is still there.
+
+### Changed
+
+- **A warmer palette across the app** (Android and web app): light mode is cream instead of lavender-white, dark mode is plum instead of gray-violet, and text is ink on cream or blush on plum. A fixed theme color now keeps those warm surfaces; only System still follows your wallpaper's colors. The launcher icon is a cream tile with the mark, shown with your launcher's themed-icon treatment when that is on.
+- **Fixed Launcher Icon** (Android): the switch still keeps the brand icon, and its description now says so instead of naming teal.
+
 ## [6.0.1] - 2026-11-02
 
 ### Added

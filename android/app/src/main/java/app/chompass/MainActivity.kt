@@ -691,7 +691,7 @@ open class MainActivity : ComponentActivity() {
             // color or the device's system theme.
             if (actions.screenshotAppearance.isNotEmpty()) {
                 container.prefs.setAppearanceMode(actions.screenshotAppearance)
-                container.prefs.setAppThemeColor(AppThemeColor.TEAL.key)
+                container.prefs.setAppThemeColor(AppThemeColor.PLUM.key)
                 DebugTrace.event("op=screenshot phase=appearance value=${actions.screenshotAppearance}")
             }
             if (actions.debugBarcode.isNotBlank()) {
