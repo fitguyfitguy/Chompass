@@ -1,0 +1,4 @@
+• New compass mark: the ring takes a bite and the needle points into it; it draws and spins on the welcome screen and splash (Android).
+• Plum is the new default theme, with Peach beside it; warm cream and plum surfaces replace the old lavender and gray-violet (Android and web app).
+• The web app and site carry the new mark, palette and bitten-o wordmark; the site header is crisp vector art.
+• About shows the mark above the wordmark, which hides a tiny wink.
