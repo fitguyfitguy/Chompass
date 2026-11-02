@@ -94,6 +94,7 @@ import { resolveDay, resolveDayJournaled } from "../lib/chompass-core/macro-plan
 import { applyingAiGoalsToPlan } from "../lib/chompass-core/macro-plan-edit.js";
 import { refreshGoalJournal } from "../lib/goal-journal-store.js";
 import { escapeHtml, escapeAttr } from "../lib/ui/html.js";
+import { brandMarkSvg, brandWordmark } from "../lib/brand-mark.js";
 import { todayIso, shiftDate } from "../lib/date.js";
 import { chevronRight } from "../lib/icons.js";
 
@@ -2013,6 +2014,10 @@ export class SettingsView extends HTMLElement {
   async renderAbout() {
     this.innerHTML = `
       ${subpageBar(t("settings.hub.about"), { backHref: SETTINGS_PARENT.about })}
+      <div class="brand-lockup">
+        ${brandMarkSvg({ idle: true })}
+        ${brandWordmark()}
+      </div>
       <div class="card">
         <p style="margin:0 0 0.6rem;">${t("settings.about.intro")}</p>
         <p style="margin:0;"><a href="#/settings?section=install">${t("install.howto_link")}</a> ${t("settings.about.install_tail")}</p>

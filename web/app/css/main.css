@@ -4,7 +4,15 @@
   --teal: #d6a2be;
   --teal-deep: #6e2f5c;
   --teal-ink: #1c131a;
+  /* Accent roles, mirroring Android `AppThemeColor`:
+     --teal is the *fill* tone (pale on the plum ground); --accent-text is the
+     readable text/icon tone for the current ground; --accent-light is the
+     light-ground value of each fixed accent, used as --accent-text there. */
   --accent: #8f4b78;
+  --accent-light: #8f4b78;
+  --accent-text: var(--teal);
+  --accent-ink: #fff6ec;
+  --brand-peach: #ffb994;
   --protein: #5a6bd8;
   --carbs: #d9a014;
   --fat: #c25e86;
@@ -21,6 +29,12 @@
   --line: rgba(251, 240, 244, 0.12);
   --focus: #ffb994;
   --danger: #e08585;
+  /* Brand mark on the plum ground: the study's Ripened *glow* variant. */
+  --mark-ring: url(#cp-mark-ripened-glow);
+  --mark-needle-a: #fff6ec;
+  --mark-needle-b: #ffc9a8;
+  --mark-hub: var(--bg);
+  --mark-pin: #fff6ec;
   --nav-pill: #3a2a38; /* warm active pill (dark) */
   --nav-icon-active: #fbf0f4; /* blush on the active pill (dark) */
   --nav-bar: #1c1119; /* warm surface container (dark) */
@@ -81,6 +95,15 @@
     --line: rgba(110, 92, 99, 0.24);
     --teal-ink: #1c131a;
     --success: #386a20;
+    --accent-text: var(--accent-light);
+    --brand-peach: #c44428;
+    --focus: #8f4b78; /* fig-500: 5.7:1 on cream; the peach glow would vanish here */
+    /* Brand mark on cream: the study's Ripened light variant. */
+    --mark-ring: url(#cp-mark-ripened-light);
+    --mark-needle-a: #1c131a;
+    --mark-needle-b: #4a3346;
+    --mark-hub: var(--bg);
+    --mark-pin: #1c131a;
     --nav-pill: #ffd9c2;
     --nav-icon-active: #1c131a;
     --nav-bar: #fffaf6;
@@ -97,6 +120,15 @@
   --line: rgba(110, 92, 99, 0.24);
   --teal-ink: #1c131a;
   --success: #386a20;
+  --accent-text: var(--accent-light);
+  --brand-peach: #c44428;
+  --focus: #8f4b78; /* fig-500: 5.7:1 on cream; the peach glow would vanish here */
+  /* Brand mark on cream: the study's Ripened light variant. */
+  --mark-ring: url(#cp-mark-ripened-light);
+  --mark-needle-a: #1c131a;
+  --mark-needle-b: #4a3346;
+  --mark-hub: var(--bg);
+  --mark-pin: #1c131a;
   --nav-pill: #ffd9c2;
   --nav-icon-active: #1c131a;
   --nav-bar: #fffaf6;
@@ -117,16 +149,18 @@
   color-scheme: dark;
 }
 
-:root[data-accent="plum"] { --accent: #8f4b78; --teal: #d6a2be; --teal-deep: #6e2f5c; }
-:root[data-accent="peach"] { --accent: #c44428; --teal: #ff9a6c; --teal-deep: #c44428; }
-:root[data-accent="teal"] { --accent: #006b5e; --teal: #5cc48f; --teal-deep: #006b5e; --teal-ink: #003731; }
-:root[data-accent="blue"] { --accent: #0061a4; --teal: #4da3ff; --teal-deep: #0061a4; }
-:root[data-accent="green"] { --accent: #386a20; --teal: #6bc45a; --teal-deep: #386a20; }
-:root[data-accent="purple"] { --accent: #6750a4; --teal: #b39ddb; --teal-deep: #6750a4; }
-:root[data-accent="pink"] { --accent: #984061; --teal: #ff8fab; --teal-deep: #984061; }
-:root[data-accent="orange"] { --accent: #8b5000; --teal: #ffb77c; --teal-deep: #8b5000; }
-:root[data-accent="indigo"] { --accent: #4f378b; --teal: #9a82db; --teal-deep: #4f378b; }
-:root[data-accent="neutral"] { --accent: #5e5e62; --teal: #9e9ea3; --teal-deep: #5e5e62; }
+/* `--accent-light` is each fixed accent's light-ground tone: the same values
+   Android uses as `primary` before `darkPrimary()` lightens it for plum. */
+:root[data-accent="plum"] { --accent: #8f4b78; --accent-light: #8f4b78; --teal: #d6a2be; --teal-deep: #6e2f5c; }
+:root[data-accent="peach"] { --accent: #c24327; --accent-light: #c24327; --teal: #ff9a6c; --teal-deep: #c24327; }
+:root[data-accent="teal"] { --accent: #006b5e; --accent-light: #006b5e; --teal: #5cc48f; --teal-deep: #006b5e; --teal-ink: #003731; }
+:root[data-accent="blue"] { --accent: #0061a4; --accent-light: #0061a4; --teal: #4da3ff; --teal-deep: #0061a4; }
+:root[data-accent="green"] { --accent: #386a20; --accent-light: #386a20; --teal: #6bc45a; --teal-deep: #386a20; }
+:root[data-accent="purple"] { --accent: #6750a4; --accent-light: #6750a4; --teal: #b39ddb; --teal-deep: #6750a4; }
+:root[data-accent="pink"] { --accent: #984061; --accent-light: #984061; --teal: #ff8fab; --teal-deep: #984061; }
+:root[data-accent="orange"] { --accent: #8b5000; --accent-light: #8b5000; --teal: #ffb77c; --teal-deep: #8b5000; }
+:root[data-accent="indigo"] { --accent: #4f378b; --accent-light: #4f378b; --teal: #9a82db; --teal-deep: #4f378b; }
+:root[data-accent="neutral"] { --accent: #5e5e62; --accent-light: #5e5e62; --teal: #9e9ea3; --teal-deep: #5e5e62; }
 
 *, *::before, *::after { box-sizing: border-box; }
 
@@ -149,7 +183,7 @@ body.hide-nav {
 }
 body.hide-nav .bottom-nav { display: none; }
 
-a { color: var(--teal); }
+a { color: var(--accent-text); }
 
 button, input, select, textarea {
   font-family: inherit;
@@ -251,7 +285,7 @@ main.view {
 
 .day-nav-btn:hover:not(:disabled) {
   background: color-mix(in srgb, var(--teal) 16%, var(--surface));
-  color: var(--teal);
+  color: var(--accent-text);
 }
 
 .day-nav-btn:disabled {
@@ -305,19 +339,20 @@ main.view {
 }
 
 .week-day.is-selected .week-day__dow {
-  color: var(--teal);
+  color: var(--accent-text);
 }
 
 .week-day.is-selected .week-day__num {
-  background: linear-gradient(145deg, var(--teal), var(--teal-deep));
-  color: #fff;
+  /* Deep accent + cream: the pale `--teal` end would leave white at 2.15:1. */
+  background: var(--teal-deep);
+  color: var(--accent-ink);
   box-shadow: 0 4px 12px color-mix(in srgb, var(--teal) 35%, transparent);
 }
 
 /* Today when not selected: hollow teal ring (Android strokeBorder). */
 .week-day.is-today:not(.is-selected) .week-day__num {
   border: 1.5px solid color-mix(in srgb, var(--teal) 35%, transparent);
-  color: var(--teal);
+  color: var(--accent-text);
 }
 
 .week-day:disabled {
@@ -388,7 +423,7 @@ main.view {
 }
 
 .gauge-info-btn:hover {
-  color: var(--teal);
+  color: var(--accent-text);
 }
 
 .calorie-hero {
@@ -441,7 +476,7 @@ main.view {
 .calorie-ring__label {
   font-size: 2rem;
   font-weight: 700;
-  fill: var(--teal);
+  fill: var(--accent-text);
 }
 
 .calorie-ring__sub {
@@ -453,7 +488,7 @@ main.view {
 .calorie-ring__left {
   font-size: 0.78rem;
   font-weight: 650;
-  fill: var(--teal);
+  fill: var(--accent-text);
 }
 
 .calorie-ring__progress {
@@ -557,7 +592,7 @@ main.view {
   padding: 0.2rem 0.5rem;
   border: none;
   background: transparent;
-  color: var(--teal);
+  color: var(--accent-text);
   font: inherit;
   font-size: 0.78rem;
   font-weight: 650;
@@ -707,7 +742,7 @@ main.view {
   font-size: 1.85rem;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
-  color: var(--teal);
+  color: var(--accent-text);
   line-height: 1;
 }
 
@@ -721,7 +756,7 @@ main.view {
   flex-shrink: 0;
   font-size: 0.82rem;
   font-weight: 650;
-  color: var(--teal);
+  color: var(--accent-text);
   font-variant-numeric: tabular-nums;
   padding-bottom: 0.15rem;
 }
@@ -793,7 +828,7 @@ main.view {
   display: grid;
   gap: 0.28rem;
   min-width: 0;
-  --tube-color: var(--teal);
+  --tube-color: var(--accent-text);
 }
 
 .macro-row__meta {
@@ -1055,21 +1090,21 @@ main.view {
   border-radius: 0.28rem;
   background: transparent;
   padding: 0;
-  accent-color: var(--teal);
+  accent-color: var(--accent);
   cursor: pointer;
 }
 
 .nutrient-picker__row input[type="checkbox"]:checked {
-  background: var(--teal);
-  border-color: var(--teal);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23003731' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3.5 8.5 6.5 11.5 12.5 4.5'/%3E%3C/svg%3E");
+  background: var(--accent);
+  border-color: var(--accent);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23fff6ec' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3.5 8.5 6.5 11.5 12.5 4.5'/%3E%3C/svg%3E");
   background-size: 0.85rem 0.85rem;
   background-position: center;
   background-repeat: no-repeat;
 }
 
 .nutrient-picker__row input[type="checkbox"]:focus-visible {
-  outline: 2px solid var(--teal);
+  outline: 2px solid var(--focus);
   outline-offset: 2px;
 }
 
@@ -1153,7 +1188,7 @@ main.view {
 }
 
 .note-row__input:focus-visible {
-  outline: 2px solid var(--teal);
+  outline: 2px solid var(--focus);
   outline-offset: 2px;
 }
 
@@ -1292,7 +1327,7 @@ main.view {
   justify-content: flex-start;
   padding-left: 1rem;
   background: color-mix(in srgb, var(--teal) 24%, var(--surface));
-  color: var(--teal);
+  color: var(--accent-text);
 }
 
 .food-swipe__behind--fav {
@@ -1372,7 +1407,7 @@ main.view {
 .food-item__cals {
   font-weight: 650;
   white-space: nowrap;
-  color: var(--teal);
+  color: var(--accent-text);
   font-variant-numeric: tabular-nums;
   font-size: 0.88rem;
 }
@@ -1425,7 +1460,7 @@ main.view {
 
 .sheet-actions button:last-child { border-bottom: none; }
 .sheet-actions button.is-danger { color: var(--danger); }
-.sheet-actions button[aria-selected="true"] { color: var(--teal); }
+.sheet-actions button[aria-selected="true"] { color: var(--accent-text); }
 
 .sheet-recents .recents-meta,
 .recents-meta {
@@ -1502,7 +1537,7 @@ body:has(coach-view) .toast {
   margin-left: 0.6rem;
   background: none;
   border: none;
-  color: var(--teal);
+  color: var(--accent-text);
   font-weight: 700;
   cursor: pointer;
 }
@@ -2077,7 +2112,7 @@ body:has(coach-view) .toast {
   padding: 0;
   border: 0;
   background: none;
-  color: var(--teal);
+  color: var(--accent-text);
   font-size: 0.94rem;
   font-weight: 500;
   cursor: pointer;
@@ -2116,7 +2151,7 @@ body:has(coach-view) .toast {
   width: 0.5rem;
   height: 0.5rem;
   border-radius: 50%;
-  background: var(--teal);
+  background: var(--accent-text);
 }
 
 .swatch-line {
@@ -2167,7 +2202,7 @@ body:has(coach-view) .toast {
 .history-link__icon svg {
   width: 1rem;
   height: 1rem;
-  color: var(--teal);
+  color: var(--accent-text);
 }
 
 .history-link__text {
@@ -2260,8 +2295,8 @@ body:has(coach-view) .toast {
 }
 
 .metric-toggle__segment.is-active {
-  background: linear-gradient(145deg, var(--teal), var(--teal-deep));
-  color: #fff;
+  background: var(--teal-deep);
+  color: var(--accent-ink);
   font-weight: 600;
 }
 
@@ -2524,7 +2559,7 @@ form.entry-form > button.btn--primary,
 .settings-hub__icon svg {
   width: 1rem;
   height: 1rem;
-  color: var(--teal);
+  color: var(--accent-text);
 }
 
 .settings-hub__text {
@@ -2907,7 +2942,7 @@ form.entry-form > button.btn--primary,
 }
 
 .install-banner__how {
-  color: var(--teal);
+  color: var(--accent-text);
   font-weight: 600;
   text-decoration: none;
   width: fit-content;
@@ -3151,12 +3186,8 @@ form.entry-form > button.btn--primary,
   justify-items: center;
 }
 
-.onboarding-welcome__logo {
-  width: 5.5rem;
-  height: 5.5rem;
-  border-radius: 1.35rem;
-  object-fit: cover;
-  box-shadow: 0 10px 28px color-mix(in srgb, var(--teal) 28%, transparent);
+.onboarding-welcome .brand-mark {
+  --mark-size: 7.5rem;
 }
 
 .onboarding-welcome__title {
@@ -3169,10 +3200,9 @@ form.entry-form > button.btn--primary,
 
 .onboarding-welcome__title-accent {
   display: block;
-  background: linear-gradient(120deg, var(--teal), color-mix(in srgb, var(--teal) 40%, #fff));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  /* The study's welcome: the highlighted line is the accent, solid. The old
+     pale→white gradient was the least readable element on the screen. */
+  color: var(--accent-text);
 }
 
 .onboarding-welcome__sub {
@@ -3210,7 +3240,7 @@ form.entry-form > button.btn--primary,
   height: 2rem;
   border-radius: 0.65rem;
   background: color-mix(in srgb, var(--teal) 18%, var(--surface));
-  color: var(--teal);
+  color: var(--accent-text);
   flex-shrink: 0;
   font-weight: 700;
   font-size: 0.85rem;
@@ -3276,8 +3306,8 @@ form.entry-form > button.btn--primary,
 }
 
 .onboarding-choice.is-selected .onboarding-choice__check {
-  border-color: var(--teal);
-  background: var(--teal);
+  border-color: var(--accent-text);
+  background: var(--accent-text);
   box-shadow: inset 0 0 0 3px var(--bg-elevated);
 }
 
@@ -3292,7 +3322,7 @@ form.entry-form > button.btn--primary,
 .onboarding-building__pct {
   font-size: 2.4rem;
   font-weight: 800;
-  color: var(--teal);
+  color: var(--accent-text);
   font-variant-numeric: tabular-nums;
   line-height: 1;
 }
@@ -3345,8 +3375,8 @@ form.entry-form > button.btn--primary,
 }
 
 .onboarding-checklist li.is-done .onboarding-checklist__mark {
-  border-color: var(--teal);
-  background: var(--teal);
+  border-color: var(--accent-text);
+  background: var(--accent-text);
   box-shadow: inset 0 0 0 3px var(--bg-elevated);
 }
 
@@ -3401,10 +3431,7 @@ form.entry-form > button.btn--primary,
   font-weight: 800;
   line-height: 1;
   letter-spacing: -0.03em;
-  background: linear-gradient(135deg, var(--teal), color-mix(in srgb, var(--teal) 35%, #fff));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: var(--accent-text);
   font-variant-numeric: tabular-nums;
 }
 
@@ -3508,12 +3535,12 @@ form.entry-form > button.btn--primary,
 }
 
 .onboarding-pace__icon.is-selected {
-  color: var(--teal);
+  color: var(--accent-text);
 }
 
 .onboarding-pace__slider {
   width: 100%;
-  accent-color: var(--teal);
+  accent-color: var(--accent-text);
 }
 
 .onboarding-pace__card {
@@ -3532,7 +3559,7 @@ form.entry-form > button.btn--primary,
 }
 
 .onboarding-pace__eta strong {
-  color: var(--teal);
+  color: var(--accent-text);
 }
 
 .onboarding-pace__caption {
@@ -3555,8 +3582,10 @@ form.entry-form > button.btn--primary,
 }
 
 .btn--gradient {
-  background: linear-gradient(135deg, var(--teal), var(--teal-deep));
-  color: #fff;
+  /* The study's filled CTA: one solid accent, cream label (never a pale→deep
+     gradient under white text, which bottomed out at 2.15:1). */
+  background: var(--teal-deep);
+  color: var(--accent-ink);
   border: 0;
   box-shadow: 0 8px 20px color-mix(in srgb, var(--teal) 32%, transparent);
 }
@@ -3990,11 +4019,11 @@ body.dialog-open {
 
 .add-food-relog-chip__kcal {
   font-size: 0.72rem;
-  color: var(--teal);
+  color: var(--accent-text);
 }
 
 .add-food-relog-chip__add {
-  color: var(--teal);
+  color: var(--accent-text);
   font-weight: 600;
   font-size: 1rem;
   line-height: 1;
@@ -4028,7 +4057,7 @@ body.dialog-open {
   height: 1.25rem;
   border-radius: 999px;
   background: color-mix(in srgb, var(--teal) 18%, var(--surface));
-  color: var(--teal);
+  color: var(--accent-text);
 }
 
 .add-food-tile__icon svg {
@@ -4482,7 +4511,7 @@ button.add-food-section--action svg {
 
 .methods-list dt {
   font-weight: 700;
-  color: var(--teal);
+  color: var(--accent-text);
   font-size: 0.85rem;
 }
 
@@ -4695,7 +4724,7 @@ body.camera-open {
   border-radius: 0.85rem;
   border: 1px dashed var(--line);
   background: color-mix(in srgb, var(--surface) 80%, transparent);
-  color: var(--teal);
+  color: var(--accent-text);
   font-size: 1.75rem;
   cursor: pointer;
 }
@@ -4754,7 +4783,7 @@ body.camera-open {
   border-radius: 999px;
   border: none;
   background: color-mix(in srgb, var(--teal) 22%, var(--surface));
-  color: var(--teal);
+  color: var(--accent-text);
   cursor: pointer;
   display: grid;
   place-items: center;
@@ -4849,7 +4878,7 @@ body.camera-open {
 }
 
 .serving-quantity-card__qty:focus {
-  outline: 2px solid var(--teal);
+  outline: 2px solid var(--focus);
   border-color: transparent;
 }
 
@@ -4897,7 +4926,7 @@ body.camera-open {
 }
 
 .serving-quantity-card__op:hover {
-  border-color: var(--teal);
+  border-color: var(--accent-text);
 }
 
 .serving-quantity-card__result {
@@ -5084,7 +5113,7 @@ body.camera-open {
   display: block;
   margin-top: 0.35rem;
   font-size: 0.75rem;
-  color: var(--teal);
+  color: var(--accent-text);
   text-decoration: none;
 }
 
@@ -5212,6 +5241,108 @@ body.camera-open {
   }
 }
 
+/* —— Brand mark ————————————————————————————————————————————————
+   The study's mark, motion and wordmark (docs/brand/logo-system.html). The
+   palette lives in the theme tokens above: Ripened on cream, RipenedGlow on
+   plum, so `stroke`/`fill` follow the ground without a second markup path. */
+.brand-mark {
+  display: block;
+  width: var(--mark-size, 120px);
+  height: var(--mark-size, 120px);
+  overflow: visible;
+}
+
+.brand-mark__ring {
+  fill: none;
+  stroke: var(--mark-ring);
+  stroke-width: 16;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.brand-mark__needle-a { fill: var(--mark-needle-a); }
+.brand-mark__needle-b { fill: var(--mark-needle-b); }
+.brand-mark__hub { fill: var(--mark-hub); }
+.brand-mark__pin { fill: var(--mark-pin); }
+
+.brand-mark__dial,
+.brand-mark__sway,
+.brand-mark__needle { transform-box: view-box; }
+.brand-mark__dial { transform-origin: 142px 56px; }
+.brand-mark__sway,
+.brand-mark__needle { transform-origin: 100px 100px; }
+
+/* The study's 1.6 s intro, then the idle loop. */
+@keyframes cp-mark-draw { from { stroke-dashoffset: 1 } to { stroke-dashoffset: 0 } }
+@keyframes cp-mark-needle {
+  0% { transform: rotate(-1080deg) } 55% { transform: rotate(26deg) }
+  70% { transform: rotate(-11deg) } 82% { transform: rotate(5deg) }
+  92% { transform: rotate(-2deg) } 100% { transform: rotate(0deg) }
+}
+@keyframes cp-mark-chomp {
+  0% { transform: scale(1, 1) } 22% { transform: scale(.955, 1.042) }
+  50% { transform: scale(1.028, .976) } 74% { transform: scale(.993, 1.006) }
+  100% { transform: scale(1, 1) }
+}
+@keyframes cp-mark-ring-pulse {
+  0% { stroke-width: 16 } 30% { stroke-width: 18.4 }
+  62% { stroke-width: 15.2 } 100% { stroke-width: 16 }
+}
+@keyframes cp-mark-sway {
+  0%, 100% { transform: rotate(0deg) } 28% { transform: rotate(2.4deg) }
+  62% { transform: rotate(-2.1deg) }
+}
+@keyframes cp-mark-in { from { opacity: 0 } to { opacity: 1 } }
+@keyframes cp-mark-float {
+  0%, 100% { transform: translateY(0) } 50% { transform: translateY(-4px) }
+}
+
+.brand-mark--intro .brand-mark__ring {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation:
+    cp-mark-draw .9s cubic-bezier(.65, 0, .35, 1) .12s both,
+    cp-mark-ring-pulse .55s cubic-bezier(.34, 1.56, .64, 1) 1.08s both;
+}
+.brand-mark--intro .brand-mark__needle { animation: cp-mark-needle 1.45s cubic-bezier(.22, 1, .36, 1) .18s both; }
+.brand-mark--intro .brand-mark__dial { animation: cp-mark-chomp .55s cubic-bezier(.34, 1.56, .64, 1) 1.08s both; }
+.brand-mark--intro .brand-mark__sway { animation: cp-mark-sway 7s ease-in-out 2.1s infinite; }
+.brand-mark--intro { animation: cp-mark-in .45s ease both, cp-mark-float 7s ease-in-out infinite; }
+.brand-mark--idle .brand-mark__sway { animation: cp-mark-sway 7s ease-in-out infinite; }
+.brand-mark--idle { animation: cp-mark-float 7s ease-in-out infinite; }
+
+/* Bitten-"o" wordmark: the "o" is a fixed brand peach in both schemes, never
+   the accent (the study's guardrail against over-explaining the joke). */
+.wordmark {
+  letter-spacing: -0.035em;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.wordmark__o {
+  width: 0.58em;
+  height: 0.58em;
+  display: inline-block;
+  vertical-align: -0.012em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  color: var(--brand-peach);
+}
+
+/* About: mark above wordmark, standing sway (no intro). */
+.brand-lockup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.35rem 0 0.25rem;
+  text-align: center;
+}
+.brand-lockup .brand-mark { --mark-size: 4rem; }
+.brand-lockup .wordmark { font-size: 1.6rem; }
+
 /* —— Reduced motion —— */
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -5231,6 +5362,16 @@ body.camera-open {
   .calorie-ring__progress {
     transition: none !important;
   }
+
+  /* The mark starts at rest: full ring, needle on the bite, no float/sway. */
+  .brand-mark,
+  .brand-mark__dial,
+  .brand-mark__needle,
+  .brand-mark__sway,
+  .brand-mark__ring {
+    animation: none !important;
+  }
+  .brand-mark__ring { stroke-dashoffset: 0 !important; }
 }
 
 

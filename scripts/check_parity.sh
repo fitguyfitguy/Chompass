@@ -32,6 +32,9 @@ run_in_devenv 'cd web && TZ=UTC node --test app/src/lib/chompass-core/__tests__/
 echo "==> PWA typecheck"
 run_in_devenv 'cd web && tsc --checkJs --noEmit -p tsconfig.json'
 
+echo "==> Guard brand tokens (Kotlin / PWA / site)"
+uv run python "$ROOT/scripts/check_brand_tokens.py"
+
 echo "==> Validate parity fixtures against contracts/ JSON Schemas"
 uv run --with jsonschema python "$ROOT/scripts/validate_parity_contracts.py"
 

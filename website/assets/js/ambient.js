@@ -37,12 +37,13 @@
     [0.35, 0.5, 38, 39000, 16000, 8500, 0.7, 0],
     [0.9, 0.28, 44, 43000, 10000, 10500, 2.8, 1],
   ];
-  // Site accent #5CC48F + hueShift(+60,0.85) + hueShift(-75,0.90), the app's
-  // ACCENT palette rule (AmbientBackground.kt:410-415).
+  // Brand accent fig-500 #8F4B78 + hueShift(+60,0.85) + hueShift(-75,0.90), the
+  // app's ACCENT palette rule (AmbientBackground.kt:410-415). The old teal trio
+  // was a pre-brand leftover: a green-blue field under a plum page.
   var COLORS = [
-    [0.361, 0.769, 0.561],
-    [0.424, 0.6, 0.769],
-    [0.678, 0.769, 0.4],
+    [0.561, 0.294, 0.471],
+    [0.561, 0.412, 0.333],
+    [0.341, 0.322, 0.561],
   ];
 
   var FRAME_MS = 33.3333; // ~30fps, the app's MinFrameIntervalNs

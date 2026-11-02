@@ -135,6 +135,9 @@ a:hover {
    when the page tint is fig/plum — the study's guardrail is that plum there would
    over-explain the joke. */
 .wordmark {
+  /* The study's lockup is a geometric grotesque; the site's display face is a
+     serif, so the wordmark opts into the body font instead of inheriting it. */
+  font-family: var(--font-body);
   letter-spacing: -0.035em;
   font-weight: 600;
   white-space: nowrap;
@@ -153,11 +156,26 @@ a:hover {
   color: var(--brand-peach);
 }
 
-.site-logo img {
+/* The mark (partials/mark.html): noir treatment, since every site ground is plum. */
+.chompass-mark {
   width: 2rem;
   height: 2rem;
-  border-radius: 0.5rem;
+  display: block;
+  flex: none;
 }
+
+.chompass-mark__ring {
+  fill: none;
+  stroke: url(#chompass-mark-glow);
+  stroke-width: 16;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.chompass-mark__needle-a { fill: #fff6ec; }
+.chompass-mark__needle-b { fill: #ffc9a8; }
+.chompass-mark__hub { fill: var(--bg); }
+.chompass-mark__pin { fill: #fff6ec; }
 
 .site-nav {
   display: flex;

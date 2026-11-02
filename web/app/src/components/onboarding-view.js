@@ -10,6 +10,7 @@ import { openInput, openConfirm } from "../lib/ui/dialog.js";
 import { t, formatNumber } from "../lib/i18n/index.js";
 import { energyQuantity, energyToKcal, energyUnitFromPrefs, energyUnitLabel, formatEnergy } from "../lib/energy-format.js";
 import { escapeAttr } from "../lib/ui/html.js";
+import { brandMarkSvg } from "../lib/brand-mark.js";
 import { todayIso } from "../lib/date.js";
 
 /** Gemini first — matches Android AI Studio default/recommend. */
@@ -391,7 +392,7 @@ export class OnboardingView extends HTMLElement {
     if (id === "welcome") {
       return `
         <div class="onboarding-welcome">
-          <img class="onboarding-welcome__logo" src="icons/icon-192.png" alt="" width="88" height="88" />
+          ${brandMarkSvg({ intro: true, label: "Chompass" })}
           <h1 class="onboarding-welcome__title">${t("onboarding.welcome_body")}</h1>
           <p class="onboarding-welcome__sub">${t("onboarding.welcome_sub")}</p>
           <ul class="onboarding-features">
