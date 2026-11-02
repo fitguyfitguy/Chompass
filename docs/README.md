@@ -41,6 +41,7 @@ status is missing or stale, fix it (release checklist).
 |-----|--------|
 | [`GROUNDED_ENTRY.md`](GROUNDED_ENTRY.md) | **WIP: not production**, UI off via feature flag |
 | [`ON_DEVICE_LLM.md`](ON_DEVICE_LLM.md) | Gemma on-device: production Tiers A/B behind a default-off Settings toggle |
+| [`brand/logo-system.html`](brand/logo-system.html) | **reference** — bitten-ring mark, peach/plum palette, mark motion (2026-11) |
 
 ## Benchmarks
 

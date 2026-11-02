@@ -1729,7 +1729,7 @@ für dich ein</string>
 
     <string name="settings_fixed_launcher_icon">Feste Launcher-Ikone</string>
 
-    <string name="settings_fixed_launcher_icon_subtitle">Behält die Launcher-Ikone in Petrol. Sie folgt nicht mehr der Akzentfarbe oder dem Hintergrundbild.</string>
+    <string name="settings_fixed_launcher_icon_subtitle">Behält das Markensymbol. Es folgt nicht mehr der Akzentfarbe oder dem Hintergrundbild.</string>
     <string name="settings_system_date_time_pickers">System-Datums- und Zeitwahl</string>
     <string name="settings_system_date_time_pickers_subtitle">Beim Bearbeiten einer Mahlzeit die Datums- und Zeitdialoge des Telefons nutzen.</string>
     <string name="settings_glass_blur">Mattes Glas</string>
@@ -1772,6 +1772,8 @@ für dich ein</string>
     <string name="sheet_theme_color_footer">Ändert die Hauptakzentfarbe, die für Schaltflächen, Diagramme und Fortschrittsanzeigen verwendet wird.</string>
 
     <string name="theme_color_system">System</string>
+    <string name="theme_color_plum">Pflaume</string>
+    <string name="theme_color_peach">Pfirsich</string>
 
     <string name="theme_color_teal">Türkis</string>
 

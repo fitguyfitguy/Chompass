@@ -12,40 +12,9 @@
 
     <style name="Theme.Chompass.Splash.Base" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/app_splash_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_icon</item>
         <item name="postSplashScreenTheme">@style/Theme.Chompass</item>
     </style>
 
-    <style name="Theme.Chompass.Splash" parent="Theme.Chompass.Splash.Teal" />
-
-    <style name="Theme.Chompass.Splash.Pink" parent="Theme.Chompass.Splash.Base">
-        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_icon</item>
-    </style>
-
-    <style name="Theme.Chompass.Splash.Red" parent="Theme.Chompass.Splash.Base">
-        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_icon_red</item>
-    </style>
-
-    <style name="Theme.Chompass.Splash.Orange" parent="Theme.Chompass.Splash.Base">
-        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_icon_orange</item>
-    </style>
-
-    <style name="Theme.Chompass.Splash.Green" parent="Theme.Chompass.Splash.Base">
-        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_icon_green</item>
-    </style>
-
-    <style name="Theme.Chompass.Splash.Mint" parent="Theme.Chompass.Splash.Base">
-        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_icon_mint</item>
-    </style>
-
-    <style name="Theme.Chompass.Splash.Teal" parent="Theme.Chompass.Splash.Base">
-        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_icon_teal</item>
-    </style>
-
-    <style name="Theme.Chompass.Splash.Blue" parent="Theme.Chompass.Splash.Base">
-        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_icon_blue</item>
-    </style>
-
-    <style name="Theme.Chompass.Splash.Purple" parent="Theme.Chompass.Splash.Base">
-        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_icon_purple</item>
-    </style>
+    <style name="Theme.Chompass.Splash" parent="Theme.Chompass.Splash.Base" />
 </resources>

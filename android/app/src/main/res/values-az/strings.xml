@@ -1465,7 +1465,7 @@ bilirsən?</string>
     <string name="settings_dinner_starts">Şam yeməyi başlanğıcı</string>
     <string name="settings_energy_goals">Enerji Xərci Məqsədləri</string>
     <string name="settings_fixed_launcher_icon">Sabit tətbiq ikonu</string>
-    <string name="settings_fixed_launcher_icon_subtitle">Tətbiq ikonunu firuzəyi saxlayır. Tema rəngini və divar kağızını izləməyi dayandırır.</string>
+    <string name="settings_fixed_launcher_icon_subtitle">Brend ikonunu saxlayır. Tema rəngini və divar kağızını izləməyi dayandırır.</string>
     <string name="settings_system_date_time_pickers">Sistem tarix və saat seçiciləri</string>
     <string name="settings_system_date_time_pickers_subtitle">Yeməyi redaktə edərkən telefonun tarix və saat pəncərələrindən istifadə et.</string>
     <string name="settings_glass_blur">Donuşdurulmuş şüşə</string>
@@ -1762,6 +1762,8 @@ bilirsən?</string>
     <string name="theme_color_pink">Çəhrayı</string>
     <string name="theme_color_purple">Bənövşəyi</string>
     <string name="theme_color_system">Sistem</string>
+    <string name="theme_color_plum">Gavalı</string>
+    <string name="theme_color_peach">Şaftalı</string>
     <string name="theme_color_teal">Firuzəyi</string>
     <string name="unit_serving">porsiya</string>
     <string name="unit_serving_plural">porsiya</string>

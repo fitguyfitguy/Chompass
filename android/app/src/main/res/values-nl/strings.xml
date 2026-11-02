@@ -1445,7 +1445,7 @@
     <string name="settings_dinner_starts">Diner start</string>
     <string name="settings_energy_goals">Energieverbruiksdoelen</string>
     <string name="settings_fixed_launcher_icon">Vast app-pictogram</string>
-    <string name="settings_fixed_launcher_icon_subtitle">Houdt het app-pictogram teal. Het volgt de themakleur en achtergrond niet meer.</string>
+    <string name="settings_fixed_launcher_icon_subtitle">Houdt het merkpictogram. Het volgt de themakleur en achtergrond niet meer.</string>
     <string name="settings_system_date_time_pickers">Systeemdatum- en tijdkiezers</string>
     <string name="settings_system_date_time_pickers_subtitle">Gebruik de datum- en tijddialogen van de telefoon bij het bewerken van een maaltijd.</string>
     <string name="settings_glass_blur">Matglas</string>
@@ -1744,6 +1744,8 @@
     <string name="theme_color_pink">Roze</string>
     <string name="theme_color_purple">Paars</string>
     <string name="theme_color_system">Systeem</string>
+    <string name="theme_color_plum">Pruim</string>
+    <string name="theme_color_peach">Perzik</string>
     <string name="theme_color_teal">Teal</string>
     <string name="unit_serving">portie</string>
     <string name="unit_serving_plural">porties</string>

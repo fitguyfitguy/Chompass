@@ -1670,7 +1670,7 @@
     <string name="settings_appearance_oled">OLED</string>
     <string name="settings_theme_color">Theme Color</string>
     <string name="settings_fixed_launcher_icon">Fixed Launcher Icon</string>
-    <string name="settings_fixed_launcher_icon_subtitle">Keeps the launcher icon teal. It stops following the theme color and wallpaper.</string>
+    <string name="settings_fixed_launcher_icon_subtitle">Keeps the brand icon. It stops following the theme color and wallpaper.</string>
     <string name="settings_system_date_time_pickers">System date and time pickers</string>
     <string name="settings_system_date_time_pickers_subtitle">Use the phone’s date and time dialogs when editing a meal.</string>
     <string name="settings_glass_blur">Frosted glass</string>
@@ -1707,6 +1707,8 @@
     <string name="sheet_theme_color">Theme Color</string>
     <string name="sheet_theme_color_footer">Changes the main accent used for buttons, charts, and progress indicators.</string>
     <string name="theme_color_system">System</string>
+    <string name="theme_color_plum">Plum</string>
+    <string name="theme_color_peach">Peach</string>
     <string name="theme_color_teal">Teal</string>
     <string name="theme_color_blue">Blue</string>
     <string name="theme_color_green">Green</string>

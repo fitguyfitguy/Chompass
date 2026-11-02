@@ -1531,7 +1531,7 @@
     <string name="settings_dinner_starts">La cena empieza</string>
     <string name="settings_energy_goals">Objetivos de quema de energía</string>
     <string name="settings_fixed_launcher_icon">Icono de inicio fijo</string>
-    <string name="settings_fixed_launcher_icon_subtitle">Mantiene el icono de inicio en turquesa. Deja de seguir el color del tema y el fondo de pantalla.</string>
+    <string name="settings_fixed_launcher_icon_subtitle">Mantiene el icono de la marca. Deja de seguir el color del tema y el fondo de pantalla.</string>
     <string name="settings_system_date_time_pickers">Selectores de fecha y hora del sistema</string>
     <string name="settings_system_date_time_pickers_subtitle">Usa los diálogos de fecha y hora del teléfono al editar una comida.</string>
     <string name="settings_glass_blur">Vidrio esmerilado</string>
@@ -1855,6 +1855,8 @@
     <string name="theme_color_pink">Rosa</string>
     <string name="theme_color_purple">Morado</string>
     <string name="theme_color_system">Sistema</string>
+    <string name="theme_color_plum">Ciruela</string>
+    <string name="theme_color_peach">Melocotón</string>
     <string name="theme_color_teal">Turquesa</string>
     <string name="unit_celsius">°C</string>
     <string name="unit_cm">cm</string>

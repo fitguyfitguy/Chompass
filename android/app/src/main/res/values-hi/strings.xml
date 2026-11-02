@@ -1466,7 +1466,7 @@
     <string name="settings_dinner_starts">रात का भोजन प्रारंभ</string>
     <string name="settings_energy_goals">ऊर्जा व्यय लक्ष्य</string>
     <string name="settings_fixed_launcher_icon">स्थिर लॉन्चर आइकन</string>
-    <string name="settings_fixed_launcher_icon_subtitle">लॉन्चर आइकन को टील रखता है। यह थीम रंग और वॉलपेपर का अनुसरण करना बंद कर देता है।</string>
+    <string name="settings_fixed_launcher_icon_subtitle">ब्रांड आइकन रखता है। यह थीम रंग और वॉलपेपर का अनुसरण करना बंद कर देता है।</string>
     <string name="settings_system_date_time_pickers">सिस्टम तारीख और समय चुनने वाले</string>
     <string name="settings_system_date_time_pickers_subtitle">भोजन संपादित करते समय फ़ोन के तारीख और समय संवाद इस्तेमाल करें।</string>
     <string name="settings_glass_blur">फ्रॉस्टेड ग्लास</string>
@@ -1762,6 +1762,8 @@
     <string name="theme_color_pink">गुलाबी</string>
     <string name="theme_color_purple">बैंगनी</string>
     <string name="theme_color_system">सिस्टम</string>
+    <string name="theme_color_plum">आलूबुखारा</string>
+    <string name="theme_color_peach">आड़ू</string>
     <string name="theme_color_teal">टील</string>
     <string name="unit_serving">सर्विंग</string>
     <string name="unit_serving_plural">सर्विंग</string>

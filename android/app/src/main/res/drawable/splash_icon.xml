@@ -2,8 +2,9 @@
 <!--
   Android 12+ SplashScreen renders this inside a 192dp circle within a 288dp
   canvas, so the source must include ~25% padding on each side or the corners
-  get clipped. ic_logo is a full-bleed 2048x2048 mark — inset it to fit.
+  get clipped. ic_splash_mark is the transparent brand mark at an 0.88 box, so
+  the inset leaves the ring well inside the clip circle.
 -->
 <inset xmlns:android="http://schemas.android.com/apk/res/android"
-    android:drawable="@drawable/ic_logo"
+    android:drawable="@drawable/ic_splash_mark"
     android:inset="25%" />

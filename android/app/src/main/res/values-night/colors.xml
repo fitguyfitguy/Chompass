@@ -6,5 +6,5 @@
          is mode-neutral light so the window layer can never contradict the
          in-app Appearance setting (Light/Dark/System). The Compose theme draws
          the actual mode; this file only feeds the pre-Compose splash. -->
-    <color name="app_splash_background">#FF1C1B1F</color>
+    <color name="app_splash_background">#FF170E16</color>
 </resources>

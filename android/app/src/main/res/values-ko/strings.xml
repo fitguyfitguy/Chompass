@@ -1465,7 +1465,7 @@
     <string name="settings_dinner_starts">저녁 시작</string>
     <string name="settings_energy_goals">에너지 소비 목표</string>
     <string name="settings_fixed_launcher_icon">고정 런처 아이콘</string>
-    <string name="settings_fixed_launcher_icon_subtitle">런처 아이콘을 청록색으로 유지해요. 테마 색상과 배경화면을 따르지 않아요.</string>
+    <string name="settings_fixed_launcher_icon_subtitle">브랜드 아이콘을 유지해요. 테마 색상과 배경화면을 따르지 않아요.</string>
     <string name="settings_system_date_time_pickers">시스템 날짜 및 시간 선택기</string>
     <string name="settings_system_date_time_pickers_subtitle">식사를 편집할 때 휴대폰의 날짜와 시간 대화상자를 사용합니다.</string>
     <string name="settings_glass_blur">서리 낀 유리</string>
@@ -1761,6 +1761,8 @@
     <string name="theme_color_pink">분홍</string>
     <string name="theme_color_purple">보라</string>
     <string name="theme_color_system">시스템</string>
+    <string name="theme_color_plum">자두</string>
+    <string name="theme_color_peach">복숭아</string>
     <string name="theme_color_teal">청록</string>
     <string name="unit_serving">1인분</string>
     <string name="unit_serving_plural">1인분</string>
