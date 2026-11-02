@@ -13,7 +13,6 @@
   --accent-text: var(--teal);
   --accent-ink: #fff6ec;
   --brand-peach: #ffb994;
-  /* "chomp | ass" easter egg: how much of the text colour the wordmark tail keeps. */
   --wordmark-tail-keep: 93%;
   --protein: #5a6bd8;
   --carbs: #d9a014;
@@ -5335,9 +5334,6 @@ body.camera-open {
   color: var(--brand-peach);
 }
 
-/* "chomp | ass" easter egg: the tail keeps almost all of the inherited text
-   colour and borrows a few percent of the bitten-o peach (3.5% on cream, 7% on
-   plum) - dE00 ~2, so it reads as one word until you look for it. */
 .wordmark__tail {
   margin-left: 0.045em;
   color: color-mix(in oklab, currentColor var(--wordmark-tail-keep, 96.5%), var(--brand-peach));

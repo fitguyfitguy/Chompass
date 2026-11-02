@@ -275,10 +275,9 @@ def main() -> int:
             elif [hex6(c) for c in site_stops] != ripened_glow:
                 failures.append(f"site chompass-mark-glow: {site_stops} != {ripened_glow}")
 
-    # --- wordmark easter egg (chomp | ass) --------------------------------
-    # `ChompassWordmark` mixes the tail toward the bitten-o peach; the CSS
-    # stores the complement ("keep") per theme, and the site hardcodes the
-    # dark mix. Drift would move the split above or below "barely visible".
+    # --- wordmark tokens ---------------------------------------------------
+    # The wordmark numbers are duplicated by hand across Kotlin, the PWA and
+    # the site; these checks keep them identical.
     light_mix = kotlin_float(wordmark_src, "WordmarkTailMixLight")
     dark_mix = kotlin_float(wordmark_src, "WordmarkTailMixDark")
     if light_mix is None:
