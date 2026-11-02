@@ -42,6 +42,14 @@ import app.chompass.models.UnitFormat
 import app.chompass.models.resolveModelForRequest
 
 /**
+ * Selected model for a Coach turn: the profile's coach slot when one is set,
+ * else its primary model. Blank counts as unset. Image routing stays in
+ * [resolveModelForRequest], which prefers the vision slot when images ride along.
+ */
+internal fun coachSelectedModel(coachModel: String?, primaryModel: String?): String? =
+    coachModel?.takeIf { it.isNotBlank() } ?: primaryModel
+
+/**
  * Multi-turn coach chat with **tool calling** — Coach can fetch any slice of
  * the user's data on demand instead of the previous fixed last-N-entries dump
  * in the system prompt. Tool definitions per provider are built inline below
@@ -119,9 +127,11 @@ class ChatService(
         val tools = CoachTools(weights = weights, bodyFats = bodyFats, foods = foods, foodAnalysisService = foodAnalysisService)
 
         val provider = cfg.provider
+        // Coach's own slot wins for text; an image still prefers the vision
+        // slot inside the helper (vision → coach → primary).
         val model = resolveModelForRequest(
             provider = provider,
-            selectedModel = cfg.selectedModel,
+            selectedModel = coachSelectedModel(cfg.coachModel, cfg.selectedModel),
             visionModel = cfg.visionModel,
             hasImages = imageBytes != null,
         )

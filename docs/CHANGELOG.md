@@ -9,6 +9,11 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 ### Added
 
 - **Muscle mass from your profile when your scale can't send it** (Android and PWA): Health Connect has no muscle-mass record, so a scale that measures muscle — a Beurer BF 105, for example — can never deliver it. Progress now shows an estimated muscle mass next to the other scale readings, worked out from your weight, height, age and sex, whenever your scale has never sent a real muscle reading. It is within about 3 kg, reads in kilograms and as a share of your body weight, and never changes your calorie or protein targets. A muscle mass you log or import still wins over the estimate.
+- **A separate model for Coach** (Android): Settings → AI → Advanced gains a Coach model row beside Vision model, so you can pin one model for conversations and keep another for everything else. Food logging, What if and goal recalculation stay on your main model. Leave it unset and Coach uses the main model exactly as before; switching to another provider or AI host clears it along with the vision model.
+
+### Fixed
+
+- **A deleted day type no longer shows as a long id** (Android): under Progress → Adherence → By day type, a row could be labelled with the day type's internal id once that day type had been removed from your plan and the journal had no name for it. That row now reads Day type, and the colored dot beside it still tells the day types apart. Rows for day types that still exist, or that kept their name in your journal, are unchanged.
 
 ## [6.0.1] - 2026-11-01
 

@@ -253,6 +253,8 @@ internal val SETTINGS_INDEX: List<SettingsIndexEntry> = listOf(
         R.array.settings_search_kw_ai_model, ChompassRoutes.SETTINGS_AI, Icons.Outlined.Tune),
     SettingsIndexEntry(R.string.settings_group_ai, R.string.settings_ai_vision_model,
         R.array.settings_search_kw_ai_vision_model, ChompassRoutes.SETTINGS_AI, Icons.Outlined.Tune),
+    SettingsIndexEntry(R.string.settings_group_ai, R.string.settings_ai_coach_model,
+        R.array.settings_search_kw_ai_model, ChompassRoutes.SETTINGS_AI, Icons.Outlined.Tune),
     SettingsIndexEntry(R.string.settings_group_ai, R.string.settings_api_key,
         R.array.settings_search_kw_api_key, ChompassRoutes.SETTINGS_AI, Icons.Outlined.Key),
     SettingsIndexEntry(R.string.settings_group_ai, R.string.settings_base_url,

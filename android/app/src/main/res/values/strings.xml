@@ -1844,6 +1844,8 @@
     <string name="settings_ai_vision_model">Vision model</string>
     <string name="settings_ai_vision_model_unset">(same as Model)</string>
     <string name="settings_ai_vision_model_footer">Photos use this model; text uses the main model. Leave unset to use the main model for everything.</string>
+    <string name="settings_ai_coach_model">Coach model</string>
+    <string name="settings_ai_coach_model_footer">Coach uses this model. Food logging and goal recalculation keep the main model. Leave unset to use the main model for Coach too.</string>
     <string name="settings_speech_language">Language</string>
     <string name="settings_ai_model_unset">(set one below)</string>
     <string name="ai_model_tier_paid">Paid-only model (free tier no longer includes Pro)</string>

@@ -2016,6 +2016,10 @@ für dich ein</string>
 
     <string name="settings_ai_vision_model_footer">Fotos verwenden dieses Modell; Text verwendet das Hauptmodell. Ohne Auswahl wird für alles das Hauptmodell verwendet.</string>
 
+    <string name="settings_ai_coach_model">Coach-Modell</string>
+
+    <string name="settings_ai_coach_model_footer">Coach verwendet dieses Modell. Essensprotokollierung und Ziel-Neuberechnung nutzen weiterhin das Hauptmodell. Ohne Auswahl verwendet auch Coach das Hauptmodell.</string>
+
     <string name="settings_speech_language">Sprache</string>
 
     <string name="settings_ai_model_unset">(bitte unten eine Option auswählen)</string>

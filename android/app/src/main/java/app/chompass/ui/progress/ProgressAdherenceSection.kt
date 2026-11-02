@@ -98,10 +98,13 @@ internal fun ProgressAdherenceSection(
                 )
                 adherence.byDayType.forEach { row ->
                     // Current plan wins for label/color consistency; the
-                    // journal's write-time name rescues a plan-missed id.
-                    val name = plan?.profileById(row.profileId)?.name
-                        ?: row.profileName
-                        ?: row.profileId
+                    // journal's write-time name rescues a plan-missed id. A
+                    // profile nobody remembers gets the generic day-type
+                    // title, never its UUID.
+                    val name = adherenceDayTypeName(
+                        plan?.profileById(row.profileId)?.name,
+                        row.profileName,
+                    ) ?: stringResource(R.string.day_type_sheet_title)
                     DayTypeAdherenceRow(
                         color = dayTypeColor(plan?.profileById(row.profileId)?.colorKey, row.profileId),
                         name = name,
