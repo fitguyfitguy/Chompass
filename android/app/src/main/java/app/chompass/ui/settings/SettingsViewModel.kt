@@ -443,6 +443,24 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         }
 
         viewModelScope.launch {
+            // The accent and appearance slices follow the store instead of the one-shot
+            // hydrate: a row must never render the default accent next to a themed UI,
+            // and writes via the debug pins or another surface land here within a frame.
+            combine(
+                container.prefs.appThemeColor,
+                container.prefs.appearanceMode,
+            ) { theme, appearance -> theme to appearance }
+                .collect { (theme, appearance) ->
+                    _ui.update {
+                        it.copy(
+                            appThemeColor = AppThemeColor.fromKey(theme),
+                            appearanceMode = appearance,
+                        )
+                    }
+                }
+        }
+
+        viewModelScope.launch {
             container.prefs.heuristicServingUnitSettings.collect { settings ->
                 _ui.value = _ui.value.copy(heuristicServingUnitSettings = settings)
             }
