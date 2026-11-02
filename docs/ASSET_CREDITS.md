@@ -21,6 +21,11 @@ The Chompass mark — a bitten compass ring with a two-facet needle pointing int
 
 `scripts/assets/build_icon_mark.py` emits the three mark SVGs (light, noir, mask) plus the BIMI logo `website/static/bimi/logo.svg`; `scripts/generate_icons.py` then emits the launcher density set, adaptive layers, splash marks, and the PWA/website/store-listing icons (via `resvg`). The script also writes a generated brand preview (`scripts/chompass_icon_master.png`); edit the SVG, not the PNG. The default brand is a cream `#FFF6EC` tile carrying the Ripened ring `#FFD9C2 → #FF9A6C → #E0685E → #8C2E4A` with the ink needle. Plum (the default accent) and Peach share that icon, so changing the default accent needs no asset regeneration.
 
+On API 31+ the splash icon is an `AnimatedVectorDrawable` that follows the study's intro: the ring
+trims in over 900 ms, the needle spins three turns (1.45 s) and the dial chomps at 1.08 s. Pre-31
+keeps the static PNG, so an old device can never show an empty ring. The animation is decorative
+only — it is never a gate on the first frame, so a fast launch may dismiss the splash mid-spin.
+
 The noir (glow) variant is the dark-ground asset: app dark scheme, night splash, and the site
 header/OG mark. Tiles — launcher, favicon, PWA, BIMI — carry the light mark on cream.
 

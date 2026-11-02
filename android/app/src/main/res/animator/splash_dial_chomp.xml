@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+    android:ordering="together">
+    <objectAnimator
+        android:propertyName="scaleX"
+        android:valueFrom="1"
+        android:valueTo="0.955"
+        android:duration="121"
+        android:startOffset="1080"
+        android:interpolator="@interpolator/mark_chomp" />
+    <objectAnimator
+        android:propertyName="scaleY"
+        android:valueFrom="1"
+        android:valueTo="1.042"
+        android:duration="121"
+        android:startOffset="1080"
+        android:interpolator="@interpolator/mark_chomp" />
+    <objectAnimator
+        android:propertyName="scaleX"
+        android:valueFrom="0.955"
+        android:valueTo="1.028"
+        android:duration="154"
+        android:startOffset="1201"
+        android:interpolator="@interpolator/mark_chomp" />
+    <objectAnimator
+        android:propertyName="scaleY"
+        android:valueFrom="1.042"
+        android:valueTo="0.976"
+        android:duration="154"
+        android:startOffset="1201"
+        android:interpolator="@interpolator/mark_chomp" />
+    <objectAnimator
+        android:propertyName="scaleX"
+        android:valueFrom="1.028"
+        android:valueTo="0.993"
+        android:duration="132"
+        android:startOffset="1355"
+        android:interpolator="@interpolator/mark_chomp" />
+    <objectAnimator
+        android:propertyName="scaleY"
+        android:valueFrom="0.976"
+        android:valueTo="1.006"
+        android:duration="132"
+        android:startOffset="1355"
+        android:interpolator="@interpolator/mark_chomp" />
+    <objectAnimator
+        android:propertyName="scaleX"
+        android:valueFrom="0.993"
+        android:valueTo="1"
+        android:duration="143"
+        android:startOffset="1487"
+        android:interpolator="@interpolator/mark_chomp" />
+    <objectAnimator
+        android:propertyName="scaleY"
+        android:valueFrom="1.006"
+        android:valueTo="1"
+        android:duration="143"
+        android:startOffset="1487"
+        android:interpolator="@interpolator/mark_chomp" />
+</set>
