@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+    android:ordering="sequentially">
+    <objectAnimator
+        android:propertyName="rotation"
+        android:valueFrom="-1080"
+        android:valueTo="26"
+        android:duration="797"
+        android:interpolator="@interpolator/mark_easing"
+        android:startOffset="180" />
+    <objectAnimator
+        android:propertyName="rotation"
+        android:valueFrom="26"
+        android:valueTo="-11"
+        android:duration="218"
+        android:interpolator="@interpolator/mark_easing" />
+    <objectAnimator
+        android:propertyName="rotation"
+        android:valueFrom="-11"
+        android:valueTo="5"
+        android:duration="174"
+        android:interpolator="@interpolator/mark_easing" />
+    <objectAnimator
+        android:propertyName="rotation"
+        android:valueFrom="5"
+        android:valueTo="-2"
+        android:duration="145"
+        android:interpolator="@interpolator/mark_easing" />
+    <objectAnimator
+        android:propertyName="rotation"
+        android:valueFrom="-2"
+        android:valueTo="0"
+        android:duration="116"
+        android:interpolator="@interpolator/mark_easing" />
+</set>
