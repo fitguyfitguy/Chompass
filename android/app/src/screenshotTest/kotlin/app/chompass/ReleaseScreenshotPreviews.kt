@@ -53,7 +53,7 @@ private fun ReleaseScreenshotFrame(
 ) {
     ChompassTheme(
         darkTheme = darkTheme,
-        themeColor = AppThemeColor.TEAL,
+        themeColor = AppThemeColor.PLUM,
     ) {
         Surface(
             modifier = Modifier.fillMaxSize(),

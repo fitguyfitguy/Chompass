@@ -9,7 +9,7 @@
 # Determinism:
 #   - debug build (`app.chompass.debug`) + seed_full fixture data
 #   - per-app locale forced to en-US for the capture, restored afterwards
-#   - appearance + brand teal pinned via the `screenshot_appearance` debug extra
+#   - appearance + brand plum pinned via the `screenshot_appearance` debug extra
 #   - system animation scales set to 0 for the capture, restored afterwards
 #   - scripted AI response (`demo_ai` + `demo_ai_hold_ms`) for the overlay frame
 #

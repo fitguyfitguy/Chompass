@@ -490,7 +490,7 @@ internal object ScreenshotFixtures {
         weightUnit = "kg",
         heightUnit = "cm",
         appearanceMode = appearanceMode,
-        appThemeColor = AppThemeColor.TEAL,
+        appThemeColor = AppThemeColor.PLUM,
         adaptiveGoalsEnabled = false,
         healthConnectEnabled = false,
     )
