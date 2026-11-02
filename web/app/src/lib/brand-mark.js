@@ -66,7 +66,7 @@ export function brandMarkSvg(options = {}) {
 export function brandWordmark(className = "") {
   const g = BRAND_MARK_GEOMETRY;
   const classes = ["wordmark", className].filter(Boolean).join(" ");
-  return `<span class="${classes}" role="img" aria-label="Chompass"><span aria-hidden="true">ch<svg class="wordmark__o" viewBox="0 0 ${g.biteOBox} ${g.biteOBox}" focusable="false"><path d="${g.biteO}" stroke-width="${g.biteOStroke}" /></svg>mpass</span></span>`;
+  return `<span class="${classes}" role="img" aria-label="Chompass"><span aria-hidden="true">ch<svg class="wordmark__o" viewBox="0 0 ${g.biteOBox} ${g.biteOBox}" focusable="false"><path d="${g.biteO}" stroke-width="${g.biteOStroke}" /></svg>mp<span class="wordmark__tail">ass</span></span></span>`;
 }
 
 /**

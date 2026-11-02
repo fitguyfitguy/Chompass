@@ -19,6 +19,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 
 PALETTE = ROOT / "android/app/src/main/java/app/chompass/ui/theme/BrandPalette.kt"
+WORDMARK = ROOT / "android/app/src/main/java/app/chompass/ui/components/ChompassMark.kt"
 PWA_CSS = ROOT / "web/app/css/main.css"
 PWA_INDEX = ROOT / "web/app/index.html"
 SITE_CSS = ROOT / "website/assets/css/main.css"
@@ -44,6 +45,12 @@ def hex6(value: str) -> str:
 def kotlin_val(source: str, name: str) -> str | None:
     match = re.search(rf"val {re.escape(name)} = Color\(0xFF([0-9A-Fa-f]{{6}})\)", source)
     return hex6(match.group(1)) if match else None
+
+
+def kotlin_float(source: str, name: str) -> float | None:
+    """A bare Kotlin float constant, e.g. `private const val X = 0.07f`."""
+    match = re.search(rf"const val {re.escape(name)} = ([0-9.]+)f", source)
+    return float(match.group(1)) if match else None
 
 
 def kotlin_ramp(source: str, name: str, palette: dict[str, str]) -> list[str] | None:
@@ -141,6 +148,7 @@ def expect_token(label: str, actual: str | None, expected: str) -> None:
 
 def main() -> int:
     palette_src = read(PALETTE)
+    wordmark_src = read(WORDMARK)
     pwa_css = read(PWA_CSS)
     pwa_index = read(PWA_INDEX)
     site_css = read(SITE_CSS)
@@ -266,6 +274,40 @@ def main() -> int:
                 failures.append("site chompass-mark-glow: gradient not found")
             elif [hex6(c) for c in site_stops] != ripened_glow:
                 failures.append(f"site chompass-mark-glow: {site_stops} != {ripened_glow}")
+
+    # --- wordmark easter egg (chomp | ass) --------------------------------
+    # `ChompassWordmark` mixes the tail toward the bitten-o peach; the CSS
+    # stores the complement ("keep") per theme, and the site hardcodes the
+    # dark mix. Drift would move the split above or below "barely visible".
+    light_mix = kotlin_float(wordmark_src, "WordmarkTailMixLight")
+    dark_mix = kotlin_float(wordmark_src, "WordmarkTailMixDark")
+    if light_mix is None:
+        failures.append("ChompassMark.WordmarkTailMixLight: missing")
+    if dark_mix is None:
+        failures.append("ChompassMark.WordmarkTailMixDark: missing")
+    if light_mix is not None and dark_mix is not None:
+        def keep(mix: float) -> str:
+            return f"{100 - mix * 100:g}%"
+
+        expect_token(
+            "PWA --wordmark-tail-keep (dark)",
+            css_root_value(pwa_css, ":root", "wordmark-tail-keep"),
+            keep(dark_mix),
+        )
+        wordmark_light_blocks = css_blocks(pwa_css, ':root:not([data-theme="dark"])') + css_blocks(
+            pwa_css, ':root[data-theme="light"]'
+        )
+        for index, body in enumerate(wordmark_light_blocks, start=1):
+            expect_token(
+                f"PWA light block {index} --wordmark-tail-keep",
+                css_value(body, "wordmark-tail-keep"),
+                keep(light_mix),
+            )
+        site_tail = css_decl(site_css, ".wordmark__tail", "color")
+        if site_tail is None:
+            failures.append("site .wordmark__tail color: not found")
+        elif keep(dark_mix) not in site_tail:
+            failures.append(f"site .wordmark__tail: {site_tail} != a {keep(dark_mix)} keep")
 
     if failures:
         print("Brand token check FAILED:", file=sys.stderr)

@@ -61,6 +61,7 @@ What changed here, per surface:
 | Site fallback | `#0f0e13` file-system/demo grounds (pre-brand near-black) | Plum `#170e16` / blush muted |
 | Android mark | Idle sway/float ignored the "Ambient motion" switch | `ChompassTraitsDefaults.ambientMotion()` gates the idle loops; the one-shot intro still plays. Battery saver / animations-off still win |
 | Android wordmark | Placeholder 0.60 × 0.66 em left the bitten "o" riding high | Square 0.60 em box, matching the study's 60-unit viewBox |
+| Wordmark easter egg | The name's double meaning ("chomp" + "ass") had no visual hint | The tail keeps 96.5% of the text colour on cream / 93% on plum, mixed toward the bite peach (dE00 ≈ 2.0–2.3, measured on the Nord 2); Android `WordmarkTailMix*`, PWA `--wordmark-tail-keep`, site CSS, all pinned by `check_brand_tokens.py` |
 | Android dark ring | `RipenedGlow` ended at Fig900 `#1F0C1B` (1.06:1 on plum) while the splash/launcher/static art end at the study's `#5E1F45` (1.58:1) | Canvas matches the study and the generated assets |
 | Android hub | Opaque `background`-coloured disc; over the ambient wax field it read as a dark dot, not the study's hole | Cleared out of the mark's offscreen layer, so the actual ground (wax included) shows through |
 | Tagline | The study's "Every bite, on course." was nowhere outside the study | About lockup on Android and the PWA (EN + DE), and under the site hero wordmark in Fraunces italic |
@@ -75,6 +76,9 @@ Deliberate divergences (not bugs):
   (Peach300).
 - **Pointer-tracked needle and per-letter wordmark intro** stay study-only. The site's hero is a
   phone demo, not a brand stage; the PWA has one intro surface (welcome) like Android.
+- **The chomp/ass split lives in the wordmark only**, not in prose mentions ("Chompass is a…",
+  share text, launcher label). Splitting a name mid-sentence across 15 catalogs would read as a
+  rendering artefact; the lockup is the one place the name is drawn as a mark.
 
 Re-run the check matrix: `web` typecheck + unit tests, `hugo --minify -s website`, Android
 `:app:testDebugUnitTest`, and the PWA visual pass (welcome light/dark, About light/dark,
