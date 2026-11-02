@@ -327,7 +327,9 @@ private fun CalorieArcCanvas(
         )
         // Eaten fill first so live/typical shades (and the ADD_ACTIVE
         // bonus tail) paint on top and stay readable when intake covers
-        // the active zone. Notch still last.
+        // the active zone. The consumed stretch gets a translucent eaten
+        // pass back over the shades (below), so the burn still reads as
+        // partly eaten instead of one solid band. Notch still last.
         var notchAngle: Float? = null
         if (plannedFillRatio > fillRatio) {
             drawArc(
@@ -416,6 +418,26 @@ private fun CalorieArcCanvas(
                     style = Stroke(width = strokePx, cap = StrokeCap.Round)
                 )
                 notchAngle = 180f + baseSweep
+            }
+        }
+        // Consumed stretch of the activity zone: the shades above sit over the
+        // eaten fill, so a translucent eaten pass is re-applied from the base
+        // boundary to the eaten tip. Burn bands stay readable, and eating into
+        // the burn visibly shades it instead of leaving one solid band.
+        val eatenDegrees = 180f * (if (freezeProgress) fillRatio else animatedRatio.value)
+        notchAngle?.let { zoneStart ->
+            val zoneStartDegrees = zoneStart - 180f
+            val consumedSweep = (eatenDegrees - zoneStartDegrees).coerceIn(0f, 180f - zoneStartDegrees)
+            if (consumedSweep > 0f) {
+                drawArc(
+                    color = progressColor.copy(alpha = 0.55f),
+                    startAngle = zoneStart,
+                    sweepAngle = consumedSweep,
+                    useCenter = false,
+                    topLeft = topLeft,
+                    size = arcSize,
+                    style = Stroke(width = strokePx),
+                )
             }
         }
         // Base-boundary notch, drawn on top of the eaten fill: where your
@@ -1124,6 +1146,9 @@ private fun CompactHorizontalCalorieHero(input: CalorieHeroInput, modifier: Modi
                     size = Size(size.width * d.fillRatio, size.height),
                     cornerRadius = CornerRadius(radius, radius),
                 )
+                // Where the active zone starts; the notch and the consumed pass
+                // below both key off it.
+                var boundaryX: Float? = null
                 if (d.shadesActive && burnShade != null) {
                     val shade = burnShade!!
                     val baseX = size.width * HomeCalorieDisplay.burnShadeBaseFraction(baseGoal, shade.typical, shade.live)
@@ -1162,9 +1187,7 @@ private fun CompactHorizontalCalorieHero(input: CalorieHeroInput, modifier: Modi
                             cornerRadius = CornerRadius(radius, radius),
                         )
                     }
-                    if (baseX > 0f) {
-                        drawLine(muted, Offset(baseX, 0f), Offset(baseX, size.height), strokeWidth = 2.dp.toPx())
-                    }
+                    boundaryX = baseX
                 } else if (displayMode == HomeCalorieDisplayMode.ADD_ACTIVE && d.target > baseGoal) {
                     // Existing flat activity-earned zone, plus the same base notch
                     // the arc draws in this state.
@@ -1175,6 +1198,22 @@ private fun CompactHorizontalCalorieHero(input: CalorieHeroInput, modifier: Modi
                         size = Size(size.width - baseX, size.height),
                         cornerRadius = CornerRadius(radius, radius),
                     )
+                    boundaryX = baseX
+                }
+                boundaryX?.let { baseX ->
+                    // Consumed stretch of the activity zone: the shades sit over
+                    // the eaten bar, so re-apply the eaten color from the base
+                    // boundary to the eaten tip. The burn bands stay readable and
+                    // eating into them visibly shades instead of one solid band.
+                    val consumedW = (size.width * d.fillRatio - baseX).coerceIn(0f, size.width - baseX)
+                    if (consumedW > 0f) {
+                        drawRoundRect(
+                            progressColor.copy(alpha = 0.55f),
+                            topLeft = Offset(baseX, 0f),
+                            size = Size(consumedW, size.height),
+                            cornerRadius = CornerRadius(radius, radius),
+                        )
+                    }
                     if (baseX > 0f) {
                         drawLine(muted, Offset(baseX, 0f), Offset(baseX, size.height), strokeWidth = 2.dp.toPx())
                     }
