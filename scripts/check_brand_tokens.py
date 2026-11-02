@@ -309,6 +309,18 @@ def main() -> int:
         elif keep(dark_mix) not in site_tail:
             failures.append(f"site .wordmark__tail: {site_tail} != a {keep(dark_mix)} keep")
 
+        gap = kotlin_float(wordmark_src, "WordmarkSplitGap")
+        if gap is None:
+            failures.append("ChompassMark.WordmarkSplitGap: missing")
+        elif gap:
+            expected_gap = f"{gap:g}em"
+            for label, css in (("PWA", pwa_css), ("site", site_css)):
+                expect_token(
+                    f"{label} .wordmark__tail margin-left",
+                    css_decl(css, ".wordmark__tail", "margin-left"),
+                    expected_gap,
+                )
+
     if failures:
         print("Brand token check FAILED:", file=sys.stderr)
         for failure in failures:
