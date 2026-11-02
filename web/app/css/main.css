@@ -5339,6 +5339,7 @@ body.camera-open {
    colour and borrows a few percent of the bitten-o peach (3.5% on cream, 7% on
    plum) - dE00 ~2, so it reads as one word until you look for it. */
 .wordmark__tail {
+  margin-left: 0.045em;
   color: color-mix(in oklab, currentColor var(--wordmark-tail-keep, 96.5%), var(--brand-peach));
 }
 

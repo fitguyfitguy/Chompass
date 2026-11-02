@@ -380,9 +380,11 @@ fun ChompassMark(
  */
 // The "chomp | ass" easter egg: the tail mixes toward the bitten-o peach just
 // enough to find when you look (dE00 ~2.0 light, ~2.1 dark), not enough to read
-// as a second accent. The web and site wordmarks use the same pair of mixes.
+// as a second accent, and the seam opens a hairline gap (0.045 em) so the two
+// halves separate only when you are already looking at it.
 private const val WordmarkTailMixLight = 0.035f
 private const val WordmarkTailMixDark = 0.07f
+private const val WordmarkSplitGap = 0.045f
 
 @Composable
 fun ChompassWordmark(
@@ -394,11 +396,15 @@ fun ChompassWordmark(
     val biteColor = if (dark) BrandPalette.Peach300 else BrandPalette.Peach700
     val tailColor = lerp(color, biteColor, if (dark) WordmarkTailMixDark else WordmarkTailMixLight)
     val biteId = "chompass-bite"
+    val gapId = "chompass-split"
     val text = remember(tailColor) {
         buildAnnotatedString {
             append("ch")
             appendInlineContent(biteId, "o")
             append("mp")
+            // Compose rejects an empty alternateText; a ZWNJ is silent in TalkBack
+            // and keeps the spoken name "Chompass" (no word break at the seam).
+            appendInlineContent(gapId, "\u200C")
             withStyle(SpanStyle(color = tailColor)) { append("ass") }
         }
     }
@@ -440,6 +446,14 @@ fun ChompassWordmark(
                     }
                 }
             },
+            gapId to InlineTextContent(
+                // Width only: an empty alt keeps the spoken name "Chompass".
+                placeholder = Placeholder(
+                    width = WordmarkSplitGap.em,
+                    height = 0.1.em,
+                    placeholderVerticalAlign = VerticalAlign.Center,
+                ),
+            ) {},
         ),
     )
 }
