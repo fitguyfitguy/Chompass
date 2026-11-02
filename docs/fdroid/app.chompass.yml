@@ -465,5 +465,5 @@ Builds:
 
 AutoUpdateMode: Version
 UpdateCheckMode: Tags ^v[0-9.]+$
-CurrentVersion: 6.0.1
-CurrentVersionCode: 112
+CurrentVersion: 6.1.0
+CurrentVersionCode: 113
