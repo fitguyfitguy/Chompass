@@ -47,7 +47,7 @@
   ];
 
   var FRAME_MS = 33.3333; // ~30fps, the app's MinFrameIntervalNs
-  var IDLE_FRAME_MS = 66; // ~15fps after IDLE_AFTER_MS
+  var IDLE_FRAME_MS = 42; // ~24fps after IDLE_AFTER_MS (mirrors IdleFrameIntervalMs)
   var IDLE_AFTER_MS = 6000;
   var HEAT_MS = 1500; // TouchHeatWindowNs
   var TOUCH_FRACTION = 0.22; // TouchRadiusFraction, of the shorter side

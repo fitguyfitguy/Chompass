@@ -175,10 +175,12 @@ half4 main(float2 p) {
 private const val MinFrameIntervalNs = 33_333_333L
 
 /** After this long without a touch the clock drops to [IdleFrameIntervalMs]
- *  instead of the display cadence: the wax still drifts, at a quarter of the
- *  wakeups. Any touch restores vsync pacing on the next iteration. */
+ *  instead of the display cadence: the wax still drifts, but at fewer wakeups.
+ *  Any touch restores vsync pacing on the next iteration. 42 ms ≈ 24 fps; the
+ *  60 Hz surface the app requests quantizes published frames to 2–3 vsyncs, so
+ *  it lands around 20–24 fps (measured ~22 fps on the Nord 2, up from ~15). */
 private const val IdleAfterNs = 6_000_000_000L
-private const val IdleFrameIntervalMs = 66L
+private const val IdleFrameIntervalMs = 42L
 
 /**
  * The wax field is rastered at [WaxRasterScale] of screen resolution and
