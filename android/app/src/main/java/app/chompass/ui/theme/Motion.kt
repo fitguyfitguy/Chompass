@@ -93,6 +93,21 @@ object AppMotion {
     /** Chomp + ring-pulse ease: the study's overshoot curve, what makes the bite feel fleshy. */
     val MarkChompEasing = CubicBezierEasing(0.34f, 1.56f, 0.64f, 1f)
 
+    /** Fade the mark in when it enters (study `cp-markIn`, .45 s ease). */
+    const val MarkInMs = 450
+
+    /** Idle float: the whole mark rises and settles on this loop (study `float`, 7 s). */
+    const val MarkFloatMs = 7000
+
+    /** Float travel as a fraction of the mark's own side (study: 10 px on its ~360 px hero). */
+    const val MarkFloatRise = 0.028f
+
+    /** CSS `ease`: the mark-in fade. */
+    val MarkInEasing = CubicBezierEasing(0.25f, 0.1f, 0.25f, 1f)
+
+    /** CSS `ease-in-out`: the idle float. */
+    val MarkFloatEasing = CubicBezierEasing(0.42f, 0f, 0.58f, 1f)
+
     /** Standard accelerate-decelerate curve for container/position transitions. */
     val EasingStandard = FastOutSlowInEasing
 
