@@ -17,7 +17,7 @@ Repo: https://codeberg.org/fitguy/chompass.git
 Builds:
   - versionName: 6.1.0
     versionCode: 113
-    commit: d14e9b9b86a8d56a561446dfaac8989cfecf74dd
+    commit: ef8fba3e9f1b7c0683ee5bf2c0fd7091b06b660c
     subdir: android/app
     gradle:
       - yes
