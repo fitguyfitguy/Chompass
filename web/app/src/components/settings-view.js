@@ -2017,6 +2017,7 @@ export class SettingsView extends HTMLElement {
       <div class="brand-lockup">
         ${brandMarkSvg({ idle: true })}
         ${brandWordmark()}
+        <p class="brand-lockup__tagline">${t("settings.about.brand_tagline")}</p>
       </div>
       <div class="card">
         <p style="margin:0 0 0.6rem;">${t("settings.about.intro")}</p>

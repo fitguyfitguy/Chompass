@@ -8,7 +8,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ### Added
 
-- **A new Chompass mark** (Android, web app and site): the compass ring now has a bite taken out of it, and the needle points into the bite. It is the launcher icon, the splash screen and the welcome screen; on the welcome screen it draws itself, spins the needle three turns, and settles into a gentle sway. About gains the mark above the wordmark, whose "o" is a bite of its own.
+- **A new Chompass mark** (Android, web app and site): the compass ring now has a bite taken out of it, and the needle points into the bite. It is the launcher icon, the splash screen and the welcome screen; on the welcome screen it draws itself, spins the needle three turns, and settles into a gentle sway. About gains the mark above the wordmark, whose "o" is a bite of its own, and the line every compass needs: "Every bite, on course."
 - **Plum, the new default theme** (Android and web app): a warm plum accent replaces teal as the default, with Peach beside it in Settings → Display → Theme Color for anyone who prefers the warmer end of the palette. Every existing theme color is still there.
 
 ### Changed

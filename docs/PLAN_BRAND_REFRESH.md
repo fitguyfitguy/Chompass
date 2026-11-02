@@ -62,6 +62,8 @@ What changed here, per surface:
 | Android mark | Idle sway/float ignored the "Ambient motion" switch | `ChompassTraitsDefaults.ambientMotion()` gates the idle loops; the one-shot intro still plays. Battery saver / animations-off still win |
 | Android wordmark | Placeholder 0.60 × 0.66 em left the bitten "o" riding high | Square 0.60 em box, matching the study's 60-unit viewBox |
 | Android dark ring | `RipenedGlow` ended at Fig900 `#1F0C1B` (1.06:1 on plum) while the splash/launcher/static art end at the study's `#5E1F45` (1.58:1) | Canvas matches the study and the generated assets |
+| Android hub | Opaque `background`-coloured disc; over the ambient wax field it read as a dark dot, not the study's hole | Cleared out of the mark's offscreen layer, so the actual ground (wax included) shows through |
+| Tagline | The study's "Every bite, on course." was nowhere outside the study | About lockup on Android and the PWA (EN + DE), and under the site hero wordmark in Fraunces italic |
 | Drift guard | Brand hexes are duplicated across Kotlin, PWA CSS/defs and site CSS/partial; the first pass already drifted | `scripts/check_brand_tokens.py`, wired into `release:check-parity` |
 
 Deliberate divergences (not bugs):
