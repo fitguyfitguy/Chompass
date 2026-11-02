@@ -4,6 +4,13 @@ All notable changes to Chompass are documented here.
 
 Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no internals). The version section is pasted verbatim onto the Codeberg release.
 
+## [Unreleased]
+
+### Changed
+
+- **The calorie hero takes its color from your theme** (Android and web app): the eaten arc and the compact bar now run from your theme color to a slightly lighter tint of it instead of one flat band, so the ring gains depth as it fills. Every theme color gets its own ramp, and the web app's light theme uses the deeper accent for the arc instead of the pale one.
+- **The site hero glows in brand colors** (site): the live-demo backdrop behind the phone was still tinted with the old teal-green; it now glows with the plum and peach brand tones.
+
 ## [6.1.0] - 2026-11-02
 
 ### Added

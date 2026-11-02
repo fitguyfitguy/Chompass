@@ -45,6 +45,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -80,6 +81,7 @@ import app.chompass.ui.navigation.LocalEnergyUnit
 import app.chompass.ui.components.pressScale
 import app.chompass.ui.components.AnimatedNumberText
 import app.chompass.ui.theme.AppMotion
+import app.chompass.ui.theme.heroGradientEnd
 import app.chompass.ui.theme.success
 
 // ── Calorie hero ─────────────────────────────────────────────────────
@@ -283,6 +285,7 @@ private fun CalorieArcCanvas(
     animatedRatio: Animatable<Float, AnimationVector1D>,
     trackColor: Color,
     progressColor: Color,
+    progressEndColor: Color,
     bonusColor: Color,
     liveBurnColor: Color,
     successColor: Color,
@@ -295,6 +298,14 @@ private fun CalorieArcCanvas(
     activeCalories: Int,
     semanticsRatio: Float,
 ) {
+    // Accent ramp for the eaten stroke: the theme color at the base, 20%
+    // toward white at the tip, so the hero reads as the theme color with
+    // depth instead of one flat band on every accent. Built once per color
+    // pair: the shader resolves against each draw's bounds, so every frame
+    // reuses the same brush.
+    val eatenBrush = remember(progressColor, progressEndColor) {
+        Brush.horizontalGradient(listOf(progressColor, progressEndColor))
+    }
     Canvas(
         modifier = modifier.semantics {
             // The budget sheet carries the exact numbers; the arc still
@@ -343,7 +354,7 @@ private fun CalorieArcCanvas(
             )
         }
         drawArc(
-            color = progressColor,
+            brush = eatenBrush,
             startAngle = 180f,
             sweepAngle = 180f * (if (freezeProgress) fillRatio else animatedRatio.value),
             useCenter = false,
@@ -423,7 +434,10 @@ private fun CalorieArcCanvas(
         // Consumed stretch of the activity zone: the shades above sit over the
         // eaten fill, so a translucent eaten pass is re-applied from the base
         // boundary to the eaten tip. Burn bands stay readable, and eating into
-        // the burn visibly shades it instead of leaving one solid band.
+        // the burn visibly shades it instead of leaving one solid band. Kept
+        // flat rather than the accent ramp: the 55% tint's separation from each
+        // burn band is calibrated per accent in the backlog's tint row, and a
+        // ramp here would make that separation vary along the band.
         val eatenDegrees = 180f * (if (freezeProgress) fillRatio else animatedRatio.value)
         notchAngle?.let { zoneStart ->
             val zoneStartDegrees = zoneStart - 180f
@@ -569,12 +583,15 @@ private fun DefaultCalorieHero(input: CalorieHeroInput, modifier: Modifier = Mod
         var showBudgetSheet by remember { mutableStateOf(false) }
         // Ring color roles, one meaning per hue across every mode:
         // - trackColor (neutral) = unfilled budget, always.
-        // - progressColor (primary, opaque) = consumed/eaten. Never reused elsewhere.
+        // - progressColor (primary) = consumed/eaten, ramped 20% toward white
+        //   along the stroke. The flat primary is reused only by the
+        //   consumed-tint pass over the burn bands.
         // - tertiary = activity-derived calories, exclusively — the estimate zone
         //   (fixed tint) and the live burn shade (opaque) share it.
         // - success = over-typical active burn.
         val trackColor = MaterialTheme.colorScheme.surfaceVariant
         val progressColor = MaterialTheme.colorScheme.primary
+        val progressEndColor = heroGradientEnd(progressColor)
         val bonusColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.45f)
         val liveBurnColor = MaterialTheme.colorScheme.tertiary
         val muted = MaterialTheme.colorScheme.onSurfaceVariant
@@ -606,6 +623,7 @@ private fun DefaultCalorieHero(input: CalorieHeroInput, modifier: Modifier = Mod
                 animatedRatio = animatedRatio,
                 trackColor = trackColor,
                 progressColor = progressColor,
+                progressEndColor = progressEndColor,
                 bonusColor = bonusColor,
                 liveBurnColor = liveBurnColor,
                 successColor = successColor,
@@ -765,6 +783,7 @@ private fun SideGaugeCalorieHero(input: CalorieHeroInput, modifier: Modifier = M
         var showBudgetSheet by remember { mutableStateOf(false) }
         val trackColor = MaterialTheme.colorScheme.surfaceVariant
         val progressColor = MaterialTheme.colorScheme.primary
+        val progressEndColor = heroGradientEnd(progressColor)
         val bonusColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.45f)
         val liveBurnColor = MaterialTheme.colorScheme.tertiary
         val muted = MaterialTheme.colorScheme.onSurfaceVariant
@@ -792,6 +811,7 @@ private fun SideGaugeCalorieHero(input: CalorieHeroInput, modifier: Modifier = M
                     animatedRatio = animatedRatio,
                     trackColor = trackColor,
                     progressColor = progressColor,
+                    progressEndColor = progressEndColor,
                     bonusColor = bonusColor,
                     liveBurnColor = liveBurnColor,
                     successColor = successColor,
@@ -928,6 +948,7 @@ private fun CompactArcCalorieHero(input: CalorieHeroInput, modifier: Modifier = 
         var showBudgetSheet by remember { mutableStateOf(false) }
         val trackColor = MaterialTheme.colorScheme.surfaceVariant
         val progressColor = MaterialTheme.colorScheme.primary
+        val progressEndColor = heroGradientEnd(progressColor)
         val bonusColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.45f)
         val liveBurnColor = MaterialTheme.colorScheme.tertiary
         val muted = MaterialTheme.colorScheme.onSurfaceVariant
@@ -958,6 +979,7 @@ private fun CompactArcCalorieHero(input: CalorieHeroInput, modifier: Modifier = 
                 animatedRatio = animatedRatio,
                 trackColor = trackColor,
                 progressColor = progressColor,
+                progressEndColor = progressEndColor,
                 bonusColor = bonusColor,
                 liveBurnColor = liveBurnColor,
                 successColor = successColor,
@@ -1109,6 +1131,7 @@ private fun CompactHorizontalCalorieHero(input: CalorieHeroInput, modifier: Modi
         val d = calorieHeroDerived(input)
         val trackColor = MaterialTheme.colorScheme.surfaceVariant
         val progressColor = MaterialTheme.colorScheme.primary
+        val progressEndColor = heroGradientEnd(progressColor)
         val activeColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.45f)
         val muted = MaterialTheme.colorScheme.onSurfaceVariant
         val tertiary = MaterialTheme.colorScheme.tertiary
@@ -1117,6 +1140,10 @@ private fun CompactHorizontalCalorieHero(input: CalorieHeroInput, modifier: Modi
         val eatenA11y = stringResource(R.string.home_calories_eaten_a11y, energyText(current))
         val budgetDescription = calorieBudgetDescription(input)
         var showBudgetSheet by remember { mutableStateOf(false) }
+
+        val eatenBrush = remember(progressColor, progressEndColor) {
+            Brush.horizontalGradient(listOf(progressColor, progressEndColor))
+        }
 
         Column(
             modifier = modifier
@@ -1142,7 +1169,7 @@ private fun CompactHorizontalCalorieHero(input: CalorieHeroInput, modifier: Modi
                     )
                 }
                 drawRoundRect(
-                    progressColor,
+                    brush = eatenBrush,
                     size = Size(size.width * d.fillRatio, size.height),
                     cornerRadius = CornerRadius(radius, radius),
                 )

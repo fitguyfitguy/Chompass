@@ -1,6 +1,7 @@
 package app.chompass.ui.theme
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -8,8 +9,9 @@ import org.junit.Test
 
 /**
  * Flat accent: [AppColors.Calorie] and [AppColors.CalorieStart] mirror the
- * scheme primary passed to [AppColors.setThemeColor]. Widgets and Compose
- * must not drift onto a second gradient stop.
+ * scheme primary passed to [AppColors.setThemeColor]. Widgets read the same
+ * primary; the hero's ramp tip is a derived stop ([heroGradientEnd]), never a
+ * second scheme color.
  *
  * Contrast assertions pin the warm palette's readability: the neutrals are a
  * deliberate recolour of the old gray-purple set, and every fixed accent — the
@@ -104,6 +106,33 @@ class AppColorsContrastTest {
                 "${accent.key} dark onPrimary ${dark.onPrimary} on ${dark.primary}",
                 contrastRatio(dark.onPrimary, dark.primary) >= 3.0,
             )
+        }
+    }
+
+    @Test
+    fun heroRamp_keepsNonTextContrastAndBrightensTowardTheTip() {
+        // The hero arc's ramp tip still reads as progress, so it keeps the 3:1
+        // non-text floor on its ground; the only direction the ramp may move is
+        // toward white, or the hero stops being the theme color.
+        AppThemeColor.entries.filterNot { it.usesSystemPalette }.forEach { accent ->
+            listOf(
+                Triple("light", lightColors(accent).primary, AppColors.AppBackgroundLight),
+                Triple("dark", darkColors(accent).primary, AppColors.AppBackgroundDark),
+            ).forEach { (scheme, start, ground) ->
+                val tip = heroGradientEnd(start)
+                assertTrue(
+                    "${accent.key} $scheme hero ramp start on its ground",
+                    contrastRatio(start, ground) >= 3.0,
+                )
+                assertTrue(
+                    "${accent.key} $scheme hero ramp tip on its ground",
+                    contrastRatio(tip, ground) >= 3.0,
+                )
+                assertTrue(
+                    "${accent.key} $scheme hero ramp brightens toward the tip",
+                    tip.luminance() > start.luminance(),
+                )
+            }
         }
     }
 }
