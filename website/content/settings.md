@@ -87,8 +87,8 @@ Appearance, language, Home, and Progress. Android labels this Display. The PWA l
 | --- | --- |
 | Appearance | System, light, dark, or OLED (Android). The PWA offers system, light, and dark. |
 | Language | System default plus 18 locales. The PWA can follow the browser language. |
-| Theme Color | Accent for buttons, charts, and progress. The PWA calls this Accent color (nine options). |
-| Fixed Launcher Icon (Android) | Keeps the launcher icon teal instead of following theme color or wallpaper. |
+| Theme Color | Accent for buttons, charts, and progress. Plum is the default; Peach is the alternative brand accent. The PWA calls this Accent color (eleven options). |
+| Fixed Launcher Icon (Android) | Keeps the brand icon instead of following the theme color or wallpaper. |
 | System date and time pickers (Android) | Uses the phone's date and time dialogs when editing a meal. |
 
 ### Home Display

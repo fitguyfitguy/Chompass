@@ -165,7 +165,7 @@ devenv tasks run device:screenshots         # device capture only
 `./scripts/export_release_screenshots.sh` runs two lanes:
 
 1. `./scripts/capture_device_screenshots.sh` — builds/installs `app.chompass.debug`,
-   seeds `seed_full`, pins the brand teal + dark/light via the
+   seeds `seed_full`, pins the brand plum + dark/light via the
    `screenshot_appearance` extra, forces the app locale to en-US for the capture,
    drives Home/Progress/Coach/Settings/deep links and sheets, and writes
    `release-screenshots/*.png` (`01-home-light.png` … `17-scale-metrics-dark.png`),
