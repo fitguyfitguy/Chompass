@@ -123,7 +123,7 @@ devenv tasks run release:screenshots       # + refresh JVM preview references
 ./scripts/capture_device_screenshots.sh --no-build --no-seed --only home,progress
 ```
 
-It builds/installs `app.chompass.debug`, seeds `seed_full`, pins the teal palette
+It builds/installs `app.chompass.debug`, seeds `seed_full`, pins the plum palette
 + dark/light (`screenshot_appearance`), forces the app locale to en-US for the
 shot, drives tabs via `chompass://go/<dest>` and sheets via uiautomator text
 selectors, crops the device status bar from every exported PNG, then restores
@@ -208,9 +208,9 @@ Requires `resvg` on `PATH`, or `nix` so the script can run `nix shell nixpkgs#re
 - Density `mipmap-*` PNGs (legacy pre-masked fallbacks) and splash `ic_logo*` drawables
 - Adaptive launcher layers: `drawable-nodpi/ic_launcher_foreground.png`, `ic_launcher_monochrome.png`, per-theme `drawable/ic_launcher_background_*.xml`, and `mipmap-anydpi-v26/ic_launcher_*.xml` (system icon shape + Material You themed icons)
 - PWA / F-Droid / website store icons (still pre-shaped squircles)
-- Generated teal preview `scripts/chompass_icon_master.png` (do not edit)
+- Generated brand preview `scripts/chompass_icon_master.png` (do not edit)
 
-Edit the SVG (or regenerate it from the CC0 needle via `uv run python scripts/assets/build_icon_mark.py`) before running the command. See [ASSET_CREDITS.md](ASSET_CREDITS.md).
+Edit the mark SVG (or regenerate it via `uv run python scripts/assets/build_icon_mark.py`) before running the command. See [ASSET_CREDITS.md](ASSET_CREDITS.md).
 
 ## On-device LLM
 
