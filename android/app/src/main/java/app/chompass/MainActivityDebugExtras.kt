@@ -144,7 +144,7 @@ internal data class DebugIntentActions(
     /** Debug-only: `HH:MM` weight reminder time to persist without the wheel. */
     val weightReminderTime: String = "",
     /**
-     * Debug-only: persist `light` | `dark` | `oled` appearance + the brand teal
+     * Debug-only: persist `light` | `dark` | `oled` appearance + the brand plum
      * palette so release screenshot captures are deterministic (no wallpaper
      * dynamic color, no Settings taps; `scripts/capture_device_screenshots.sh`).
      */

@@ -190,7 +190,7 @@ internal object Keys {
         /** Gyro parallax on the ambient field; default ON. */
         val AMBIENT_TILT_ENABLED = booleanPreferencesKey("ambientTiltEnabled")
         val GLASS_STRENGTH = stringPreferencesKey("glassStrength")
-        /** When ON the launcher icon stays the brand teal and never swaps activity aliases. */
+        /** When ON the launcher icon stays the brand icon and never swaps activity aliases. */
         val FIXED_LAUNCHER_ICON = booleanPreferencesKey("fixedLauncherIcon")
         /** Codeberg #77: meal date/time uses the system pickers instead of wheels. */
         val USE_SYSTEM_DATE_TIME_PICKERS = booleanPreferencesKey("useSystemDateTimePickers")
