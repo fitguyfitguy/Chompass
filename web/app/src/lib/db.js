@@ -544,7 +544,7 @@ export const profile = {
 export const DEFAULT_PREFS = /** @type {AppPrefs} */ ({
   onboardingComplete: false,
   theme: "system",
-  accent: "system",
+  accent: "plum",
   weightUnit: "kg",
   heightUnit: "cm",
   energyUnit: "kcal",

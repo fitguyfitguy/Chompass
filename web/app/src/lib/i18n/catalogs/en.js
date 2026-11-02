@@ -958,6 +958,8 @@ export const en = Object.freeze({
   "settings.units.accent_pink": "Pink",
   "settings.units.accent_purple": "Purple",
   "settings.units.accent_system": "System",
+  "settings.units.accent_plum": "Plum",
+  "settings.units.accent_peach": "Peach",
   "settings.units.accent_teal": "Teal",
   "settings.units.height": "Height",
   "settings.units.meal_times": "Meal times",

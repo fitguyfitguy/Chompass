@@ -13,11 +13,11 @@ LOGO = ROOT / "website" / "static" / "img" / "logo.png"
 OUT = ROOT / "website" / "static" / "img" / "og.png"
 
 WIDTH, HEIGHT = 1200, 630
-BG = (18, 17, 22)
-TEAL = (77, 182, 172)
-TEAL_DEEP = (0, 107, 94)
-TEXT = (230, 225, 229)
-MUTED = (169, 164, 173)
+BG = (23, 14, 22)
+TEAL = (214, 162, 190)
+TEAL_DEEP = (143, 75, 120)
+TEXT = (251, 240, 244)
+MUTED = (185, 168, 179)
 
 
 def _font_candidates(bold: bool) -> list[Path]:

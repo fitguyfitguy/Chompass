@@ -1,29 +1,29 @@
-/* App chrome aligned with Android AppColors / teal macro palette.
+/* App chrome aligned with Android AppColors / plum macro palette.
    Prefer Compose-like surfaces over marketing-site hero typography. */
 :root {
-  --teal: #5cc48f;
-  --teal-deep: #006b5e;
-  --teal-ink: #003731;
-  --accent: #006b5e;
-  --protein: #5b6ad6;
+  --teal: #d6a2be;
+  --teal-deep: #6e2f5c;
+  --teal-ink: #1c131a;
+  --accent: #8f4b78;
+  --protein: #5a6bd8;
   --carbs: #d9a014;
-  --fat: #e06b58;
-  --fiber: #3d9b56;
+  --fat: #c25e86;
+  --fiber: #4f9e63;
   --kcal: #e891a8;
   --water: #4a90d9;
   --over: #e08585;
   --success: #9cd67d;
-  --bg: #1c1b1f;
-  --bg-elevated: #1d1b20;
-  --surface: #2b2930;
-  --text: #e6e1e5;
-  --muted: #cac4d0;
-  --line: rgba(202, 196, 208, 0.2);
-  --focus: #a7f0c8;
+  --bg: #170e16;
+  --bg-elevated: #221621;
+  --surface: #2a1b28;
+  --text: #fbf0f4;
+  --muted: #b9a8b3;
+  --line: rgba(251, 240, 244, 0.12);
+  --focus: #ffb994;
   --danger: #e08585;
-  --nav-pill: #4a4458; /* M3 secondaryContainer (dark) */
-  --nav-icon-active: #e6e1e5; /* M3 onSecondaryContainer (dark) */
-  --nav-bar: #211f26; /* M3 surfaceContainer (dark) */
+  --nav-pill: #3a2a38; /* warm active pill (dark) */
+  --nav-icon-active: #fbf0f4; /* blush on the active pill (dark) */
+  --nav-bar: #1c1119; /* warm surface container (dark) */
   --radius: 1rem;
   /* Corner-radius steps mirroring Android AppRadii (Tokens.kt) */
   --radius-section-card: 22px;
@@ -73,46 +73,53 @@
 
 @media (prefers-color-scheme: light) {
   :root:not([data-theme="dark"]) {
-    --bg: #fef7ff;
-    --bg-elevated: #fffbfe;
-    --surface: #f7f2fa;
-    --text: #1c1b1f;
-    --muted: #49454f;
-    --line: rgba(121, 116, 126, 0.24);
-    --teal-ink: #003731;
+    --bg: #fff6ec;
+    --bg-elevated: #ffffff;
+    --surface: #fffaf6;
+    --text: #1c131a;
+    --muted: #6e5c63;
+    --line: rgba(110, 92, 99, 0.24);
+    --teal-ink: #1c131a;
     --success: #386a20;
-    --nav-pill: #e8def8;
-    --nav-icon-active: #1c1b1f;
-    --nav-bar: #f3edf7;
+    --nav-pill: #ffd9c2;
+    --nav-icon-active: #1c131a;
+    --nav-bar: #fffaf6;
     color-scheme: light;
   }
 }
 
 :root[data-theme="light"] {
-  --bg: #fef7ff;
-  --bg-elevated: #fffbfe;
-  --surface: #f7f2fa;
-  --text: #1c1b1f;
-  --muted: #49454f;
-  --line: rgba(121, 116, 126, 0.24);
-  --teal-ink: #003731;
+  --bg: #fff6ec;
+  --bg-elevated: #ffffff;
+  --surface: #fffaf6;
+  --text: #1c131a;
+  --muted: #6e5c63;
+  --line: rgba(110, 92, 99, 0.24);
+  --teal-ink: #1c131a;
   --success: #386a20;
-  --nav-pill: #e8def8;
-  --nav-icon-active: #1c1b1f;
-  --nav-bar: #f3edf7;
+  --nav-pill: #ffd9c2;
+  --nav-icon-active: #1c131a;
+  --nav-bar: #fffaf6;
   color-scheme: light;
 }
 
 :root[data-theme="dark"] {
-  --bg: #1c1b1f;
-  --bg-elevated: #1d1b20;
-  --surface: #2b2930;
-  --text: #e6e1e5;
-  --muted: #cac4d0;
-  --line: rgba(202, 196, 208, 0.2);
+  --bg: #170e16;
+  --bg-elevated: #221621;
+  --surface: #2a1b28;
+  --text: #fbf0f4;
+  --muted: #b9a8b3;
+  --line: rgba(251, 240, 244, 0.12);
+  --teal-ink: #1c131a;
+  --nav-pill: #3a2a38;
+  --nav-icon-active: #fbf0f4;
+  --nav-bar: #1c1119;
   color-scheme: dark;
 }
 
+:root[data-accent="plum"] { --accent: #8f4b78; --teal: #d6a2be; --teal-deep: #6e2f5c; }
+:root[data-accent="peach"] { --accent: #c44428; --teal: #ff9a6c; --teal-deep: #c44428; }
+:root[data-accent="teal"] { --accent: #006b5e; --teal: #5cc48f; --teal-deep: #006b5e; --teal-ink: #003731; }
 :root[data-accent="blue"] { --accent: #0061a4; --teal: #4da3ff; --teal-deep: #0061a4; }
 :root[data-accent="green"] { --accent: #386a20; --teal: #6bc45a; --teal-deep: #386a20; }
 :root[data-accent="purple"] { --accent: #6750a4; --teal: #b39ddb; --teal-deep: #6750a4; }

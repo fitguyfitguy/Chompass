@@ -1,29 +1,30 @@
 :root {
-  --teal: #5cc48f;
-  --teal-deep: #006b5e;
-  --teal-ink: #003731;
-  --bg: #0f0e13;
-  --bg-weak: #16151b;
-  --bg-weak-hover: #1d1c23;
-  --bg-strong: #eef0ec;
-  --bg-strong-hover: #f4f6f2;
-  --surface: #24232a;
-  --text: #c9c4cc;
-  --text-weak: #9b96a1;
-  --text-strong: #eef0ec;
-  --text-inverted: #0f0e13;
-  --line: rgba(230, 225, 229, 0.14);
-  --line-weak: rgba(230, 225, 229, 0.08);
-  --icon: #7d7882;
-  --focus: #a7f0c8;
+  --teal: #d6a2be;
+  --teal-deep: #b8759c;
+  --teal-ink: #1c131a;
+  --brand-peach: #ffb994;
+  --bg: #170e16;
+  --bg-weak: #1c1119;
+  --bg-weak-hover: #241722;
+  --bg-strong: #fff6ec;
+  --bg-strong-hover: #ffffff;
+  --surface: #221621;
+  --text: #dccfd6;
+  --text-weak: #a8959f;
+  --text-strong: #fbf0f4;
+  --text-inverted: #1c131a;
+  --line: rgba(251, 240, 244, 0.14);
+  --line-weak: rgba(251, 240, 244, 0.08);
+  --icon: #a8959f;
+  --focus: #ffb994;
   --radius: 8px;
   /* Morphe glass: tint alphas are GlassStrength LIGHT/MEDIUM/STRONG from
      android/.../ui/theme/Traits.kt; blur 18px + saturate(1.2) matches the PWA's
      .card--glass. Tint-only surfaces use --glass-tint with no filter. */
-  --glass-tint: rgba(36, 35, 42, 0.30);
-  --glass-tint-soft: rgba(36, 35, 42, 0.18);
-  --glass-tint-hover: rgba(36, 35, 42, 0.44);
-  --glass-rim: rgba(255, 255, 255, 0.06);
+  --glass-tint: rgba(34, 22, 33, 0.30);
+  --glass-tint-soft: rgba(34, 22, 33, 0.18);
+  --glass-tint-hover: rgba(34, 22, 33, 0.44);
+  --glass-rim: rgba(251, 240, 244, 0.06);
   --glass-blur: 18px;
   --radius-card: 16px;
   --radius-panel: 28px;
@@ -128,6 +129,28 @@ a:hover {
 
 .site-logo:hover {
   color: var(--text-strong);
+}
+
+/* Bitten-o wordmark (docs/brand/logo-system.html): the "o" stays brand peach even
+   when the page tint is fig/plum — the study's guardrail is that plum there would
+   over-explain the joke. */
+.wordmark {
+  letter-spacing: -0.035em;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.wordmark__o {
+  width: 0.58em;
+  height: 0.58em;
+  display: inline-block;
+  vertical-align: -0.012em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  color: var(--brand-peach);
 }
 
 .site-logo img {
