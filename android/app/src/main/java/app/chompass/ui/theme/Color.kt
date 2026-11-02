@@ -18,9 +18,17 @@ enum class AppThemeColor(
     val key: String,
     @param:StringRes val displayNameRes: Int,
     val primary: Color,
+    /** Fixed second stop for the settings swatch / launcher gradient; null = derived. */
+    private val iconEnd: Color? = null,
 ) {
     /** Follows the device wallpaper / Material You palette (Android 12+). */
     SYSTEM("system", R.string.theme_color_system, Color(0xFF6750A4)),
+
+    /** Brand plum (fig) — the default accent: warm neutrals, fig primary. */
+    PLUM("plum", R.string.theme_color_plum, BrandPalette.Fig500, BrandPalette.Fig800),
+
+    /** Brand peach — the alternative brand accent; identical launcher icon to [PLUM]. */
+    PEACH("peach", R.string.theme_color_peach, BrandPalette.PeachAccent, Color(0xFF8C2E4A)),
     TEAL("teal", R.string.theme_color_teal, Color(0xFF006B5E)),
     BLUE("blue", R.string.theme_color_blue, Color(0xFF0061A4)),
     GREEN("green", R.string.theme_color_green, Color(0xFF386A20)),
@@ -32,20 +40,22 @@ enum class AppThemeColor(
 
     /** Flat accent for non-Compose surfaces. Compose reads `colorScheme.primary`. */
     val start: Color
-        get() = if (this == SYSTEM) TEAL.primary else primary
+        get() = if (this == SYSTEM) fromKey(DEFAULT_KEY).primary else primary
 
-    /** Widget-gauge blend only. Compose surfaces do not read this. */
+    /** Widget-gauge / swatch blend. Compose surfaces do not read this. */
     val end: Color
-        get() = if (this == SYSTEM) TEAL.end else lerp(primary, Color.White, 0.28f)
+        get() = iconEnd
+            ?: if (this == SYSTEM) fromKey(DEFAULT_KEY).end else lerp(primary, Color.White, 0.28f)
 
     val macroPalette: MacroPalette
-        get() = ThemeMacroPalettes.getValue(if (this == SYSTEM) TEAL else this)
+        get() = ThemeMacroPalettes.getValue(if (this == SYSTEM) fromKey(DEFAULT_KEY) else this)
 
     val usesSystemPalette: Boolean
         get() = this == SYSTEM
 
     companion object {
-        const val DEFAULT_KEY = "system"
+        /** Default accent. Flip to `"peach"` to switch the default without a redesign. */
+        const val DEFAULT_KEY = "plum"
 
         private val LEGACY_KEY_MIGRATION = mapOf(
             "fudPink" to PINK,
@@ -62,8 +72,9 @@ enum class AppThemeColor(
             "graphite" to NEUTRAL,
         )
 
+        /** Absent prefs mean "first launch on the current build" → the brand default. */
         fun fromKey(key: String?): AppThemeColor {
-            if (key == null) return SYSTEM
+            if (key.isNullOrBlank()) return PLUM
             values().firstOrNull { it.key == key }?.let { return it }
             LEGACY_KEY_MIGRATION[key]?.let { return it }
             return SYSTEM
@@ -84,6 +95,8 @@ private data class LauncherIconAccent(
 
 /** Representative launcher-icon gradient colors from [scripts/generate_icons.py]. */
 private val LauncherIconAccents: List<LauncherIconAccent> = listOf(
+    LauncherIconAccent(AppThemeColor.PLUM, Color(0xFF8F4B78)),
+    LauncherIconAccent(AppThemeColor.PEACH, Color(0xFFC44428)),
     LauncherIconAccent(AppThemeColor.TEAL, Color(0xFF006B5E)),
     LauncherIconAccent(AppThemeColor.BLUE, Color(0xFF0A84FF)),
     LauncherIconAccent(AppThemeColor.GREEN, Color(0xFF34C759)),
@@ -149,12 +162,19 @@ fun nearestLauncherIconTheme(accent: Color): AppThemeColor {
 
 /**
  * Launcher icon theme for a Material You / wallpaper accent.
- * Near-gray accents (common on light wallpapers) resolve to the brand teal icon
- * instead of the gray Graphite one, so a light wallpaper never turns the launcher
+ * Near-gray accents (common on light wallpapers) resolve to the default brand accent
+ * icon instead of the gray Graphite one, so a light wallpaper never turns the launcher
  * icon gray (#13). Saturated accents still map by hue via [nearestLauncherIconTheme].
+ *
+ * The brand accents ([AppThemeColor.PLUM] and [AppThemeColor.PEACH]) share one cream
+ * launcher icon, so the fallback never depends on which of the two is the default.
  */
 fun launcherIconThemeFor(accent: Color): AppThemeColor =
-    if (accent.toHsl().s < GRAY_ACCENT_MAX_SATURATION) AppThemeColor.TEAL else nearestLauncherIconTheme(accent)
+    if (accent.toHsl().s < GRAY_ACCENT_MAX_SATURATION) {
+        AppThemeColor.fromKey(AppThemeColor.DEFAULT_KEY)
+    } else {
+        nearestLauncherIconTheme(accent)
+    }
 
 /**
  * Pure launcher-icon decision: fixed icon wins, fixed theme colors map 1:1, and
@@ -162,7 +182,7 @@ fun launcherIconThemeFor(accent: Color): AppThemeColor =
  * the whole decision is JVM-testable (see AppThemeColorLauncherTest).
  */
 fun AppThemeColor.resolveLauncherIconTheme(accent: Color, fixedIcon: Boolean = false): AppThemeColor {
-    if (fixedIcon) return AppThemeColor.TEAL
+    if (fixedIcon) return AppThemeColor.fromKey(AppThemeColor.DEFAULT_KEY)
     if (!usesSystemPalette) return this
     return launcherIconThemeFor(accent)
 }
@@ -257,42 +277,42 @@ object AppColors {
     fun nutrientColor(nutrient: HomeTopNutrient): Color =
         activeThemeColor.macroPalette.colorFor(nutrient)
 
-    // M3 neutral surfaces
-    val AppBackgroundLight = Color(0xFFFEF7FF)
-    val AppBackgroundDark = Color(0xFF1C1B1F)
+    // Brand neutrals, warm: cream light surfaces, blush text, plum dark surfaces.
+    val AppBackgroundLight = Color(0xFFFFF6EC)
+    val AppBackgroundDark = Color(0xFF170E16)
 
-    val AppCardLight = Color(0xFFFFFBFE)
-    val AppCardDark = Color(0xFF1C1B1F)
+    val AppCardLight = Color(0xFFFFFFFF)
+    val AppCardDark = Color(0xFF221621)
 
-    val SurfaceContainerLowLight = Color(0xFFF7F2FA)
-    val SurfaceContainerLowDark = Color(0xFF1D1B20)
+    val SurfaceContainerLowLight = Color(0xFFFFFAF6)
+    val SurfaceContainerLowDark = Color(0xFF1E131D)
 
-    val SurfaceContainerHighLight = Color(0xFFECE6F0)
-    val SurfaceContainerHighDark = Color(0xFF2B2930)
+    val SurfaceContainerHighLight = Color(0xFFFBF0F4)
+    val SurfaceContainerHighDark = Color(0xFF2A1B28)
 
-    val OnLight = Color(0xFF1C1B1F)
-    val OnDark = Color(0xFFE6E1E5)
+    val OnLight = Color(0xFF1C131A)
+    val OnDark = Color(0xFFFBF0F4)
 
-    val MutedLight = Color(0xFF49454F)
-    val MutedDark = Color(0xFFCAC4D0)
+    val MutedLight = Color(0xFF6E5C63)
+    val MutedDark = Color(0xFFB9A8B3)
 
-    val DividerLight = Color(0xFFE7E0EC)
-    val DividerDark = Color(0xFF49454F)
+    val DividerLight = Color(0xFFE7D9CF)
+    val DividerDark = Color(0xFF3A2A38)
 
     val TranslucentSurfaceLight = SurfaceContainerLowLight.copy(alpha = 0.92f)
     val TranslucentSurfaceDark = SurfaceContainerLowDark.copy(alpha = 0.92f)
 
-    val TranslucentFieldLight = Color(0xFFE7E0EC).copy(alpha = 0.65f)
-    val TranslucentFieldDark = Color(0xFF49454F).copy(alpha = 0.55f)
+    val TranslucentFieldLight = DividerLight.copy(alpha = 0.65f)
+    val TranslucentFieldDark = DividerDark.copy(alpha = 0.55f)
 
     val HairlineBorderLight = MutedNeutral.copy(alpha = 0.24f)
-    val HairlineBorderDark = Color(0xFFCAC4D0).copy(alpha = 0.20f)
+    val HairlineBorderDark = MutedDark.copy(alpha = 0.20f)
 
     val NavBarLight = SurfaceContainerLowLight
     val NavBarDark = SurfaceContainerLowDark
 
-    val ActivePillLight = Color(0xFFE8DEF8)
-    val ActivePillDark = Color(0xFF4A4458)
+    val ActivePillLight = Color(0xFFFFD9C2)
+    val ActivePillDark = Color(0xFF3A2A38)
 
     /** Semantic water-tracker accent (icon + value caption; bar stays primary). */
     val WaterLight = Color(0xFF0061A4)
@@ -344,8 +364,8 @@ val androidx.compose.material3.ColorScheme.water: Color
 val androidx.compose.material3.ColorScheme.caffeine: Color
     get() = if (background.luminance() < 0.5f) AppColors.CaffeineDark else AppColors.CaffeineLight
 
-/** Canonical muted gray base (one literal; UI-audit 2.4). */
-val MutedNeutral: Color = Color(0xFF79747E)
+/** Canonical muted neutral base — warm (not gray), one literal (UI-audit 2.4). */
+val MutedNeutral: Color = Color(0xFF6E5C63)
 
 /** Muted tone for non-core nutrients (sodium, vitamins…), theme/dark aware (UI-audit 2.4). */
 val androidx.compose.material3.ColorScheme.mutedNutrient: Color

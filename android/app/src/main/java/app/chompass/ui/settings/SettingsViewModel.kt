@@ -239,7 +239,7 @@ data class SettingsUiState(
     val aiFeaturesEnabled: Boolean = true,
     /** Issue #8 follow-up: release cleartext opt-in for user-entered endpoints; default OFF. */
     val allowInsecureHttp: Boolean = false,
-    val appThemeColor: AppThemeColor = AppThemeColor.SYSTEM,
+    val appThemeColor: AppThemeColor = AppThemeColor.PLUM,
     /** Opt-in: launcher icon stays the brand teal and never swaps aliases (#21). */
     val fixedLauncherIcon: Boolean = false,
     /** Codeberg #77: meal date/time uses the system pickers. */

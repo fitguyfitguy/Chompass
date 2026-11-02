@@ -100,6 +100,18 @@ data class MacroPalette(
  * the hues stay recognizable across all eight theme accents.
  */
 internal val ThemeMacroPalettes: Map<AppThemeColor, MacroPalette> = mapOf(
+    AppThemeColor.PLUM to MacroPalette(
+        protein = Color(0xFF5A6BD8),
+        carbs = Color(0xFFD9A014),
+        fat = Color(0xFFC25E86),
+        fiber = Color(0xFF4F9E63),
+    ),
+    AppThemeColor.PEACH to MacroPalette(
+        protein = Color(0xFF6370E0),
+        carbs = Color(0xFFE0A22A),
+        fat = Color(0xFFB0526B),
+        fiber = Color(0xFF4C9F5A),
+    ),
     AppThemeColor.TEAL to MacroPalette(
         protein = Color(0xFF5B6AD6),
         carbs = Color(0xFFD9A014),

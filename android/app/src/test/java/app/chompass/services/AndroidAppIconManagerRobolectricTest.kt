@@ -15,7 +15,7 @@ import org.robolectric.annotation.Config
 /**
  * Device-free verification of the launcher-icon alias machinery (#13, #21):
  * exactly one alias owns MAIN/LAUNCHER after every apply, the fixed-icon option
- * pins the teal alias, and re-applies are idempotent. The swap deferral itself
+ * pins the brand default alias, and re-applies are idempotent. The swap deferral itself
  * lives in [MainActivity.onStop] (not testable on JVM) — this pins the
  * PackageManager state machine it drives.
  */
@@ -25,6 +25,8 @@ class AndroidAppIconManagerRobolectricTest {
     private val context = RuntimeEnvironment.getApplication()
 
     private val aliasNames = mapOf(
+        AppThemeColor.PLUM to "LauncherPlum",
+        AppThemeColor.PEACH to "LauncherPeach",
         AppThemeColor.TEAL to "LauncherTeal",
         AppThemeColor.BLUE to "LauncherBlue",
         AppThemeColor.GREEN to "LauncherGreen",
@@ -42,32 +44,49 @@ class AndroidAppIconManagerRobolectricTest {
         when (context.packageManager.getComponentEnabledSetting(component(color))) {
             PackageManager.COMPONENT_ENABLED_STATE_ENABLED -> true
             PackageManager.COMPONENT_ENABLED_STATE_DISABLED -> false
-            // Manifest default: only Teal starts enabled.
-            else -> color == AppThemeColor.TEAL
+            // Manifest default: only the brand default alias starts enabled.
+            else -> color == AppThemeColor.fromKey(AppThemeColor.DEFAULT_KEY)
         }
 
     private fun enabledCount(): Int =
         AppThemeColor.iconSelectableColors().count(::isEnabled)
 
     @Test
-    fun manifestDefault_enablesOnlyTeal() {
+    fun manifestDefault_enablesOnlyPlum() {
         assertEquals(1, enabledCount())
-        assertTrue(isEnabled(AppThemeColor.TEAL))
+        assertTrue(isEnabled(AppThemeColor.PLUM))
+        assertTrue(!isEnabled(AppThemeColor.PEACH))
+        assertTrue(!isEnabled(AppThemeColor.TEAL))
         assertEquals(
-            ComponentName(context.packageName, "app.chompass.LauncherTeal"),
+            ComponentName(context.packageName, "app.chompass.LauncherPlum"),
             AndroidAppIconManager.enabledLauncherComponent(context),
         )
     }
 
     @Test
     fun apply_fixedColor_enablesOnlyThatAlias() {
-        AndroidAppIconManager.apply(context, AppThemeColor.BLUE)
+        AndroidAppIconManager.apply(context, AppThemeColor.PLUM)
 
         assertEquals(1, enabledCount())
-        assertTrue(isEnabled(AppThemeColor.BLUE))
+        assertTrue(isEnabled(AppThemeColor.PLUM))
         assertTrue(!isEnabled(AppThemeColor.TEAL))
         assertEquals(
-            ComponentName(context.packageName, "app.chompass.LauncherBlue"),
+            ComponentName(context.packageName, "app.chompass.LauncherPlum"),
+            AndroidAppIconManager.enabledLauncherComponent(context),
+        )
+    }
+
+    @Test
+    fun apply_peachSwapsAliasButKeepsOneIcon() {
+        // Peach is its own alias (identical cream icon); selecting it must move the
+        // enabled alias off Plum, not leave both live.
+        AndroidAppIconManager.apply(context, AppThemeColor.PEACH)
+
+        assertEquals(1, enabledCount())
+        assertTrue(isEnabled(AppThemeColor.PEACH))
+        assertTrue(!isEnabled(AppThemeColor.PLUM))
+        assertEquals(
+            ComponentName(context.packageName, "app.chompass.LauncherPeach"),
             AndroidAppIconManager.enabledLauncherComponent(context),
         )
     }
@@ -96,15 +115,15 @@ class AndroidAppIconManagerRobolectricTest {
     }
 
     @Test
-    fun apply_fixedIcon_pinsTealRegardlessOfThemeColor() {
+    fun apply_fixedIcon_pinsBrandDefaultRegardlessOfThemeColor() {
         AndroidAppIconManager.apply(context, AppThemeColor.BLUE)
         AndroidAppIconManager.apply(context, AppThemeColor.BLUE, fixedIcon = true)
 
         assertEquals(1, enabledCount())
-        assertTrue(isEnabled(AppThemeColor.TEAL))
+        assertTrue(isEnabled(AppThemeColor.PLUM))
         assertTrue(!isEnabled(AppThemeColor.BLUE))
         assertEquals(
-            ComponentName(context.packageName, "app.chompass.LauncherTeal"),
+            ComponentName(context.packageName, "app.chompass.LauncherPlum"),
             AndroidAppIconManager.enabledLauncherComponent(context),
         )
     }
@@ -118,6 +137,6 @@ class AndroidAppIconManagerRobolectricTest {
 
         AndroidAppIconManager.apply(context, AppThemeColor.SYSTEM, fixedIcon = true)
         assertEquals(1, enabledCount())
-        assertTrue(isEnabled(AppThemeColor.TEAL))
+        assertTrue(isEnabled(AppThemeColor.fromKey(AppThemeColor.DEFAULT_KEY)))
     }
 }

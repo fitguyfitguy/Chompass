@@ -14,10 +14,30 @@ import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.platform.LocalContext
 
-private fun onColorFor(background: Color): Color =
-    if (background.luminance() > 0.5f) AppColors.OnLight else AppColors.OnDark
+/** WCAG contrast ratio between two colors (both luminance values are relative). */
+internal fun contrastRatio(a: Color, b: Color): Double {
+    val first = a.luminance().toDouble()
+    val second = b.luminance().toDouble()
+    return (maxOf(first, second) + 0.05) / (minOf(first, second) + 0.05)
+}
 
-private fun lightColors(themeColor: AppThemeColor) = lightColorScheme(
+/**
+ * Content color for a filled accent: whichever of ink / blush contrasts more with the fill.
+ *
+ * Picking the maximum instead of thresholding on luminance keeps labels readable on mid-tone
+ * fills — the dark scheme lightens the accent, where a luminance test would still choose the
+ * light label and land near 2.8:1. Both brand accents and every fixed accent clear 4.5:1 here.
+ */
+internal fun onColorFor(fill: Color): Color {
+    val ink = contrastRatio(AppColors.OnLight, fill)
+    val blush = contrastRatio(AppColors.OnDark, fill)
+    return if (blush >= ink) AppColors.OnDark else AppColors.OnLight
+}
+
+/** The accent as rendered in the dark scheme (lightened so it reads on plum). */
+private fun AppThemeColor.darkPrimary(): Color = lerp(primary, Color.White, 0.25f)
+
+internal fun lightColors(themeColor: AppThemeColor) = lightColorScheme(
     primary = themeColor.primary,
     onPrimary = onColorFor(themeColor.primary),
     primaryContainer = lerp(themeColor.primary, Color.White, 0.82f),
@@ -48,9 +68,9 @@ private fun lightColors(themeColor: AppThemeColor) = lightColorScheme(
     onErrorContainer = Color(0xFF410E0B),
 )
 
-private fun darkColors(themeColor: AppThemeColor) = darkColorScheme(
-    primary = lerp(themeColor.primary, Color.White, 0.25f),
-    onPrimary = lerp(themeColor.primary, Color.Black, 0.25f),
+internal fun darkColors(themeColor: AppThemeColor) = darkColorScheme(
+    primary = themeColor.darkPrimary(),
+    onPrimary = onColorFor(themeColor.darkPrimary()),
     primaryContainer = lerp(themeColor.primary, Color.Black, 0.55f),
     onPrimaryContainer = lerp(themeColor.primary, Color.White, 0.75f),
     secondary = AppColors.MutedDark,
@@ -80,7 +100,7 @@ private fun darkColors(themeColor: AppThemeColor) = darkColorScheme(
 )
 
 /** OLED scheme: mirrors [darkColors] (same text/accents) but with true-black neutrals. */
-private fun oledColors(themeColor: AppThemeColor) = darkColors(themeColor).copy(
+internal fun oledColors(themeColor: AppThemeColor) = darkColors(themeColor).copy(
     background = AppColors.AppBackgroundOled,
     onBackground = AppColors.OnOled,
     surface = AppColors.AppCardOled,
@@ -111,6 +131,16 @@ private fun androidx.compose.material3.ColorScheme.withOledNeutrals() = copy(
     outlineVariant = AppColors.HairlineBorderOled,
 )
 
+/**
+ * Root Compose theme.
+ *
+ * Two palette regimes:
+ * - [AppThemeColor.SYSTEM] + [useDynamicColor] on Android 12+ = Material You, wallpaper-derived
+ *   surfaces and primary; OLED keeps the true-black neutral override.
+ * - Every fixed accent (including [AppThemeColor.PLUM], the default, and
+ *   [AppThemeColor.PEACH]) = the curated cream/blush/plum neutral palette with that accent as
+ *   primary. Fixed accents never borrow wallpaper neutrals — that is what System is for.
+ */
 @Composable
 fun ChompassTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
@@ -142,40 +172,17 @@ fun ChompassTheme(
             if (oledTheme) scheme.withOledNeutrals() else scheme
         }
         else -> {
-            val accent = if (themeColor.usesSystemPalette) AppThemeColor.TEAL else themeColor
-            val baseScheme = when {
+            // A fixed accent owns its neutrals: the curated cream/blush/plum palette,
+            // never wallpaper-derived surfaces (that is what System is for).
+            val accent = if (themeColor.usesSystemPalette) {
+                AppThemeColor.fromKey(AppThemeColor.DEFAULT_KEY)
+            } else {
+                themeColor
+            }
+            when {
                 oledTheme -> oledColors(accent)
                 dark -> darkColors(accent)
                 else -> lightColors(accent)
-            }
-            if (useDynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                val dynamicScheme =
-                    if (dark) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-
-                val primary = if (dark) {
-                    lerp(accent.primary, Color.White, 0.25f)
-                } else {
-                    accent.primary
-                }
-                val onPrimary = onColorFor(primary)
-
-                val accentOverrides = dynamicScheme.copy(
-                    primary = primary,
-                    onPrimary = onPrimary,
-                    primaryContainer = if (dark) {
-                        lerp(accent.primary, Color.Black, 0.55f)
-                    } else {
-                        lerp(accent.primary, Color.White, 0.82f)
-                    },
-                    onPrimaryContainer = if (dark) {
-                        lerp(accent.primary, Color.White, 0.75f)
-                    } else {
-                        lerp(accent.primary, Color.Black, 0.35f)
-                    },
-                )
-                if (oledTheme) accentOverrides.withOledNeutrals() else accentOverrides
-            } else {
-                baseScheme
             }
         }
     }

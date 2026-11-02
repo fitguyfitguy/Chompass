@@ -13,12 +13,12 @@ import android.graphics.Shader
  * Glance has no Canvas / arc primitives, so the Home-style dashed speedometer
  * gauge and the vertical nutrient bars are rasterized into Bitmaps in the
  * widget update path and drawn via Image(provider = ImageProvider(bitmap)).
- * Colors come from the snapshot's synced theme (teal fallback), mirroring
+ * Colors come from the snapshot's synced theme (brand plum fallback), mirroring
  * the iOS widget's SpeedometerGauge / VerticalNutrientBar pair.
  */
 
-const val DEFAULT_THEME_START = 0x006B5E
-const val DEFAULT_THEME_END = 0x4DB6AC
+const val DEFAULT_THEME_START = 0x8F4B78
+const val DEFAULT_THEME_END = 0x371430
 
 private fun opaque(rgb: Int): Int =
     AndroidColor.rgb((rgb shr 16) and 0xFF, (rgb shr 8) and 0xFF, rgb and 0xFF)

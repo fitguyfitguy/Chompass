@@ -33,11 +33,11 @@ class ThemeNightResourcesTest {
         val dayBackgroundColor = context.resources.getColor(app.chompass.R.color.chompass_background, null)
 
         assertEquals("windowBackground must stay mode-neutral (#28)", dayBackgroundColor, nightBackgroundColor)
-        assertEquals(0xFFFEF7FF.toInt(), nightBackgroundColor)
+        assertEquals(0xFFFFF6EC.toInt(), nightBackgroundColor)
 
         val nightSplash = nightAppContext.resources.getColor(app.chompass.R.color.app_splash_background, null)
         val daySplash = context.resources.getColor(app.chompass.R.color.app_splash_background, null)
-        assertEquals("splash may follow the system night mode", 0xFF1C1B1F.toInt(), nightSplash)
-        assertEquals(0xFFFEF7FF.toInt(), daySplash)
+        assertEquals("splash may follow the system night mode", 0xFF170E16.toInt(), nightSplash)
+        assertEquals(0xFFFFF6EC.toInt(), daySplash)
     }
 }

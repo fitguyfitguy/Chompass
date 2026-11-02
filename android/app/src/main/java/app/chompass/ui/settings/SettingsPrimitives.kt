@@ -120,7 +120,9 @@ internal fun ThemeColorSwatch(themeColor: AppThemeColor, modifier: Modifier = Mo
                         )
                     )
                 } else {
-                    Modifier.background(themeColor.primary)
+                    Modifier.background(
+                        Brush.linearGradient(listOf(themeColor.primary, themeColor.end))
+                    )
                 }
             ),
     )

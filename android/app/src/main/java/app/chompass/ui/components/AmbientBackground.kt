@@ -201,12 +201,6 @@ private const val TouchRadiusFraction = 0.22f
 private const val AmbientTiltFraction = 0.03f
 private const val AmbientTiltDeadzone = 0.05f
 
-private fun Context.isPowerSaveMode(): Boolean =
-    getSystemService(PowerManager::class.java)?.isPowerSaveMode ?: false
-
-private fun Context.isAnimatorScaleOff(): Boolean =
-    Settings.Global.getFloat(contentResolver, Settings.Global.ANIMATOR_DURATION_SCALE, 1f) == 0f
-
 /**
  * Where the finger is, for the wax to swell around. Screen fractions, with
  * [x] < 0 meaning "no touch yet"; [lastTouchNs] also drives the idle throttle,

@@ -53,6 +53,7 @@ import androidx.navigation.NavHostController
 import app.chompass.AppContainer
 import app.chompass.services.update.AndroidUpdateChecker
 import app.chompass.services.update.AndroidUpdateState
+import app.chompass.ui.components.ChompassBrandHeader
 import app.chompass.ui.settings.SettingsSubScreen
 import kotlinx.coroutines.launch
 
@@ -106,6 +107,10 @@ fun AboutSettingsScreen(
         onBack = onBack,
     ) {
         Column(Modifier.fillMaxWidth()) {
+            ChompassBrandHeader(
+                Modifier.fillMaxWidth().padding(top = 8.dp)
+            )
+            Hairline()
             UpdateRow(
                 state = updateState,
                 currentVersion = currentVersion,

@@ -1,5 +1,6 @@
 package app.chompass.ui.theme
 
+import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.Spring
@@ -53,6 +54,41 @@ object AppMotion {
 
     /** Ambient record/listening pulse duration (ms). */
     const val TweenPulseMs = 800
+
+    // --- Brand mark intro (welcome step) -----------------------------------
+    // Timeline transcribed from docs/brand/logo-system.html §"mark motion":
+    // the ring draws, the needle spins three turns and settles into the bite,
+    // the dial flinches, then the needle sways ±2.4° forever.
+
+    /** Settle time before the ring starts drawing (ms). */
+    const val MarkIntroDelayMs = 120
+
+    /** Ring trim-in duration (ms). */
+    const val MarkDrawMs = 900
+
+    /** Needle spin start offset (ms). */
+    const val MarkNeedleDelayMs = 180
+
+    /** Needle spin duration (ms): −1080° → overshoot → settle. */
+    const val MarkNeedleMs = 1450
+
+    /** Chomp start offset (ms) — lands after the needle passes the bite. */
+    const val MarkChompDelayMs = 1080
+
+    /** Chomp squash-and-stretch duration (ms). */
+    const val MarkChompMs = 550
+
+    /** Delay before the idle sway starts on a first-run mark (ms). */
+    const val MarkSwayStartMs = 2100
+
+    /** Idle sway loop length (ms). */
+    const val MarkSwayMs = 7000
+
+    /** General mark ease-out (emphasised decelerate). */
+    val MarkEasing = CubicBezierEasing(0.22f, 1f, 0.36f, 1f)
+
+    /** Ring draw ease: steady in and out, so the trim never snaps. */
+    val MarkDrawEasing = CubicBezierEasing(0.65f, 0f, 0.35f, 1f)
 
     /** Standard accelerate-decelerate curve for container/position transitions. */
     val EasingStandard = FastOutSlowInEasing
