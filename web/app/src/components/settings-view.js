@@ -139,6 +139,8 @@ const ACTIVITY_LEVELS = [
 ];
 const ACCENTS = [
   { id: "system", labelKey: "settings.units.accent_system" },
+  { id: "plum", labelKey: "settings.units.accent_plum" },
+  { id: "peach", labelKey: "settings.units.accent_peach" },
   { id: "teal", labelKey: "settings.units.accent_teal" },
   { id: "blue", labelKey: "settings.units.accent_blue" },
   { id: "green", labelKey: "settings.units.accent_green" },
@@ -1190,7 +1192,7 @@ export class SettingsView extends HTMLElement {
         weightUnit: /** @type {any} */ (fd.get("weightUnit")),
         heightUnit: /** @type {any} */ (fd.get("heightUnit")),
         theme: /** @type {any} */ (fd.get("theme")),
-        accent: String(fd.get("accent") || "system"),
+        accent: String(fd.get("accent") || "plum"),
         weekStartDay: /** @type {"monday"|"sunday"|"saturday"} */ (String(fd.get("weekStartDay") || "monday")),
         weekStartsOnMonday: String(fd.get("weekStartDay") || "monday") === "monday",
         progressDefaultRangeId: String(fd.get("progressDefaultRangeId") || "1W"),
