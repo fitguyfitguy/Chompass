@@ -52,6 +52,7 @@ import app.chompass.ui.theme.AppMotion
 import app.chompass.ui.theme.AppThemeColor
 import app.chompass.ui.theme.BrandPalette
 import app.chompass.ui.theme.ChompassTheme
+import app.chompass.ui.theme.ChompassTraitsDefaults
 import kotlinx.coroutines.launch
 
 /**
@@ -247,8 +248,11 @@ fun ChompassMark(
         }
     }
 
-    // One idle clock for both loops; skipped entirely when system motion is paused.
-    val idle = if (paused) null else rememberInfiniteTransition(label = "markIdle")
+    // One idle clock for both loops. The sway/float are ambient motion, so the
+    // user's "Ambient motion" switch stops them too (the intro is a one-shot and
+    // still plays); battery saver / animations-off remain the system-level gate.
+    val idleMotion = !paused && ChompassTraitsDefaults.ambientMotion()
+    val idle = if (idleMotion) rememberInfiniteTransition(label = "markIdle") else null
 
     val swayState = if (idle != null && idleSway) {
         idle.animateFloat(
@@ -350,7 +354,9 @@ fun ChompassMark(
  * The wordmark, with the bitten "o" drawn as a stroked path.
  *
  * The "o" keeps a fixed brand peach in both schemes rather than following the accent:
- * the study's guardrail is that the plum accent would over-explain the joke.
+ * the study's guardrail is that plum there would over-explain the joke. Light ground
+ * uses Peach700 (4.67:1 on cream) where the study's CSS uses Peach600 (3.24:1) — the
+ * glyph is small and stroke-only, so the extra step keeps it legible at 13sp.
  */
 @Composable
 fun ChompassWordmark(
@@ -383,9 +389,11 @@ fun ChompassWordmark(
         ),
         inlineContent = mapOf(
             biteId to InlineTextContent(
+                // Square box like the study's 60-unit viewBox (CSS: .58em wide,
+                // baseline-anchored); a taller box left the glyph riding high.
                 placeholder = Placeholder(
                     width = 0.60.em,
-                    height = 0.66.em,
+                    height = 0.60.em,
                     placeholderVerticalAlign = VerticalAlign.AboveBaseline,
                 ),
             ) {

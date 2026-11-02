@@ -1,7 +1,7 @@
 <header class="site-header">
   <div class="site-header__inner">
     <a class="site-logo" href="{{ .Site.Home.RelPermalink }}">
-      <img src="{{ "img/logo.png" | relURL }}" alt="" width="32" height="32" />
+      {{ partial "mark.html" . }}
       {{ partial "wordmark.html" . }}
     </a>
     <nav class="site-nav" aria-label="Primary">

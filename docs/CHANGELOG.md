@@ -16,6 +16,10 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 - **A warmer palette across the app** (Android and web app): light mode is cream instead of lavender-white, dark mode is plum instead of gray-violet, and text is ink on cream or blush on plum. A fixed theme color now keeps those warm surfaces; only System still follows your wallpaper's colors. The launcher icon is a cream tile with the mark, shown with your launcher's themed-icon treatment when that is on.
 - **Fixed Launcher Icon** (Android): the switch still keeps the brand icon, and its description now says so instead of naming teal.
 
+### Fixed
+
+- **The web app and site now carry the new brand properly** (web app and site): the web app's welcome screen and About page show the mark — the welcome plays the same draw, needle spin and chomp as the app — and the bitten "o" wordmark. In the light theme, links, icons, the selected day and the main buttons used the pale pink accent on cream and were hard to read; they now use the deeper plum. The browser toolbar follows the page instead of showing the old teal band. On the site, the header mark is drawn as crisp vector art, the wordmark uses the brand type, and the glow behind the page is plum and peach instead of the old teal-green.
+
 ## [6.0.1] - 2026-11-02
 
 ### Added

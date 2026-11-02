@@ -9,8 +9,10 @@ import androidx.compose.ui.graphics.Color
  * the ring's light end) and **fig** (the plum neutrals and the default accent). The mark's
  * ring gradient is [Ripened] on light surfaces and [RipenedGlow] on dark ones.
  *
- * Keep `scripts/generate_icons.py` and the website/PWA `--teal*` tokens in sync with the
- * values here; the study is the source of truth for all of them.
+ * Keep `scripts/generate_icons.py`, the PWA `--teal*` / `--accent-text` / `--mark-*` tokens
+ * and the site's `--brand-peach` in sync with the values here; the study is the source of
+ * truth for all of them. The PWA splits the accent in two — `--teal` is the pale fill,
+ * `--accent-text` the readable text/icon tone (fig-500 on cream, fig-300 on plum).
  */
 object BrandPalette {
     // Peach — warm ramp: cream tints through the ring's orange mid to a deep fig-red.
@@ -62,12 +64,18 @@ object BrandPalette {
         1f to Color(0xFF8C2E4A),
     )
 
-    /** Ring gradient on dark surfaces: the same bite, lit for a plum ground. */
+    /**
+     * Ring gradient on dark surfaces: the same bite, lit for a plum ground.
+     *
+     * The dark end is the study's `#5E1F45` (1.58:1 on plum) — the wine stop between
+     * Fig800 and Fig900. Fig900 itself is the ground's own value (1.06:1), which made
+     * the in-app ring disappear where the launcher and splash ring still read.
+     */
     val RipenedGlow: List<Pair<Float, Color>> = listOf(
         0f to Color(0xFFFFE8D6),
         0.38f to Color(0xFFFFA07A),
         0.70f to Color(0xFFD9555C),
-        1f to Fig900,
+        1f to Color(0xFF5E1F45),
     )
 
     /** Fig ramp for fig-accented fills (macro bars, chart accents). */

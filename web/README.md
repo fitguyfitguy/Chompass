@@ -78,7 +78,8 @@ see [`docs/LOCALIZATION.md`](../docs/LOCALIZATION.md)).
 
 Landing URL: `fitguy.codeberg.page/Chompass/app/` (linked from site nav + Download).
 
-Service worker cache: `chompass-shell-v7`.
+Service worker cache: `chompass-shell-v14` (bump it in `app/sw.js` on any shell
+asset change: the cache is cache-first, so an unchanged name serves the old CSS).
 
 ### Desktop layout
 

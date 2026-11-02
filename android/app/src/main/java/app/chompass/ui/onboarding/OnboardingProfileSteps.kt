@@ -44,10 +44,10 @@ import java.time.LocalDate
 
 @Composable
 internal fun WelcomeStep() {
-    // 1:1 port of iOS OnboardingView.welcomeStep — brand mark, two-line
-    // "Eat Smart, / Live Better" headline (second line uses the pink gradient),
-    // and a centered two-line subheading. This is the only surface that plays the
-    // mark's full intro (ring draw → needle turns → chomp → sway).
+    // Welcome step per the brand study: mark, two-line headline with the second
+    // line in the accent ("Track meals, / Stay balanced"), then the subtitle.
+    // This is the only surface that plays the mark's full intro
+    // (ring draw → needle turns → chomp → sway).
     Column(
         Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,

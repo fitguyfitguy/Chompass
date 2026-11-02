@@ -1,0 +1,19 @@
+{{- /*
+  The Chompass mark, inline (docs/brand/logo-system.html §01/§10). The site is a
+  plum ground everywhere, so this is the noir/glow treatment: RipenedGlow ring,
+  cream + pale-peach needle, plum hub. Inline SVG keeps the 2rem header mark
+  crisp at any DPR; img/logo.png stays as the static/OG source art.
+*/ -}}
+<svg class="chompass-mark" viewBox="0 0 200 200" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="chompass-mark-glow" x1="20" y1="10" x2="180" y2="190" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFE8D6" /><stop offset=".38" stop-color="#FFA07A" />
+      <stop offset=".70" stop-color="#D9555C" /><stop offset="1" stop-color="#5E1F45" />
+    </linearGradient>
+  </defs>
+  <path class="chompass-mark__ring" d="M171.7 106.3A72 72 0 1 1 118.6 30.5A34 34 0 0 0 159 58.7A34 34 0 0 0 171.7 106.3Z" />
+  <path class="chompass-mark__needle-a" d="M151.6 63.9L104.3 106.1L83.6 111.5Z" />
+  <path class="chompass-mark__needle-b" d="M151.6 63.9L83.6 111.5L95.7 93.9Z" />
+  <circle class="chompass-mark__hub" cx="100" cy="100" r="7" />
+  <circle class="chompass-mark__pin" cx="100" cy="100" r="2.5" />
+</svg>

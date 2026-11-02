@@ -15,7 +15,8 @@
   />
   <title>Chompass</title>
   <meta name="description" content="Ad-free calorie tracker. Installable PWA for any modern browser (Chromium works best)." />
-  <meta name="theme-color" content="#006b5e" />
+  <!-- Default (dark) plum ground; app.js re-syncs this from --bg on every theme change. -->
+  <meta name="theme-color" content="#170e16" />
 
   <link rel="manifest" href="./manifest.json" />
   <link rel="icon" href="./icons/icon-192.png" />
@@ -28,6 +29,21 @@
   <link rel="stylesheet" href="./css/main.css" />
 </head>
 <body>
+  <!-- Brand mark gradients (docs/brand/logo-system.html). CSS picks one through
+       --mark-ring, so the same mark markup renders on cream and on plum. -->
+  <svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute">
+    <defs>
+      <linearGradient id="cp-mark-ripened-light" x1="20" y1="10" x2="180" y2="190" gradientUnits="userSpaceOnUse">
+        <stop offset="0" stop-color="#FFD9C2" /><stop offset=".32" stop-color="#FF9A6C" />
+        <stop offset=".68" stop-color="#E0685E" /><stop offset="1" stop-color="#8C2E4A" />
+      </linearGradient>
+      <linearGradient id="cp-mark-ripened-glow" x1="20" y1="10" x2="180" y2="190" gradientUnits="userSpaceOnUse">
+        <stop offset="0" stop-color="#FFE8D6" /><stop offset=".38" stop-color="#FFA07A" />
+        <stop offset=".70" stop-color="#D9555C" /><stop offset="1" stop-color="#5E1F45" />
+      </linearGradient>
+    </defs>
+  </svg>
+
   <main id="view" class="view"></main>
 
   <nav class="bottom-nav" aria-label="Primary" id="bottom-nav">
