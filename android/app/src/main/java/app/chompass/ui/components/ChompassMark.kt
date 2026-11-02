@@ -33,6 +33,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.scale
+import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.vector.PathParser
@@ -151,6 +152,7 @@ fun ChompassMark(
     val paths = rememberMarkPaths()
     val colors = markColors()
 
+    val introAlpha = remember { Animatable(if (playIntro) 0f else 1f) }
     val drawProgress = remember { Animatable(1f) }
     val needleDegrees = remember { Animatable(0f) }
     val chompX = remember { Animatable(1f) }
@@ -160,6 +162,7 @@ fun ChompassMark(
     LaunchedEffect(animateIntro) {
         if (!animateIntro) {
             // Static at rest: full ring, needle on the bite, no chomp swelling.
+            introAlpha.snapTo(1f)
             drawProgress.snapTo(1f)
             needleDegrees.snapTo(0f)
             chompX.snapTo(1f)
@@ -167,12 +170,23 @@ fun ChompassMark(
             ringStroke.snapTo(ChompassMarkGeometry.RingStroke)
             return@LaunchedEffect
         }
+        introAlpha.snapTo(0f)
         drawProgress.snapTo(0f)
         needleDegrees.snapTo(ChompassMarkGeometry.RingDegreesStart)
         chompX.snapTo(1f)
         chompY.snapTo(1f)
         ringStroke.snapTo(ChompassMarkGeometry.RingStroke)
 
+        launch {
+            // Study `cp-markIn`: the mark fades in as the ring starts drawing.
+            introAlpha.animateTo(
+                targetValue = 1f,
+                animationSpec = tween(
+                    durationMillis = AppMotion.MarkInMs,
+                    easing = AppMotion.MarkInEasing,
+                ),
+            )
+        }
         launch {
             drawProgress.animateTo(
                 targetValue = 1f,
@@ -233,11 +247,11 @@ fun ChompassMark(
         }
     }
 
-    val sway = if (!idleSway || paused) {
-        0f
-    } else {
-        val transition = rememberInfiniteTransition(label = "markSway")
-        val degrees by transition.animateFloat(
+    // One idle clock for both loops; skipped entirely when system motion is paused.
+    val idle = if (paused) null else rememberInfiniteTransition(label = "markIdle")
+
+    val swayState = if (idle != null && idleSway) {
+        idle.animateFloat(
             initialValue = 0f,
             targetValue = 0f,
             animationSpec = infiniteRepeatable(
@@ -250,8 +264,24 @@ fun ChompassMark(
             ),
             label = "markSwayDegrees",
         )
-        degrees
+    } else {
+        null
     }
+    val sway = swayState?.value ?: 0f
+
+    // Study `float`: the whole mark drifts up and settles, independent of the needle.
+    val floatState = idle?.animateFloat(
+        initialValue = 0f,
+        targetValue = 0f,
+        animationSpec = infiniteRepeatable(
+            animation = keyframes {
+                durationMillis = AppMotion.MarkFloatMs
+                1f at AppMotion.MarkFloatMs / 2 with AppMotion.MarkFloatEasing
+            },
+        ),
+        label = "markFloat",
+    )
+    val floatFraction = floatState?.value ?: 0f
 
     val ringBrush = remember(colors) {
         Brush.linearGradient(
@@ -268,43 +298,49 @@ fun ChompassMark(
 
     Canvas(modifier.aspectRatio(1f).then(semantics)) {
         val unit = size.minDimension / ChompassMarkGeometry.Box
-        scale(unit, unit, pivot = Offset.Zero) {
-            withTransform({
-                scale(chompX.value, chompY.value, pivot = ChompassMarkGeometry.DialPivot)
-            }) {
-                val stroke = Stroke(
-                    width = ringStroke.value,
-                    cap = StrokeCap.Round,
-                    join = StrokeJoin.Round,
-                )
-                if (drawProgress.value >= 1f) {
-                    drawPath(paths.ring, brush = ringBrush, style = stroke)
-                } else {
-                    val trimmed = Path()
-                    paths.ringMeasure.getSegment(
-                        startDistance = 0f,
-                        stopDistance = paths.ringMeasure.length * drawProgress.value,
-                        destination = trimmed,
-                        startWithMoveTo = true,
+        val alpha = introAlpha.value
+        val rise = floatFraction * size.minDimension * AppMotion.MarkFloatRise
+        translate(top = -rise) {
+            scale(unit, unit, pivot = Offset.Zero) {
+                withTransform({
+                    scale(chompX.value, chompY.value, pivot = ChompassMarkGeometry.DialPivot)
+                }) {
+                    val stroke = Stroke(
+                        width = ringStroke.value,
+                        cap = StrokeCap.Round,
+                        join = StrokeJoin.Round,
                     )
-                    drawPath(trimmed, brush = ringBrush, style = stroke)
+                    if (drawProgress.value >= 1f) {
+                        drawPath(paths.ring, brush = ringBrush, alpha = alpha, style = stroke)
+                    } else {
+                        val trimmed = Path()
+                        paths.ringMeasure.getSegment(
+                            startDistance = 0f,
+                            stopDistance = paths.ringMeasure.length * drawProgress.value,
+                            destination = trimmed,
+                            startWithMoveTo = true,
+                        )
+                        drawPath(trimmed, brush = ringBrush, alpha = alpha, style = stroke)
+                    }
                 }
-            }
-            withTransform({
-                rotate(sway + needleDegrees.value, pivot = ChompassMarkGeometry.NeedlePivot)
-            }) {
-                drawPath(paths.needleA, color = colors.needleA)
-                drawPath(paths.needleB, color = colors.needleB)
-                drawCircle(
-                    color = colors.hub,
-                    radius = ChompassMarkGeometry.HubRadius,
-                    center = ChompassMarkGeometry.NeedlePivot,
-                )
-                drawCircle(
-                    color = colors.pin,
-                    radius = ChompassMarkGeometry.PinRadius,
-                    center = ChompassMarkGeometry.NeedlePivot,
-                )
+                withTransform({
+                    rotate(sway + needleDegrees.value, pivot = ChompassMarkGeometry.NeedlePivot)
+                }) {
+                    drawPath(paths.needleA, color = colors.needleA, alpha = alpha)
+                    drawPath(paths.needleB, color = colors.needleB, alpha = alpha)
+                    drawCircle(
+                        color = colors.hub,
+                        radius = ChompassMarkGeometry.HubRadius,
+                        center = ChompassMarkGeometry.NeedlePivot,
+                        alpha = alpha,
+                    )
+                    drawCircle(
+                        color = colors.pin,
+                        radius = ChompassMarkGeometry.PinRadius,
+                        center = ChompassMarkGeometry.NeedlePivot,
+                        alpha = alpha,
+                    )
+                }
             }
         }
     }
