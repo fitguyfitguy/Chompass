@@ -8,20 +8,19 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ### Added
 
-- **A new Chompass mark** (Android, web app and site): the compass ring now has a bite taken out of it, and the needle points into the bite. It is the launcher icon, the splash screen and the welcome screen; on the welcome screen it draws itself, spins the needle three turns, and settles into a gentle sway. About gains the mark above the wordmark, whose "o" is a bite of its own, and the line every compass needs: "Every bite, on course."
+- **A new Chompass mark** (Android, web app and site): the compass ring now has a bite taken out of it, and the needle points into the bite. It is the launcher icon, the splash screen and the welcome screen. On the welcome screen it draws itself, spins the needle three turns, and settles into a gentle sway. About gains the mark above the wordmark, whose "o" is a bite of its own, and the line every compass needs: "Every bite, on course."
 - **Plum, the new default theme** (Android and web app): a warm plum accent replaces teal as the default, with Peach beside it in Settings → Display → Theme Color for anyone who prefers the warmer end of the palette. Every existing theme color is still there.
 
 ### Changed
 
-- **A warmer palette across the app** (Android and web app): light mode is cream instead of lavender-white, dark mode is plum instead of gray-violet, and text is ink on cream or blush on plum. A fixed theme color now keeps those warm surfaces; only System still follows your wallpaper's colors. The launcher icon is a cream tile with the mark, shown with your launcher's themed-icon treatment when that is on.
+- **A warmer palette across the app** (Android and web app): light mode is cream instead of lavender-white, dark mode is plum instead of gray-violet, and text is ink on cream or blush on plum. A fixed theme color now keeps those warm surfaces. Only System still follows your wallpaper's colors. The launcher icon is a cream tile with the mark, shown with your launcher's themed-icon treatment when that is on.
 - **Fixed Launcher Icon** (Android): the switch still keeps the brand icon, and its description now says so instead of naming teal.
 - **A smoother ambient background** (Android and site): the wax keeps drifting at about 24 frames a second once you stop touching the screen, instead of dropping to 15, so it stops looking stepped. Battery saver and animations-off still freeze it.
-- **A wink in the wordmark** (Android, web app, site): the name's last three letters pick up a whisper of the mark's peach, and a hairline of air opens at the seam. Most people will never notice; that is the point.
 
 ### Fixed
 
 - **Bitten "o"** (Android): the bitten "o" in the About wordmark now sits on the baseline like it does on the website, instead of riding a little high.
-- **The web app and site now carry the new brand properly** (web app and site): the web app's welcome screen and About page show the mark — the welcome plays the same draw, needle spin and chomp as the app — and the bitten "o" wordmark. In the light theme, links, icons, the selected day and the main buttons used the pale pink accent on cream and were hard to read; they now use the deeper plum. The browser toolbar follows the page instead of showing the old teal band. On the site, the header mark is drawn as crisp vector art, the wordmark uses the brand type, and the glow behind the page is plum and peach instead of the old teal-green.
+- **The web app and site now carry the new brand properly** (web app and site): the web app's welcome screen plays the same draw, needle spin and chomp as the app, and its About page shows the mark above the bitten "o" wordmark. In the light theme, links, icons, the selected day and the main buttons used the pale pink accent on cream and were hard to read. They now use the deeper plum. The browser toolbar follows the page instead of showing the old teal band. On the site, the header mark is drawn as crisp vector art, the wordmark uses the brand type, and the glow behind the page is plum and peach instead of the old teal-green.
 
 ## [6.0.1] - 2026-11-02
 
