@@ -190,10 +190,10 @@ fun ChompassMark(
                 animationSpec = keyframes {
                     durationMillis = AppMotion.MarkNeedleMs
                     delayMillis = AppMotion.MarkNeedleDelayMs
-                    26f at 797
-                    -11f at 1015
-                    5f at 1189
-                    -2f at 1334
+                    26f at 797 with AppMotion.MarkEasing
+                    -11f at 1015 with AppMotion.MarkEasing
+                    5f at 1189 with AppMotion.MarkEasing
+                    -2f at 1334 with AppMotion.MarkEasing
                 },
             )
         }
@@ -203,9 +203,9 @@ fun ChompassMark(
                 animationSpec = keyframes {
                     durationMillis = AppMotion.MarkChompMs
                     delayMillis = AppMotion.MarkChompDelayMs
-                    0.955f at 121
-                    1.028f at 275
-                    0.993f at 407
+                    0.955f at 121 with AppMotion.MarkChompEasing
+                    1.028f at 275 with AppMotion.MarkChompEasing
+                    0.993f at 407 with AppMotion.MarkChompEasing
                 },
             )
         }
@@ -215,9 +215,9 @@ fun ChompassMark(
                 animationSpec = keyframes {
                     durationMillis = AppMotion.MarkChompMs
                     delayMillis = AppMotion.MarkChompDelayMs
-                    1.042f at 121
-                    0.976f at 275
-                    1.006f at 407
+                    1.042f at 121 with AppMotion.MarkChompEasing
+                    0.976f at 275 with AppMotion.MarkChompEasing
+                    1.006f at 407 with AppMotion.MarkChompEasing
                 },
             )
         }
@@ -226,8 +226,8 @@ fun ChompassMark(
                 targetValue = ChompassMarkGeometry.RingStroke,
                 animationSpec = keyframes {
                     durationMillis = AppMotion.MarkChompMs
-                    18.4f at 165
-                    15.2f at 341
+                    18.4f at 165 with AppMotion.MarkChompEasing
+                    15.2f at 341 with AppMotion.MarkChompEasing
                 },
             )
         }

@@ -90,6 +90,9 @@ object AppMotion {
     /** Ring draw ease: steady in and out, so the trim never snaps. */
     val MarkDrawEasing = CubicBezierEasing(0.65f, 0f, 0.35f, 1f)
 
+    /** Chomp + ring-pulse ease: the study's overshoot curve, what makes the bite feel fleshy. */
+    val MarkChompEasing = CubicBezierEasing(0.34f, 1.56f, 0.64f, 1f)
+
     /** Standard accelerate-decelerate curve for container/position transitions. */
     val EasingStandard = FastOutSlowInEasing
 

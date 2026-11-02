@@ -78,6 +78,7 @@ import app.chompass.ui.theme.widgetAccentColors
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
@@ -690,8 +691,13 @@ open class MainActivity : ComponentActivity() {
             // the first frame so published PNGs never pick up wallpaper dynamic
             // color or the device's system theme.
             if (actions.screenshotAppearance.isNotEmpty()) {
-                container.prefs.setAppearanceMode(actions.screenshotAppearance)
-                container.prefs.setAppThemeColor(AppThemeColor.PLUM.key)
+                // Both pins must land: switching appearance can recreate the activity, and
+                // this block runs in lifecycleScope, which dies with it. Order the accent
+                // first and keep the pair non-cancellable, or captures keep a stale accent.
+                withContext(NonCancellable) {
+                    container.prefs.setAppThemeColor(AppThemeColor.PLUM.key)
+                    container.prefs.setAppearanceMode(actions.screenshotAppearance)
+                }
                 DebugTrace.event("op=screenshot phase=appearance value=${actions.screenshotAppearance}")
             }
             if (actions.debugBarcode.isNotBlank()) {
