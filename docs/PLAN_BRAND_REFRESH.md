@@ -61,6 +61,7 @@ What changed here, per surface:
 | Site fallback | `#0f0e13` file-system/demo grounds (pre-brand near-black) | Plum `#170e16` / blush muted |
 | Android mark | Idle sway/float ignored the "Ambient motion" switch | `ChompassTraitsDefaults.ambientMotion()` gates the idle loops; the one-shot intro still plays. Battery saver / animations-off still win |
 | Android wordmark | Placeholder 0.60 × 0.66 em left the bitten "o" riding high | Square 0.60 em box, matching the study's 60-unit viewBox |
+| Android bitten "o" | Compose's inline placeholder rides above the baseline, so the o sat 3 px high at 26 sp while the site's SVG sits on it | Path drawn 5 wordmark units (0.05 em) lower; the o's ink bottom and top now match the h/m baseline and x-height like the site |
 | Wordmark easter egg | The name's double meaning ("chomp" + "ass") had no visual hint | The tail keeps 96.5% of the text colour on cream / 93% on plum, mixed toward the bite peach (dE00 ≈ 2.0–2.3), and a 0.045 em seam gap opens between the halves (Android inline gap, CSS `margin-left`); pinned by `check_brand_tokens.py` and a Robolectric composition test |
 | Android dark ring | `RipenedGlow` ended at Fig900 `#1F0C1B` (1.06:1 on plum) while the splash/launcher/static art end at the study's `#5E1F45` (1.58:1) | Canvas matches the study and the generated assets |
 | Android hub | Opaque `background`-coloured disc; over the ambient wax field it read as a dark dot, not the study's hole | Cleared out of the mark's offscreen layer, so the actual ground (wax included) shows through |
