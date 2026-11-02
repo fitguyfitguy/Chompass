@@ -222,6 +222,18 @@ fun AppThemeColor.widgetAccentColors(context: Context, dark: Boolean): Pair<Colo
 fun AppThemeColor.widgetAccentColors(context: Context): Pair<Color, Color> =
     widgetAccentColors(context, appearanceIsDark(null, context))
 
+/**
+ * End stop of the hero's accent ramp: [primary] blended 20% toward white.
+ *
+ * The hero arc and bar are wide progress strokes, so the ramp has to stay a
+ * tint of the accent, not a second color, and its tip still carries progress
+ * information. 20% is the largest delta that keeps every fixed accent's tip
+ * above the 3:1 non-text floor on the cream ground (worst: peach 3.41:1;
+ * the widget's 28% blend puts peach at 2.97:1). On the plum ground the scheme
+ * primary is already lightened, so the same blend only adds glow.
+ */
+fun heroGradientEnd(primary: Color): Color = lerp(primary, Color.White, 0.2f)
+
 object AppColors {
     private var activeThemeColor: AppThemeColor = AppThemeColor.SYSTEM
     private var primaryOverride: Color? = null

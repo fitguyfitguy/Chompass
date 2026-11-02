@@ -352,10 +352,16 @@ function ringSvg(eaten, target, baseGoal = null, burn = null, unit = "kcal") {
   return `
     <svg class="calorie-ring calorie-ring--semi" viewBox="0 0 ${width} ${height}" role="img"
       aria-label="${t("diary.ring_aria", { eaten: formatNumber(energyQuantity(Math.round(eaten), unit)), target: formatNumber(energyQuantity(Math.round(target), unit)), left: leftLabel })}${ariaBurn}">
+      <defs>
+        <linearGradient id="calorie-ring-ramp" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" class="calorie-ring__ramp-start" />
+          <stop offset="1" class="calorie-ring__ramp-end" />
+        </linearGradient>
+      </defs>
       <path d="${arc}" fill="none" stroke="var(--surface)" stroke-width="${stroke}" stroke-linecap="round" />
       ${tailMarkup}
       <path class="calorie-ring__progress" d="${arc}" fill="none"
-        stroke="var(--teal)" stroke-width="${stroke}" stroke-linecap="round"
+        stroke="url(#calorie-ring-ramp)" stroke-width="${stroke}" stroke-linecap="round"
         stroke-dasharray="0 ${halfC.toFixed(1)}"
         data-dash="${(pct * halfC).toFixed(1)} ${halfC.toFixed(1)}" />
       <text x="50%" y="88" text-anchor="middle" class="calorie-ring__label">${formatNumber(energyQuantity(Math.round(eaten), unit))}</text>

@@ -498,6 +498,15 @@ main.view {
   transition: stroke-dasharray 280ms ease-out;
 }
 
+/* Accent ramp on the eaten stroke (mirrors Android `heroGradientEnd`): the
+   legible accent tone at the base, 20% toward white at the tip. `--accent-text`
+   is the per-ground accent role, so the light theme's arc is the deep accent
+   instead of the pale fill tone. */
+.calorie-ring__ramp-start { stop-color: var(--accent-text); }
+.calorie-ring__ramp-end {
+  stop-color: color-mix(in srgb, var(--accent-text) 80%, white);
+}
+
 .calorie-ring__tail {
   transition: stroke-dasharray 280ms ease-out;
   opacity: 0.45;

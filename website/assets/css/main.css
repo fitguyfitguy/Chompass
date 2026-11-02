@@ -501,12 +501,12 @@ a:hover {
   background:
     radial-gradient(
       120% 90% at 50% 8%,
-      rgba(92, 196, 143, 0.1),
+      color-mix(in srgb, var(--brand-peach) 10%, transparent),
       transparent 60%
     ),
     radial-gradient(
       85% 65% at 80% 85%,
-      rgba(0, 107, 94, 0.16),
+      color-mix(in srgb, var(--teal-deep) 16%, transparent),
       transparent 65%
     ),
     var(--bg);
