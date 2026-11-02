@@ -5342,6 +5342,13 @@ body.camera-open {
 }
 .brand-lockup .brand-mark { --mark-size: 4rem; }
 .brand-lockup .wordmark { font-size: 1.6rem; }
+.brand-lockup__tagline {
+  margin: 0;
+  font-size: 0.85rem;
+  font-style: italic;
+  letter-spacing: 0.005em;
+  color: var(--muted);
+}
 
 /* —— Reduced motion —— */
 @media (prefers-reduced-motion: reduce) {

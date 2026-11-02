@@ -751,6 +751,7 @@ export const en = Object.freeze({
 
   // settings.* (PWA UI audit sweep, 2026-08)
   "settings.about.install_tail": "this app on your phone or computer.",
+  "settings.about.brand_tagline": "Every bite, on course.",
   "settings.about.intro": "Chompass browser PWA. Local storage, no analytics. Compatible with the Android app diary and body-metrics JSON.",
   "settings.about.kofi_link": "buy fitguy a yogurt",
   "settings.about.kofi_post": "on Ko-fi.",

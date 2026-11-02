@@ -25,8 +25,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathMeasure
 import androidx.compose.ui.graphics.StrokeCap
@@ -35,12 +37,15 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.drawscope.withTransform
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.vector.PathParser
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.Placeholder
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.PlaceholderVerticalAlign as VerticalAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -48,6 +53,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
+import app.chompass.R
 import app.chompass.ui.theme.AppMotion
 import app.chompass.ui.theme.AppThemeColor
 import app.chompass.ui.theme.BrandPalette
@@ -90,12 +96,17 @@ internal object ChompassMarkGeometry {
     val RingGradientEnd = Offset(180f, 190f)
 }
 
-/** Resolved mark palette: the study's light values, or its glow variant for dark surfaces. */
+/**
+ * Resolved mark palette: the study's light values, or its glow variant for dark surfaces.
+ *
+ * There is no `hub` colour: the pivot is cleared out of the mark's offscreen layer
+ * instead, so the ground — including the ambient wax field — shows through the hole.
+ * A flat "background colour" disc only matched a flat ground.
+ */
 internal data class ChompassMarkColors(
     val ringStops: List<Pair<Float, Color>>,
     val needleA: Color,
     val needleB: Color,
-    val hub: Color,
     val pin: Color,
 )
 
@@ -120,7 +131,6 @@ private fun markColors(): ChompassMarkColors {
             ringStops = BrandPalette.RipenedGlow,
             needleA = BrandPalette.Cream,
             needleB = Color(0xFFFFC9A8),
-            hub = MaterialTheme.colorScheme.background,
             pin = BrandPalette.Cream,
         )
     } else {
@@ -128,7 +138,6 @@ private fun markColors(): ChompassMarkColors {
             ringStops = BrandPalette.Ripened,
             needleA = BrandPalette.Ink,
             needleB = Color(0xFF4A3346),
-            hub = BrandPalette.Cream,
             pin = BrandPalette.Ink,
         )
     }
@@ -300,7 +309,14 @@ fun ChompassMark(
         Modifier.semantics { this.contentDescription = contentDescription }
     }
 
-    Canvas(modifier.aspectRatio(1f).then(semantics)) {
+    Canvas(
+        modifier
+            .aspectRatio(1f)
+            // The pivot is cleared out of this layer (see drawCircle below), so the
+            // mark needs its own compositing layer; the ambient field shows through.
+            .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
+            .then(semantics),
+    ) {
         val unit = size.minDimension / ChompassMarkGeometry.Box
         val alpha = introAlpha.value
         val rise = floatFraction * size.minDimension * AppMotion.MarkFloatRise
@@ -333,10 +349,11 @@ fun ChompassMark(
                     drawPath(paths.needleA, color = colors.needleA, alpha = alpha)
                     drawPath(paths.needleB, color = colors.needleB, alpha = alpha)
                     drawCircle(
-                        color = colors.hub,
+                        color = Color.Black,
                         radius = ChompassMarkGeometry.HubRadius,
                         center = ChompassMarkGeometry.NeedlePivot,
                         alpha = alpha,
+                        blendMode = BlendMode.Clear,
                     )
                     drawCircle(
                         color = colors.pin,
@@ -416,13 +433,20 @@ fun ChompassWordmark(
     )
 }
 
-/** Mark + wordmark lockup for the About screen: standing sway, no intro. */
+/** Mark + wordmark + tagline lockup for the About screen: standing sway, no intro. */
 @Composable
 fun ChompassBrandHeader(modifier: Modifier = Modifier) {
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         ChompassMark(modifier = Modifier.size(64.dp), idleSway = true)
         Spacer(Modifier.height(8.dp))
         ChompassWordmark(fontSize = 26.sp)
+        Spacer(Modifier.height(6.dp))
+        Text(
+            stringResource(R.string.about_brand_tagline),
+            style = MaterialTheme.typography.bodySmall,
+            fontStyle = FontStyle.Italic,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }
 
