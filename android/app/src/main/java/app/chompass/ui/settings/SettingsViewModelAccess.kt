@@ -18,11 +18,18 @@ fun rememberSettingsViewModel(
     nav: NavHostController? = null,
 ): SettingsViewModel {
     val factory = remember(container) { SettingsViewModel.Factory(container) }
-    val settingsEntry = nav?.let { runCatching { it.getBackStackEntry(ChompassRoutes.SETTINGS) }.getOrNull() }
+    // One owner for every settings screen. Resolving the SETTINGS back-stack entry when
+    // it happened to exist (and the activity when it did not) produced two ViewModels:
+    // the one the screen rendered could miss the hydration snapshot and paint defaults,
+    // so a row could disagree with the theme the app was actually using.
     val activity = LocalContext.current.findComponentActivity()
     return when {
-        settingsEntry != null -> viewModel(settingsEntry, factory = factory)
         activity != null -> viewModel(activity, factory = factory)
+        nav != null -> {
+            val settingsEntry = runCatching { nav.getBackStackEntry(ChompassRoutes.SETTINGS) }.getOrNull()
+            if (settingsEntry != null) viewModel(settingsEntry, factory = factory)
+            else viewModel(factory = factory)
+        }
         else -> viewModel(factory = factory)
     }
 }
