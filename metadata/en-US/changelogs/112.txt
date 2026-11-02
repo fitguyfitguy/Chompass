@@ -1,0 +1,7 @@
+• Back up to a folder you pick, once a day or on demand (Android).
+• Save a photo review to favorites without logging it (Android).
+• Progress estimates muscle mass from your profile when your scale cannot send it, and shows muscle as a share of body weight (Android and PWA).
+• A Coach model row in Settings → AI → Advanced pins a separate model for conversations (Android).
+• Bone mass, total body water and lean mass from Health Connect now appear on Progress (Android).
+• Coach input lines up with the navigation pill, and the Settings update mark sits on the gear (Android).
+• A deleted day type shows as Day type instead of a long id (Android).
