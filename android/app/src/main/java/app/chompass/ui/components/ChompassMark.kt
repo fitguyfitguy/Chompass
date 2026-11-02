@@ -378,10 +378,6 @@ fun ChompassMark(
  * uses Peach700 (4.67:1 on cream) where the study's CSS uses Peach600 (3.24:1) — the
  * glyph is small and stroke-only, so the extra step keeps it legible at 13sp.
  */
-// The "chomp | ass" easter egg: the tail mixes toward the bitten-o peach just
-// enough to find when you look (dE00 ~2.0 light, ~2.1 dark), not enough to read
-// as a second accent, and the seam opens a hairline gap (0.045 em) so the two
-// halves separate only when you are already looking at it.
 private const val WordmarkTailMixLight = 0.035f
 private const val WordmarkTailMixDark = 0.07f
 private const val WordmarkSplitGap = 0.045f

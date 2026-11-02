@@ -156,9 +156,6 @@ a:hover {
   color: var(--brand-peach);
 }
 
-/* "chomp | ass" easter egg: the tail keeps 93% of the inherited text colour and
-   7% of the bitten-o peach (dE00 ~2.1 on plum). The site is always plum, so the
-   mix is fixed here instead of riding a theme token. */
 .wordmark__tail {
   margin-left: 0.045em;
   color: color-mix(in oklab, currentColor 93%, var(--brand-peach));

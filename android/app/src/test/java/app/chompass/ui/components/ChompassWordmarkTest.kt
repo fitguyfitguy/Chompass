@@ -13,11 +13,10 @@ import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 
 /**
- * The wordmark carries the "chomp | ass" easter egg: a tinted tail plus a
- * hairline inline gap at the seam. The gap is inline content, and Compose
- * rejects an empty alternate text at composition time — a contract with no
- * compile-time warning that once crashed the About screen. Compose it here so
- * the failure cannot return silently, and keep the spoken name readable.
+ * The wordmark is built from inline content, and Compose validates the
+ * alternate text of every placeholder at composition time. An empty one threw
+ * here once, with no compile-time warning. Compose the wordmark so that class
+ * of failure cannot return silently, and keep the spoken name readable.
  */
 @RunWith(AndroidJUnit4::class)
 @Config(sdk = [34], application = Application::class)
