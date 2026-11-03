@@ -12,6 +12,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ### Fixed
 
+- **Scrolling to the bottom of the diary leaves breathing room above the Add button** (Android): at the end of the food log the last entry's bottom edge touched the floating Add button. The gap there now matches the gap between the navigation pill and the button, so the button floats clear of both.
 - **Repeat barcode scans are quick again** (Android): the product photo was re-downloaded from Open Food Facts on every scan of the same code even though the nutrition data was already cached on-device. The first scan now stores the photo too, and later scans render it from disk with no network request. Closes Codeberg [#160](https://codeberg.org/fitguy/Chompass/issues/160)
 
 ## [6.1.1] - 2026-11-03

@@ -58,11 +58,13 @@ val BottomNavDockedControlPadding = 72.dp
 val BottomOverlayPadding = BottomNavDockedControlPadding + 16.dp
 
 /**
- * Extra scroll clearance for lists under a docked overlay: FAB 56dp tall plus
- * 8dp breathing room above [BottomOverlayPadding] (#156 — at max scroll the
- * Add button covered the last row's trailing chips).
+ * Extra scroll clearance for lists under a docked overlay (#156 — at max scroll
+ * the Add button covered the last row's trailing chips): FAB 56dp tall, floating
+ * 8dp above the pill top ([BottomOverlayPadding] 88 − pill's 16 + 64), plus 8dp
+ * of air above the button — the same 8dp that separates the pill from the
+ * button, so the last scrolled row keeps that gap too.
  */
-val BottomFabScrollClearance = 64.dp
+val BottomFabScrollClearance = 72.dp
 
 /**
  * Codeberg #158: the classic docked Material 3 navigation bar — the standard Android
