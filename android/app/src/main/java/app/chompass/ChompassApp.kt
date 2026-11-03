@@ -13,6 +13,7 @@ import app.chompass.data.FoodRepository
 import app.chompass.data.KeyStore
 import app.chompass.data.ManualActiveRepository
 import app.chompass.data.CaffeineRepository
+import app.chompass.scale.ScaleSyncController
 import app.chompass.data.NicotineRepository
 import app.chompass.data.NotesRepository
 import app.chompass.data.PreferencesStore
@@ -265,6 +266,14 @@ class AppContainer(app: ChompassApp) {
     val bodyFatRepository = BodyFatRepository(prefs, profileRepository, health, syncRepository)
     val bodyMeasurementRepository = BodyMeasurementRepository(prefs, syncRepository)
     val bodyCompositionRepository = BodyCompositionRepository(prefs, profileRepository, health, syncRepository)
+    // Native BLE scale sync (vendored openScale drivers, third_party/openscale/SNAPSHOT.md).
+    val scaleSyncController = ScaleSyncController(
+        appContext,
+        profileRepository,
+        weightRepository,
+        bodyFatRepository,
+        bodyCompositionRepository,
+    )
     val chatRepository = ChatRepository(prefs)
     val waterRepository = WaterRepository(prefs, health, syncRepository).apply {
         // Re-arm the adaptive reminder chain after every water entry so the next
