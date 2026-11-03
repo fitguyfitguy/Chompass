@@ -1,16 +1,29 @@
 package app.chompass.ui.navigation
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.Forum
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import app.chompass.R
@@ -50,3 +63,42 @@ val BottomOverlayPadding = BottomNavDockedControlPadding + 16.dp
  * Add button covered the last row's trailing chips).
  */
 val BottomFabScrollClearance = 64.dp
+
+/**
+ * Codeberg #158: the classic docked Material 3 navigation bar — the standard Android
+ * bottom bar the floating pill replaced, driven by the same [FloatingPillItem]s as the
+ * pill. [NavigationBar] consumes the navigation-bar inset itself, so its 80 dp height
+ * plus the inset equals [BottomNavScrollPadding] and no content padding constant
+ * changes with the style. The update badge mirrors the pill's 8 dp dot.
+ */
+@Composable
+fun ChompassClassicBottomBar(items: List<FloatingPillItem>, modifier: Modifier = Modifier) {
+    NavigationBar(modifier = modifier) {
+        items.forEach { item ->
+            NavigationBarItem(
+                selected = item.selected == true,
+                onClick = item.onClick,
+                icon = {
+                    if (item.badge) {
+                        val updateLabel = stringResource(R.string.about_update_available)
+                        BadgedBox(
+                            badge = {
+                                Badge(
+                                    modifier = Modifier
+                                        .size(8.dp)
+                                        .clip(CircleShape)
+                                        .semantics { contentDescription = updateLabel },
+                                )
+                            },
+                        ) {
+                            Icon(item.icon, contentDescription = null)
+                        }
+                    } else {
+                        Icon(item.icon, contentDescription = null)
+                    }
+                },
+                label = { Text(item.label) },
+            )
+        }
+    }
+}

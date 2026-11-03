@@ -2837,4 +2837,9 @@ macro\'s opnieuw verdeeld over het nieuwe calorieëntotaal</string>
         <item>resetten</item>
         <item>fabrieksinstellingen</item>
     </string-array>
+
+    <string name="settings_nav_bar">Navigatiebalk</string>
+    <string name="settings_nav_bar_subtitle">Klassieke balk onderaan of zwevende glazen pil.</string>
+    <string name="settings_nav_bar_pill">Zwevende pil</string>
+    <string name="settings_nav_bar_classic">Klassieke balk</string>
 </resources>

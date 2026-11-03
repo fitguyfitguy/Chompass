@@ -2838,4 +2838,9 @@ macro riequilibrate al nuovo totale calorico</string>
         <item>reimposta</item>
         <item>ripristino di fabbrica</item>
     </string-array>
+
+    <string name="settings_nav_bar">Barra di navigazione</string>
+    <string name="settings_nav_bar_subtitle">Barra classica ancorata in basso o pillola di vetro flottante.</string>
+    <string name="settings_nav_bar_pill">Pillola flottante</string>
+    <string name="settings_nav_bar_classic">Barra classica</string>
 </resources>

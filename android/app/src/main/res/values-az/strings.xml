@@ -2838,4 +2838,9 @@ makrolar yeni kalori cəminə uyğun yenidən tarazlaşdırılır</string>
         <item>sıfırlama</item>
         <item>zavod ayarları</item>
     </string-array>
+
+    <string name="settings_nav_bar">Naviqasiya paneli</string>
+    <string name="settings_nav_bar_subtitle">Aşağıda sabitlənmiş klassik panel və ya üzən şüşə həbi.</string>
+    <string name="settings_nav_bar_pill">Üzən həb</string>
+    <string name="settings_nav_bar_classic">Klassik panel</string>
 </resources>

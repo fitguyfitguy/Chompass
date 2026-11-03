@@ -2836,4 +2836,9 @@
         <item>초기화</item>
         <item>공장 초기화</item>
     </string-array>
+
+    <string name="settings_nav_bar">탐색 모음</string>
+    <string name="settings_nav_bar_subtitle">하단에 고정되는 클래식 바 또는 떠 있는 글래스 필.</string>
+    <string name="settings_nav_bar_pill">플로팅 필</string>
+    <string name="settings_nav_bar_classic">클래식 바</string>
 </resources>

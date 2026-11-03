@@ -2856,4 +2856,9 @@ makrolar yeni kalori toplamına göre yeniden dengelenir</string>
         <item>sıfırla</item>
         <item>fabrika ayarları</item>
     </string-array>
+
+    <string name="settings_nav_bar">Gezinme çubuğu</string>
+    <string name="settings_nav_bar_subtitle">Alta sabitlenen klasik çubuk ya da yüzen cam hap.</string>
+    <string name="settings_nav_bar_pill">Yüzen hap</string>
+    <string name="settings_nav_bar_classic">Klasik çubuk</string>
 </resources>

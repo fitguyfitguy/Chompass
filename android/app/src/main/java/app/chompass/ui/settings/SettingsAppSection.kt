@@ -27,6 +27,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import app.chompass.R
+import app.chompass.data.NAV_BAR_STYLE_CLASSIC
+import app.chompass.data.NAV_BAR_STYLE_PILL
 import app.chompass.ui.components.ChompassSegmentedTabs
 import app.chompass.ui.navigation.ChompassRoutes
 import app.chompass.ui.progress.TimeRange
@@ -150,6 +152,21 @@ internal fun SettingsAppSection(
                     stringResource(ui.appThemeColor.displayNameRes),
                     icon = Icons.Outlined.Palette,
                 ) { onOpenSheet(SettingsSheet.THEME_COLOR) }
+                HorizontalDivider()
+                // Codeberg #158: the bottom bar stays a floating pill or returns to the
+                // classic docked Material bar.
+                SegmentedSettingRow(
+                    label = stringResource(R.string.settings_nav_bar),
+                    options = listOf(NAV_BAR_STYLE_PILL, NAV_BAR_STYLE_CLASSIC),
+                    selected = ui.navBarStyle,
+                    onSelect = vm::setNavBarStyle,
+                    subtitle = stringResource(R.string.settings_nav_bar_subtitle),
+                ) { style ->
+                    stringResource(
+                        if (style == NAV_BAR_STYLE_CLASSIC) R.string.settings_nav_bar_classic
+                        else R.string.settings_nav_bar_pill,
+                    )
+                }
                 HorizontalDivider()
                 BusyToggleRow(
                     label = stringResource(R.string.settings_fixed_launcher_icon),

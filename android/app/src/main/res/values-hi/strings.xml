@@ -2837,4 +2837,9 @@
         <item>रीसेट</item>
         <item>फ़ैक्टरी</item>
     </string-array>
+
+    <string name="settings_nav_bar">नेविगेशन बार</string>
+    <string name="settings_nav_bar_subtitle">नीचे टिकी क्लासिक बार या फ्लोटिंग ग्लास पिल।</string>
+    <string name="settings_nav_bar_pill">फ्लोटिंग पिल</string>
+    <string name="settings_nav_bar_classic">क्लासिक बार</string>
 </resources>

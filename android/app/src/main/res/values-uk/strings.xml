@@ -2783,4 +2783,9 @@ LBM = вага × (1 − %жиру)</string>
         <item>скинути</item>
         <item>заводські</item>
     </string-array>
+
+    <string name="settings_nav_bar">Панель навігації</string>
+    <string name="settings_nav_bar_subtitle">Класична панель унизу екрана або плаваюча скляна пігулка.</string>
+    <string name="settings_nav_bar_pill">Плаваюча пігулка</string>
+    <string name="settings_nav_bar_classic">Класична панель</string>
 </resources>

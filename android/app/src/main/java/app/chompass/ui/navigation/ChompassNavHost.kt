@@ -38,6 +38,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import app.chompass.AppContainer
+import app.chompass.data.NAV_BAR_STYLE_CLASSIC
+import app.chompass.data.NAV_BAR_STYLE_PILL
 import app.chompass.models.EnergyUnit
 import app.chompass.ui.components.AmbientBackground
 import app.chompass.ui.components.AmbientTouchState
@@ -250,38 +252,44 @@ fun ChompassNavHost(
     val coachTabEnabled by container.prefs.coachTabEnabled.collectAsState(initial = true)
     val aiFeaturesEnabled by container.prefs.aiFeaturesEnabled.collectAsState(initial = true)
     val showCoachTab = coachTabEnabled && aiFeaturesEnabled
+    // Codeberg #158: floating pill (default) or classic docked bottom bar.
+    val navBarStyle by container.prefs.navBarStyle.collectAsState(initial = NAV_BAR_STYLE_PILL)
     Scaffold(
         bottomBar = {
             if (showTabs) {
-                ChompassFloatingPillBar(
-                    items = bottomTabs(showCoachTab).map { tab ->
-                        FloatingPillItem(
-                            icon = tab.icon,
-                            label = stringResource(tab.labelRes),
-                            onClick = {
-                                val target = tab.route
-                                // Tapping HOME (the start destination) needs popBackStack
-                                // — `navigate(HOME) { popUpTo(HOME); launchSingleTop = true }`
-                                // is a no-op because NavController sees HOME at the top of
-                                // the stack and skips re-emitting currentBackStackEntry, so
-                                // the bar stays selected on the previous tab.
-                                if (target != currentRoute) {
-                                    if (target == ChompassRoutes.HOME) {
-                                        nav.popBackStack(ChompassRoutes.HOME, inclusive = false)
-                                    } else {
-                                        nav.navigate(target) {
-                                            popUpTo(ChompassRoutes.HOME) { saveState = true }
-                                            launchSingleTop = true
-                                            restoreState = true
-                                        }
+                // Shared mapping keeps the HOME popBackStack quirk and the update badge
+                // identical across both bar styles (Codeberg #158).
+                val pillItems = bottomTabs(showCoachTab).map { tab ->
+                    FloatingPillItem(
+                        icon = tab.icon,
+                        label = stringResource(tab.labelRes),
+                        onClick = {
+                            val target = tab.route
+                            // Tapping HOME (the start destination) needs popBackStack
+                            // — `navigate(HOME) { popUpTo(HOME); launchSingleTop = true }`
+                            // is a no-op because NavController sees HOME at the top of
+                            // the stack and skips re-emitting currentBackStackEntry, so
+                            // the bar stays selected on the previous tab.
+                            if (target != currentRoute) {
+                                if (target == ChompassRoutes.HOME) {
+                                    nav.popBackStack(ChompassRoutes.HOME, inclusive = false)
+                                } else {
+                                    nav.navigate(target) {
+                                        popUpTo(ChompassRoutes.HOME) { saveState = true }
+                                        launchSingleTop = true
+                                        restoreState = true
                                     }
                                 }
-                            },
-                            selected = tab.route == currentRoute,
-                            badge = updateAvailable && tab.route == ChompassRoutes.SETTINGS,
-                        )
-                    },
-                )
+                            }
+                        },
+                        selected = tab.route == currentRoute,
+                        badge = updateAvailable && tab.route == ChompassRoutes.SETTINGS,
+                    )
+                }
+                when (navBarStyle) {
+                    NAV_BAR_STYLE_CLASSIC -> ChompassClassicBottomBar(pillItems)
+                    else -> ChompassFloatingPillBar(pillItems)
+                }
             }
         }
     ) { _ ->
