@@ -21,9 +21,13 @@ Publishing (maintainer, one-time per refresh): see the header of
 release carries both packs.
 
 Usage:
-    uv run python scripts/build_off_country_index.py                    # latest nightly (large download)
-    uv run python scripts/build_off_country_index.py --revision <sha>   # pin a dataset revision
-    uv run python scripts/build_off_country_index.py --fixture          # tiny committed test pack
+    uv run scripts/build_off_country_index.py                    # latest nightly (large download)
+    uv run scripts/build_off_country_index.py --revision <sha>   # pin a dataset revision
+    uv run scripts/build_off_country_index.py --fixture          # tiny committed test pack
+
+Note: plain ``uv run scripts/...`` (no ``python``) so uv honours the PEP 723
+dependency header above; ``uv run python scripts/...`` skips it and dies on
+``import pyarrow``.
 """
 
 from __future__ import annotations
