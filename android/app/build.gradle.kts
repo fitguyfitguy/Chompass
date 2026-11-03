@@ -243,6 +243,11 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.vico.compose.m3)
+    // Vendored openScale BLE drivers (third_party/openscale/SNAPSHOT.md):
+    // blessed-kotlin (MIT) drives GATT; room-common supplies annotation classes
+    // referenced by vendored MeasurementType.kt — annotations only, no Room runtime.
+    implementation(libs.blessed.kotlin)
+    implementation(libs.androidx.room.common)
 
     testImplementation(libs.junit)
     testImplementation(libs.robolectric)
