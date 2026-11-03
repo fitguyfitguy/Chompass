@@ -2845,4 +2845,11 @@
     <string name="export_settings_summary">設定をJSONファイルに保存します。APIキーは含まれません。</string>
     <string name="export_settings_success">設定をエクスポートしました。</string>
     <string name="export_settings_failed">設定のエクスポートに失敗しました: %1$s</string>
-</resources>
+    <string name="progress_sync_scale_metrics">スケールから同期</string>
+    <string name="progress_sync_scale_rationale">Chompass がスケールと通信するには付近のデバイスの権限が必要です。</string>
+    <string name="progress_sync_scale_grant">許可</string>
+    <string name="progress_sync_scale_scanning">スケールを探しています…乗ってください</string>
+    <string name="progress_sync_scale_reading">%1$s から読み込み中…</string>
+    <string name="progress_sync_scale_done">%1$d 件の新しい計測を取り込みました</string>
+    <string name="progress_sync_scale_failed">スケール同期に失敗しました: %1$s</string>
+    </resources>

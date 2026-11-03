@@ -1,5 +1,6 @@
 package app.chompass.ui.progress
 
+import android.os.Build
 import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -108,6 +109,7 @@ fun ProgressScreen(container: AppContainer, onOpenCustomize: (() -> Unit)? = nul
     var showAddDialog by remember { mutableStateOf(false) }
     var showAddBodyFatDialog by remember { mutableStateOf(false) }
     var showAddCompositionDialog by remember { mutableStateOf(false) }
+    var showScaleSyncSheet by remember { mutableStateOf(false) }
     // Collected at screen level so the history sheets compose with data
     // already present: collected inside the `if` they start empty, the sheet
     // anchors to the header-only height, and the later emission never
@@ -256,6 +258,11 @@ fun ProgressScreen(container: AppContainer, onOpenCustomize: (() -> Unit)? = nul
                         untrackedDays = ui.untrackedDays,
                         typeColorOf = typeColorOf,
                         onLog = { showAddCompositionDialog = true },
+                        onSyncScale = if (Build.VERSION.SDK_INT >= 31) {
+                            { showScaleSyncSheet = true }
+                        } else {
+                            null
+                        },
                     )
                 }
             }
@@ -388,6 +395,18 @@ fun ProgressScreen(container: AppContainer, onOpenCustomize: (() -> Unit)? = nul
             vm.addBodyComposition(entry)
             showAddCompositionDialog = false
         }
+    }
+    if (showScaleSyncSheet) {
+        val syncState by vm.scaleSyncState.collectAsState()
+        ScaleSyncSheet(
+            syncState = syncState,
+            onStart = { vm.startScaleSync() },
+            onCancel = { vm.cancelScaleSync() },
+            onDismiss = {
+                vm.cancelScaleSync()
+                showScaleSyncSheet = false
+            },
+        )
     }
     if (showAllWeights) {
         AllWeightHistorySheet(

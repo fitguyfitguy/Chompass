@@ -3075,4 +3075,12 @@
     <string name="tuning_conservative">Conservative</string>
     <string name="tuning_balanced">Balanced</string>
     <string name="tuning_aggressive">Aggressive</string>
-</resources>
+    <!-- Native BLE scale sync (vendored openScale drivers) -->
+    <string name="progress_sync_scale_metrics">Sync from scale</string>
+    <string name="progress_sync_scale_rationale">Chompass needs the nearby-devices permission to talk to your scale.</string>
+    <string name="progress_sync_scale_grant">Grant</string>
+    <string name="progress_sync_scale_scanning">Looking for your scale… step on it</string>
+    <string name="progress_sync_scale_reading">Reading from %1$s…</string>
+    <string name="progress_sync_scale_done">Imported %1$d new weigh-ins</string>
+    <string name="progress_sync_scale_failed">Scale sync failed: %1$s</string>
+    </resources>

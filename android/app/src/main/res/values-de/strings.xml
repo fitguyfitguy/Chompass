@@ -4365,4 +4365,11 @@ für dich ein</string>
     <string name="export_settings_summary">Speichert Einstellungen als JSON-Datei. Enthält keine API-Schlüssel.</string>
     <string name="export_settings_success">Einstellungen exportiert.</string>
     <string name="export_settings_failed">Export der Einstellungen fehlgeschlagen: %1$s</string>
-</resources>
+    <string name="progress_sync_scale_metrics">Von der Waage synchronisieren</string>
+    <string name="progress_sync_scale_rationale">Chompass braucht die Berechtigung für Geräte in der Nähe, um mit deiner Waage zu sprechen.</string>
+    <string name="progress_sync_scale_grant">Erlauben</string>
+    <string name="progress_sync_scale_scanning">Suche nach deiner Waage … steig drauf</string>
+    <string name="progress_sync_scale_reading">Lese von %1$s …</string>
+    <string name="progress_sync_scale_done">%1$d neue Wiegungen importiert</string>
+    <string name="progress_sync_scale_failed">Waage-Sync fehlgeschlagen: %1$s</string>
+    </resources>

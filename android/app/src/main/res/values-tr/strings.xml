@@ -2866,4 +2866,11 @@ makrolar yeni kalori toplamına göre yeniden dengelenir</string>
     <string name="export_settings_summary">Tercimleri JSON dosyasına kaydeder. API anahtarları dahil değildir.</string>
     <string name="export_settings_success">Ayarlar dışa aktarıldı.</string>
     <string name="export_settings_failed">Ayarlar dışa aktarılamadı: %1$s</string>
-</resources>
+    <string name="progress_sync_scale_metrics">Tartıdan senkronize et</string>
+    <string name="progress_sync_scale_rationale">Chompass\'un tartınızla konuşması için yakındaki cihazlar izni gerekiyor.</string>
+    <string name="progress_sync_scale_grant">İzin ver</string>
+    <string name="progress_sync_scale_scanning">Tartınız aranıyor… üstüne çıkın</string>
+    <string name="progress_sync_scale_reading">%1$s cihazından okunuyor…</string>
+    <string name="progress_sync_scale_done">%1$d yeni tartım içe aktarıldı</string>
+    <string name="progress_sync_scale_failed">Tartı senkronizasyonu başarısız: %1$s</string>
+    </resources>
