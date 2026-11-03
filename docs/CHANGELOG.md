@@ -6,6 +6,14 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## [Unreleased]
 
+### Added
+
+- **Offline product data packs** (Android): Settings → Food & Entry → Offline product data can download two optional barcode packs — USDA branded foods (GTIN) and Open Food Facts Germany. When Open Food Facts doesn't know a barcode, or the network is down, the scan answers from the pack with name, brand and calories for the serving. Downloads come straight from this project's release page, Wi-Fi-only by default, and scans themselves never query anywhere new. Pack data: USDA FoodData Central (public domain) and Open Food Facts (ODbL).
+
+### Fixed
+
+- **Repeat barcode scans are quick again** (Android): the product photo was re-downloaded from Open Food Facts on every scan of the same code even though the nutrition data was already cached on-device. The first scan now stores the photo too, and later scans render it from disk with no network request. Closes Codeberg [#160](https://codeberg.org/fitguy/Chompass/issues/160)
+
 ## [6.1.1] - 2026-11-03
 
 ### Changed

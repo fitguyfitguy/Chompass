@@ -43,6 +43,7 @@ Chompass may contact external services only when you use a feature that requires
 |---------|----------------|-------|
 | AI features (see [AI data sharing by feature](#ai-data-sharing-by-feature)) | Food photos, meal text, chat context, profile, and diary totals, depending on the feature | Your configured AI provider |
 | Barcode scan | Scanned barcode. When Open Food Facts has a front product photo, it is also fetched from Open Food Facts' image CDN for display on your device | Open Food Facts public API / image CDN |
+| Offline barcode packs (Android) | Nothing about your scans. A one-off download fetches a static pack file (barcode → name, brand, per-100g macros) from this project's Codeberg releases — only when you tap Download in Settings → Food & Entry → Offline product data, Wi-Fi-only by default. Scans themselves never query anywhere new | Codeberg release assets |
 | Packaged-product search (Android) | The product or brand search string you type, while Open Food Facts search is on (on by default; switch it off in Settings or on the Add Food sheet's databases heading). Query only, never diary data | Open Food Facts public API |
 | Food photos (barcode hint) | Barcodes decoded from food photos are looked up on Open Food Facts | Open Food Facts public API |
 | Weather widget | Your chosen city name and its coordinates | Open-Meteo (openweather-style forecast API, no account) |
