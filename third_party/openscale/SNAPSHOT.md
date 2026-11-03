@@ -59,37 +59,6 @@ rows). Verified by `scripts/vendor_openscale_check.sh`.
 
 | Upstream path | Delta | sha256 (tree copy) |
 |---|---|---|
-
-## Splits (verbatim declarations, no upstream 1:1 file)
-
-These files are NOT in the checksum table. Their content is upstream-verbatim
-declaration(s) extracted from a larger upstream file, plus the GPL header.
-
-| Tree path | Split from (upstream) | Note |
-|---|---|---|
-| `android/app/src/main/java/com/health/openscale/core/service/ScannedDeviceInfo.kt` | `core/service/BleScanner.kt` | data class + KDoc copied verbatim |
-| `android/app/src/main/java/com/health/openscale/core/bluetooth/scales/TuningProfile.kt` | `core/bluetooth/scales/ModernScaleAdapter.kt` | enum declaration verbatim; `forGatt()`/tuning data classes NOT vendored (adapter-layer, unused by Chompass transport) |
-| `android/app/src/main/java/com/health/openscale/BuildConfig.kt` | — (Gradle-generated upstream) | Chompass-side shim object bridging `VERSION_NAME`/`VERSION_CODE`/`APPLICATION_ID`/`BUILD_TYPE` to `app.chompass.BuildConfig`; `BUILD_TIME_UTC`/`GIT_SHA` stubbed |
-
-## Deliberately NOT vendored
-
-- `GattScaleAdapter.kt`, `SppScaleAdapter.kt`, `ModernScaleAdapter.kt`,
-  `BroadcastScaleAdapter.kt`, `ScaleFactory.kt`, `ScaleCommunicator`'s
-  communicator implementations — Chompass implements its own transport
-  (`app/chompass/scale/ScaleBleTransport.kt`) over blessed-kotlin.
-- `core/facade/*`, `core/model/*`, `core/database/*` — Chompass repositories
-  replace these.
-- openScale-sync (`openScale-sync` repo) — app-to-app bridging is obsolete once
-  the driver is in-app; Chompass never writes composition records to Health
-  Connect.
-- All other scale handlers (upstream `scales/` dir) — only the family set needed
-  for Beurer/Sanitas/Medisana/MGB coverage is vendored. If the device pass finds
-  an unclaimed device, vendor the missing handler at the same pin per policy (d).
-
-## Driver registry ordering
-
-`MGBHandler` MUST be last in `ScaleDriverRegistry`: it claims any device
-advertising service `0xFFB0` (upstream `ScaleFactory.createHandlers()` documents
 | android_app/app/src/main/java/com/health/openscale/core/bluetooth/ScaleCommunicator.kt | - | 56cb09ccfaceadec97949c47c9925ae6336521e449c4eec35cabf65ac4b953b3 |
 | android_app/app/src/main/java/com/health/openscale/core/bluetooth/data/ScaleMeasurement.kt | - | 01ac1bb7b657f4fd1178a12aa5d231f07fa3f0888ce93d35e3eaf50907987b26 |
 | android_app/app/src/main/java/com/health/openscale/core/bluetooth/data/ScaleUser.kt | - | af75d82bb8b60cdb85091d746f4e0f9e4fcbb06a89371db36aeefae8e4513617 |
@@ -138,7 +107,8 @@ advertising service `0xFFB0` (upstream `ScaleFactory.createHandlers()` documents
 | android_app/app/src/main/res/drawable/ic_whr.xml | - | 52e2e8fc8b6b0b880ca751e6e7be9db63b81ba1882d480b9f0cde39676266a9e |
 | android_app/app/src/main/res/drawable/ic_whtr.xml | - | 908647483c93902f3707fa1d8ddf82e8c5054397555d31eb27d4d133c92e31b0 |
 
-## Splits## Splits (verbatim declarations, no upstream 1:1 file)
+
+## Splits (verbatim declarations, no upstream 1:1 file)
 
 These files are NOT in the checksum table. Their content is upstream-verbatim
 declaration(s) extracted from a larger upstream file, plus the GPL header.
@@ -163,6 +133,14 @@ declaration(s) extracted from a larger upstream file, plus the GPL header.
 - All other scale handlers (upstream `scales/` dir) — only the family set needed
   for Beurer/Sanitas/Medisana/MGB coverage is vendored. If the device pass finds
   an unclaimed device, vendor the missing handler at the same pin per policy (d).
+
+## Replay fixture
+
+`android/app/src/test/resources/openscale_beurer_frames.json` + `BeurerSanitasProtocolTest`
+replay a full BF700/800 handshake through the vendored handler and assert the published
+measurement. The fixture is **synthetic** (hand-built from the handler's protocol outline,
+`"synthetic": true` in the file) — replace it with real frames captured via the
+`ChompassScaleSync` logcat hook after the first live weigh-in, and flip the flag.
 
 ## Driver registry ordering
 

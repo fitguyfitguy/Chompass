@@ -104,6 +104,9 @@ class ChompassApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        // Vendored openScale drivers log through LogManager (third_party/openscale/
+        // SNAPSHOT.md); logcat only — file logging stays a vendored-app feature.
+        com.health.openscale.core.utils.LogManager.init(this, enableLoggingToFile = false)
         container = AppContainer(this)
         // API < 33: notification/widget/receiver contexts localize through the
         // cached legacy tag. One small DataStore read at cold start; the first
