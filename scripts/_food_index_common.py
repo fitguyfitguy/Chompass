@@ -84,3 +84,81 @@ def write_manifest(db_path: Path, manifest: dict) -> Path:
     path = db_path.with_name(f"{db_path.stem}.manifest.json")
     path.write_text(json.dumps(full, indent=2) + "\n", encoding="utf-8")
     return path
+
+
+# -- Downloadable offline barcode packs (see build_usda_gtin_index.py /
+# -- build_off_country_index.py): barcode-exact SQLite, no FTS.
+
+BARCODE_PACK_SCHEMA = """
+CREATE TABLE barcodes(
+  code TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  brand TEXT,
+  kcal REAL,
+  protein REAL,
+  carbs REAL,
+  fat REAL,
+  serving_g REAL
+) WITHOUT ROWID;
+CREATE TABLE meta(key TEXT PRIMARY KEY, value TEXT NOT NULL) WITHOUT ROWID;
+"""
+
+
+def create_barcode_pack(conn: sqlite3.Connection) -> None:
+    """Create the barcode-pack schema (``barcodes`` + ``meta``, WITHOUT ROWID)."""
+    conn.executescript(BARCODE_PACK_SCHEMA)
+
+
+def insert_barcode_pack_meta(conn: sqlite3.Connection, meta: dict[str, str]) -> None:
+    conn.executemany("INSERT INTO meta(key, value) VALUES (?, ?)", sorted(meta.items()))
+
+
+def insert_barcode_pack_rows(
+    conn: sqlite3.Connection,
+    rows: list[tuple],
+) -> int:
+    """Insert ``(code, name, brand, kcal, protein, carbs, fat, serving_g)`` tuples."""
+    conn.executemany(
+        "INSERT INTO barcodes(code, name, brand, kcal, protein, carbs, fat, serving_g) "
+        "VALUES(?,?,?,?,?,?,?,?)",
+        rows,
+    )
+    return len(rows)
+
+
+def emit_barcode_pack(
+    db_path: Path,
+    pack_id: str,
+    version: str,
+    rows: int,
+    license_text: str,
+    source: str,
+    out_dir: Path,
+) -> tuple[Path, Path]:
+    """Gzip [db_path] into ``<pack-id>-<version>.sqlite.gz`` and write the manifest
+    JSON (``sha256``/``bytes`` describe the ``.gz``; ``url`` is the Codeberg
+    release asset location by the naming contract). Returns (gz, manifest)."""
+    import gzip
+
+    out_dir.mkdir(parents=True, exist_ok=True)
+    gz_path = out_dir / f"{pack_id}-{version}.sqlite.gz"
+    with db_path.open("rb") as src, gzip.open(gz_path, "wb") as dst:
+        for chunk in iter(lambda: src.read(1 << 20), b""):
+            dst.write(chunk)
+    manifest = {
+        "id": pack_id,
+        "version": version,
+        "generatedAt": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "rows": rows,
+        "sha256": sha256(gz_path),
+        "bytes": gz_path.stat().st_size,
+        "license": license_text,
+        "source": source,
+        "url": (
+            f"https://codeberg.org/fitguy/chompass/releases/download/"
+            f"offline-index-{version}/{pack_id}-{version}.sqlite.gz"
+        ),
+    }
+    manifest_path = out_dir / f"{pack_id}-{version}.json"
+    manifest_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+    return gz_path, manifest_path
