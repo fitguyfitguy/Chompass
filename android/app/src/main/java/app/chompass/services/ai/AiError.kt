@@ -185,6 +185,15 @@ internal fun connectionFailureHint(cause: Throwable): String? {
             t is java.security.cert.CertPathValidatorException ||
                 message.contains("Trust anchor", ignoreCase = true) ->
                 return "The server's certificate isn't trusted. Install its CA certificate on this phone (Settings → Security → Install a certificate) and restart the app; custom and Ollama endpoints trust your installed certificates."
+
+            // Codeberg #116: failed DNS lookup (after the retry ladder) — name the host
+            // and point at the usual blockers. Message form: `Unable to resolve host
+            // "<host>": No address associated with hostname`.
+            t is java.net.UnknownHostException ->
+                return "Could not resolve ${
+                    Regex("Unable to resolve host \"([^\"]+)\"").find(message)?.groupValues?.get(1)
+                        ?: message.ifBlank { "the endpoint host" }
+                }. Check your internet connection — a VPN, private DNS, or ad-blocking DNS on this device can block the lookup."
         }
         t = t.cause
     }
