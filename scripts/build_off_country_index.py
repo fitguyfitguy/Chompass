@@ -6,7 +6,7 @@
 """Build the Open Food Facts country barcode pack (``off-de``) — Chompass offline pack.
 
 Streams the nightly OFF product dataset — an ~8 GB Parquet file on Hugging
-Face (``openfoodfacts/product-dataset`` / ``food.parquet``) — in row-group
+Face (``openfoodfacts/product-database`` / ``food.parquet``) — in row-group
 batches, reading only the columns the pack needs. Filters to one country tag
 (pilot: ``de``), keeps rows with a numeric code, a product name and per-100g
 energy, and emits the shared barcode-pack schema (see
@@ -50,7 +50,7 @@ CACHE_DIR = REPO / "build" / "off-parquet"
 
 PACK_ID = "off-de"
 LICENSE_TEXT = "Open Database Licence (ODbL) — Open Food Facts"
-DATASET_BASE = "https://huggingface.co/datasets/openfoodfacts/product-dataset/resolve"
+DATASET_BASE = "https://huggingface.co/datasets/openfoodfacts/product-database/resolve"
 
 # Columns read from the parquet (nothing else is pulled off disk).
 COLUMNS = ["code", "product_name", "brands", "countries_tags", "serving_quantity", "nutriments"]
@@ -82,7 +82,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--revision",
         default="main",
-        help="dataset revision (branch, tag or commit sha) of openfoodfacts/product-dataset",
+        help="dataset revision (branch, tag or commit sha) of openfoodfacts/product-database",
     )
     parser.add_argument(
         "--version",
