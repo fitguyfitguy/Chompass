@@ -10,6 +10,8 @@ import app.chompass.models.ServingUnitOption
 import app.chompass.services.ai.FoodAnalysis
 import app.chompass.services.ai.FoodAnalysisService
 import app.chompass.services.ai.await
+import app.chompass.services.grounding.PackResolver
+import app.chompass.services.grounding.toFoodAnalysis
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -192,16 +194,31 @@ object OpenFoodFactsService {
      * Barcode lookup plus a best-effort download of the OFF front product
      * photo. The photo download never fails the lookup: any problem (offline,
      * non-OFF host, non-image body, oversize) yields null bytes and the caller
-     * falls back to the emoji hero.
+     * falls back to the emoji hero. When [photoStore] is supplied, the first
+     * successful download is persisted under the normalized code and later
+     * lookups of the same product render that file with no image request
+     * (Codeberg #160). When [packs] is supplied, a failed OFF lookup falls
+     * back to the installed offline barcode packs (see [lookupByCode]).
      */
     suspend fun lookupWithImage(
         barcode: String,
         prefs: PreferencesStore,
         client: OkHttpClient = FoodAnalysisService.defaultClient,
         baseUrl: String = OFF_BASE_URL,
+        photoStore: BarcodePhotoStore? = null,
+        packs: PackResolver? = null,
     ): LookupResult = withContext(Dispatchers.IO) {
-        val analysis = lookup(barcode, prefs, client, baseUrl)
-        LookupResult(analysis, productImageBytes(analysis.productMetadata?.imageUrl, client))
+        // Same normalization as lookup(): the photo store is keyed by the code
+        // the analysis cache uses, so a stored photo is only ever served with
+        // the analysis it was downloaded alongside.
+        val code = BarcodeCodeNormalizer.normalize(barcode)
+            ?: throw LookupException("That barcode could not be read. Try scanning it again.")
+        val analysis = lookupByCode(code, prefs, client, baseUrl, photoStore, packs)
+        val stored = photoStore?.get(code)
+        if (stored != null) return@withContext LookupResult(analysis, stored)
+        val downloaded = productImageBytes(analysis.productMetadata?.imageUrl, client)
+        if (downloaded != null) photoStore?.put(code, downloaded)
+        LookupResult(analysis, downloaded)
     }
 
     /**
@@ -219,12 +236,47 @@ object OpenFoodFactsService {
         prefs: PreferencesStore,
         client: OkHttpClient = FoodAnalysisService.defaultClient,
         baseUrl: String = OFF_BASE_URL,
+        photoStore: BarcodePhotoStore? = null,
+        packs: PackResolver? = null,
     ): FoodAnalysis = withContext(Dispatchers.IO) {
         prefs.barcodeCache.first()[code]?.let { return@withContext it.analysis }
 
-        val result = lookupNetwork(code, client, baseUrl)
-        prefs.cacheBarcodeLookup(code, result)
-        result
+        var result: FoodAnalysis? = null
+        var failure: Exception? = null
+        try {
+            result = lookupNetwork(code, client, baseUrl)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            failure = e
+        }
+        if (result != null) {
+            prefs.cacheBarcodeLookup(code, result)
+            // Photo files never outlive their cache entries: LRU eviction (500)
+            // drops keys, retain deletes the photos whose keys are gone.
+            photoStore?.retain(prefs.barcodeCache.first().keys)
+            return@withContext result
+        }
+        // Pack fallback. OFF-NotFound implies the OFF-derived regional pack
+        // misses too (same source), so the regional pack only answers the
+        // offline path; the USDA GTIN pack answers genuine OFF gaps both
+        // online and offline. Pack errors degrade to a miss, so the original
+        // error still reaches the caller unchanged.
+        val gtinsIndex = packs?.gtins()
+        val gtinsHit = gtinsIndex?.let { runCatching { it.lookup(code) }.getOrNull() }
+        val regionalIndex = if (failure is LookupException.NotFound) null else packs?.regional()
+        val regionalHit = regionalIndex?.let { runCatching { it.lookup(code) }.getOrNull() }
+        val hit = when {
+            gtinsHit != null -> gtinsIndex to gtinsHit
+            regionalHit != null -> regionalIndex to regionalHit
+            else -> null
+        }
+        if (hit != null) {
+            val analysis = hit.second.toFoodAnalysis(hit.first)
+            prefs.cacheBarcodeLookup(code, analysis)
+            return@withContext analysis
+        }
+        throw failure!!
     }
 
     /**

@@ -327,6 +327,8 @@ internal object Keys {
         /** Debug-only: hold the demo analysis overlay this many ms (demo_ai_hold_ms; screenshot capture). */
         val DEBUG_DEMO_ANALYSIS_HOLD_MS = intPreferencesKey("debugDemoAnalysisHoldMs")
         val BARCODE_CACHE = stringPreferencesKey("barcodeLookupCache")
+        val OFFLINE_INDEX_PACKS = stringPreferencesKey("offlineIndexPacks")
+        val OFFLINE_INDEX_WIFI_ONLY = booleanPreferencesKey("offlineIndexWifiOnly")
         val ON_DEVICE_MODEL_DOWNLOADED_VERSION = stringPreferencesKey("onDeviceModelDownloadedVersion")
         val ON_DEVICE_DOWNLOAD_OVER_WIFI_ONLY = booleanPreferencesKey("onDeviceDownloadOverWifiOnly")
         /** #46: adjustable on-device memory reserve percent (0 = default 5%, clamped 0..20 at the setter). */
