@@ -11,6 +11,21 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
 
+    <!-- BLE scale sync (vendored openScale drivers; Android 12+ path only). -->
+    <uses-permission
+        android:name="android.permission.BLUETOOTH_SCAN"
+        android:usesPermissionFlags="neverForLocation" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+
+    <!-- blessed-kotlin 3.1.0 declares minSdk 28; Chompass stays 26 because the BLE
+         sync surface is gated to Android 12+ (SDK 31) and blessed classes are never
+         loaded below that. Overriding the library check, not raising minSdk. -->
+    <uses-sdk tools:overrideLibrary="com.welie.blessed" />
+
+    <uses-feature
+        android:name="android.hardware.bluetooth_le"
+        android:required="false" />
+
     <uses-permission android:name="android.permission.health.READ_WEIGHT" />
     <uses-permission android:name="android.permission.health.WRITE_WEIGHT" />
     <uses-permission android:name="android.permission.health.READ_NUTRITION" />
