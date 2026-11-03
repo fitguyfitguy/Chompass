@@ -1673,6 +1673,11 @@
     <string name="settings_nav_bar_subtitle">Docked classic bar or floating glass pill at the bottom.</string>
     <string name="settings_nav_bar_pill">Floating pill</string>
     <string name="settings_nav_bar_classic">Classic bar</string>
+    <string name="export_settings_section">Settings backup</string>
+    <string name="export_settings_row">Export settings</string>
+    <string name="export_settings_summary">Saves preferences to a JSON file. No API keys are included.</string>
+    <string name="export_settings_success">Settings exported.</string>
+    <string name="export_settings_failed">Settings export failed: %1$s</string>
     <string name="settings_fixed_launcher_icon">Fixed Launcher Icon</string>
     <string name="settings_fixed_launcher_icon_subtitle">Keeps the brand icon. It stops following the theme color and wallpaper.</string>
     <string name="settings_system_date_time_pickers">System date and time pickers</string>

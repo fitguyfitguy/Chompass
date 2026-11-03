@@ -2842,4 +2842,9 @@
     <string name="settings_nav_bar_subtitle">नीचे टिकी क्लासिक बार या फ्लोटिंग ग्लास पिल।</string>
     <string name="settings_nav_bar_pill">फ्लोटिंग पिल</string>
     <string name="settings_nav_bar_classic">क्लासिक बार</string>
+    <string name="export_settings_section">सेटिंग बैकअप</string>
+    <string name="export_settings_row">सेटिंग निर्यात करें</string>
+    <string name="export_settings_summary">प्राथमिकताओं को JSON फ़ाइल में सहेजता है। कोई API कुँजी शामिल नहीं है।</string>
+    <string name="export_settings_success">सेटिंग निर्यात हो गईं।</string>
+    <string name="export_settings_failed">सेटिंग निर्यात विफल: %1$s</string>
 </resources>

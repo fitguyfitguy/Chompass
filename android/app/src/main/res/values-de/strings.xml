@@ -4355,4 +4355,14 @@ für dich ein</string>
         <item>zurücksetzen</item>
         <item>Werkseinstellungen</item>
     </string-array>
+
+    <string name="settings_nav_bar">Navigationsleiste</string>
+    <string name="settings_nav_bar_subtitle">Unten angedockte klassische Leiste oder schwebende Glas-Pille.</string>
+    <string name="settings_nav_bar_pill">Schwebende Pille</string>
+    <string name="settings_nav_bar_classic">Klassische Leiste</string>
+    <string name="export_settings_section">Einstellungs-Backup</string>
+    <string name="export_settings_row">Einstellungen exportieren</string>
+    <string name="export_settings_summary">Speichert Einstellungen als JSON-Datei. Enthält keine API-Schlüssel.</string>
+    <string name="export_settings_success">Einstellungen exportiert.</string>
+    <string name="export_settings_failed">Export der Einstellungen fehlgeschlagen: %1$s</string>
 </resources>

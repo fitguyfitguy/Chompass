@@ -1,6 +1,7 @@
 package app.chompass.data
 
 import android.content.Context
+import androidx.datastore.preferences.core.Preferences
 import app.chompass.models.AIProvider
 import app.chompass.models.AiProfile
 import app.chompass.models.BodyFatEntry
@@ -33,6 +34,7 @@ import java.time.LocalDate
 import java.time.YearMonth
 import java.util.UUID
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.Json
 
@@ -430,6 +432,10 @@ class PreferencesStore(private val appContext: Context) : NutritionSyncStore {
     /** Codeberg #158: bottom navigation style — pill (default) or classic docked bar. */
     val navBarStyle: Flow<String> get() = navBarStyleImpl
     suspend fun setNavBarStyle(v: String) = setNavBarStyleImpl(v)
+
+    /** Codeberg #117: one raw snapshot for the settings export; no caching, no filtering. */
+    suspend fun rawSnapshot(): Preferences = dataStore.data.first()
+
     val fixedLauncherIcon: Flow<Boolean> get() = fixedLauncherIconImpl
     suspend fun setFixedLauncherIcon(v: Boolean) = setFixedLauncherIconImpl(v)
     val useSystemDateTimePickers: Flow<Boolean> get() = useSystemDateTimePickersImpl

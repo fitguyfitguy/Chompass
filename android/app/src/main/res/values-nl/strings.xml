@@ -2842,4 +2842,9 @@ macro\'s opnieuw verdeeld over het nieuwe calorieëntotaal</string>
     <string name="settings_nav_bar_subtitle">Klassieke balk onderaan of zwevende glazen pil.</string>
     <string name="settings_nav_bar_pill">Zwevende pil</string>
     <string name="settings_nav_bar_classic">Klassieke balk</string>
+    <string name="export_settings_section">Back-up van instellingen</string>
+    <string name="export_settings_row">Instellingen exporteren</string>
+    <string name="export_settings_summary">Slaat voorkeuren op in een JSON-bestand. API-sleutels zijn niet inbegrepen.</string>
+    <string name="export_settings_success">Instellingen geëxporteerd.</string>
+    <string name="export_settings_failed">Exporteren van instellingen mislukt: %1$s</string>
 </resources>

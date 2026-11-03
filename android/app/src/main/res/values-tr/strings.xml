@@ -2861,4 +2861,9 @@ makrolar yeni kalori toplamına göre yeniden dengelenir</string>
     <string name="settings_nav_bar_subtitle">Alta sabitlenen klasik çubuk ya da yüzen cam hap.</string>
     <string name="settings_nav_bar_pill">Yüzen hap</string>
     <string name="settings_nav_bar_classic">Klasik çubuk</string>
+    <string name="export_settings_section">Ayar yedeği</string>
+    <string name="export_settings_row">Ayarları dışa aktar</string>
+    <string name="export_settings_summary">Tercimleri JSON dosyasına kaydeder. API anahtarları dahil değildir.</string>
+    <string name="export_settings_success">Ayarlar dışa aktarıldı.</string>
+    <string name="export_settings_failed">Ayarlar dışa aktarılamadı: %1$s</string>
 </resources>
