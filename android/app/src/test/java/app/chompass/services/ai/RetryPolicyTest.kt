@@ -1,6 +1,5 @@
 package app.chompass.services.ai
 
-import app.chompass.R
 import kotlinx.coroutines.runBlocking
 import okhttp3.Call
 import okhttp3.Callback
@@ -48,7 +47,7 @@ class RetryPolicyTest {
     }
 
     @Test
-    fun dnsMissExhausted_throwsNetworkWithPlatformLine() = runBlocking {
+    fun dnsMissExhausted_throwsNetworkWithDnsHint() = runBlocking {
         val factory = script(
             fail(UnknownHostException(ANDROID_DNS_LINE)),
             fail(UnknownHostException(ANDROID_DNS_LINE)),
@@ -56,8 +55,15 @@ class RetryPolicyTest {
             fail(UnknownHostException(ANDROID_DNS_LINE)),
         )
         val network = openError(factory) as AiError.Network
-        assertEquals("Network error: $ANDROID_DNS_LINE", network.message)
-        assertEquals(R.string.ai_error_network_format, network.messageRes)
+        // #116: an exhausted DNS miss surfaces the actionable hint naming the
+        // host, shown verbatim (messageRes 0), instead of the raw platform line.
+        assertEquals(
+            "Could not resolve generativelanguage.googleapis.com. Check your " +
+                "internet connection — a VPN, private DNS, or ad-blocking DNS on " +
+                "this device can block the lookup.",
+            network.message,
+        )
+        assertEquals(0, network.messageRes)
         assertEquals(ANDROID_DNS_LINE, network.formatArgs[0])
         assertEquals(4, factory.count)
     }
