@@ -620,6 +620,12 @@ class PreferencesStore(private val appContext: Context) : NutritionSyncStore {
     val barcodeCache: Flow<Map<String, CachedBarcodeProduct>> get() = barcodeCacheImpl
     suspend fun cacheBarcodeLookup(barcode: String, analysis: app.chompass.services.ai.FoodAnalysis) =
         cacheBarcodeLookupImpl(barcode, analysis)
+    val offlineIndexPacks: Flow<Map<String, InstalledOfflinePack>> get() = offlineIndexPacksImpl
+    suspend fun setOfflineIndexPacks(packs: Map<String, InstalledOfflinePack>) = setOfflineIndexPacksImpl(packs)
+    /** One-pack write: null removes the entry (removed / dropped at startup). */
+    suspend fun updateOfflineIndexPack(id: String, pack: InstalledOfflinePack?) = updateOfflineIndexPackImpl(id, pack)
+    val offlineIndexWifiOnly: Flow<Boolean> get() = offlineIndexWifiOnlyImpl
+    suspend fun setOfflineIndexWifiOnly(enabled: Boolean) = setOfflineIndexWifiOnlyImpl(enabled)
     val pendingFoodInputDraft: Flow<PendingFoodInputDraft?> get() = pendingFoodInputDraftImpl
     suspend fun setPendingFoodInputDraft(draft: PendingFoodInputDraft?) = setPendingFoodInputDraftImpl(draft)
     suspend fun foodImageReferenceFilenames(): Set<String>? = foodImageReferenceFilenamesImpl()

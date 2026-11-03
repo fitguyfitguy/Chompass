@@ -16,6 +16,7 @@ import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -26,6 +27,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
+import java.io.File
 
 /**
  * `lookupWithImage()` end-to-end: the API request still goes to the
@@ -40,6 +42,9 @@ class OpenFoodFactsLookupWithImageTest {
     private lateinit var server: MockWebServer
     private lateinit var prefs: PreferencesStore
 
+    /** Image-host requests answered by the interceptor; zero-network counter. */
+    private var imageRequestCount = 0
+
     private val productJson =
         """{"code":"9339687206605","status":1,"product":{"product_name":"Spirals Australian Pasta","brands":"San Remo","quantity":"500 g","product_quantity":500,"product_quantity_unit":"g","serving_quantity":100,"image_front_url":"https://images.openfoodfacts.org/images/products/933/968/720/6605/front_en.4.400.jpg","nutriments":{"energy-kcal_100g":356,"proteins_100g":12,"carbohydrates_100g":70,"fat_100g":2}}}"""
 
@@ -52,6 +57,7 @@ class OpenFoodFactsLookupWithImageTest {
     fun setUp() {
         server = MockWebServer()
         server.start()
+        imageRequestCount = 0
         prefs = PreferencesStore(RuntimeEnvironment.getApplication())
         // Shared DataStore across tests in this class: clear the barcode cache
         // so one test's cached lookup can't short-circuit another's request.
@@ -71,6 +77,7 @@ class OpenFoodFactsLookupWithImageTest {
                 if (request.url.host != "images.openfoodfacts.org") {
                     return@Interceptor chain.proceed(request)
                 }
+                imageRequestCount++
                 Response.Builder()
                     .request(request)
                     .protocol(Protocol.HTTP_1_1)
@@ -82,12 +89,16 @@ class OpenFoodFactsLookupWithImageTest {
         )
         .build()
 
-    private fun lookupWithImage(client: OkHttpClient) = runBlocking {
+    private fun lookupWithImage(
+        client: OkHttpClient,
+        photoStore: BarcodePhotoStore? = null,
+    ) = runBlocking {
         OpenFoodFactsService.lookupWithImage(
             barcode = "9339687206605",
             prefs = prefs,
             client = client,
             baseUrl = server.url("/").toString(),
+            photoStore = photoStore,
         )
     }
 
@@ -179,5 +190,59 @@ class OpenFoodFactsLookupWithImageTest {
             assertTrue(e.message!!.contains("not found"))
         }
         assertEquals(1, server.requestCount)
+    }
+
+    @Test
+    fun warmPhotoStore_secondLookupSkipsImageAndApiRequests() {
+        val store = BarcodePhotoStore(RuntimeEnvironment.getApplication())
+        server.enqueue(MockResponse().setResponseCode(200).setBody(productJson))
+        val first = lookupWithImage(imageServingClient(), store)
+        assertArrayEquals(imageBytes, first.productImageBytes)
+        assertEquals(1, imageRequestCount)
+
+        // Second scan of the same code: analysis from the barcode cache,
+        // photo from disk — no image download and no API call (Codeberg #160).
+        val second = lookupWithImage(imageServingClient(), store)
+        assertArrayEquals(imageBytes, second.productImageBytes)
+        assertEquals(1, imageRequestCount)
+        assertEquals(1, server.requestCount)
+    }
+
+    @Test
+    fun successfulLookup_persistsPhotoFileUnderNormalizedCode() {
+        server.enqueue(MockResponse().setResponseCode(200).setBody(productJson))
+        val store = BarcodePhotoStore(RuntimeEnvironment.getApplication())
+        lookupWithImage(imageServingClient(), store)
+        val file = File(
+            RuntimeEnvironment.getApplication().filesDir,
+            "barcode_photos/9339687206605.jpg",
+        )
+        assertArrayEquals(imageBytes, file.readBytes())
+    }
+
+    @Test
+    fun failedImageDownload_writesNoPhotoFile() {
+        val htmlClient = OkHttpClient.Builder()
+            .addInterceptor { chain ->
+                val request = chain.request()
+                if (request.url.host != "images.openfoodfacts.org") {
+                    return@addInterceptor chain.proceed(request)
+                }
+                Response.Builder()
+                    .request(request)
+                    .protocol(Protocol.HTTP_1_1)
+                    .code(200)
+                    .message("OK")
+                    .body("<html></html>".toResponseBody("text/html".toMediaType()))
+                    .build()
+            }
+            .build()
+        server.enqueue(MockResponse().setResponseCode(200).setBody(productJson))
+        val store = BarcodePhotoStore(RuntimeEnvironment.getApplication())
+        val result = lookupWithImage(htmlClient, store)
+        assertNull(result.productImageBytes)
+        assertFalse(
+            File(RuntimeEnvironment.getApplication().filesDir, "barcode_photos/9339687206605.jpg").exists(),
+        )
     }
 }

@@ -2080,6 +2080,18 @@ für dich ein</string>
     <string name="settings_meal_constituents_footer">Wenn diese Funktion aktiviert ist, kann die KI zusammengesetzte Mahlzeiten in bearbeitbare Zutaten mit Grammangaben und Einheiten aufschlüsseln. Mikronährstoffe je Zutat werden nur bei stärkeren Cloud-Modellen angefragt; kleinere Modelle liefern weiterhin die Zutatenliste mit Makros.</string>
 
     <string name="settings_meal_constituents_footer_on_device">Nicht verfügbar für Gemma auf dem Gerät: Die Aufschlüsselung der Zutaten erfordert ein leistungsfähigeres Modell. Wechsle zu einem Cloud-Anbieter, um diese Funktion zu aktivieren.</string>
+    <string name="settings_offline_index_section">Offline-Produktdaten</string>
+    <string name="settings_offline_pack_usda_name">USDA-Markenprodukte (GTIN)</string>
+    <string name="settings_offline_pack_usda_desc">Optionaler Download: Barcode → Name, Marke und Kalorien für US-Verpackungsprodukte (USDA FoodData Central, gemeinfrei).</string>
+    <string name="settings_offline_pack_offde_name">Open Food Facts Deutschland</string>
+    <string name="settings_offline_pack_offde_desc">Optionaler Download: Barcode → Name, Marke und Kalorien für in Deutschland verkaufte Produkte (Open Food Facts, ODbL).</string>
+    <string name="settings_offline_pack_download">Zum Laden tippen</string>
+    <string name="settings_offline_pack_downloading">Download %1$d%%</string>
+    <string name="settings_offline_pack_installed">v%1$s · %2$s MB</string>
+    <string name="settings_offline_pack_failed">Download fehlgeschlagen — zum Wiederholen tippen</string>
+    <string name="settings_offline_index_wifi_only">Nur über WLAN laden</string>
+    <string name="settings_offline_index_wifi_only_desc">Downloads warten auf ein nicht getaktetes Netzwerk, es sei denn, du schaltest das aus.</string>
+    <string name="settings_offline_index_license_footer">Paketdaten: Open Food Facts (Open-Database-Lizenz) und USDA FoodData Central (gemeinfrei). Pakete laden einmalig von der Release-Seite dieses Projekts; Scans fragen nirgendwo sonst an. Tippe auf ein geladenes Paket, um es zu entfernen.</string>
 
     <string name="on_device_model_privacy_notice">Wird vollständig auf diesem Gerät ausgeführt. Nichts, was du eingibst oder fotografierst, wird an einen Server gesendet. Beim Herunterladen wird die Modelldatei direkt von Hugging Face (%1$s) abgerufen, einem Drittanbieter-Host, der von dieser App ansonsten nicht genutzt wird.</string>
 
