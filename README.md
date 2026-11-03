@@ -19,7 +19,7 @@ Bring your own AI key. On Android you can also run Gemma 4 on-device. No ads, no
 
 </div>
 
-Log food with a photo, voice, barcode, or typed note. Barcode scans look up [Open Food Facts](https://world.openfoodfacts.org/) (4.6M+ products, cached offline). The [PWA](https://chompass.app/app/) and the Android app share the same diary and body-metrics JSON. There is no cloud sync between clients.
+Log food with a photo, voice, barcode, or typed note. Barcode scans look up [Open Food Facts](https://world.openfoodfacts.org/), recent scans stay cached on your device, and optional offline barcode packs (USDA GTIN, Open Food Facts Germany) download in Settings for offline answers. The [PWA](https://chompass.app/app/) and the Android app share the same diary and body-metrics JSON. There is no cloud sync between clients.
 
 ## Install
 
@@ -93,7 +93,7 @@ On both the [PWA](https://chompass.app/app/) and the Android app unless noted:
 ### Logging
 
 - **Food logging**: photo (up to 10), voice, barcode, text, manual entry, meal components, recipes, saved meals, draft recovery. Android also accepts a share into the app.
-- **Barcode**: [Open Food Facts](https://world.openfoodfacts.org/) lookup (4.6M+ products, cached offline). Reads EAN, QR, and Data Matrix. FOSS [zxing-cpp](https://github.com/zxing-cpp/zxing-cpp) on Android; browser scanner on the PWA.
+- **Barcode**: [Open Food Facts](https://world.openfoodfacts.org/) lookup; recent scans stay cached on-device, and optional offline barcode packs (USDA GTIN, Open Food Facts Germany) download in Settings. Reads EAN, QR, and Data Matrix. FOSS [zxing-cpp](https://github.com/zxing-cpp/zxing-cpp) on Android; browser scanner on the PWA.
 - **Food search** (Android): live Open Food Facts search plus offline USDA and Swiss Food Composition indexes.
 
 ### AI
