@@ -38,6 +38,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -628,7 +629,15 @@ internal fun ManualEntryDialog(
 
     val canSave = name.isNotBlank() && calories > 0 && !isSaving
 
-    ChompassDialog(onDismissRequest = onDismiss, scrollable = true) {
+    ChompassDialog(
+        onDismissRequest = onDismiss,
+        // #159: with the keyboard open the fields sat under the IME. Same fix
+        // as the scale-metrics dialog (device pass 2026-10-29): stop
+        // decor-fitting so imePadding sees the inset, and lift the dialog.
+        modifier = Modifier.imePadding(),
+        decorFitsSystemWindows = false,
+        scrollable = true,
+    ) {
                 Text(stringResource(R.string.manual_title), fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
 
                 ChompassTextField(

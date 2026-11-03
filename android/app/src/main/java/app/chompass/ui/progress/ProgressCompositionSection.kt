@@ -86,8 +86,10 @@ private fun formatCompositionDelta(
 /**
  * Scale composition section for the Progress tab: one block per metric that
  * actually has readings in the selected range (bone mass, total body water,
- * muscle mass, lean mass, visceral-fat rating). Users without a
- * composition-reporting scale see nothing at all — no empty cards.
+ * muscle mass, lean mass, visceral-fat rating). With no readings the card
+ * shrinks to header, note, log action and the muscle estimate (#153) — the
+ * manual entry point must exist before the first row does. Without a profile
+ * nothing renders.
  *
  * Display-only: the values come from the user's scale (or a CSV import), and the
  * section says so; nothing here feeds BMR/macros (the profile lean-mass stamp does
@@ -112,7 +114,12 @@ internal fun CompositionSection(
             compositions.any { it.value(metric) != null }
         }
     }
-    if (metrics.isEmpty()) return
+    // #153: the log action lives inside this card, so a profile with zero
+    // composition rows (fresh install, weight-only use) had no manual entry
+    // point at all, and the Lee muscle estimate sat behind the same gate.
+    // Keep the card — header, note, log pill, estimate — whenever a profile
+    // exists; without one there is nothing to log against.
+    if (metrics.isEmpty() && profile == null) return
 
     CardSection {
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {

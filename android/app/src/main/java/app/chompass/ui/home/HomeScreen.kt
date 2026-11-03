@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -122,6 +123,7 @@ import app.chompass.ui.components.WeekEnergyStrip
 import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.util.formatClockMillis
 import app.chompass.ui.navigation.BottomNavScrollPadding
+import app.chompass.ui.navigation.BottomFabScrollClearance
 import app.chompass.ui.navigation.BottomOverlayPadding
 import app.chompass.ui.theme.dayTypeColor
 import app.chompass.ui.theme.nutrientAccentColor
@@ -465,6 +467,40 @@ fun HomeScreen(
         ui.todayEntries.filter { it.id in selectedEntryIds }
     }
     val inSelectionMode = selectedEntryIds.isNotEmpty()
+
+    // #159: a freshly logged row can land off-screen (standard sort appends at
+    // the bottom), so the entry the user just saved is invisible. Scroll it
+    // into view once — single additions only (batch imports must not yank the
+    // list), and only when the row is not already composed (a top-side
+    // insertion under "latest meals first" must not move the scroll position).
+    val foodLogListState = rememberLazyListState()
+    var seenEntryIds by remember { mutableStateOf<Set<UUID>?>(null) }
+    LaunchedEffect(ui.todayEntries, mealGroups) {
+        val ids = ui.todayEntries.mapTo(mutableSetOf()) { it.id }
+        val previous = seenEntryIds
+        seenEntryIds = ids
+        if (previous == null || inSelectionMode) return@LaunchedEffect
+        val added = ids - previous
+        if (added.size != 1) return@LaunchedEffect
+        // Flat item index mirrors the fixed items above the food log: week
+        // strip, hero block, spacer, plus the optional seeding notice and the
+        // optional daily-note pair; each meal group then contributes its
+        // header + rows. Keep in sync with the item list below.
+        var index = 3 + (if (seedingSampleData) 1 else 0) + (if (ui.dailyNotesEnabled) 2 else 0)
+        var target: Int? = null
+        for (group in mealGroups) {
+            val position = group.entries.indexOfFirst { it.id in added }
+            if (position >= 0) {
+                target = index + 1 + position
+                break
+            }
+            index += 1 + group.entries.size
+        }
+        val flat = target ?: return@LaunchedEffect
+        if (foodLogListState.layoutInfo.visibleItemsInfo.any { it.index == flat }) return@LaunchedEffect
+        runCatching { foodLogListState.animateScrollToItem(flat) }
+    }
+
     val scope = rememberCoroutineScope()
     val foodRemovedMessage = stringResource(R.string.home_food_removed)
     val undoLabel = stringResource(R.string.action_undo)
@@ -528,11 +564,15 @@ fun HomeScreen(
     ) { padding ->
         Box(Modifier.fillMaxSize().padding(padding)) {
         LazyColumn(
+            state = foodLogListState,
             modifier = Modifier
                 .contentMaxWidth(),
             contentPadding = androidx.compose.foundation.layout.PaddingValues(
                 top = if (inSelectionMode) 72.dp else 8.dp,
-                bottom = BottomNavScrollPadding
+                // #156: the Add FAB docks above the pill, so the list must
+                // scroll past it — BottomNavScrollPadding alone left the last
+                // row's trailing chips behind the button at max scroll.
+                bottom = BottomNavScrollPadding + BottomFabScrollClearance
             )
         ) {
             // Week strip — 52 past weeks + current + 8 future (Codeberg #96).
@@ -2310,7 +2350,7 @@ internal fun HomeScreenPreviewContent(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = androidx.compose.foundation.layout.PaddingValues(
                     top = 8.dp,
-                    bottom = BottomNavScrollPadding,
+                    bottom = BottomNavScrollPadding + BottomFabScrollClearance,
                 ),
             ) {
                 item {

@@ -91,8 +91,8 @@ private fun derivedMetricList(
 ): List<Pair<String, String>> = buildList {
     m.waistToHipRatio?.let { add(context.getString(R.string.derived_waist_to_hip) to String.format(Locale.getDefault(), "%.2f", it)) }
     m.waistToHeightRatio(heightCm)?.let { add(context.getString(R.string.derived_waist_to_height) to String.format(Locale.getDefault(), "%.2f", it)) }
-    m.usNavyBodyFatPercent(gender, heightCm)?.let { add(context.getString(R.string.derived_navy_body_fat) to String.format(Locale.getDefault(), "%.0f%%", it)) }
-    m.relativeFatMassPercent(gender, heightCm)?.let { add(context.getString(R.string.derived_rfm_body_fat) to String.format(Locale.getDefault(), "%.0f%%", it)) }
+    m.usNavyBodyFatPercent(gender, heightCm)?.let { add(context.getString(R.string.derived_navy_body_fat) to String.format(Locale.getDefault(), "%.1f%%", it)) }
+    m.relativeFatMassPercent(gender, heightCm)?.let { add(context.getString(R.string.derived_rfm_body_fat) to String.format(Locale.getDefault(), "%.1f%%", it)) }
     m.estimatedSkeletalMuscleMassKg(gender, ageYears, heightCm)?.let { kg ->
         // SMM-LEE is display-only: a trend companion, never an input to BMR/macros.
         val value = if (useMetric) String.format(Locale.getDefault(), "%.1f %s", kg, context.getString(R.string.unit_kg))
@@ -104,8 +104,8 @@ private fun derivedMetricList(
 
 private fun measurementHistorySummary(context: android.content.Context, m: BodyMeasurement, gender: Gender, heightCm: Double, useMetric: Boolean): String {
     val sites = measurementSiteList(context, m).map { "${it.first} ${displayLengthCm(context, it.second, useMetric)}" }
-    val navy = m.usNavyBodyFatPercent(gender, heightCm)?.let { "Navy ${String.format(Locale.getDefault(), "%.0f%%", it)}" }
-    val rfm = m.relativeFatMassPercent(gender, heightCm)?.let { "RFM ${String.format(Locale.getDefault(), "%.0f%%", it)}" }
+    val navy = m.usNavyBodyFatPercent(gender, heightCm)?.let { "Navy ${String.format(Locale.getDefault(), "%.1f%%", it)}" }
+    val rfm = m.relativeFatMassPercent(gender, heightCm)?.let { "RFM ${String.format(Locale.getDefault(), "%.1f%%", it)}" }
     val bf = listOfNotNull(navy, rfm).joinToString(" · ").ifEmpty { null }
     return (sites + listOfNotNull(bf)).joinToString(" · ")
 }
