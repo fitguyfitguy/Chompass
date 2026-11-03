@@ -2847,4 +2847,11 @@
     <string name="export_settings_summary">प्राथमिकताओं को JSON फ़ाइल में सहेजता है। कोई API कुँजी शामिल नहीं है।</string>
     <string name="export_settings_success">सेटिंग निर्यात हो गईं।</string>
     <string name="export_settings_failed">सेटिंग निर्यात विफल: %1$s</string>
-</resources>
+    <string name="progress_sync_scale_metrics">स्केल से सिंक करें</string>
+    <string name="progress_sync_scale_rationale">Chompass को आपके स्केल से बात करने के लिए नज़दीकी डिवाइस अनुमति चाहिए।</string>
+    <string name="progress_sync_scale_grant">अनुमति दें</string>
+    <string name="progress_sync_scale_scanning">आपका स्केल खोजा जा रहा है… उस पर चढ़ जाइए</string>
+    <string name="progress_sync_scale_reading">%1$s से पढ़ा जा रहा है…</string>
+    <string name="progress_sync_scale_done">%1$d नई वज़न माप आयात की गईं</string>
+    <string name="progress_sync_scale_failed">स्केल सिंक विफल: %1$s</string>
+    </resources>

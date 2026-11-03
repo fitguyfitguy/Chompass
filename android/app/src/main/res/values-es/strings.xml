@@ -2861,4 +2861,11 @@ macros reequilibradas al nuevo total calórico</string>
     <string name="export_settings_summary">Guarda las preferencias en un archivo JSON. No se incluyen claves de API.</string>
     <string name="export_settings_success">Ajustes exportados.</string>
     <string name="export_settings_failed">Error al exportar los ajustes: %1$s</string>
-</resources>
+    <string name="progress_sync_scale_metrics">Sincronizar desde la báscula</string>
+    <string name="progress_sync_scale_rationale">Chompass necesita el permiso de dispositivos cercanos para hablar con tu báscula.</string>
+    <string name="progress_sync_scale_grant">Conceder</string>
+    <string name="progress_sync_scale_scanning">Buscando tu báscula… sube a ella</string>
+    <string name="progress_sync_scale_reading">Leyendo de %1$s…</string>
+    <string name="progress_sync_scale_done">Se importaron %1$d pesadas nuevas</string>
+    <string name="progress_sync_scale_failed">Error al sincronizar la báscula: %1$s</string>
+    </resources>
