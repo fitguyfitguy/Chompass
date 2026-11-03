@@ -43,3 +43,10 @@ val BottomNavDockedControlPadding = 72.dp
 
 /** Docked overlays (FAB, chips, snackbar) sit this far above the bottom pill. */
 val BottomOverlayPadding = BottomNavDockedControlPadding + 16.dp
+
+/**
+ * Extra scroll clearance for lists under a docked overlay: FAB 56dp tall plus
+ * 8dp breathing room above [BottomOverlayPadding] (#156 — at max scroll the
+ * Add button covered the last row's trailing chips).
+ */
+val BottomFabScrollClearance = 64.dp

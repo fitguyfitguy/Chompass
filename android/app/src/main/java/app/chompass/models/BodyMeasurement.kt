@@ -156,7 +156,7 @@ data class BodyMeasurement(
         val metrics = mutableListOf<String>()
         waistToHipRatio?.let { metrics.add("waist-to-hip ${String.format(Locale.US, "%.2f", it)}") }
         waistToHeightRatio(heightCm)?.let { metrics.add("waist-to-height ${String.format(Locale.US, "%.2f", it)}") }
-        usNavyBodyFatPercent(gender, heightCm)?.let { metrics.add("US-Navy body fat ~${String.format(Locale.US, "%.0f", it)}%") }
+        usNavyBodyFatPercent(gender, heightCm)?.let { metrics.add("US-Navy body fat ~${String.format(Locale.US, "%.1f", it)}%") }
         wristFrame(gender, heightCm)?.let { metrics.add("frame ${it.label.lowercase()}") }
 
         var summary = sites.joinToString(", ")

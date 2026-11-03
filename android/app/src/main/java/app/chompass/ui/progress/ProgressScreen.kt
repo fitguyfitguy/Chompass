@@ -239,9 +239,10 @@ fun ProgressScreen(container: AppContainer, onOpenCustomize: (() -> Unit)? = nul
                     }
             }
 
-            // Scale composition: renders nothing at all when the range holds no
-            // composition rows, so users without such a scale see no change.
-            if (heavySectionsReady && ui.filteredCompositions.isNotEmpty()) {
+            // Scale composition: metric blocks stay reading-gated, but the card
+            // itself now renders with the log action whenever a profile exists
+            // (#153 — the entry point must not require a first composition row).
+            if (heavySectionsReady && ui.profile != null) {
                 item {
                     CompositionSection(
                         compositions = ui.filteredCompositions,
@@ -496,7 +497,7 @@ internal fun ProgressScreenPreviewContent(
                         )
                     }
                 }
-            if (ui.filteredCompositions.isNotEmpty()) {
+            if (ui.profile != null) {
                 item {
                     CompositionSection(
                         compositions = ui.filteredCompositions,
