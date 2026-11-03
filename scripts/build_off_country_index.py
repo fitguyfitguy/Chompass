@@ -52,6 +52,22 @@ PACK_ID = "off-de"
 LICENSE_TEXT = "Open Database Licence (ODbL) — Open Food Facts"
 DATASET_BASE = "https://huggingface.co/datasets/openfoodfacts/product-database/resolve"
 
+# countries_tags carry language prefixes (`en:germany`) and the English slug
+# differs from the CLI's ISO code (`de`). Bare and prefix-stripped matches both
+# count; near-misses like `en:east-germany` stay out. Extend per new pilot.
+COUNTRY_TAG_SLUGS = {"de": "germany"}
+
+
+def matches_country(tags: list[str] | None, country_tag: str) -> bool:
+    slug = COUNTRY_TAG_SLUGS.get(country_tag, country_tag)
+    for tag in tags or []:
+        if tag == country_tag:
+            return True
+        local = tag.split(":", 1)[-1]
+        if local == country_tag or local == slug:
+            return True
+    return False
+
 # Columns read from the parquet (nothing else is pulled off disk).
 COLUMNS = ["code", "product_name", "brands", "countries_tags", "serving_quantity", "nutriments"]
 # Fields inside the ``nutriments`` struct. energy_100g (kJ) backs kcal up,
@@ -112,12 +128,25 @@ def build_from_parquet(
             f"Present: {sorted(names)}. Pin --revision to a known-good dataset "
             "revision, or update COLUMNS/NUTRIENT_FIELDS for a real rename."
         )
-    nutr_names = set(getattr(schema.field("nutriments").type, "names", []) or [])
-    missing_fields = [f for f in NUTRIENT_FIELDS if f not in nutr_names]
-    if missing_fields:
+    nutr_type = schema.field("nutriments").type
+    # The 2026-11 nightly moved nutriments from a flat struct keyed by
+    # `energy-kcal_100g`-style fields to a list of per-nutrient structs
+    # (`name` + `100g`/`serving`/…), and product_name to a localized list of
+    # {lang, text} structs. Anything else is drift worth pinning.
+    elem_names = set(getattr(getattr(nutr_type, "value_type", None), "names", []) or [])
+    if nutr_type.__class__.__name__ != "ListType" or not {"name", "100g"} <= elem_names:
         raise SystemExit(
-            f"OFF parquet nutriments struct is missing {missing_fields}; "
-            f"found {sorted(nutr_names)}."
+            "OFF parquet nutriments column changed shape: expected "
+            f"list<struct> with name/100g fields, got {nutr_type}. "
+            "Pin --revision to a known-good dataset revision or update the reader."
+        )
+    pname_type = schema.field("product_name").type
+    pname_elem_names = set(getattr(getattr(pname_type, "value_type", None), "names", []) or [])
+    if pname_type.__class__.__name__ != "ListType" or not {"lang", "text"} <= pname_elem_names:
+        raise SystemExit(
+            "OFF parquet product_name column changed shape: expected "
+            f"list<struct> with lang/text fields, got {pname_type}. "
+            "Pin --revision to a known-good dataset revision or update the reader."
         )
 
     if db_path.exists():
@@ -129,21 +158,59 @@ def build_from_parquet(
         create_barcode_pack(conn)
         for batch in pf.iter_batches(batch_size=65536, columns=COLUMNS):
             codes = batch.column("code").to_pylist()
-            product_names = batch.column("product_name").to_pylist()
+            # product_name is a localized list of {lang, text} structs; resolve
+            # the row name to its `main` entry, else the first non-empty text.
+            pname_col = batch.column("product_name")
+            pname_elems = pname_col.flatten()
+            pname_langs = pname_elems.field("lang").to_pylist()
+            pname_texts = pname_elems.field("text").to_pylist()
+            pname_offsets = pname_col.offsets.to_pylist()
+            product_names: list[str | None] = []
+            for i in range(len(pname_offsets) - 1):
+                main = None
+                first = None
+                for lang, text in zip(
+                    pname_langs[pname_offsets[i]:pname_offsets[i + 1]],
+                    pname_texts[pname_offsets[i]:pname_offsets[i + 1]],
+                ):
+                    if not text:
+                        continue
+                    if first is None:
+                        first = text
+                    if lang == "main":
+                        main = text
+                        break
+                product_names.append(main or first)
             brands = batch.column("brands").to_pylist()
             countries = batch.column("countries_tags").to_pylist()
             servings = batch.column("serving_quantity").to_pylist()
             nutr_lists: dict[str, list] = {f: [] for f in NUTRIENT_FIELDS}
-            for chunk in batch.column("nutriments").chunks:
+            # nutriments is a list of {name, value, 100g, serving, …} structs per
+            # row; the per-100g value of old flat key `energy-kcal_100g` is the
+            # entry named `energy-kcal` with its `100g` field set. RecordBatch
+            # columns are plain Arrays (no chunks).
+            nutr_col = batch.column("nutriments")
+            elems = nutr_col.flatten()
+            entry_names = elems.field("name").to_pylist()
+            per100 = elems.field("100g").to_pylist()
+            offsets = nutr_col.offsets.to_pylist()
+            for i in range(len(offsets) - 1):
+                row_values: dict[str, float] = {}
+                for name, value in zip(
+                    entry_names[offsets[i]:offsets[i + 1]],
+                    per100[offsets[i]:offsets[i + 1]],
+                ):
+                    if name and value is not None and name not in row_values:
+                        row_values[name] = value
                 for field in NUTRIENT_FIELDS:
-                    nutr_lists[field].extend(chunk.field(field).to_pylist())
+                    nutr_lists[field].append(row_values.get(field[:-5]))
 
             for i, raw_code in enumerate(codes):
                 code = (raw_code or "").strip() if isinstance(raw_code, str) else ""
                 if not code.isdigit():
                     continue
                 tags = countries[i] or []
-                if country_tag not in tags:
+                if not matches_country(tags, country_tag):
                     continue
                 raw_name = product_names[i]
                 name = raw_name.strip() if isinstance(raw_name, str) else ""
