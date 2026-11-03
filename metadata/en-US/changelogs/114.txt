@@ -1,0 +1,3 @@
+• Scale metrics can be logged by hand before any scale reading exists; the estimated muscle mass shows for weight-only profiles too (Android).
+• The Add button no longer covers the last diary entry, newly logged entries scroll into view, and the manual entry dialog lifts above the keyboard (Android).
+• Derived body-fat estimates show one decimal (Android).

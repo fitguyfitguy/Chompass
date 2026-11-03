@@ -6,10 +6,19 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## [Unreleased]
 
+## [6.1.1] - 2026-11-03
+
 ### Changed
 
 - **The calorie hero takes its color from your theme** (Android and web app): the eaten arc and the compact bar now run from your theme color to a slightly lighter tint of it instead of one flat band, so the ring gains depth as it fills. Every theme color gets its own ramp, and the web app's light theme uses the deeper accent for the arc instead of the pale one.
 - **The site hero glows in brand colors** (site): the live-demo backdrop behind the phone was still tinted with the old teal-green; it now glows with the plum and peach brand tones.
+
+### Fixed
+
+- **Scale metrics can be logged before any scale reading exists** (Android): the log action lived inside the Scale metrics card, and that card only appeared once a reading had arrived from Health Connect, a scale export, or sync. The card now shows the log action and the estimated muscle mass even with no readings, so a fresh install or a weight-only profile can log bone mass, body water, muscle mass and the visceral-fat rating by hand. Closes Codeberg [#153](https://codeberg.org/fitguy/Chompass/issues/153)
+- **The Add button no longer covers the last diary entry** (Android): at the bottom of the food log the last row's nutrition chips sat behind the floating Add button. The list now scrolls past it. Closes Codeberg [#156](https://codeberg.org/fitguy/Chompass/issues/156) by [@Spacellary](https://codeberg.org/Spacellary)
+- **New food entries scroll into view after logging** (Android): with the standard food log order a newly logged row could land off-screen, so the entry just saved stayed invisible until a manual scroll. Logging now scrolls the new row into view. The edit sheet brings the serving card into view when it would open below the fold, and the manual entry dialog lifts above the keyboard so its fields stay reachable while typing. Closes Codeberg [#159](https://codeberg.org/fitguy/Chompass/issues/159) by [@NiklasMM](https://codeberg.org/NiklasMM)
+- **Derived body-fat estimates show one decimal** (Android): the US Navy and relative fat mass estimates on the measurements screen rounded to whole percent while the other body metrics show decimals. They now show one decimal too.
 
 ## [6.1.0] - 2026-11-02
 
