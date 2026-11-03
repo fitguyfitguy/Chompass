@@ -91,14 +91,14 @@ enum class AIProvider {
             "gpt-4o-mini"
         )
         ANTHROPIC -> listOf(
+            "claude-haiku-5-5",
+            "claude-sonnet-5-5",
             "claude-haiku-4-5",
             "claude-sonnet-5",
             "claude-opus-4-8",
             "claude-sonnet-4-6",
             "claude-opus-4-7",
-            "claude-opus-5-5",
-            "claude-sonnet-5-5",
-            "claude-haiku-5-5"
+            "claude-opus-5-5"
         )
         XAI -> listOf(
             "grok-4.3"
