@@ -1,0 +1,25 @@
+{
+  "synthetic": true,
+  "note": "Hand-built Beurer BF700/800 handshake frames derived from BeurerSanitasHandler's documented protocol (third_party/openscale/SNAPSHOT.md). Replace with real logcat captures after the first live weigh-in (Step 5 device pass).",
+  "deviceName": "BEURER BF700",
+  "characteristic": "0000ffe1-0000-1000-8000-00805f9b34fb",
+  "expected": {
+    "weightKg": 78.5,
+    "bodyFatPercent": 24.0,
+    "waterPercent": 55.0,
+    "musclePercent": 42.0,
+    "boneKg": 3.2,
+    "impedanceOhm": 500,
+    "dateTimeEpochMs": 1800000000000
+  },
+  "frames": [
+    { "role": "init-ack (alt start byte, nibble 6)", "hex": "F6" },
+    { "role": "scale-ack: CMD_SCALE_STATUS, unit=KG, battery=80", "hex": "F7F04F005001010100000005" },
+    { "role": "scale-ack: CMD_USER_LIST, 1 user of max 8", "hex": "F7F0330108" },
+    { "role": "CMD_USER_INFO: uid=100, name ALE, born 1990", "hex": "F73401010000000000000064414C455A" },
+    { "role": "scale-ack: CMD_GET_SAVED_MEASUREMENTS, 0 saved", "hex": "F7F04100" },
+    { "role": "CMD_MEASUREMENT part 1/3: uid=100 (decodeUserId reads offsets 5..12)", "hex": "F7590301000000000000000064" },
+    { "role": "CMD_MEASUREMENT part 2/3: ts=1800000000, weight 78.5kg (0x0622 x 50g), impedance 500", "hex": "F75903026B49D200062201F4" },
+    { "role": "CMD_MEASUREMENT part 3/3: fat 24.0, water 55.0, muscle 42.0, bone 3.2kg", "hex": "F759030300F0022601A40040" }
+  ]
+}
