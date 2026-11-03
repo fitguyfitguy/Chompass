@@ -2835,4 +2835,9 @@
         <item>重置</item>
         <item>出厂</item>
     </string-array>
+
+    <string name="settings_nav_bar">导航栏</string>
+    <string name="settings_nav_bar_subtitle">底部停靠的经典栏或浮动玻璃胶囊。</string>
+    <string name="settings_nav_bar_pill">浮动胶囊</string>
+    <string name="settings_nav_bar_classic">经典栏</string>
 </resources>

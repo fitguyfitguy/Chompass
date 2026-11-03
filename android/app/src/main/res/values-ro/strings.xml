@@ -2853,4 +2853,9 @@ macro-urile reechilibrate la noul total caloric</string>
         <item>resetare</item>
         <item>fabrică</item>
     </string-array>
+
+    <string name="settings_nav_bar">Bară de navigare</string>
+    <string name="settings_nav_bar_subtitle">Bară clasică fixată jos sau pastilă de sticlă plutitoare.</string>
+    <string name="settings_nav_bar_pill">Pastilă plutitoare</string>
+    <string name="settings_nav_bar_classic">Bară clasică</string>
 </resources>

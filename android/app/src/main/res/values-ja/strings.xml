@@ -2835,4 +2835,9 @@
         <item>リセット</item>
         <item>初期化</item>
     </string-array>
+
+    <string name="settings_nav_bar">ナビゲーションバー</string>
+    <string name="settings_nav_bar_subtitle">下部に固定するクラシックバー、または浮かぶガラスピル。</string>
+    <string name="settings_nav_bar_pill">フローティングピル</string>
+    <string name="settings_nav_bar_classic">クラシックバー</string>
 </resources>

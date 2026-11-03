@@ -2881,4 +2881,9 @@
         <item>إعادة تعيين</item>
         <item>ضبط المصنع</item>
     </string-array>
+
+    <string name="settings_nav_bar">شريط التنقل</string>
+    <string name="settings_nav_bar_subtitle">شريط كلاسيكي مثبت أسفل الشاشة أو كبسولة زجاجية عائمة.</string>
+    <string name="settings_nav_bar_pill">كبسولة عائمة</string>
+    <string name="settings_nav_bar_classic">الشريط الكلاسيكي</string>
 </resources>

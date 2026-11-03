@@ -12,6 +12,10 @@ import java.time.YearMonth
 
 internal const val FOOD_ENTRIES_BUCKET_PREFIX = "foodEntries_"
 
+/** Bottom navigation style values for [Keys.NAV_BAR_STYLE] (Codeberg #158). */
+internal const val NAV_BAR_STYLE_PILL = "pill"
+internal const val NAV_BAR_STYLE_CLASSIC = "classic"
+
 internal object Keys {
         val USER_PROFILE = stringPreferencesKey("userProfile")
         /** Per-day goal journal (Codeberg #60, MACRO-CYCLE-D); see models/GoalJournal.kt. */
@@ -177,6 +181,8 @@ internal object Keys {
          *  no data is sent to any LLM provider and AI entry points are hidden. */
         val AI_FEATURES_ENABLED = booleanPreferencesKey("aiFeaturesEnabled")
         val APP_THEME_COLOR = stringPreferencesKey("appThemeColor")
+        /** Codeberg #158: bottom navigation style — pill (default) or classic docked bar. */
+        val NAV_BAR_STYLE = stringPreferencesKey("navBarStyle")
         /** Frosted-glass blur behind floating panels (Morphe traits); default ON.
          *  Key survives from the iOS era, so stored `true` simply means enabled. */
         val GLASS_BLUR_ENABLED = booleanPreferencesKey("glassBlurEnabled")

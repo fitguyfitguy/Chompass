@@ -2932,4 +2932,9 @@
         <item>сброс</item>
         <item>заводские</item>
     </string-array>
+
+    <string name="settings_nav_bar">Панель навигации</string>
+    <string name="settings_nav_bar_subtitle">Классическая панель внизу экрана или плавающая стеклянная пилюля.</string>
+    <string name="settings_nav_bar_pill">Плавающая пилюля</string>
+    <string name="settings_nav_bar_classic">Классическая панель</string>
 </resources>

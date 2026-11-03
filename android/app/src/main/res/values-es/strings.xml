@@ -2851,4 +2851,9 @@ macros reequilibradas al nuevo total calórico</string>
         <item>restablecer</item>
         <item>fábrica</item>
     </string-array>
+
+    <string name="settings_nav_bar">Barra de navegación</string>
+    <string name="settings_nav_bar_subtitle">Barra clásica anclada abajo o píldora de cristal flotante.</string>
+    <string name="settings_nav_bar_pill">Píldora flotante</string>
+    <string name="settings_nav_bar_classic">Barra clásica</string>
 </resources>

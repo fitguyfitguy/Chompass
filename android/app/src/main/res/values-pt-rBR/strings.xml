@@ -2840,4 +2840,9 @@ macros reequilibradas ao novo total calórico</string>
         <item>redefinir</item>
         <item>fábrica</item>
     </string-array>
+
+    <string name="settings_nav_bar">Barra de navegação</string>
+    <string name="settings_nav_bar_subtitle">Barra clássica fixa na parte inferior ou pílula de vidro flutuante.</string>
+    <string name="settings_nav_bar_pill">Pílula flutuante</string>
+    <string name="settings_nav_bar_classic">Barra clássica</string>
 </resources>

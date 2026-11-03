@@ -65,6 +65,7 @@ import app.chompass.data.GoalRecalcTierOverride
 import app.chompass.data.OpenRouterReasoningEffort
 import app.chompass.data.WeatherRepository
 import app.chompass.data.readSettingsHydration
+import app.chompass.data.NAV_BAR_STYLE_PILL
 import app.chompass.services.ondevice.ModelCatalog
 import app.chompass.services.ondevice.OnDeviceCapability
 import app.chompass.models.WeightGoal
@@ -240,6 +241,8 @@ data class SettingsUiState(
     /** Issue #8 follow-up: release cleartext opt-in for user-entered endpoints; default OFF. */
     val allowInsecureHttp: Boolean = false,
     val appThemeColor: AppThemeColor = AppThemeColor.PLUM,
+    /** Codeberg #158: bottom bar style — pill (default) or classic docked bar. */
+    val navBarStyle: String = NAV_BAR_STYLE_PILL,
     /** Opt-in: launcher icon stays the brand teal and never swaps aliases (#21). */
     val fixedLauncherIcon: Boolean = false,
     /** Codeberg #77: meal date/time uses the system pickers. */
@@ -450,12 +453,14 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             combine(
                 container.prefs.appThemeColor,
                 container.prefs.appearanceMode,
-            ) { theme, appearance -> theme to appearance }
-                .collect { (theme, appearance) ->
+                container.prefs.navBarStyle,
+            ) { theme, appearance, navStyle -> Triple(theme, appearance, navStyle) }
+                .collect { (theme, appearance, navStyle) ->
                     _ui.update {
                         it.copy(
                             appThemeColor = AppThemeColor.fromKey(theme),
                             appearanceMode = appearance,
+                            navBarStyle = navStyle,
                         )
                     }
                 }
@@ -652,6 +657,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                     aiFeaturesEnabled = snap.aiFeaturesEnabled,
                     allowInsecureHttp = snap.allowInsecureHttp,
                     appThemeColor = AppThemeColor.fromKey(snap.appThemeColorKey),
+                    navBarStyle = snap.navBarStyleKey,
                     fixedLauncherIcon = snap.fixedLauncherIcon,
                     useSystemDateTimePickers = snap.useSystemDateTimePickers,
                     glassBlurEnabled = snap.glassBlurEnabled,
@@ -1085,6 +1091,12 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
     fun setAppThemeColor(themeColor: AppThemeColor) = updateUiPref(
         { container.prefs.setAppThemeColor(themeColor.key) },
         { copy(appThemeColor = themeColor) },
+    )
+
+    /** Codeberg #158: switch the bottom bar between floating pill and classic docked bar. */
+    fun setNavBarStyle(style: String) = updateUiPref(
+        { container.prefs.setNavBarStyle(style) },
+        { copy(navBarStyle = style) },
     )
 
     fun setFixedLauncherIcon(enabled: Boolean) = updateUiPref(

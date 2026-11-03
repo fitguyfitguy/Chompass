@@ -426,6 +426,10 @@ class PreferencesStore(private val appContext: Context) : NutritionSyncStore {
     suspend fun setAllowInsecureHttp(v: Boolean) = setAllowInsecureHttpImpl(v)
     val appThemeColor: Flow<String> get() = appThemeColorImpl
     suspend fun setAppThemeColor(v: String) = setAppThemeColorImpl(v)
+
+    /** Codeberg #158: bottom navigation style — pill (default) or classic docked bar. */
+    val navBarStyle: Flow<String> get() = navBarStyleImpl
+    suspend fun setNavBarStyle(v: String) = setNavBarStyleImpl(v)
     val fixedLauncherIcon: Flow<Boolean> get() = fixedLauncherIconImpl
     suspend fun setFixedLauncherIcon(v: Boolean) = setFixedLauncherIconImpl(v)
     val useSystemDateTimePickers: Flow<Boolean> get() = useSystemDateTimePickersImpl

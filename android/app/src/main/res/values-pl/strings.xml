@@ -2878,4 +2878,9 @@ makro rebalansowane do nowej sumy kalorii</string>
         <item>reset</item>
         <item>fabryczne</item>
     </string-array>
+
+    <string name="settings_nav_bar">Pasek nawigacji</string>
+    <string name="settings_nav_bar_subtitle">Klasyczny pasek przyczepiony do dołu albo unosząca się szklana pigułka.</string>
+    <string name="settings_nav_bar_pill">Unosząca się pigułka</string>
+    <string name="settings_nav_bar_classic">Klasyczny pasek</string>
 </resources>

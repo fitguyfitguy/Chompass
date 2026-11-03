@@ -102,6 +102,10 @@ internal val PreferencesStore.appThemeColorImpl: Flow<String> get() = dataStore.
     }
 internal suspend fun PreferencesStore.setAppThemeColorImpl(v: String) { dataStore.edit { it[Keys.APP_THEME_COLOR] = v } }
 
+/** Codeberg #158: bottom navigation style — pill (default) or classic docked Material bar. */
+internal val PreferencesStore.navBarStyleImpl: Flow<String> get() = dataStore.data.map { it[Keys.NAV_BAR_STYLE] ?: NAV_BAR_STYLE_PILL }
+internal suspend fun PreferencesStore.setNavBarStyleImpl(v: String) { dataStore.edit { it[Keys.NAV_BAR_STYLE] = v } }
+
     /** When ON the launcher icon stays the brand icon and never swaps activity aliases (launcher workaround, #21). */
 internal val PreferencesStore.fixedLauncherIconImpl: Flow<Boolean> get() = dataStore.data.map { it[Keys.FIXED_LAUNCHER_ICON] ?: false }
 internal suspend fun PreferencesStore.setFixedLauncherIconImpl(v: Boolean) { dataStore.edit { it[Keys.FIXED_LAUNCHER_ICON] = v } }

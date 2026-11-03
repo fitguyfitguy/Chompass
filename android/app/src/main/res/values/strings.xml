@@ -1669,6 +1669,10 @@
     <string name="settings_appearance_dark">Dark</string>
     <string name="settings_appearance_oled">OLED</string>
     <string name="settings_theme_color">Theme Color</string>
+    <string name="settings_nav_bar">Navigation bar</string>
+    <string name="settings_nav_bar_subtitle">Docked classic bar or floating glass pill at the bottom.</string>
+    <string name="settings_nav_bar_pill">Floating pill</string>
+    <string name="settings_nav_bar_classic">Classic bar</string>
     <string name="settings_fixed_launcher_icon">Fixed Launcher Icon</string>
     <string name="settings_fixed_launcher_icon_subtitle">Keeps the brand icon. It stops following the theme color and wallpaper.</string>
     <string name="settings_system_date_time_pickers">System date and time pickers</string>
