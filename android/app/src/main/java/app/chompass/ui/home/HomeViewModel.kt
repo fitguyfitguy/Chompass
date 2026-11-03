@@ -2148,7 +2148,12 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 )
             },
         ) { start ->
-            val lookup = OpenFoodFactsService.lookupWithImage(barcode, container.prefs)
+            val lookup = OpenFoodFactsService.lookupWithImage(
+                barcode,
+                container.prefs,
+                photoStore = container.barcodePhotoStore,
+                packs = container.packResolver,
+            )
             savePendingDraft(
                 analysis = lookup.analysis,
                 imageBytes = lookup.productImageBytes,

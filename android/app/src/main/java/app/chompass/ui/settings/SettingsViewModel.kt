@@ -281,6 +281,7 @@ data class SettingsUiState(
     val foodSearchOpenFoodFactsEnabled: Boolean = true,
     val foodSearchUsdaEnabled: Boolean = true,
     val foodSearchSwissEnabled: Boolean = true,
+    val offlineIndexWifiOnly: Boolean = true,
     /** Inverted in UI: “Ask for a photo note” = !skipPhotoNotePrompt. */
     val skipPhotoNotePrompt: Boolean = false,
     val optionalNutrientGoals: OptionalNutrientGoals = OptionalNutrientGoals.Default,
@@ -680,6 +681,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                     foodSearchOpenFoodFactsEnabled = snap.foodSearchOpenFoodFactsEnabled,
                     foodSearchUsdaEnabled = snap.foodSearchUsdaEnabled,
                     foodSearchSwissEnabled = snap.foodSearchSwissEnabled,
+                    offlineIndexWifiOnly = snap.offlineIndexWifiOnly,
                     skipPhotoNotePrompt = snap.skipPhotoNotePrompt,
                     optionalNutrientGoals = snap.optionalNutrientGoals,
                     homeDisplay = snap.homeDisplay,
@@ -999,6 +1001,19 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         { container.prefs.setFoodSearchSwissEnabled(v) },
         { copy(foodSearchSwissEnabled = v) },
     )
+
+    fun setOfflineIndexWifiOnly(v: Boolean) = updateUiPref(
+        { container.prefs.setOfflineIndexWifiOnly(v) },
+        { copy(offlineIndexWifiOnly = v) },
+    )
+
+    fun downloadOfflinePack(packId: String) {
+        container.offlineIndexManager.requestDownload(packId)
+    }
+
+    fun removeOfflinePack(packId: String) {
+        container.offlineIndexManager.remove(packId)
+    }
 
     fun setServingUnitInferenceMode(mode: ServingUnitInferenceMode) = updateUiPref(
         { container.prefs.setServingUnitInferenceMode(mode) },

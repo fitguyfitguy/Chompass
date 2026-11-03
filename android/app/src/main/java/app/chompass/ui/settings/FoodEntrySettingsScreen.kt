@@ -13,6 +13,7 @@ import androidx.compose.material.icons.outlined.Restaurant
 import androidx.compose.material.icons.outlined.Storage
 import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material.icons.outlined.Tune
+import androidx.compose.material.icons.outlined.Wifi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -31,6 +32,8 @@ import androidx.compose.ui.unit.sp
 import app.chompass.AppContainer
 import app.chompass.R
 import app.chompass.models.ServingUnitInferenceMode
+import app.chompass.services.offline.OfflineIndexPacks
+import app.chompass.services.offline.OfflineIndexState
 import app.chompass.ui.components.ChompassDialog
 import app.chompass.ui.components.ChompassDialogActions
 
@@ -39,6 +42,26 @@ import app.chompass.ui.components.ChompassDialogActions
  * food databases search looks in, and how photo analysis works (note prompt,
  * constituents, serving size detection). Provider wiring lives in AI & Speech.
  */
+private fun packTitleRes(packId: String): Int = when (packId) {
+    OfflineIndexPacks.USDA_GTINS.id -> R.string.settings_offline_pack_usda_name
+    else -> R.string.settings_offline_pack_offde_name
+}
+
+private fun packDescRes(packId: String): Int = when (packId) {
+    OfflineIndexPacks.USDA_GTINS.id -> R.string.settings_offline_pack_usda_desc
+    else -> R.string.settings_offline_pack_offde_desc
+}
+
+@Composable
+private fun offlinePackStateLine(state: OfflineIndexState): String = when (state) {
+    is OfflineIndexState.Downloading ->
+        stringResource(R.string.settings_offline_pack_downloading, (state.progress * 100).toInt())
+    is OfflineIndexState.Installed ->
+        stringResource(R.string.settings_offline_pack_installed, state.version, state.bytes / (1024 * 1024))
+    is OfflineIndexState.Failed -> stringResource(R.string.settings_offline_pack_failed)
+    OfflineIndexState.NotDownloaded -> stringResource(R.string.settings_offline_pack_download)
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FoodEntrySettingsScreen(
@@ -153,6 +176,37 @@ fun FoodEntrySettingsScreen(
                 icon = Icons.Outlined.Storage,
                 onChange = vm::setFoodSearchSwissEnabled,
             )
+        }
+
+        // Downloadable offline barcode packs (Codeberg WP5): the barcode
+        // lookup chain consults them when OFF can't answer. Tap downloads an
+        // absent pack; tapping an installed pack removes it.
+        val offlineIndexStates by container.offlineIndexManager.states.collectAsState()
+        SectionCard(title = stringResource(R.string.settings_offline_index_section)) {
+            OfflineIndexPacks.ALL.forEachIndexed { index, pack ->
+                if (index > 0) HorizontalDivider()
+                val state = offlineIndexStates[pack.id] ?: OfflineIndexState.NotDownloaded
+                SettingRow(
+                    label = stringResource(packTitleRes(pack.id)),
+                    value = offlinePackStateLine(state),
+                    icon = Icons.Outlined.Storage,
+                ) {
+                    when (state) {
+                        is OfflineIndexState.Installed -> vm.removeOfflinePack(pack.id)
+                        else -> vm.downloadOfflinePack(pack.id)
+                    }
+                }
+                SettingFootnote(stringResource(packDescRes(pack.id)))
+            }
+            HorizontalDivider()
+            ToggleRow(
+                stringResource(R.string.settings_offline_index_wifi_only),
+                checked = ui.offlineIndexWifiOnly,
+                icon = Icons.Outlined.Wifi,
+                onChange = vm::setOfflineIndexWifiOnly,
+            )
+            SettingFootnote(stringResource(R.string.settings_offline_index_wifi_only_desc))
+            SettingFootnote(stringResource(R.string.settings_offline_index_license_footer))
         }
 
         SectionCard(title = stringResource(R.string.settings_food_section_serving)) {
