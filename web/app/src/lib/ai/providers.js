@@ -526,17 +526,17 @@ export const PROVIDERS = {
   anthropic: {
     label: "Anthropic (Claude)",
     send: anthropicSend,
-    defaultModel: "claude-haiku-4-5",
-    defaultFallbackModel: "claude-sonnet-5",
+    defaultModel: "claude-haiku-5-5",
+    defaultFallbackModel: "claude-sonnet-5-5",
     models: [
+      "claude-haiku-5-5",
+      "claude-sonnet-5-5",
       "claude-haiku-4-5",
       "claude-sonnet-5",
       "claude-opus-4-8",
       "claude-sonnet-4-6",
       "claude-opus-4-7",
       "claude-opus-5-5",
-      "claude-sonnet-5-5",
-      "claude-haiku-5-5",
     ],
   },
   gemini: {
