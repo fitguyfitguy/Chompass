@@ -2858,4 +2858,9 @@ macro-urile reechilibrate la noul total caloric</string>
     <string name="settings_nav_bar_subtitle">Bară clasică fixată jos sau pastilă de sticlă plutitoare.</string>
     <string name="settings_nav_bar_pill">Pastilă plutitoare</string>
     <string name="settings_nav_bar_classic">Bară clasică</string>
+    <string name="export_settings_section">Copie de rezervă a setărilor</string>
+    <string name="export_settings_row">Exportează setările</string>
+    <string name="export_settings_summary">Salvează preferințele într-un fișier JSON. Nu include chei API.</string>
+    <string name="export_settings_success">Setări exportate.</string>
+    <string name="export_settings_failed">Exportul setărilor a eșuat: %1$s</string>
 </resources>

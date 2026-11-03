@@ -2843,4 +2843,9 @@ macro riequilibrate al nuovo totale calorico</string>
     <string name="settings_nav_bar_subtitle">Barra classica ancorata in basso o pillola di vetro flottante.</string>
     <string name="settings_nav_bar_pill">Pillola flottante</string>
     <string name="settings_nav_bar_classic">Barra classica</string>
+    <string name="export_settings_section">Backup delle impostazioni</string>
+    <string name="export_settings_row">Esporta impostazioni</string>
+    <string name="export_settings_summary">Salva le preferenze in un file JSON. Nessuna chiave API inclusa.</string>
+    <string name="export_settings_success">Impostazioni esportate.</string>
+    <string name="export_settings_failed">Esportazione delle impostazioni non riuscita: %1$s</string>
 </resources>

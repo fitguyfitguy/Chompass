@@ -2886,4 +2886,9 @@
     <string name="settings_nav_bar_subtitle">شريط كلاسيكي مثبت أسفل الشاشة أو كبسولة زجاجية عائمة.</string>
     <string name="settings_nav_bar_pill">كبسولة عائمة</string>
     <string name="settings_nav_bar_classic">الشريط الكلاسيكي</string>
+    <string name="export_settings_section">النسخ الاحتياطي للإعدادات</string>
+    <string name="export_settings_row">تصدير الإعدادات</string>
+    <string name="export_settings_summary">يحفظ التفضيلات في ملف JSON. لا تُضمَّن مفاتيح API.</string>
+    <string name="export_settings_success">تم تصدير الإعدادات.</string>
+    <string name="export_settings_failed">فشل تصدير الإعدادات: %1$s</string>
 </resources>

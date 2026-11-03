@@ -2937,4 +2937,9 @@
     <string name="settings_nav_bar_subtitle">Классическая панель внизу экрана или плавающая стеклянная пилюля.</string>
     <string name="settings_nav_bar_pill">Плавающая пилюля</string>
     <string name="settings_nav_bar_classic">Классическая панель</string>
+    <string name="export_settings_section">Резервная копия настроек</string>
+    <string name="export_settings_row">Экспорт настроек</string>
+    <string name="export_settings_summary">Сохраняет настройки в файл JSON. Ключи API не включаются.</string>
+    <string name="export_settings_success">Настройки экспортированы.</string>
+    <string name="export_settings_failed">Не удалось экспортировать настройки: %1$s</string>
 </resources>

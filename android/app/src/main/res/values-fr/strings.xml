@@ -2857,4 +2857,9 @@ macros rééquilibrées au nouveau total calorique</string>
     <string name="settings_nav_bar_subtitle">Barre classique ancrée en bas ou pastille de verre flottante.</string>
     <string name="settings_nav_bar_pill">Pastille flottante</string>
     <string name="settings_nav_bar_classic">Barre classique</string>
+    <string name="export_settings_section">Sauvegarde des réglages</string>
+    <string name="export_settings_row">Exporter les réglages</string>
+    <string name="export_settings_summary">Enregistre les préférences dans un fichier JSON. Aucune clé d\'API n\'est incluse.</string>
+    <string name="export_settings_success">Réglages exportés.</string>
+    <string name="export_settings_failed">Échec de l\'export des réglages : %1$s</string>
 </resources>

@@ -2841,4 +2841,9 @@
     <string name="settings_nav_bar_subtitle">하단에 고정되는 클래식 바 또는 떠 있는 글래스 필.</string>
     <string name="settings_nav_bar_pill">플로팅 필</string>
     <string name="settings_nav_bar_classic">클래식 바</string>
+    <string name="export_settings_section">설정 백업</string>
+    <string name="export_settings_row">설정 내보내기</string>
+    <string name="export_settings_summary">환경설정을 JSON 파일로 저장합니다. API 키는 포함되지 않습니다.</string>
+    <string name="export_settings_success">설정을 내보냈습니다.</string>
+    <string name="export_settings_failed">설정 내보내기 실패: %1$s</string>
 </resources>

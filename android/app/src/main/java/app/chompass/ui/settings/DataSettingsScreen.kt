@@ -32,6 +32,7 @@ import app.chompass.ui.components.ChompassDialogActions
 import app.chompass.ui.navigation.ChompassRoutes
 import app.chompass.models.CurrentMealCatalog
 import app.chompass.models.LocaleFormat
+import app.chompass.sync.SettingsExportFile
 import java.time.Instant
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -51,6 +52,7 @@ fun DataSettingsScreen(
     var showBodyMetricsExportSheet by remember { mutableStateOf(false) }
     var importDiaryMessage by remember { mutableStateOf<String?>(null) }
     var importBodyMetricsMessage by remember { mutableStateOf<String?>(null) }
+    var settingsExportMessage by remember { mutableStateOf<String?>(null) }
     var lastSyncAt by remember { mutableStateOf<String?>(null) }
     val activityContext = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -203,6 +205,33 @@ fun DataSettingsScreen(
         }
     }
 
+    // Codeberg #117: export the raw preferences to a user-picked JSON document.
+    val exportSettingsLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.CreateDocument("application/json")
+    ) { uri ->
+        if (uri == null) return@rememberLauncherForActivityResult
+        scope.launch {
+            runCatching {
+                val buckets = SettingsExportFile.split(container.prefs.rawSnapshot().asMap())
+                val json = SettingsExportFile.buildSettingsExportJson(
+                    buckets.strings,
+                    buckets.booleans,
+                    buckets.ints,
+                    buckets.floats,
+                    exportedAt = Instant.now().toString(),
+                )
+                SettingsExportFile.write(activityContext, uri, json)
+            }.onSuccess {
+                settingsExportMessage = activityContext.getString(R.string.export_settings_success)
+            }.onFailure { t ->
+                settingsExportMessage = activityContext.getString(
+                    R.string.export_settings_failed,
+                    t.localizedMessage ?: activityContext.getString(R.string.error_unknown)
+                )
+            }
+        }
+    }
+
     SettingsSubScreen(
         title = stringResource(R.string.settings_group_data),
         onBack = onBack,
@@ -230,6 +259,14 @@ fun DataSettingsScreen(
                 activityContext.getString(R.string.settings_last_sync, formatted)
             },
         )
+
+        // Codeberg #117: document a setup as JSON — export-only, no restore path.
+        SectionCard(title = stringResource(R.string.export_settings_section)) {
+            SettingRow(
+                stringResource(R.string.export_settings_row),
+                stringResource(R.string.export_settings_summary),
+            ) { exportSettingsLauncher.launch(SettingsExportFile.SUGGESTED_FILE_NAME) }
+        }
     }
 
     if (showExportSheet) {
@@ -307,6 +344,17 @@ fun DataSettingsScreen(
             ChompassDialogActions(
                 primaryText = stringResource(R.string.action_ok),
                 onPrimary = { importBodyMetricsMessage = null }
+            )
+        }
+    }
+
+    settingsExportMessage?.let { msg ->
+        ChompassDialog(onDismissRequest = { settingsExportMessage = null }) {
+            Text(stringResource(R.string.export_settings_row), fontSize = 20.sp, fontWeight = FontWeight.Bold)
+            Text(msg, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            ChompassDialogActions(
+                primaryText = stringResource(R.string.action_ok),
+                onPrimary = { settingsExportMessage = null }
             )
         }
     }

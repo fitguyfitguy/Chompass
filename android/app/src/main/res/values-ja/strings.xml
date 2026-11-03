@@ -2840,4 +2840,9 @@
     <string name="settings_nav_bar_subtitle">下部に固定するクラシックバー、または浮かぶガラスピル。</string>
     <string name="settings_nav_bar_pill">フローティングピル</string>
     <string name="settings_nav_bar_classic">クラシックバー</string>
+    <string name="export_settings_section">設定のバックアップ</string>
+    <string name="export_settings_row">設定をエクスポート</string>
+    <string name="export_settings_summary">設定をJSONファイルに保存します。APIキーは含まれません。</string>
+    <string name="export_settings_success">設定をエクスポートしました。</string>
+    <string name="export_settings_failed">設定のエクスポートに失敗しました: %1$s</string>
 </resources>

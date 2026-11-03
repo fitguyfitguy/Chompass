@@ -2883,4 +2883,9 @@ makro rebalansowane do nowej sumy kalorii</string>
     <string name="settings_nav_bar_subtitle">Klasyczny pasek przyczepiony do dołu albo unosząca się szklana pigułka.</string>
     <string name="settings_nav_bar_pill">Unosząca się pigułka</string>
     <string name="settings_nav_bar_classic">Klasyczny pasek</string>
+    <string name="export_settings_section">Kopia zapasowa ustawień</string>
+    <string name="export_settings_row">Eksportuj ustawienia</string>
+    <string name="export_settings_summary">Zapisuje preferencje do pliku JSON. Nie zawiera kluczy API.</string>
+    <string name="export_settings_success">Ustawienia wyeksportowane.</string>
+    <string name="export_settings_failed">Eksport ustawień nie powiódł się: %1$s</string>
 </resources>
