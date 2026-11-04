@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="metadata/en-US/images/icon.png" alt="Chompass icon" width="96" />
+<img src="website/static/img/favicon.svg" alt="Chompass ring" width="96" />
 
 # Chompass
 
