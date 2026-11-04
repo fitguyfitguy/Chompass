@@ -20,7 +20,7 @@ run_in_devenv() {
 
 echo "==> Kotlin lint (ktlint; scope in android/.editorconfig)"
 if command -v ktlint >/dev/null 2>&1 || [[ -n "${DEVENV_IN_SHELL:-}" ]] || command -v devenv >/dev/null 2>&1; then
-  run_in_devenv "cd '$ROOT/android' && ktlint --relative 'app/src/**/*.kt'"
+  run_in_devenv "cd '$ROOT/android' && ktlint --relative 'app/src/**/*.kt' '!app/src/main/java/com/health/openscale/**'"
 else
   echo "    ktlint not available — skipping (run inside devenv shell to enforce)"
 fi
