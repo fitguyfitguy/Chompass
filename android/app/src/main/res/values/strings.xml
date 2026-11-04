@@ -1610,6 +1610,13 @@
         <item>auto sync</item>
         <item>server</item>
     </string-array>
+    <string-array name="settings_search_kw_saved_foods">
+        <item>favorites</item>
+        <item>favorite</item>
+        <item>library</item>
+        <item>food library</item>
+        <item>hidden</item>
+    </string-array>
     <string-array name="settings_search_kw_clear_food_log">
         <item>delete</item>
         <item>erase</item>

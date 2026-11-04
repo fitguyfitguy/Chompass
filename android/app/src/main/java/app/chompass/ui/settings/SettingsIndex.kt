@@ -297,6 +297,8 @@ internal val SETTINGS_INDEX: List<SettingsIndexEntry> = listOf(
         R.array.settings_search_kw_import_body_metrics, ChompassRoutes.SETTINGS_DATA, Icons.Outlined.MonitorWeight),
     SettingsIndexEntry(R.string.settings_group_data, R.string.settings_sync_section,
         R.array.settings_search_kw_sync, ChompassRoutes.syncRoute("search"), Icons.Outlined.Sync),
+    SettingsIndexEntry(R.string.settings_group_data, R.string.settings_saved_foods,
+        R.array.settings_search_kw_saved_foods, ChompassRoutes.SETTINGS_FOOD_LIBRARY, Icons.Outlined.Restaurant),
     SettingsIndexEntry(R.string.settings_danger_zone, R.string.settings_clear_food_log,
         R.array.settings_search_kw_clear_food_log, ChompassRoutes.SETTINGS_DATA, Icons.Outlined.DeleteForever),
     SettingsIndexEntry(R.string.settings_danger_zone, R.string.settings_delete_all_data,
