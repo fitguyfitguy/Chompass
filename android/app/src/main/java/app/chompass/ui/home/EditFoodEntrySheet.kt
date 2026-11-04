@@ -23,7 +23,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.launch
 import app.chompass.services.FillGapsFeature
@@ -1105,7 +1104,8 @@ fun EditFoodEntrySheet(
                                             color = MaterialTheme.colorScheme.outline
                                         )
                                     },
-                                    shape = RoundedCornerShape(percent = 50),
+                                    // Fixed radius: percent=50 corners scale with the box and clip once the note grows (FoodSheetPrimitives SheetPillCard precedent).
+                                    shape = MaterialTheme.shapes.large,
                                     modifier = Modifier.fillMaxWidth().heightIn(min = 90.dp)
                                 )
                             } else if (!isReprocessing) {
@@ -1215,7 +1215,8 @@ fun EditFoodEntrySheet(
                                 color = MaterialTheme.colorScheme.outline
                             )
                         },
-                        shape = RoundedCornerShape(percent = 50),
+                        // Fixed radius: percent=50 corners scale with the box and clip once the note grows (FoodSheetPrimitives SheetPillCard precedent).
+                        shape = MaterialTheme.shapes.large,
                         modifier = Modifier.fillMaxWidth().heightIn(min = 90.dp)
                     )
                 }

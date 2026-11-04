@@ -4,6 +4,7 @@ import app.chompass.ui.components.ChompassBottomSheet
 import app.chompass.ui.components.ChompassDialog
 import app.chompass.ui.components.ChompassDialogActions
 import app.chompass.ui.components.rememberChompassSheetState
+import app.chompass.ui.theme.CapsuleShape
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -229,7 +230,7 @@ fun ContextNoteSheet(
                     modifier = Modifier
                         .weight(1f)
                         .height(48.dp),
-                    shape = RoundedCornerShape(percent = 50)
+                    shape = CapsuleShape
                 ) {
                     androidx.compose.material3.Icon(
                         Icons.Filled.AddAPhoto,
