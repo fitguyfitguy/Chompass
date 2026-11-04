@@ -18,7 +18,6 @@ import com.health.openscale.core.service.ScannedDeviceInfo
  * (same ordering constraint as upstream ScaleFactory.createHandlers()).
  */
 object ScaleDriverRegistry {
-
     val handlers: List<ScaleDeviceHandler> = listOf(
         BeurerBF450Handler(),
         BeurerSanitasHandler(),

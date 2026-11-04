@@ -55,7 +55,6 @@ class ScaleBleTransport(
     /** Notification payload forwarded to handler.handleNotification. */
     private val onNotification: (characteristic: UUID, data: ByteArray) -> Unit,
 ) : ScaleDeviceHandler.Transport {
-
     private companion object {
         const val TAG = "ChompassScaleSync"
 

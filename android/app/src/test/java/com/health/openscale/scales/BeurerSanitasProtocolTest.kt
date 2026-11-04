@@ -18,7 +18,6 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import java.util.Calendar
-import java.util.Date
 import java.util.UUID
 
 /**
@@ -31,7 +30,6 @@ import java.util.UUID
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [33], application = android.app.Application::class)
 class BeurerSanitasProtocolTest {
-
     @Serializable
     private data class Fixture(
         val synthetic: Boolean = true,

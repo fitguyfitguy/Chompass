@@ -55,8 +55,8 @@
   scripts.pwa-typecheck.exec = "cd web && tsc --checkJs --noEmit -p tsconfig.json";
   scripts.pwa-serve.exec = "node web/serve.mjs";
   # Rule scope lives in android/.editorconfig. `kotlin-lint-fix` autocorrects.
-  scripts.kotlin-lint.exec = "cd android && ktlint --relative 'app/src/**/*.kt'";
-  scripts.kotlin-lint-fix.exec = "cd android && ktlint --format --relative 'app/src/**/*.kt'";
+  scripts.kotlin-lint.exec = "cd android && ktlint --relative 'app/src/**/*.kt' '!app/src/main/java/com/health/openscale/**'";
+  scripts.kotlin-lint-fix.exec = "cd android && ktlint --format --relative 'app/src/**/*.kt' '!app/src/main/java/com/health/openscale/**'";
 
   tasks."build:debug" = {
     exec = "cd android && ./gradlew :app:assembleDebug";
@@ -79,7 +79,7 @@
   };
 
   tasks."lint:kotlin" = {
-    exec = "cd android && ktlint --relative 'app/src/**/*.kt'";
+    exec = "cd android && ktlint --relative 'app/src/**/*.kt' '!app/src/main/java/com/health/openscale/**'";
     description = "ktlint over the Android sources (scope: android/.editorconfig)";
   };
 
