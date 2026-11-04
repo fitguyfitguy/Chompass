@@ -718,7 +718,6 @@
     <string name="ai_provider_subtitle_ollama_cloud">Ollama 호스팅 모델</string>
     <string name="settings_section_ai_profile">프로필</string>
     <string name="settings_section_ai_connection">연결</string>
-    <string name="settings_section_ai_advanced">고급</string>
     <string name="settings_ai_key_test">테스트</string>
     <string name="settings_ai_key_test_failed">키가 거부됨: %1$s</string>
     <string name="settings_ai_key_remove_title">API 키를 삭제할까요?</string>
@@ -1412,7 +1411,6 @@
     <string name="settings_ai_privacy_ondevice">완전 비공개: 음식 분석, "어떻게 될까?", 목표 추정이 이 기기에서 실행되며 서버로 전송되지 않아요.</string>
     <string name="settings_ai_read_timeout">AI 읽기 시간 제한</string>
     <string name="settings_ai_read_timeout_unit">초</string>
-    <string name="settings_ai_read_timeout_value">%1$d초</string>
     <string name="settings_goal_tier">목표 재계산 프롬프트</string>
     <string name="settings_goal_tier_footer">목표 재계산이 모델에 보내는 데이터 양이에요. 안전은 간결한 요약을 보내요. 작은 모델이나 로컬 모델에 적합해요. 스마트는 체중과 음식 기록 전체를 보내서 큰 모델이 추세를 직접 판단해요. 자동은 모델 이름으로 골라요.</string>
     <string name="goal_tier_auto">자동</string>

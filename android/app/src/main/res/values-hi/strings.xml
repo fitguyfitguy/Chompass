@@ -719,7 +719,6 @@
     <string name="ai_provider_subtitle_ollama_cloud">Ollama के होस्टेड मॉडल</string>
     <string name="settings_section_ai_profile">प्रोफ़ाइल</string>
     <string name="settings_section_ai_connection">कनेक्शन</string>
-    <string name="settings_section_ai_advanced">उन्नत</string>
     <string name="settings_ai_key_test">टेस्ट</string>
     <string name="settings_ai_key_test_failed">कुंजी अस्वीकृत: %1$s</string>
     <string name="settings_ai_key_remove_title">API कुंजी हटाएं?</string>
@@ -1413,7 +1412,6 @@
     <string name="settings_ai_privacy_ondevice">पूरी तरह निजी: खाद्य विश्लेषण, "क्या होगा अगर?" और लक्ष्य अनुमान इस डिवाइस पर चलते हैं। कुछ भी सर्वर को नहीं भेजा जाता।</string>
     <string name="settings_ai_read_timeout">AI रीड टाइमआउट</string>
     <string name="settings_ai_read_timeout_unit">से</string>
-    <string name="settings_ai_read_timeout_value">%1$d से</string>
     <string name="settings_goal_tier">लक्ष्य पुनः गणना प्रॉम्प्ट</string>
     <string name="settings_goal_tier_footer">लक्ष्य पुनः गणना मॉडल को कितना डेटा भेजती है। सुरक्षित कॉम्पैक्ट सारांश भेजता है, जो छोटे या लोकल मॉडल के लिए सही है। स्मार्ट आपका पूरा वज़न और भोजन इतिहास भेजता है ताकि बड़ा मॉडल रुझान खुद आँक सके। ऑटो मॉडल नाम से चुनता है।</string>
     <string name="goal_tier_auto">ऑटो</string>

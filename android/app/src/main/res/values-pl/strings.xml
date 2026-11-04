@@ -201,7 +201,6 @@
     <string name="ai_provider_subtitle_ollama_cloud">Modele w chmurze Ollama</string>
     <string name="settings_section_ai_profile">Profil</string>
     <string name="settings_section_ai_connection">Połączenie</string>
-    <string name="settings_section_ai_advanced">Zaawansowane</string>
     <string name="settings_ai_key_test">Testuj</string>
     <string name="settings_ai_key_test_failed">Klucz odrzucony: %1$s</string>
     <string name="settings_ai_key_remove_title">Usunąć klucz API?</string>
@@ -1720,7 +1719,6 @@
     <string name="settings_calc_methods">Metody obliczeń</string>
     <string name="settings_ai_read_timeout">Limit czasu odczytu AI</string>
     <string name="settings_ai_read_timeout_unit">s</string>
-    <string name="settings_ai_read_timeout_value">%1$d s</string>
     <string name="settings_goal_tier">Prompt przeliczania celów</string>
     <string name="settings_goal_tier_footer">Ile danych przeliczanie celów wysyła do modelu. Bezpieczne wysyła zwięzłe podsumowania, odpowiednie dla małych lub lokalnych modeli. Inteligentne wysyła pełną historię wagi i jedzenia, żeby duży model sam ocenił trendy. Automatycznie wybiera na podstawie nazwy modelu.</string>
     <string name="goal_tier_auto">Automatycznie</string>
