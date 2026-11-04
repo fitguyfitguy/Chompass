@@ -139,4 +139,71 @@ class AndroidAppIconManagerRobolectricTest {
         assertEquals(1, enabledCount())
         assertTrue(isEnabled(AppThemeColor.fromKey(AppThemeColor.DEFAULT_KEY)))
     }
+
+    // — Night twin (LauncherBrandDark) —
+
+    private val brandDarkComponent =
+        ComponentName(context.packageName, "app.chompass.LauncherBrandDark")
+
+    private fun isBrandDarkEnabled(): Boolean =
+        context.packageManager.getComponentEnabledSetting(brandDarkComponent) ==
+            PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+
+    private fun setNight(night: Boolean) {
+        RuntimeEnvironment.setQualifiers(if (night) "+night" else "")
+    }
+
+    @Test
+    fun apply_nightConfig_brandTileSwapsToBrandDark() {
+        setNight(true)
+        AndroidAppIconManager.apply(context, AppThemeColor.PLUM)
+
+        assertTrue(isBrandDarkEnabled())
+        assertEquals(0, enabledCount())
+        assertEquals(
+            brandDarkComponent,
+            AndroidAppIconManager.enabledLauncherComponent(context),
+        )
+    }
+
+    @Test
+    fun apply_nightConfig_accentTileKeepsLightAlias() {
+        setNight(true)
+        AndroidAppIconManager.apply(context, AppThemeColor.BLUE)
+
+        assertEquals(1, enabledCount())
+        assertTrue(isEnabled(AppThemeColor.BLUE))
+        assertTrue(!isBrandDarkEnabled())
+        assertEquals(
+            ComponentName(context.packageName, "app.chompass.LauncherBlue"),
+            AndroidAppIconManager.enabledLauncherComponent(context),
+        )
+    }
+
+    @Test
+    fun apply_nightConfig_fixedIconFollowsNight() {
+        setNight(true)
+        AndroidAppIconManager.apply(context, AppThemeColor.TEAL, fixedIcon = true)
+
+        assertTrue(isBrandDarkEnabled())
+        assertEquals(0, enabledCount())
+    }
+
+    @Test
+    fun apply_nightThenDay_restoresLightAlias() {
+        setNight(true)
+        AndroidAppIconManager.apply(context, AppThemeColor.PLUM)
+        assertTrue(isBrandDarkEnabled())
+
+        setNight(false)
+        AndroidAppIconManager.apply(context, AppThemeColor.PLUM)
+
+        assertEquals(1, enabledCount())
+        assertTrue(isEnabled(AppThemeColor.PLUM))
+        assertTrue(!isBrandDarkEnabled())
+        assertEquals(
+            ComponentName(context.packageName, "app.chompass.LauncherPlum"),
+            AndroidAppIconManager.enabledLauncherComponent(context),
+        )
+    }
 }

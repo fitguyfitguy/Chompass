@@ -34,7 +34,11 @@ keeps the static PNG, so an old device can never show an empty ring. The animati
 only — it is never a gate on the first frame, so a fast launch may dismiss the splash mid-spin.
 
 The noir (glow) variant is the dark-ground asset: app dark scheme, night splash, and the site
-header/OG mark. Tiles — launcher, favicon, PWA, BIMI — carry the light mark on cream. The tab
+header/OG mark. Tiles come as a pair on Android: the launcher light tiles (brand, themed accents,
+favicon, PWA, BIMI) carry the light mark on cream, and the Android night launcher
+(`LauncherBrandDark`, `ic_launcher_brand_dark`) carries the RipenedGlow mark on the plum tile
+(`#170E16`), enabled by `AndroidAppIconManager` when the system is in night mode and a brand-tile
+alias owns the launcher. Accent tiles have no dark variants. The tab
 icon (`favicon.svg` served first, plus `favicon.ico` / `img/favicon.png`) is the mark on the
 cream tile with one tab-size simplification: the needle's two facets collapse into a solid ink
 silhouette, because below ~32px the slivers just anti-alias into a smudge. The tile is opaque,
