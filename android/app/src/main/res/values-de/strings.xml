@@ -1756,6 +1756,7 @@ für dich ein</string>
     <string name="ambient_saturation_rich">Kräftig</string>
     <string name="settings_ambient_speed">Ambient-Geschwindigkeit</string>
     <string name="ambient_speed_calm">Ruhig</string>
+    <string name="ambient_speed_standard">Standard</string>
     <string name="ambient_speed_lively">Zügig</string>
     <string name="settings_ambient_palette">Ambient-Palette</string>
     <string name="ambient_palette_accent">Akzent</string>
@@ -4341,6 +4342,13 @@ für dich ein</string>
         <item>Cloud</item>
         <item>automatische Synchronisierung</item>
         <item>Server</item>
+    </string-array>
+    <string-array name="settings_search_kw_saved_foods">
+        <item>Favoriten</item>
+        <item>Favorit</item>
+        <item>Bibliothek</item>
+        <item>Lebensmittelbibliothek</item>
+        <item>Ausgeblendet</item>
     </string-array>
     <string-array name="settings_search_kw_clear_food_log">
         <item>löschen</item>

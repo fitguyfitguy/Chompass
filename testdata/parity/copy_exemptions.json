@@ -43,6 +43,12 @@
       ]
     },
     {
+      "key": "ambient_speed_standard",
+      "locales": [
+        "de"
+      ]
+    },
+    {
       "key": "ai_provider_anthropic",
       "locales": [
         "*"
