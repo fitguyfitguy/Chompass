@@ -4,13 +4,14 @@ All notable changes to Chompass are documented here.
 
 Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no internals). The version section is pasted verbatim onto the Codeberg release.
 
-## [Unreleased]
+## [6.2.0] - 2026-11-04
 
 ### Added
 
 - **Offline product data packs** (Android): Settings → Food & Entry → Offline product data can download two optional barcode packs — USDA branded foods (GTIN) and Open Food Facts Germany. When Open Food Facts doesn't know a barcode, or the network is down, the scan answers from the pack with name, brand and calories for the serving. Downloads come straight from this project's release page, Wi-Fi-only by default, and scans themselves never query anywhere new. Pack data: USDA FoodData Central (public domain) and Open Food Facts (ODbL).
 - **Pick a classic docked bottom bar** (Android): Settings → Display gains a Navigation bar row with two styles: the floating pill (still the default) and a classic docked bar pinned to the screen edge. Both run the same tabs, so the update badge and back behavior are identical either way. Closes Codeberg [#158](https://codeberg.org/fitguy/Chompass/issues/158)
 - **Export settings to a file** (Android): Settings → Data & Backup gains a Settings backup section. Export settings writes your preferences to a Chompass-settings.json document you pick, then reads it back to confirm the copy. Export only: there is no import path, and anything key-shaped (API keys) never leaves the device. Closes Codeberg [#117](https://codeberg.org/fitguy/Chompass/issues/117)
+- **Sync weigh-ins straight from your Bluetooth scale** (Android): Progress → Scale metrics gains a Sync from scale action. Chompass asks for the nearby-devices permission once, finds your scale over Bluetooth (step on it to wake it), and imports the new weigh-ins it reads — no CSV export detour. Works with a range of Beurer, Sanitas, SilverCrest, Crane and Medisana scales on Android 12 or newer.
 
 ### Changed
 
