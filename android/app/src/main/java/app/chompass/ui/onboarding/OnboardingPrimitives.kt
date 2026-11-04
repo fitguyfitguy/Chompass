@@ -77,7 +77,8 @@ internal fun SelectionCard(
 ) {
     val accent = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground
     val selectedBorder = if (selected) {
-        Modifier.border(BorderStroke(1.4.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.55f)), RoundedCornerShape(percent = 50))
+        // Border follows the card fill's 20dp radius; percent=50 drifts as the full-width growable card wraps.
+        Modifier.border(BorderStroke(1.4.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.55f)), RoundedCornerShape(20.dp))
     } else {
         Modifier
     }

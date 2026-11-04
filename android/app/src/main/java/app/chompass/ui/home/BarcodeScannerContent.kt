@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.QrCodeScanner
@@ -52,6 +51,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicLong
 import app.chompass.R
 import app.chompass.services.BarcodeCodeNormalizer
+import app.chompass.ui.theme.CapsuleShape
 import zxingcpp.BarcodeReader
 
 private const val FOCUS_SETTLE_DEADLINE_MS = 800L
@@ -219,9 +219,9 @@ internal fun BarcodeScannerContent(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .padding(horizontal = 24.dp, vertical = 36.dp)
-                    .clip(RoundedCornerShape(percent = 50))
+                    .clip(CapsuleShape)
                     .background(Color.Black.copy(alpha = 0.58f))
-                    .border(1.dp, Color.White.copy(alpha = 0.15f), RoundedCornerShape(percent = 50))
+                    .border(1.dp, Color.White.copy(alpha = 0.15f), CapsuleShape)
                     .padding(horizontal = 22.dp, vertical = 18.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {

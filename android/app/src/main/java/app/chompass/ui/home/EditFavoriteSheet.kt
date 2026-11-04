@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -1020,7 +1019,8 @@ fun EditFavoriteSheet(
                                         color = MaterialTheme.colorScheme.outline
                                     )
                                 },
-                                shape = RoundedCornerShape(percent = 50),
+                                // Fixed radius: percent=50 corners scale with the box and clip once the note grows (FoodSheetPrimitives SheetPillCard precedent).
+                                shape = MaterialTheme.shapes.large,
                                 modifier = Modifier.fillMaxWidth().heightIn(min = 90.dp)
                             )
                         }

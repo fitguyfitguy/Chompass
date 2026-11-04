@@ -24,7 +24,6 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -62,6 +61,7 @@ import app.chompass.services.decodeSampledBitmap
 import app.chompass.ui.navigation.BottomNavDockedControlPadding
 import app.chompass.ui.navigation.FloatingPillHeight
 import app.chompass.ui.components.isDarkTheme
+import app.chompass.ui.theme.CapsuleShape
 
 /**
  * Horizontal scrolling chips.
@@ -81,7 +81,7 @@ internal fun PromptChipRow(chips: List<String>, enabled: Boolean, onTap: (String
 
 @Composable
 private fun PromptChip(text: String, enabled: Boolean, onTap: (String) -> Unit) {
-    val shape = RoundedCornerShape(percent = 50)
+    val shape = CapsuleShape
     val isDark = isDarkTheme()
     val borderColor = MaterialTheme.colorScheme.outlineVariant
     val chipInteraction = remember { MutableInteractionSource() }
@@ -122,7 +122,7 @@ internal fun InputBar(
     onSend: () -> Unit
 ) {
     val canSend = !sending && (value.trim().isNotEmpty() || attachedImageBytes != null)
-    val capsule = MaterialTheme.shapes.extraLarge
+    val capsule = CapsuleShape
 
     Column(
         modifier = Modifier
@@ -236,7 +236,7 @@ internal fun CoachMediaActions(
     onPickImage: () -> Unit,
     onCaptureImage: () -> Unit
 ) {
-    val shape = RoundedCornerShape(percent = 50)
+    val shape = CapsuleShape
     Row(
         modifier = Modifier
             .clip(shape)
@@ -326,7 +326,7 @@ private fun SendButton(canSend: Boolean, onClick: () -> Unit) {
 
 @Composable
 internal fun CoachInputBarPreviewStub(value: String, sending: Boolean) {
-    val capsule = MaterialTheme.shapes.extraLarge
+    val capsule = CapsuleShape
     Row(
         modifier = Modifier
             .padding(horizontal = 12.dp)

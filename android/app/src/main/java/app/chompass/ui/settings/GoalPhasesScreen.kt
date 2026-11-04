@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
@@ -65,6 +64,7 @@ import app.chompass.ui.components.LocalPinnedToolbarHeight
 import app.chompass.ui.components.energyUnitLabel
 import app.chompass.ui.components.rememberChompassSheetState
 import app.chompass.ui.navigation.LocalEnergyUnit
+import app.chompass.ui.theme.CapsuleShape
 import app.chompass.ui.theme.success
 import java.time.LocalDate
 import java.time.ZoneId
@@ -246,7 +246,7 @@ private fun IntentChip(intent: PhaseIntent) {
         fontWeight = FontWeight.Medium,
         color = content,
         modifier = Modifier
-            .clip(RoundedCornerShape(percent = 50))
+            .clip(CapsuleShape)
             .background(background)
             .padding(horizontal = 8.dp, vertical = 3.dp),
     )
