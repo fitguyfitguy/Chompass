@@ -314,6 +314,7 @@ class AiProfileStoreTest {
         assertNull(decoded[0].readTimeoutSeconds)
         assertNull(decoded[0].reasoningEffort)
         assertNull(decoded[0].geminiGoogleSearch)
+        assertNull(decoded[0].analysisModel)
     }
 
     @Test
@@ -323,6 +324,8 @@ class AiProfileStoreTest {
         val gemini = profile("Gemini", model = "gemini-custom").copy(
             baseUrl = "https://old.example",
             visionModel = "old-vision",
+            coachModel = "old-coach",
+            analysisModel = "old-food",
         )
         prefs.mutateProfiles { it += gemini }
         prefs.setActiveAiProfileId(gemini.id.toString())
@@ -336,6 +339,8 @@ class AiProfileStoreTest {
         assertEquals(AIProvider.OPENAI.defaultModel, active?.model)
         assertNull(active?.baseUrl)
         assertNull(active?.visionModel)
+        assertNull(active?.coachModel)
+        assertNull(active?.analysisModel)
         assertNull(ks.profileApiKey(gemini.id))
     }
 

@@ -2030,12 +2030,17 @@ für dich ein</string>
 
     <string name="settings_ai_vision_model_unset">(gleich wie Modell)</string>
 
-    <string name="settings_ai_vision_model_footer">Fotos verwenden dieses Modell; Text verwendet das Hauptmodell. Ohne Auswahl wird für alles das Hauptmodell verwendet.</string>
+    <string name="settings_ai_vision_model_footer">Fotos verwenden dieses Modell; Text verwendet das Hauptmodell, oder das Food-Modell, wenn eines gesetzt ist.</string>
 
     <string name="settings_ai_coach_model">Coach-Modell</string>
     <string name="settings_ai_coach_model_unset">(gleich wie Modell)</string>
 
-    <string name="settings_ai_coach_model_footer">Coach verwendet dieses Modell. Essensprotokollierung und Ziel-Neuberechnung nutzen weiterhin das Hauptmodell. Ohne Auswahl verwendet auch Coach das Hauptmodell.</string>
+    <string name="settings_ai_coach_model_footer">Coach verwendet dieses Modell. Essensprotokollierung folgt dem Food-Modell. Ohne Auswahl verwendet auch Coach das Hauptmodell.</string>
+
+    <string name="settings_ai_analysis_model">Food-Modell</string>
+    <string name="settings_ai_analysis_model_unset">(gleich wie Modell)</string>
+
+    <string name="settings_ai_analysis_model_footer">Essensprotokollierung, Was wäre wenn und Ziel-Neuberechnung verwenden dieses Modell. Ohne Auswahl wird für alles das Hauptmodell verwendet.</string>
 
     <string name="settings_speech_language">Sprache</string>
 
@@ -2176,7 +2181,7 @@ für dich ein</string>
     <string name="settings_profile_delete">Profil löschen</string>
     <string name="settings_profile_delete_confirm">Dieses Profil löschen? Sein API-Schlüssel wird ebenfalls entfernt.</string>
     <string name="settings_ai_switch_provider_title">Anbieter wechseln?</string>
-    <string name="settings_ai_switch_provider_body">Beim Wechsel werden der API-Schlüssel dieses Profils, der Endpunkt und die Vision- und Coach-Modell-Einstellungen gelöscht. Sie gehören zum alten Anbieter.</string>
+    <string name="settings_ai_switch_provider_body">Beim Wechsel werden der API-Schlüssel dieses Profils, der Endpunkt und die Vision-, Coach- und Food-Modell-Einstellungen gelöscht. Sie gehören zum alten Anbieter.</string>
     <string name="settings_ai_switch_provider_confirm">Wechseln</string>
     <string name="settings_profile_fallback">Fallback-Profil</string>
     <string name="settings_profile_fallback_none">Ohne</string>

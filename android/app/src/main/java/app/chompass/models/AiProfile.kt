@@ -29,6 +29,8 @@ data class AiProfile(
     val visionModel: String? = null,
     /** Per-profile Coach text model; null = [model] handles Coach too. */
     val coachModel: String? = null,
+    /** Per-profile meal-analysis text model (#148); null = [model] handles analysis too. */
+    val analysisModel: String? = null,
     @Serializable(with = InstantSerializer::class)
     val createdAt: Instant,
     /** Per-profile advanced overrides; null = fall back to the global preference. */

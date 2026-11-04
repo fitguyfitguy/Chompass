@@ -176,7 +176,7 @@ internal suspend fun PreferencesStore.editActiveProfileImpl(
 /**
  * Retargets the active profile. Same provider is a no-op (key, base URL,
  * vision model, coach model, and model stay). A real switch clears base URL
- * and both per-feature model slots — they belong to the old host — and
+ * and the per-feature model slots — they belong to the old host — and
  * deletes that profile's key.
  * Returns false when there is no profile or the provider did not change.
  */
@@ -188,7 +188,7 @@ internal suspend fun PreferencesStore.switchActiveProfileProviderImpl(
     val active = activeAiProfile.first() ?: return false
     if (active.provider == provider) return false
     editActiveProfileImpl {
-        it.copy(provider = provider, model = model, baseUrl = null, visionModel = null, coachModel = null)
+        it.copy(provider = provider, model = model, baseUrl = null, visionModel = null, coachModel = null, analysisModel = null)
     }
     keyStore.setProfileApiKey(active.id, null)
     return true
@@ -277,7 +277,7 @@ internal suspend fun PreferencesStore.setSelectedFallbackProviderCompatImpl(p: A
         val existingId = prefs[Keys.FALLBACK_AI_PROFILE_ID]
         val idx = list.indexOfFirst { it.id.toString() == existingId }
         val replaced = if (idx >= 0) {
-            list[idx].copy(provider = p, model = null, baseUrl = null, visionModel = null, coachModel = null)
+            list[idx].copy(provider = p, model = null, baseUrl = null, visionModel = null, coachModel = null, analysisModel = null)
         } else {
             AiProfile(
                 id = UUID.randomUUID(),

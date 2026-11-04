@@ -217,7 +217,8 @@ internal fun SettingsAiSection(
                 val showReadTimeout = ui.activeProvider.usesConfigurableRequestTimeout && ui.directoryEntry == null
                 // Per-feature model slots: routing is provider-generic
                 // (resolveModelForRequest / coachSelectedModel), so any
-                // non-on-device provider can pin a vision and a Coach model.
+                // non-on-device provider can pin a vision, a Coach, and a
+                // meal-analysis model.
                 if (showVisionModel) {
                     SettingRow(
                         stringResource(R.string.settings_ai_vision_model),
@@ -232,6 +233,15 @@ internal fun SettingsAiSection(
                         ui.activeProfile?.coachModel.orEmpty().ifEmpty { stringResource(R.string.settings_ai_coach_model_unset) },
                         icon = Icons.Outlined.Tune,
                     ) { onOpenSheet(SettingsSheet.COACH_MODEL) }
+                    // Meal-analysis slot (#148): the other half of the same
+                    // trade — pin a cheap model for high-volume logging while
+                    // Coach keeps the strong one.
+                    HorizontalDivider()
+                    SettingRow(
+                        stringResource(R.string.settings_ai_analysis_model),
+                        ui.activeProfile?.analysisModel.orEmpty().ifEmpty { stringResource(R.string.settings_ai_analysis_model_unset) },
+                        icon = Icons.Outlined.Tune,
+                    ) { onOpenSheet(SettingsSheet.ANALYSIS_MODEL) }
                 }
                 if (showReasoningEffort) {
                     if (showVisionModel) HorizontalDivider()
