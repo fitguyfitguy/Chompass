@@ -453,6 +453,7 @@ internal fun BuildingPlanStep(vm: OnboardingViewModel, onComplete: () -> Unit) {
     var checkedCount by remember { mutableIntStateOf(0) }
     var percent by remember { mutableIntStateOf(0) }
     var aiDone by remember { mutableStateOf(false) }
+    var skipped by remember { mutableStateOf(false) }
     val targetProgress = checkedCount / items.size.toFloat()
     val animatedProgress by animateFloatAsState(
         targetValue = targetProgress,
@@ -474,7 +475,7 @@ internal fun BuildingPlanStep(vm: OnboardingViewModel, onComplete: () -> Unit) {
         kotlinx.coroutines.delay(400)
         // Advance only once the AI plan calc has also finished.
         while (!aiDone) kotlinx.coroutines.delay(100)
-        onComplete()
+        if (!skipped) onComplete()
     }
 
     Column(
@@ -550,6 +551,20 @@ internal fun BuildingPlanStep(vm: OnboardingViewModel, onComplete: () -> Unit) {
                     }
                 }
             }
+        }
+        Spacer(Modifier.height(16.dp))
+        // Skip: advance now. Safe — buildPlanWithAI leaves plan targets null
+        // until it finishes and Plan Ready renders formula values meanwhile;
+        // the AI build continues in the background as before.
+        TextButton(
+            onClick = {
+                if (!skipped) {
+                    skipped = true
+                    onComplete()
+                }
+            }
+        ) {
+            Text(stringResource(R.string.onboarding_building_skip))
         }
     }
 }

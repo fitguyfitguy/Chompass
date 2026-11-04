@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.combinedClickable
@@ -28,6 +29,8 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.outlined.Reply
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
@@ -647,52 +650,64 @@ fun HomeScreen(
                     }
                 ) {
                     Spacer(Modifier.height(4.dp))
-                    if (isToday) {
-                        Text(
-                            stringResource(R.string.home_today),
-                            style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(horizontal = 16.dp),
-                        )
-                    } else {
-                        val jumpCd = stringResource(R.string.home_jump_to_today)
-                        // Date plus a Today pill: the whole strip jumps back,
-                        // not just the date text.
-                        Row(
-                            Modifier
-                                .padding(horizontal = 16.dp)
-                                .clickable { vm.setSelectedDate(LocalDate.now()) }
-                                .semantics { contentDescription = jumpCd },
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
+                    // Decorative day-swipe affordance: the chevrons fade with the
+                    // hero drag handler's reachability (backward is always allowed;
+                    // forward stops at the diary's today limit). Decorative only —
+                    // no new a11y actions, the swipe path is unchanged.
+                    val canSwipeForward = canAdvanceDiaryDay(selectedDate, today)
+                    Row(
+                        Modifier.padding(horizontal = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        DaySwipeChevron(backward = true, visible = true)
+                        Spacer(Modifier.width(2.dp))
+                        if (isToday) {
                             Text(
-                                selectedDate.format(LocaleFormat.mediumDate()),
+                                stringResource(R.string.home_today),
                                 style = MaterialTheme.typography.labelLarge,
-                                color = MaterialTheme.colorScheme.primary,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
-                            Spacer(Modifier.width(6.dp))
-                            Surface(
-                                shape = CircleShape,
-                                color = MaterialTheme.colorScheme.primaryContainer,
+                        } else {
+                            val jumpCd = stringResource(R.string.home_jump_to_today)
+                            // Date plus a Today pill: the whole strip jumps back,
+                            // not just the date text.
+                            Row(
+                                Modifier
+                                    .clickable { vm.setSelectedDate(LocalDate.now()) }
+                                    .semantics { contentDescription = jumpCd },
+                                verticalAlignment = Alignment.CenterVertically,
                             ) {
-                                Row(
-                                    Modifier.padding(start = 8.dp, end = 6.dp, top = 2.dp, bottom = 2.dp),
-                                    verticalAlignment = Alignment.CenterVertically,
+                                Text(
+                                    selectedDate.format(LocaleFormat.mediumDate()),
+                                    style = MaterialTheme.typography.labelLarge,
+                                    color = MaterialTheme.colorScheme.primary,
+                                )
+                                Spacer(Modifier.width(6.dp))
+                                Surface(
+                                    shape = CircleShape,
+                                    color = MaterialTheme.colorScheme.primaryContainer,
                                 ) {
-                                    Text(
-                                        stringResource(R.string.home_today),
-                                        style = MaterialTheme.typography.labelSmall,
-                                        color = MaterialTheme.colorScheme.onPrimaryContainer,
-                                    )
-                                    Icon(
-                                        Icons.AutoMirrored.Outlined.Reply,
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                                        modifier = Modifier.size(14.dp),
-                                    )
+                                    Row(
+                                        Modifier.padding(start = 8.dp, end = 6.dp, top = 2.dp, bottom = 2.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                    ) {
+                                        Text(
+                                            stringResource(R.string.home_today),
+                                            style = MaterialTheme.typography.labelSmall,
+                                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                        )
+                                        Icon(
+                                            Icons.AutoMirrored.Outlined.Reply,
+                                            contentDescription = null,
+                                            tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                                            modifier = Modifier.size(14.dp),
+                                        )
+                                    }
                                 }
                             }
                         }
+                        Spacer(Modifier.width(2.dp))
+                        DaySwipeChevron(backward = false, visible = canSwipeForward)
                     }
                     val baseGoal = ui.gaugeBaseCalorieGoal
                     val activeCalories = ui.displayActiveCalories
@@ -2524,4 +2539,25 @@ private fun Context.findComponentActivity(): ComponentActivity? {
         current = current.baseContext
     }
     return current as? ComponentActivity
+}
+
+/**
+ * Decorative day-swipe affordance beside the date caption: fades in only when
+ * the adjacent day is reachable by the hero drag handler. Decorative only —
+ * no semantics; the horizontal swipe path is unchanged.
+ */
+@Composable
+private fun DaySwipeChevron(backward: Boolean, visible: Boolean) {
+    val alpha by animateFloatAsState(
+        targetValue = if (visible) 1f else 0f,
+        label = "daySwipeChevron",
+    )
+    Icon(
+        if (backward) Icons.AutoMirrored.Filled.KeyboardArrowLeft else Icons.AutoMirrored.Filled.KeyboardArrowRight,
+        contentDescription = null,
+        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier
+            .size(16.dp)
+            .alpha(alpha),
+    )
 }
