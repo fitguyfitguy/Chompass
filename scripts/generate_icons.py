@@ -33,6 +33,7 @@ MASTER_PREVIEW = ROOT / "scripts" / "chompass_icon_master.png"
 RES = ROOT / "android" / "app" / "src" / "main" / "res"
 PWA_ICONS = ROOT / "web" / "app" / "icons"
 WEBSITE_IMG = ROOT / "website" / "static" / "img"
+WEBSITE_STATIC = ROOT / "website" / "static"
 METADATA_ICON = ROOT / "metadata" / "en-US" / "images" / "icon.png"
 
 # Rasterize the SVG well above the largest consumer size, then LANCZOS-down.
@@ -436,6 +437,12 @@ def write_pwa_icons(
     compose_mark_image(LOGO_SIZE, noir_raster, 1.0).save(WEBSITE_IMG / "logo.png", optimize=True)
     compose_brand_icon(64, rounded_mask, color_raster).save(
         WEBSITE_IMG / "favicon.png", optimize=True
+    )
+    # Root .ico: Google and several browsers fetch /favicon.ico regardless of <link>
+    # tags, so it must carry the same tile, not a hand-made relic.
+    compose_brand_icon(64, rounded_mask, color_raster).save(
+        WEBSITE_STATIC / "favicon.ico",
+        sizes=[(16, 16), (32, 32), (48, 48)],
     )
 
 
