@@ -8,6 +8,7 @@ import app.chompass.models.BodyFatEntry
 import app.chompass.models.BodyCompositionEntry
 import app.chompass.models.BodyMeasurement
 import app.chompass.models.ChatMessage
+import app.chompass.models.CoachQuickPrompts
 import app.chompass.models.DailyFoodTotals
 import app.chompass.models.DailyNote
 import app.chompass.models.FoodEntry
@@ -420,6 +421,9 @@ class PreferencesStore(private val appContext: Context) : NutritionSyncStore {
     suspend fun setAppLanguage(v: String) = setAppLanguageImpl(v)
     val coachTabEnabled: Flow<Boolean> get() = coachTabEnabledImpl
     suspend fun setCoachTabEnabled(v: Boolean) = setCoachTabEnabledImpl(v)
+    /** Codeberg #155: coach quick-prompt strip; null = per-goal defaults. */
+    val coachQuickPrompts: Flow<CoachQuickPrompts?> get() = coachQuickPromptsImpl
+    suspend fun setCoachQuickPrompts(prompts: CoachQuickPrompts?) = setCoachQuickPromptsImpl(prompts)
     /** Codeberg #20 phase 2: master AI-features switch; default ON. */
     val aiFeaturesEnabled: Flow<Boolean> get() = aiFeaturesEnabledImpl
     suspend fun setAiFeaturesEnabled(v: Boolean) = setAiFeaturesEnabledImpl(v)

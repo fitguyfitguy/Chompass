@@ -8,6 +8,7 @@ import androidx.compose.material.icons.automirrored.outlined.ShowChart
 import androidx.compose.material.icons.outlined.Brightness6
 import androidx.compose.material.icons.outlined.Calculate
 import androidx.compose.material.icons.outlined.CalendarToday
+import androidx.compose.material.icons.outlined.Chat
 import androidx.compose.material.icons.outlined.Dashboard
 import androidx.compose.material.icons.outlined.DeleteForever
 import androidx.compose.material.icons.outlined.Equalizer
@@ -279,6 +280,8 @@ internal val SETTINGS_INDEX: List<SettingsIndexEntry> = listOf(
         R.array.settings_search_kw_show_coach_tab, ChompassRoutes.SETTINGS_COACH, Icons.Outlined.Forum),
     SettingsIndexEntry(R.string.settings_group_coach, R.string.settings_section_custom_instructions,
         R.array.settings_search_kw_section_custom_instructions, ChompassRoutes.SETTINGS_COACH, Icons.Outlined.SmartToy),
+    SettingsIndexEntry(R.string.settings_group_coach, R.string.settings_coach_quick_prompts,
+        R.array.settings_search_kw_coach_quick_prompts, ChompassRoutes.SETTINGS_COACH, Icons.Outlined.Chat),
 
     // — Health Data —
     SettingsIndexEntry(R.string.settings_section_health, R.string.settings_health_connect,

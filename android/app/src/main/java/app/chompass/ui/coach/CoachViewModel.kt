@@ -1,6 +1,7 @@
 package app.chompass.ui.coach
 
 import android.util.Log
+import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -8,6 +9,8 @@ import app.chompass.AppContainer
 import app.chompass.R
 import app.chompass.data.disambiguateFoodName
 import app.chompass.models.ChatMessage
+import app.chompass.models.CoachQuickPromptEntry
+import app.chompass.models.CoachQuickPrompts
 import app.chompass.models.EnergyFormat
 import app.chompass.models.EnergyUnit
 import app.chompass.models.FoodEntry
@@ -22,6 +25,7 @@ import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -43,13 +47,47 @@ data class CoachUiState(
     val sending: Boolean = false,
     val error: String? = null,
     val errorRes: Int? = null,
-    val suggestions: List<Int> = emptyList(),
+    val suggestions: List<CoachPromptChip> = emptyList(),
     /** A write action the coach proposed, awaiting explicit user confirmation.
      *  At most one of these is non-null at a time. */
     val pendingFood: FoodEntry? = null,
     val pendingWeight: WeightEntry? = null,
     val pendingWater: WaterEntry? = null,
 )
+
+/**
+ * One coach quick-prompt chip (Codeberg #155): a builtin (resource-backed,
+ * translates) or a custom entry (user label + prompt).
+ */
+sealed interface CoachPromptChip {
+    data class Builtin(val id: String, @StringRes val labelRes: Int) : CoachPromptChip
+    data class Custom(val id: String, val label: String, val prompt: String) : CoachPromptChip
+}
+
+/** Stable builtin chip ids (snake case of the string-key suffix) → label resource. */
+internal val CoachBuiltinPromptLabels: Map<String, Int> = mapOf(
+    "predict_30_days" to R.string.coach_chip_predict_30_days,
+    "lose_faster" to R.string.coach_chip_lose_faster,
+    "eating_too_much" to R.string.coach_chip_eating_too_much,
+    "what_dinner" to R.string.coach_chip_what_dinner,
+    "gain_healthy" to R.string.coach_chip_gain_healthy,
+    "eating_enough" to R.string.coach_chip_eating_enough,
+    "high_protein" to R.string.coach_chip_high_protein,
+    "holding_weight" to R.string.coach_chip_holding_weight,
+    "average_intake" to R.string.coach_chip_average_intake,
+    "macro_suggestions" to R.string.coach_chip_macro_suggestions,
+    "trend" to R.string.coach_chip_trend,
+    "doing_this_week" to R.string.coach_chip_doing_this_week,
+    "log_advice" to R.string.coach_chip_log_advice,
+)
+
+/** Goal defaults as builtin ids; null storage falls back to these. */
+internal fun coachBuiltinDefaultIds(goal: WeightGoal?): List<String> = when (goal) {
+    WeightGoal.LOSE -> listOf("predict_30_days", "lose_faster", "eating_too_much", "what_dinner")
+    WeightGoal.GAIN -> listOf("predict_30_days", "gain_healthy", "eating_enough", "high_protein")
+    WeightGoal.MAINTAIN -> listOf("holding_weight", "average_intake", "macro_suggestions", "trend")
+    else -> listOf("doing_this_week", "predict_30_days", "log_advice")
+}
 
 class CoachViewModel(private val container: AppContainer) : ViewModel() {
     private val _ui = MutableStateFlow(CoachUiState())
@@ -60,36 +98,29 @@ class CoachViewModel(private val container: AppContainer) : ViewModel() {
             .onEach { _ui.value = _ui.value.copy(messages = it) }
             .launchIn(viewModelScope)
 
-        // Live-subscribe to profile so chips update when the user changes goal in Settings.
-        container.profileRepository.profile
-            .onEach { p -> _ui.value = _ui.value.copy(suggestions = chipsFor(p?.goal)) }
+        // Live-subscribe: chips update when the goal changes in Settings or the
+        // quick-prompt selection changes (#155). Null storage falls back to the
+        // goal defaults; a present-but-empty selection hides the strip.
+        combine(container.profileRepository.profile, container.prefs.coachQuickPrompts) { p, stored ->
+            promptChipsFor(p?.goal, stored)
+        }
+            .onEach { chips -> _ui.value = _ui.value.copy(suggestions = chips) }
             .launchIn(viewModelScope)
     }
 
-    private fun chipsFor(goal: WeightGoal?): List<Int> = when (goal) {
-        WeightGoal.LOSE -> listOf(
-            R.string.coach_chip_predict_30_days,
-            R.string.coach_chip_lose_faster,
-            R.string.coach_chip_eating_too_much,
-            R.string.coach_chip_what_dinner
-        )
-        WeightGoal.GAIN -> listOf(
-            R.string.coach_chip_predict_30_days,
-            R.string.coach_chip_gain_healthy,
-            R.string.coach_chip_eating_enough,
-            R.string.coach_chip_high_protein
-        )
-        WeightGoal.MAINTAIN -> listOf(
-            R.string.coach_chip_holding_weight,
-            R.string.coach_chip_average_intake,
-            R.string.coach_chip_macro_suggestions,
-            R.string.coach_chip_trend
-        )
-        else -> listOf(
-            R.string.coach_chip_doing_this_week,
-            R.string.coach_chip_predict_30_days,
-            R.string.coach_chip_log_advice
-        )
+    private fun promptChipsFor(goal: WeightGoal?, stored: CoachQuickPrompts?): List<CoachPromptChip> {
+        val defaults = coachBuiltinDefaultIds(goal).map { CoachQuickPromptEntry(id = it) }
+        val entries = stored?.resolveFor(defaults) ?: defaults
+        return entries.mapNotNull { entry ->
+            when {
+                entry.isBuiltin -> CoachBuiltinPromptLabels[entry.id]?.let {
+                    CoachPromptChip.Builtin(entry.id, it)
+                }
+                entry.label != null && entry.prompt != null ->
+                    CoachPromptChip.Custom(entry.id, entry.label, entry.prompt)
+                else -> null
+            }
+        }
     }
 
     fun send(userText: String, imageBytes: ByteArray? = null, thumbnailBytes: ByteArray? = null) {

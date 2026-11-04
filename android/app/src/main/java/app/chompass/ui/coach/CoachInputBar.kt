@@ -69,13 +69,23 @@ import app.chompass.ui.theme.CapsuleShape
  *     padding 14h × 9v, footnote rounded medium, calorie text
  */
 @Composable
-internal fun PromptChipRow(chips: List<String>, enabled: Boolean, onTap: (String) -> Unit) {
+internal fun PromptChipRow(chips: List<CoachPromptChip>, enabled: Boolean, onTap: (String) -> Unit) {
     if (chips.isEmpty()) return
     LazyRow(
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        items(chips) { chip -> PromptChip(chip, enabled, onTap) }
+        items(chips) { chip ->
+            val label = when (chip) {
+                is CoachPromptChip.Builtin -> stringResource(chip.labelRes)
+                is CoachPromptChip.Custom -> chip.label
+            }
+            val prompt = when (chip) {
+                is CoachPromptChip.Builtin -> label
+                is CoachPromptChip.Custom -> chip.prompt
+            }
+            PromptChip(label, enabled) { onTap(prompt) }
+        }
     }
 }
 
@@ -363,7 +373,6 @@ internal fun CoachScreenPreviewContent(
     input: String = "",
 ) {
     val listState = rememberLazyListState()
-    val resolvedChips = ui.suggestions.map { stringResource(it) }
     val resolvedError = ui.error ?: ui.errorRes?.let { stringResource(it) }
 
     Scaffold(
@@ -413,7 +422,7 @@ internal fun CoachScreenPreviewContent(
                     )
                 }
             }
-            PromptChipRow(chips = resolvedChips, enabled = !ui.sending, onTap = {})
+            PromptChipRow(chips = ui.suggestions, enabled = !ui.sending, onTap = {})
             CoachInputBarPreviewStub(value = input, sending = ui.sending)
         }
     }
