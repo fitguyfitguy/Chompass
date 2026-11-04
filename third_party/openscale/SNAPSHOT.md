@@ -42,8 +42,8 @@ Only these deviations from upstream bytes are allowed:
    Rows in the table marked `R-IMPORT` carry exactly this one-line change; the
    check script applies it to the fetched upstream copy before hashing.
 2. **String closure** — all `R.string.*` keys referenced by vendored files are
-   copied verbatim into `android/app/src/main/res/values/strings.xml` (marked
-   block; English-only). Exception: `gender_male` / `gender_female` reuse
+   copied verbatim into `android/app/src/main/res/values/openscale-vendor.xml`
+   (English-only). Exception: `gender_male` / `gender_female` reuse
    Chompass's existing keys (identical English text, already translated).
 3. **Room annotations** — vendored entities reference `androidx.room.*`
    annotations; Chompass has no Room. Satisfied by the annotation-only artifact
