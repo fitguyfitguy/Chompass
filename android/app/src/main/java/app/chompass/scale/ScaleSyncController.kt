@@ -59,7 +59,6 @@ class ScaleSyncController(
     private val bodyFatRepository: BodyFatRepository,
     private val bodyCompositionRepository: BodyCompositionRepository,
 ) : ScaleDeviceHandler.Callbacks, ScaleDeviceHandler.DataProvider {
-
     private companion object {
         const val TAG = "ChompassScaleSync"
         const val SCAN_TIMEOUT_MS = 60_000L

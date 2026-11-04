@@ -15,7 +15,6 @@ import java.time.Instant
 import java.util.Date
 
 class ScaleMeasurementMapperTest {
-
     private fun measurementAt(epochMs: Long): ScaleMeasurement =
         ScaleMeasurement(dateTime = Date(epochMs))
 

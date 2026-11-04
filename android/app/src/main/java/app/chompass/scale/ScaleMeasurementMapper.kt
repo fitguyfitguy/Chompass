@@ -5,7 +5,6 @@ import app.chompass.models.BodyFatEntry
 import app.chompass.models.WeightEntry
 import com.health.openscale.core.bluetooth.data.ScaleMeasurement
 import com.health.openscale.core.data.MeasurementType
-import java.time.Instant
 import java.util.Date
 import java.util.UUID
 
@@ -16,7 +15,6 @@ import java.util.UUID
  * accept exactly the same value ranges. See the OPENSCALE_* constants there.
  */
 object ScaleMeasurementMapper {
-
     /** Cap: total-body-water kg may not exceed this fraction of the same-row weight. */
     private const val MAX_TBW_FRACTION_OF_WEIGHT = 0.85
     /** Cap: muscle kg may not exceed this fraction of the same-row weight. */
