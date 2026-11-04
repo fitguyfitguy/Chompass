@@ -28,6 +28,7 @@
     <string name="action_ok">OK</string>
     <string name="action_info">Info</string>
     <string name="action_clear">Clear</string>
+    <string name="action_refresh">Refresh</string>
     <string name="action_delete">Delete</string>
     <string name="action_continue">Continue</string>
     <string name="action_get_started">Get started</string>
@@ -206,7 +207,8 @@
 
     <string name="settings_section_ai_profile">Profile</string>
     <string name="settings_section_ai_connection">Connection</string>
-    <string name="settings_section_ai_advanced">Advanced</string>
+    <string name="settings_section_ai_model_overrides">Model overrides</string>
+    <string name="settings_section_ai_features">AI features</string>
     <string name="settings_ai_key_test">Test</string>
     <string name="settings_ai_key_test_failed">Key rejected: %1$s</string>
     <string name="settings_ai_key_remove_title">Remove API key?</string>
@@ -1869,7 +1871,7 @@
     <string name="settings_ai_provider">Provider</string>
     <string name="settings_ai_model">Model</string>
     <string name="settings_ai_reasoning_effort">Reasoning effort</string>
-    <string name="settings_ai_reasoning_effort_footer">OpenRouter models: sets the thinking budget. Custom and Ollama servers: sends reasoning_effort where the server supports it. If your server rejects the request, set Auto.</string>
+    <string name="settings_ai_reasoning_effort_footer">Models that expose a thinking budget: sets how hard they think. Custom and Ollama servers: sends reasoning_effort where the server supports it. If your server rejects the request, set Auto.</string>
     <string name="ai_reasoning_effort_auto">Auto</string>
     <string name="ai_reasoning_effort_low">Low</string>
     <string name="ai_reasoning_effort_medium">Medium</string>
@@ -1879,6 +1881,7 @@
     <string name="settings_ai_vision_model_unset">(same as Model)</string>
     <string name="settings_ai_vision_model_footer">Photos use this model; text uses the main model. Leave unset to use the main model for everything.</string>
     <string name="settings_ai_coach_model">Coach model</string>
+    <string name="settings_ai_coach_model_unset">(same as Model)</string>
     <string name="settings_ai_coach_model_footer">Coach uses this model. Food logging and goal recalculation keep the main model. Leave unset to use the main model for Coach too.</string>
     <string name="settings_speech_language">Language</string>
     <string name="settings_ai_model_unset">(set one below)</string>
@@ -1969,6 +1972,9 @@
     <string name="settings_profile_rename">Rename profile</string>
     <string name="settings_profile_delete">Delete profile</string>
     <string name="settings_profile_delete_confirm">Delete this profile? Its API key is removed too.</string>
+    <string name="settings_ai_switch_provider_title">Switch provider?</string>
+    <string name="settings_ai_switch_provider_body">Switching clears this profile\'s API key, endpoint, and vision and Coach model settings. They belong to the old host.</string>
+    <string name="settings_ai_switch_provider_confirm">Switch</string>
     <string name="settings_profile_fallback">Fallback profile</string>
     <string name="settings_profile_fallback_none">None</string>
     <string name="sheet_profile_name">Profile name</string>
@@ -2611,7 +2617,8 @@
     <string name="settings_calc_methods">Calculation Methods</string>
     <string name="settings_ai_read_timeout">AI read timeout</string>
     <string name="settings_ai_read_timeout_unit">s</string>
-    <string name="settings_ai_read_timeout_value">%1$d s</string>
+    <string name="settings_ai_timeout_override">%1$d s · profile override</string>
+
     <string name="settings_goal_tier">Goal recalc prompt</string>
     <string name="settings_goal_tier_footer">How much data the goals recalculation sends the model. Safe sends compact summaries, right for small or local models. Smart sends your full weight and food history so a large model can judge trends itself. Auto picks by model name.</string>
     <string name="goal_tier_auto">Auto</string>

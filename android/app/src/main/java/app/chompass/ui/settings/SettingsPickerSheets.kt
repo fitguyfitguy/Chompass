@@ -134,6 +134,8 @@ internal fun <T> ListSheet(
     trailing: (@Composable (T) -> Unit)? = null,
     /** Null keeps the model-search hint. */
     searchPlaceholder: String? = null,
+    /** Rendered below the footer text (e.g. a Refresh action); also makes [footer] render without [customField]. */
+    footerButton: (@Composable () -> Unit)? = null,
     /** Controlled query. Used only when [onQueryChange] is non-null, in which case this sheet does not filter. */
     query: String? = null,
     onQueryChange: ((String) -> Unit)? = null,
@@ -261,6 +263,14 @@ internal fun <T> ListSheet(
             }
             }
         }
+    }
+    if (footerButton != null) {
+        footer?.let {
+            Spacer(Modifier.height(8.dp))
+            Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+        Spacer(Modifier.height(8.dp))
+        footerButton()
     }
     if (customField != null) {
         footer?.let {
