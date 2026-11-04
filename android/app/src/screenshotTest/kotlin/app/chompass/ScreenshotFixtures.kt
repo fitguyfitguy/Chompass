@@ -24,6 +24,7 @@ import app.chompass.models.WeightGoal
 import app.chompass.services.ai.PartialFoodAnalysis
 import app.chompass.services.health.ActivityDataSource
 import app.chompass.services.health.HomeActivitySnapshot
+import app.chompass.ui.coach.CoachPromptChip
 import app.chompass.ui.coach.CoachUiState
 import app.chompass.ui.home.HomeUiState
 import app.chompass.services.SampleDataGenerators
@@ -478,10 +479,10 @@ internal object ScreenshotFixtures {
             ),
         ),
         suggestions = listOf(
-            app.chompass.R.string.coach_chip_predict_30_days,
-            app.chompass.R.string.coach_chip_lose_faster,
-            app.chompass.R.string.coach_chip_eating_too_much,
-            app.chompass.R.string.coach_chip_what_dinner,
+            CoachPromptChip.Builtin("predict_30_days", app.chompass.R.string.coach_chip_predict_30_days),
+            CoachPromptChip.Builtin("lose_faster", app.chompass.R.string.coach_chip_lose_faster),
+            CoachPromptChip.Builtin("eating_too_much", app.chompass.R.string.coach_chip_eating_too_much),
+            CoachPromptChip.Builtin("what_dinner", app.chompass.R.string.coach_chip_what_dinner),
         ),
     )
 
