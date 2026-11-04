@@ -103,6 +103,7 @@ class SettingsIndexTest {
             "dark", "theme", "language", "week", "progress", "water", "nicotine",
             "caffeine", "journal", "reminders", "speech", "voice", "api key", "model", "fallback",
             "health connect", "export", "import", "backup", "webdav", "delete",
+            "favorites", "saved foods",
         )
         for (q in queries) {
             val foldedQuery = settingsSearchFold(q)
