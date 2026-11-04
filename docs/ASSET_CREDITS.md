@@ -34,7 +34,11 @@ keeps the static PNG, so an old device can never show an empty ring. The animati
 only — it is never a gate on the first frame, so a fast launch may dismiss the splash mid-spin.
 
 The noir (glow) variant is the dark-ground asset: app dark scheme, night splash, and the site
-header/OG mark. Tiles — launcher, favicon, PWA, BIMI — carry the light mark on cream.
+header/OG mark. Tiles — launcher, favicon, PWA, BIMI — carry the light mark on cream. The tab
+icon is the exception in shape: `favicon.svg` / `favicon.ico` / `img/favicon.png` are the ring
+alone in a single Ripened mid tone (`#E0685E`, t=0.68) — on a transparent ground for SVG-capable
+browsers, on the cream tile as the Safari/Google fallback — because the needle is illegible at
+16px and the gradient's pale start washes out on white tab bars.
 
 On Android API 26+, home-screen icons use adaptive XML (`mipmap-anydpi-v26`) with a cream or theme-gradient background, a safe-zone foreground logo, and a monochrome layer so the system icon-shape mask and Material You themed icons apply. PWA and store listing icons remain pre-shaped squircles.
 
