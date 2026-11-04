@@ -16,6 +16,11 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 ### Changed
 
 - **Anthropic starts on the Claude 5.5 models** (Android and web app): the Anthropic provider now defaults to Claude Haiku 5.5, with Claude Sonnet 5.5 next; the earlier Claude models stay in the list. The web app carries the same defaults. Closes Codeberg [#147](https://codeberg.org/fitguy/Chompass/issues/147)
+- **Coach quick prompts, your way** (Android): Settings → Coach → Quick prompts can reorder the chips above the Coach input, remove the ones you never use, add your own one-tap prompts, or hide the strip entirely. Custom prompts are plain text sends, so the editor works with AI features off. Closes Codeberg [#155](https://codeberg.org/fitguy/Chompass/issues/155)
+- **A launcher icon that follows the system theme** (Android): in system dark mode the home-screen tile switches to the plum tile with the glow mark; in light mode it stays the cream brand tile. Themed icons, the fixed-icon switch and shortcuts are unaffected.
+- **AI provider switching asks first** (Android): switching the provider now confirms before it clears the profile's API key, endpoint and vision and Coach model picks, instead of dropping them without a word.
+- **A clearer AI settings screen** (Android): the Advanced section splits into Model overrides and AI features, the read-timeout row shows when a profile override is active, the model list shows loading and error notes for providers that read their catalog live with a Refresh button, and the fallback profile gets a row on the AI screen.
+- **Steady rounded corners on growable cards** (Android): multi-row cards, note boxes and the coach input keep fixed rounded corners as they grow, so expanded content no longer clips under oversized circular corners.
 
 ### Fixed
 
@@ -23,6 +28,10 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 - **Repeat barcode scans are quick again** (Android): the product photo was re-downloaded from Open Food Facts on every scan of the same code even though the nutrition data was already cached on-device. The first scan now stores the photo too, and later scans render it from disk with no network request. Closes Codeberg [#160](https://codeberg.org/fitguy/Chompass/issues/160)
 - **Connection errors name the host that failed** (Android): when the AI host's name doesn't resolve, the error now names it and points at VPN, private DNS and ad-blocking DNS filters as the usual causes. Closes Codeberg [#116](https://codeberg.org/fitguy/Chompass/issues/116)
 - **Settings search finds Saved foods** (Android): searching settings for "favorites" or "saved foods" turned up nothing because the Saved foods row was missing from the offline search index. Closes Codeberg [#161](https://codeberg.org/fitguy/Chompass/issues/161)
+- **A deleted planned meal can be undone** (Android): long-pressing a chip on the Plan week canvas now shows an Undo note that puts the meal back in its place.
+- **The Progress tab no longer flashes placeholders when you return** (Android): charts render immediately again on tab switches instead of empty frames.
+- **The goal wheel matches the other pickers** (Android): the goal phase wheels used narrower rows than every other picker in the app; they now share the same row height.
+- **The fasting card gets its own accent** (Android): the fasting tracker's icon, progress bar and button use a plum accent of their own, like the water and caffeine cards, instead of the theme primary.
 
 ## [6.1.1] - 2026-11-03
 
