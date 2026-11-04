@@ -1,0 +1,48 @@
+# Device pass (6.2.0-beta.2): Coach quick-prompt editor round trip (#155).
+# Add a custom prompt, save, verify it renders and sends in Coach, survives a
+# restart, then disable the strip and verify the chip row hides.
+appId: app.chompass.debug
+name: Coach quick prompts customize and disable
+---
+- launchApp:
+    clearState: false
+- tapOn: "Settings"
+- tapOn: "Coach tab, custom instructions"
+- assertVisible: "Quick prompts"
+- assertVisible: "3 shown"
+- tapOn: "Quick prompts"
+- assertVisible: "How am I doing this week?"
+- tapOn: "Add custom"
+- tapOn: "Label"
+- inputText: "Salt check"
+- tapOn: "Prompt"
+- inputText: "How much salt should I eat today?"
+- tapOn: "Save"
+- assertVisible: "Salt check"
+- tapOn: "Save"
+- assertVisible: "4 shown"
+# Coach renders the custom chip and tapping sends its prompt verbatim.
+- tapOn: "Settings"
+- tapOn: "Coach"
+- assertVisible: "Salt check"
+- tapOn: "Salt check"
+- assertVisible: "How much salt should I eat today?"
+# Persistence: the stored selection survives a full restart.
+- stopApp
+- launchApp:
+    clearState: false
+- tapOn: "Settings"
+- tapOn: "Coach tab, custom instructions"
+- assertVisible: "4 shown"
+# Disable: delete every entry and save the empty list.
+- tapOn: "Quick prompts"
+- tapOn: "Delete"
+- tapOn: "Delete"
+- tapOn: "Delete"
+- tapOn: "Delete"
+- assertVisible: "Quick prompts are hidden."
+- tapOn: "Save"
+- assertVisible: "Hidden"
+- tapOn: "Settings"
+- tapOn: "Coach"
+- assertNotVisible: "Salt check"
