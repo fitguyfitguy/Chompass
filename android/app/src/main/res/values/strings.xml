@@ -1023,6 +1023,16 @@
     <string name="coach_chip_doing_this_week">How am I doing this week?</string>
     <string name="coach_chip_log_advice">Any advice based on my log?</string>
 
+    <string name="settings_coach_quick_prompts">Quick prompts</string>
+    <string name="settings_coach_quick_prompts_footer">Choose which prompts appear in Coach, reorder them, or add your own.</string>
+    <string name="settings_coach_quick_prompts_help">These chips appear above the Coach input. Reorder, remove, or add your own; saving an empty list hides the strip.</string>
+    <string name="settings_coach_quick_prompts_shown">%1$d shown</string>
+    <string name="settings_coach_quick_prompts_empty">Quick prompts are hidden. Add some, or save to keep them hidden.</string>
+    <string name="settings_coach_quick_prompts_add_builtin">Add built-in</string>
+    <string name="settings_coach_quick_prompts_add_custom">Add custom</string>
+    <string name="settings_coach_quick_prompts_custom_label">Label</string>
+    <string name="settings_coach_quick_prompts_custom_prompt">Prompt</string>
+
     <!-- Progress -->
     <string name="progress_range_week">1W</string>
     <string name="progress_range_month">1M</string>
@@ -1490,6 +1500,11 @@
         <item>coach</item>
         <item>tab</item>
         <item>hide</item>
+    </string-array>
+    <string-array name="settings_search_kw_coach_quick_prompts">
+        <item>coach</item>
+        <item>prompts</item>
+        <item>chips</item>
     </string-array>
     <string-array name="settings_search_kw_ai_provider">
         <item>gemini</item>

@@ -177,6 +177,8 @@ internal object Keys {
         val APP_LANGUAGE = stringPreferencesKey("appLanguage")
         /** Codeberg #20 (phase 1): View-only coach-tab toggle; default ON. */
         val COACH_TAB_ENABLED = booleanPreferencesKey("coachTabEnabled")
+        /** Codeberg #155: stored coach quick-prompt strip (JSON; null = goal defaults). */
+        val COACH_QUICK_PROMPTS = stringPreferencesKey("coachQuickPrompts")
         /** Codeberg #20 (phase 2): master AI-features switch; default ON. When off,
          *  no data is sent to any LLM provider and AI entry points are hidden. */
         val AI_FEATURES_ENABLED = booleanPreferencesKey("aiFeaturesEnabled")

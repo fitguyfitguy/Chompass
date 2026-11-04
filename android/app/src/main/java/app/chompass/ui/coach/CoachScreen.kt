@@ -264,16 +264,16 @@ fun CoachScreen(container: AppContainer) {
                 }
             }
 
-            // promptChips — horizontal scrolling, ALWAYS visible (matches iOS)
-            val resolvedChips = ui.suggestions.map { stringResource(it) }
+            // promptChips — horizontal strip; an explicitly empty stored selection
+            // hides it (#155). PromptChipRow returns early on empty.
             PromptChipRow(
-                chips = resolvedChips,
+                chips = ui.suggestions,
                 enabled = !ui.sending,
-                onTap = { chip ->
+                onTap = { prompt ->
                     hideKeyboard()
                     input = ""
                     attachedImageBytes = null
-                    vm.send(chip)
+                    vm.send(prompt)
                 }
             )
 
