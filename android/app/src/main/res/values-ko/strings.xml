@@ -2846,4 +2846,11 @@
     <string name="export_settings_summary">환경설정을 JSON 파일로 저장합니다. API 키는 포함되지 않습니다.</string>
     <string name="export_settings_success">설정을 내보냈습니다.</string>
     <string name="export_settings_failed">설정 내보내기 실패: %1$s</string>
-</resources>
+    <string name="progress_sync_scale_metrics">저울에서 동기화</string>
+    <string name="progress_sync_scale_rationale">Chompass가 저울과 통신하려면 근처 기기 권한이 필요합니다.</string>
+    <string name="progress_sync_scale_grant">허용</string>
+    <string name="progress_sync_scale_scanning">저울을 찾는 중… 위에 올라가세요</string>
+    <string name="progress_sync_scale_reading">%1$s에서 읽는 중…</string>
+    <string name="progress_sync_scale_done">새 측정 %1$d개를 가져왔습니다</string>
+    <string name="progress_sync_scale_failed">저울 동기화 실패: %1$s</string>
+    </resources>

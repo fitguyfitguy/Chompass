@@ -2862,4 +2862,11 @@ macros rééquilibrées au nouveau total calorique</string>
     <string name="export_settings_summary">Enregistre les préférences dans un fichier JSON. Aucune clé d\'API n\'est incluse.</string>
     <string name="export_settings_success">Réglages exportés.</string>
     <string name="export_settings_failed">Échec de l\'export des réglages : %1$s</string>
-</resources>
+    <string name="progress_sync_scale_metrics">Synchroniser depuis la balance</string>
+    <string name="progress_sync_scale_rationale">Chompass a besoin de l\'autorisation des appareils à proximité pour communiquer avec votre balance.</string>
+    <string name="progress_sync_scale_grant">Accorder</string>
+    <string name="progress_sync_scale_scanning">Recherche de votre balance… montez dessus</string>
+    <string name="progress_sync_scale_reading">Lecture depuis %1$s…</string>
+    <string name="progress_sync_scale_done">%1$d nouvelles pesées importées</string>
+    <string name="progress_sync_scale_failed">Échec de la synchronisation de la balance : %1$s</string>
+    </resources>

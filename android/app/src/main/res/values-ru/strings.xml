@@ -2942,4 +2942,11 @@
     <string name="export_settings_summary">Сохраняет настройки в файл JSON. Ключи API не включаются.</string>
     <string name="export_settings_success">Настройки экспортированы.</string>
     <string name="export_settings_failed">Не удалось экспортировать настройки: %1$s</string>
-</resources>
+    <string name="progress_sync_scale_metrics">Синхронизировать с весами</string>
+    <string name="progress_sync_scale_rationale">Chompass нужен доступ к ближайшим устройствам, чтобы связаться с вашими весами.</string>
+    <string name="progress_sync_scale_grant">Разрешить</string>
+    <string name="progress_sync_scale_scanning">Ищем ваши весы… встаньте на них</string>
+    <string name="progress_sync_scale_reading">Чтение с %1$s…</string>
+    <string name="progress_sync_scale_done">Импортировано новых взвешиваний: %1$d</string>
+    <string name="progress_sync_scale_failed">Не удалось синхронизироваться с весами: %1$s</string>
+    </resources>

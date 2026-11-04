@@ -8,9 +8,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material.icons.filled.Bluetooth
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -108,6 +110,8 @@ internal fun CompositionSection(
     untrackedDays: Set<String> = emptySet(),
     typeColorOf: (String) -> Color = { Color.Transparent },
     onLog: () -> Unit = {},
+    /** Sync-from-scale action; null hides it (Android 12+ only, display-only paths). */
+    onSyncScale: (() -> Unit)? = null,
 ) {
     val metrics = remember(compositions) {
         CompositionMetric.entries.filter { metric ->
@@ -131,6 +135,29 @@ internal fun CompositionSection(
                     maxLines = 1,
                     modifier = Modifier.weight(1f),
                 )
+                if (onSyncScale != null) {
+                    Row(
+                        modifier = Modifier
+                            .clickable(onClick = onSyncScale)
+                            .padding(end = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Icon(
+                            Icons.Filled.Bluetooth,
+                            contentDescription = stringResource(R.string.progress_sync_scale_metrics),
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.width(16.dp),
+                        )
+                        Spacer(Modifier.width(4.dp))
+                        Text(
+                            stringResource(R.string.progress_sync_scale_metrics),
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = MaterialTheme.colorScheme.primary,
+                            maxLines = 1,
+                        )
+                    }
+                }
                 Row(
                     modifier = Modifier.clickable(onClick = onLog),
                     verticalAlignment = Alignment.CenterVertically,
