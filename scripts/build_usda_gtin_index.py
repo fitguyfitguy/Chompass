@@ -18,9 +18,20 @@ Outputs into ``build/offline-index/`` (gitignored):
     usda-gtins-<version>.json    -- manifest; sha256/bytes describe the .gz
 
 Publishing (maintainer, one-time per refresh): create a Codeberg release
-tagged ``offline-index-<version>`` on fitguy/Chompass and attach the pack
-pair (plus the ``off-de`` pair from ``build_off_country_index.py``). The app
-resolves by tag prefix + asset naming contract; nothing ships in the APK.
+tagged ``offline-index-<version>`` on fitguy/Chompass, attach the pack
+pair (plus the ``off-de`` pair from ``build_off_country_index.py``), and
+mark it as a **pre-release** so it never becomes the repo's "latest
+release" (the README badge and Obtainium's stable track use latest =
+newest stable release). The app resolves packs by tag prefix + asset
+naming contract and ignores the flag; nothing ships in the APK.
+
+    nix shell nixpkgs#tea -c tea releases create --login codeberg-release \
+      --repo fitguy/chompass --tag offline-index-<version> \
+      --title "Offline barcode packs <version>" --prerelease \
+      --asset build/offline-index/usda-gtins-<version>.sqlite.gz \
+      --asset build/offline-index/usda-gtins-<version>.json \
+      --asset build/offline-index/off-de-<version>.sqlite.gz \
+      --asset build/offline-index/off-de-<version>.json
 
 Usage:
     uv run python scripts/build_usda_gtin_index.py              # full build (downloads the pinned FDC zip)

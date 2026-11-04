@@ -18,7 +18,8 @@ and adjust the column/field lists only when a column was truly renamed.
 
 Publishing (maintainer, one-time per refresh): see the header of
 ``build_usda_gtin_index.py`` — one ``offline-index-<version>`` Codeberg
-release carries both packs.
+release carries both packs, created with ``--prerelease true`` so it never
+becomes the repo's "latest release".
 
 Usage:
     uv run scripts/build_off_country_index.py                    # latest nightly (large download)
