@@ -3,6 +3,7 @@ package app.chompass.services
 import android.content.ComponentName
 import android.content.Context
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import app.chompass.ChompassApp
 import app.chompass.ui.theme.AppThemeColor
 import app.chompass.ui.theme.resolveLauncherIconTheme
@@ -11,6 +12,14 @@ import kotlinx.coroutines.launch
 
 object AndroidAppIconManager {
     private const val MANIFEST_NAMESPACE = "app.chompass"
+
+    /**
+     * Night twin of the brand tile (Plum / Peach / the fixedIcon pin all share
+     * the brand tile): enabled in night mode, otherwise a disabled manifest
+     * default. Accent-tile aliases keep their light-tuned gradients — no dark
+     * variants exist for them.
+     */
+    private const val BRAND_DARK_ALIAS = "LauncherBrandDark"
 
     /**
      * @param fixedIcon when true the brand icon alias is always used and no aliases
@@ -22,15 +31,30 @@ object AndroidAppIconManager {
     fun apply(context: Context, themeColor: AppThemeColor, fixedIcon: Boolean = false) {
         val resolved = themeColor.resolveLauncherIconTheme(context, fixedIcon)
         val pm = context.packageManager
+        val night = isNightLauncher(context)
+        val dark = resolved.isBrandTile && night
         val currentlyEnabled = AppThemeColor.iconSelectableColors().firstOrNull { color ->
             isAliasEnabled(pm, context, color)
         }
-        if (currentlyEnabled != resolved) {
-            AppThemeColor.iconSelectableColors().forEach { color ->
-                val component = ComponentName(
-                    context.packageName,
-                    "$MANIFEST_NAMESPACE.${color.launcherAliasSimpleName}",
+        val darkEnabled = isBrandDarkAliasEnabled(pm, context)
+        if (dark) {
+            if (currentlyEnabled != null || !darkEnabled) {
+                AppThemeColor.iconSelectableColors().forEach { color ->
+                    pm.setComponentEnabledSetting(
+                        component(context, color.launcherAliasSimpleName),
+                        PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+                        PackageManager.DONT_KILL_APP,
+                    )
+                }
+                pm.setComponentEnabledSetting(
+                    component(context, BRAND_DARK_ALIAS),
+                    PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+                    PackageManager.DONT_KILL_APP,
                 )
+            }
+        } else if (currentlyEnabled != resolved || darkEnabled) {
+            AppThemeColor.iconSelectableColors().forEach { color ->
+                val component = component(context, color.launcherAliasSimpleName)
                 val state = if (color == resolved) {
                     PackageManager.COMPONENT_ENABLED_STATE_ENABLED
                 } else {
@@ -42,6 +66,11 @@ object AndroidAppIconManager {
                     PackageManager.DONT_KILL_APP,
                 )
             }
+            pm.setComponentEnabledSetting(
+                component(context, BRAND_DARK_ALIAS),
+                PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+                PackageManager.DONT_KILL_APP,
+            )
         }
         // Shortcuts must target the enabled alias (same component as the live
         // task). Republish after every apply so theme switches stay in sync;
@@ -65,10 +94,18 @@ object AndroidAppIconManager {
         val pm = context.packageManager
         val enabled = AppThemeColor.iconSelectableColors().firstOrNull { color ->
             isAliasEnabled(pm, context, color)
-        } ?: AppThemeColor.fromKey(AppThemeColor.DEFAULT_KEY)
+        }
+        val simpleName = enabled?.launcherAliasSimpleName
+            // Night twin: when LauncherBrandDark owns MAIN/LAUNCHER no color
+            // alias is enabled, so shortcuts must target it.
+            ?: if (isBrandDarkAliasEnabled(pm, context)) {
+                BRAND_DARK_ALIAS
+            } else {
+                AppThemeColor.fromKey(AppThemeColor.DEFAULT_KEY).launcherAliasSimpleName
+            }
         return ComponentName(
             context.packageName,
-            "$MANIFEST_NAMESPACE.${enabled.launcherAliasSimpleName}",
+            "$MANIFEST_NAMESPACE.$simpleName",
         )
     }
 
@@ -77,10 +114,7 @@ object AndroidAppIconManager {
         context: Context,
         color: AppThemeColor,
     ): Boolean {
-        val component = ComponentName(
-            context.packageName,
-            "$MANIFEST_NAMESPACE.${color.launcherAliasSimpleName}",
-        )
+        val component = component(context, color.launcherAliasSimpleName)
         return when (pm.getComponentEnabledSetting(component)) {
             PackageManager.COMPONENT_ENABLED_STATE_ENABLED -> true
             PackageManager.COMPONENT_ENABLED_STATE_DISABLED -> false
@@ -88,6 +122,21 @@ object AndroidAppIconManager {
             else -> color == AppThemeColor.fromKey(AppThemeColor.DEFAULT_KEY)
         }
     }
+
+    /** BrandDark ships disabled; only a prior night apply state-enables it. */
+    private fun isBrandDarkAliasEnabled(pm: PackageManager, context: Context): Boolean =
+        pm.getComponentEnabledSetting(component(context, BRAND_DARK_ALIAS)) ==
+            PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+
+    private fun isNightLauncher(context: Context): Boolean =
+        (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
+            Configuration.UI_MODE_NIGHT_YES
+
+    private val AppThemeColor.isBrandTile: Boolean
+        get() = this == AppThemeColor.PLUM || this == AppThemeColor.PEACH
+
+    private fun component(context: Context, simpleName: String) =
+        ComponentName(context.packageName, "$MANIFEST_NAMESPACE.$simpleName")
 
     private val AppThemeColor.launcherAliasSimpleName: String
         get() = when (this) {

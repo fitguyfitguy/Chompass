@@ -59,6 +59,8 @@ SAFE_ZONE_RATIO = 0.66
 
 # Brand tile: cream background, mark box as a fraction of the canvas.
 CREAM = (0xFF, 0xF6, 0xEC)
+# Night twin of the brand tile: plum ground (BrandPalette Plum), noir mark.
+BRAND_DARK_TILE = (0x17, 0x0E, 0x16)
 BRAND_BOX_RATIO = 0.76
 MASKABLE_CONTENT_RATIO = 0.70
 SPLASH_BOX_RATIO = 0.88
@@ -192,11 +194,12 @@ def compose_brand_icon(
     mask: Image.Image,
     color_raster: Image.Image,
     box_ratio: float = BRAND_BOX_RATIO,
+    tile: tuple[int, int, int] = CREAM,
 ) -> Image.Image:
-    """Cream tile + full-colour mark, intersected with the launcher mask."""
-    tile = compose_mark_image(size, color_raster, box_ratio)
-    base = Image.new("RGBA", (size, size), (*CREAM, 255))
-    base.alpha_composite(tile)
+    """Tile + full-colour mark, intersected with the launcher mask."""
+    tile_img = compose_mark_image(size, color_raster, box_ratio)
+    base = Image.new("RGBA", (size, size), (*tile, 255))
+    base.alpha_composite(tile_img)
 
     out = Image.new("RGBA", (size, size), (0, 0, 0, 0))
     out.paste(base, mask=mask.resize((size, size), Image.Resampling.LANCZOS))
@@ -393,6 +396,44 @@ def write_adaptive_icons(color_raster: Image.Image, logo_mask: Image.Image) -> N
         )
 
 
+def write_brand_dark_icons(
+    noir_raster: Image.Image,
+    rounded_mask: Image.Image,
+    circle_mask: Image.Image,
+) -> None:
+    """Night launcher twin: noir (RipenedGlow) mark on the plum tile.
+
+    Accent tiles keep their light-tuned gradients — no dark variants exist
+    for them; only the brand tile pair gets a night half.
+    """
+    drawable = RES / "drawable"
+    nodpi = RES / "drawable-nodpi"
+    nodpi.mkdir(parents=True, exist_ok=True)
+    anydpi = RES / "mipmap-anydpi-v26"
+    anydpi.mkdir(parents=True, exist_ok=True)
+
+    compose_adaptive_foreground(ADAPTIVE_PX, noir_raster).save(
+        nodpi / "ic_launcher_foreground_brand_dark.png", optimize=True
+    )
+    write_solid_background_xml(drawable / "ic_launcher_background_plum.xml", BRAND_DARK_TILE)
+    write_adaptive_icon_xml(
+        anydpi / "ic_launcher_brand_dark.xml",
+        "ic_launcher_background_plum",
+        "ic_launcher_foreground_brand_dark",
+    )
+
+    base = "ic_launcher_brand_dark"
+    for folder, px in DENSITIES.items():
+        out_dir = RES / folder
+        out_dir.mkdir(parents=True, exist_ok=True)
+        compose_brand_icon(px, rounded_mask, noir_raster, tile=BRAND_DARK_TILE).save(
+            out_dir / f"{base}.png", optimize=True
+        )
+        compose_brand_icon(px, circle_mask, noir_raster, tile=BRAND_DARK_TILE).save(
+            out_dir / f"{base}_round.png", optimize=True
+        )
+
+
 def write_splash_marks(color_raster: Image.Image, noir_raster: Image.Image) -> None:
     """Android 12+ splash icon source: transparent mark, no tile, no inset.
 
@@ -475,6 +516,7 @@ def main() -> None:
 
     write_density_icons(color_raster, logo_mask, rounded_mask, circle_mask)
     write_adaptive_icons(color_raster, logo_mask)
+    write_brand_dark_icons(noir_raster, rounded_mask, circle_mask)
     write_splash_marks(color_raster, noir_raster)
     write_pwa_icons(rounded_mask, color_raster, noir_raster, logo_mask)
 
