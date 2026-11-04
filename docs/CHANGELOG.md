@@ -9,11 +9,19 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 ### Added
 
 - **Offline product data packs** (Android): Settings → Food & Entry → Offline product data can download two optional barcode packs — USDA branded foods (GTIN) and Open Food Facts Germany. When Open Food Facts doesn't know a barcode, or the network is down, the scan answers from the pack with name, brand and calories for the serving. Downloads come straight from this project's release page, Wi-Fi-only by default, and scans themselves never query anywhere new. Pack data: USDA FoodData Central (public domain) and Open Food Facts (ODbL).
+- **Pick a classic docked bottom bar** (Android): Settings → Display gains a Navigation bar row with two styles: the floating pill (still the default) and a classic docked bar pinned to the screen edge. Both run the same tabs, so the update badge and back behavior are identical either way. Closes Codeberg [#158](https://codeberg.org/fitguy/Chompass/issues/158)
+- **Export settings to a file** (Android): Settings → Data & Backup gains a Settings backup section. Export settings writes your preferences to a Chompass-settings.json document you pick, then reads it back to confirm the copy. Export only: there is no import path, and anything key-shaped (API keys) never leaves the device. Closes Codeberg [#117](https://codeberg.org/fitguy/Chompass/issues/117)
+
+### Changed
+
+- **Anthropic starts on the Claude 5.5 models** (Android and web app): the Anthropic provider now defaults to Claude Haiku 5.5, with Claude Sonnet 5.5 next; the earlier Claude models stay in the list. The web app carries the same defaults. Closes Codeberg [#147](https://codeberg.org/fitguy/Chompass/issues/147)
 
 ### Fixed
 
 - **Scrolling to the bottom of the diary leaves breathing room above the Add button** (Android): at the end of the food log the last entry's bottom edge touched the floating Add button. The gap there now matches the gap between the navigation pill and the button, so the button floats clear of both.
 - **Repeat barcode scans are quick again** (Android): the product photo was re-downloaded from Open Food Facts on every scan of the same code even though the nutrition data was already cached on-device. The first scan now stores the photo too, and later scans render it from disk with no network request. Closes Codeberg [#160](https://codeberg.org/fitguy/Chompass/issues/160)
+- **Connection errors name the host that failed** (Android): when the AI host's name doesn't resolve, the error now names it and points at VPN, private DNS and ad-blocking DNS filters as the usual causes. Closes Codeberg [#116](https://codeberg.org/fitguy/Chompass/issues/116)
+- **Settings search finds Saved foods** (Android): searching settings for "favorites" or "saved foods" turned up nothing because the Saved foods row was missing from the offline search index. Closes Codeberg [#161](https://codeberg.org/fitguy/Chompass/issues/161)
 
 ## [6.1.1] - 2026-11-03
 
