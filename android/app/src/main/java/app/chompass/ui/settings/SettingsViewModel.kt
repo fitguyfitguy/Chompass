@@ -1443,6 +1443,16 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         }
     }
 
+    /** Sets the per-profile meal-analysis slot (#148); null/blank clears it back to "same as Model". */
+    fun setProfileAnalysisModel(m: String?) {
+        viewModelScope.launch {
+            val active = _ui.value.activeProfile ?: return@launch
+            val model = m?.takeIf { it.isNotBlank() }?.let { active.provider.supportedModelOrDefault(it) }
+            container.prefs.editActiveProfile { it.copy(analysisModel = model) }
+            refreshAiState()
+        }
+    }
+
     /** E4B is the OOM-risk model; 6 GB devices get E2B only. */
     private fun supportedOnDeviceModels(): List<String> =
         AIProvider.ON_DEVICE.models.filter { modelId ->

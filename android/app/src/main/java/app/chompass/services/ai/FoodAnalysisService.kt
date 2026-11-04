@@ -24,6 +24,7 @@ import app.chompass.models.MicronutrientValues
 import app.chompass.models.gapReport
 import app.chompass.models.WeightEntry
 import app.chompass.models.OptionalNutrientGoals
+import app.chompass.models.analysisSelectedModel
 import app.chompass.models.resolveModelForRequest
 import app.chompass.models.GoalFormulaReference
 import app.chompass.models.HeuristicServingUnitSettings
@@ -1775,7 +1776,7 @@ class FoodAnalysisService(
         }
         val primaryModel = resolveModelForRequest(
             provider = primary,
-            selectedModel = ap.model,
+            selectedModel = analysisSelectedModel(ap.analysisModel, ap.model),
             visionModel = ap.visionModel,
             hasImages = imageBytesList.any { it.isNotEmpty() },
         )
@@ -1832,7 +1833,7 @@ class FoodAnalysisService(
             )
             val fallbackModel = resolveModelForRequest(
                 provider = fallback.provider,
-                selectedModel = fallback.model,
+                selectedModel = analysisSelectedModel(fallback.analysisModel, fallback.model),
                 visionModel = fallback.visionModel,
                 hasImages = imageBytesList.any { it.isNotEmpty() },
             )
@@ -1948,7 +1949,7 @@ class FoodAnalysisService(
             val body = if (rebuildPrompt != null) {
                 val ap = prefs?.activeAiProfile?.first()
                 val provider = ap?.provider ?: AIProvider.GEMINI
-                val delegateModel = modelFor(provider, ap?.model, ap?.visionModel)
+                val delegateModel = modelFor(provider, analysisSelectedModel(ap?.analysisModel, ap?.model), ap?.visionModel)
                 rebuildPrompt(provider, delegateModel, kindOverride ?: entryKind(provider, delegateModel))
             } else {
                 prompt
@@ -1991,7 +1992,7 @@ class FoodAnalysisService(
             GoalRecalcTierOverride.SMART -> GoalRecalcTier.SMART
         }
         val primary = cfg.provider
-        val primaryModel = modelFor(primary, cfg.selectedModel, cfg.profile.visionModel)
+        val primaryModel = modelFor(primary, analysisSelectedModel(cfg.profile.analysisModel, cfg.selectedModel), cfg.profile.visionModel)
         val kind = kindOverride ?: entryKind(primary, primaryModel)
         attemptState?.kind = kind
         var wrapPrompt: (String) -> String = { it }
@@ -2094,7 +2095,7 @@ class FoodAnalysisService(
                         it.primaryProvider = primary
                         it.primaryError = primaryError.message
                     }
-                    val fallbackModel = modelFor(fallback.provider, fallback.model, cfg.fallbackProfile?.visionModel)
+                    val fallbackModel = modelFor(fallback.provider, analysisSelectedModel(fallback.analysisModel, fallback.model), fallback.visionModel)
                     val fallbackKind = kindOverride ?: entryKind(fallback.provider, fallbackModel)
                     attemptState?.kind = fallbackKind
                     assembler.reset()
@@ -2409,14 +2410,14 @@ class FoodAnalysisService(
             // id explicitly via ModelCatalog.)
             val entry = ModelCatalog.forModelId(model)
             if (onDeviceModelDownloaded?.invoke(entry.modelId) != true) return null
-            return FallbackConfig(provider, model, baseUrl = "", apiKey = null, visionModel = fb.visionModel)
+            return FallbackConfig(provider, model, baseUrl = "", apiKey = null, visionModel = fb.visionModel, analysisModel = fb.analysisModel)
         }
         val key = keyLookup?.invoke(fb)
             ?: AiHttp.sanitizeApiKey(keyStore!!.profileApiKey(fb.id))
         if (provider.requiresApiKey && key.isNullOrEmpty()) return null
         val baseUrl = fb.baseUrl?.takeIf { it.isNotEmpty() }?.let(AiHttp::normalizeCustomBaseUrl) ?: provider.baseUrl
         if (baseUrl.isEmpty()) return null
-        return FallbackConfig(provider, model, baseUrl, key, fb.visionModel)
+        return FallbackConfig(provider, model, baseUrl, key, fb.visionModel, fb.analysisModel)
     }
 
     private data class FallbackConfig(
@@ -2426,6 +2427,8 @@ class FoodAnalysisService(
         val apiKey: String?,
         /** Fallback profile's vision slot (resolved like the primary's). */
         val visionModel: String?,
+        /** Fallback profile's meal-analysis slot (#148), raw like [model]. */
+        val analysisModel: String?,
     )
 
     companion object {
