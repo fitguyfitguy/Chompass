@@ -71,7 +71,8 @@ internal object MagnitudeDrafts {
     }
 }
 
-private val MAGNITUDE_ROW_HEIGHT = 44.dp * 5
+// 48dp rows: matches WheelPicker ITEM_HEIGHT; the goal wheel is the last 44dp wheel surface.
+private val MAGNITUDE_ROW_HEIGHT = 48.dp * 5
 
 @Composable
 internal fun rememberMagnitudePickerMode(): Pair<Boolean, (Boolean) -> Unit> {
@@ -165,7 +166,7 @@ internal fun MagnitudeTypeField(
         Box(
             modifier = Modifier
                 .weight(1f)
-                .height(44.dp)
+                .height(48.dp)
                 .semantics { this.contentDescription = contentDescription },
             contentAlignment = Alignment.Center,
         ) {

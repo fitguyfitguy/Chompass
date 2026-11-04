@@ -39,6 +39,7 @@ import app.chompass.models.FastingPhase
 import app.chompass.models.FastingSession
 import app.chompass.ui.components.AnimatedNumberText
 import app.chompass.ui.theme.AppMotion
+import app.chompass.ui.theme.fasting
 import app.chompass.ui.util.formatClockMillis
 
 /**
@@ -129,7 +130,7 @@ fun FastingProgressRow(
             Icon(
                 Icons.Outlined.Schedule,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
+                tint = MaterialTheme.colorScheme.fasting,
                 modifier = Modifier.height(17.dp),
             )
             Spacer(Modifier.padding(start = 6.dp))
@@ -142,7 +143,7 @@ fun FastingProgressRow(
                 Spacer(Modifier.padding(start = 6.dp))
                 Text(
                     stringResource(R.string.fasting_auto_tag),
-                    color = MaterialTheme.colorScheme.primary,
+                    color = MaterialTheme.colorScheme.fasting,
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Medium,
                 )
@@ -161,7 +162,7 @@ fun FastingProgressRow(
                     .fillMaxWidth()
                     .height(5.dp)
                     .clip(RoundedCornerShape(3.dp)),
-                color = MaterialTheme.colorScheme.primary,
+                color = MaterialTheme.colorScheme.fasting,
                 trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.16f),
             )
             if (countdownHint != null) {
@@ -184,7 +185,7 @@ fun FastingProgressRow(
                 Button(
                     onClick = if (showStop) onStop else onStart,
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
+                        containerColor = MaterialTheme.colorScheme.fasting,
                     ),
                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 6.dp),
                     modifier = Modifier
@@ -270,7 +271,7 @@ fun FastingHubControl(
             Icon(
                 Icons.Outlined.Schedule,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
+                tint = MaterialTheme.colorScheme.fasting,
                 modifier = Modifier.height(18.dp),
             )
             Spacer(Modifier.padding(start = 8.dp))
@@ -296,7 +297,7 @@ fun FastingHubControl(
                 Button(
                     onClick = if (showStop) onStop else onStart,
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
+                        containerColor = MaterialTheme.colorScheme.fasting,
                     ),
                     contentPadding = PaddingValues(horizontal = 14.dp, vertical = 6.dp),
                     modifier = Modifier

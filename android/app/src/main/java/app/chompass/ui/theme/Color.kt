@@ -334,6 +334,11 @@ object AppColors {
     val CaffeineLight = Color(0xFF9A6700)
     val CaffeineDark = Color(0xFFFFC14D)
 
+    /** Semantic fasting-tracker accent (icon + value caption; bar stays primary). */
+    // Fig ramp mid steps (BrandPalette Fig500 light / Fig300 dark) — the one unused brand ramp.
+    val FastingLight = Color(0xFF8F4B78)
+    val FastingDark = Color(0xFFD6A2BE)
+
     /** Semantic warning tone (non-destructive caution states). */
     val WarningLight = Color(0xFF8B5000)
     val WarningDark = Color(0xFFFFB77C)
@@ -375,6 +380,10 @@ val androidx.compose.material3.ColorScheme.water: Color
 /** Resolves [AppColors.CaffeineLight]/[AppColors.CaffeineDark] against the active theme. */
 val androidx.compose.material3.ColorScheme.caffeine: Color
     get() = if (background.luminance() < 0.5f) AppColors.CaffeineDark else AppColors.CaffeineLight
+
+/** Resolves [AppColors.FastingLight]/[AppColors.FastingDark] against the active theme. */
+val androidx.compose.material3.ColorScheme.fasting: Color
+    get() = if (background.luminance() < 0.5f) AppColors.FastingDark else AppColors.FastingLight
 
 /** Canonical muted neutral base — warm (not gray), one literal (UI-audit 2.4). */
 val MutedNeutral: Color = Color(0xFF6E5C63)

@@ -23,6 +23,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
@@ -122,7 +123,10 @@ fun ProgressScreen(container: AppContainer, onOpenCustomize: (() -> Unit)? = nul
     var editingMeasurementSite by remember { mutableStateOf<BodyMeasurement.Site?>(null) }
     var showAllWeights by remember { mutableStateOf(false) }
     var showAllBodyFats by remember { mutableStateOf(false) }
-    var heavySectionsReady by remember { mutableStateOf(false) }
+    // rememberSaveable: the destination leaves composition on tab switch, so
+    // returning to the tab skips the two-frame defer; cold start still defers
+    // once (the original heavy-section jank guard).
+    var heavySectionsReady by rememberSaveable { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         repeat(2) { withFrameNanos { } }
         heavySectionsReady = true

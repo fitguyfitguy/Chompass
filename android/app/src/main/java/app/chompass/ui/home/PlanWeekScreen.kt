@@ -22,8 +22,13 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
 import androidx.compose.material3.TextButton
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -171,10 +176,27 @@ internal class PlanWeekViewModel(private val container: AppContainer) : ViewMode
         }
     }
 
-    /** Chip long-press: remove the row (v1 without the Home undo snackbar). */
+    private val _removedAck = MutableStateFlow<FoodEntry?>(null)
+    /** Last chip delete; the screen shows one undo snackbar for it (Home pattern). */
+    val removedAck: StateFlow<FoodEntry?> = _removedAck.asStateFlow()
+
+    /** Chip long-press: remove the row, keeping it for one undo. */
     fun remove(entry: FoodEntry) {
         viewModelScope.launch {
             container.foodRepository.deleteEntry(entry)
+            refresh()
+            _removedAck.value = entry
+        }
+    }
+
+    fun clearRemovedAck() {
+        _removedAck.value = null
+    }
+
+    /** Undo: re-insert the deleted chip (same id and timestamp, so the same slot). */
+    fun undoRemove(entry: FoodEntry) {
+        viewModelScope.launch {
+            container.foodRepository.addEntry(entry.copy(planned = true), writeHealth = false)
             refresh()
         }
     }
@@ -234,10 +256,33 @@ internal fun PlanWeekScreen(
     val loaded by vm.loaded.collectAsState()
     val loadFailed by vm.loadFailed.collectAsState()
     val dateFmt = remember { LocaleFormat.shortDate() }
+    val removedEntry by vm.removedAck.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val removedMessage = stringResource(R.string.home_food_removed)
+    val undoLabel = stringResource(R.string.action_undo)
+
+    // Chip delete → undo snackbar, mirroring the Home saved-favorite ack.
+    // Undo re-inserts through the repository; the same id and timestamp
+    // restore the chip's slot in its day section.
+    LaunchedEffect(removedEntry) {
+        val removed = removedEntry ?: return@LaunchedEffect
+        val result = snackbarHostState.showSnackbar(
+            message = removedMessage,
+            actionLabel = undoLabel,
+            duration = if (container.debugPersistentSnackbars) {
+                SnackbarDuration.Indefinite
+            } else {
+                SnackbarDuration.Short
+            },
+        )
+        if (result == SnackbarResult.ActionPerformed) vm.undoRemove(removed)
+        vm.clearRemovedAck()
+    }
 
     SettingsSubScreen(
         title = stringResource(R.string.plan_week_title),
         onBack = { nav.popBackStack() },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
     ) {
         Row(
             Modifier.fillMaxWidth(),
