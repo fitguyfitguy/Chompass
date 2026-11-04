@@ -49,6 +49,7 @@
     <string name="action_info">Info</string>
 
     <string name="action_clear">Leeren</string>
+    <string name="action_refresh">Aktualisieren</string>
 
     <string name="action_delete">Löschen</string>
 
@@ -336,7 +337,8 @@
 
     <string name="settings_section_ai_connection">Verbindung</string>
 
-    <string name="settings_section_ai_advanced">Erweitert</string>
+    <string name="settings_section_ai_model_overrides">Modell-Overrides</string>
+    <string name="settings_section_ai_features">KI-Funktionen</string>
 
     <string name="settings_ai_key_test">Testen</string>
 
@@ -666,6 +668,7 @@ für dich ein</string>
     <string name="onboarding_building_recommendation">Tägliche Empfehlung für</string>
 
     <string name="onboarding_building_bullet">•</string>
+    <string name="onboarding_building_skip">Überspringen</string>
 
     <string name="onboarding_plan_title">Dein Plan</string>
 
@@ -1448,6 +1451,16 @@ für dich ein</string>
 
     <string name="coach_chip_log_advice">Gibt es Ratschläge basierend auf meinem Protokoll?</string>
 
+    <string name="settings_coach_quick_prompts">Schnellprompts</string>
+    <string name="settings_coach_quick_prompts_footer">Wähle, welche Prompts im Coach erscheinen, sortiere sie oder füge eigene hinzu.</string>
+    <string name="settings_coach_quick_prompts_help">Diese Chips erscheinen über der Coach-Eingabe. Sortiere sie, entferne sie oder füge eigene hinzu; eine leere Liste blendet die Leiste aus.</string>
+    <string name="settings_coach_quick_prompts_shown">%1$d angezeigt</string>
+    <string name="settings_coach_quick_prompts_empty">Schnellprompts sind ausgeblendet. Füge welche hinzu oder speichere, um sie ausgeblendet zu lassen.</string>
+    <string name="settings_coach_quick_prompts_add_builtin">Eingebauten hinzufügen</string>
+    <string name="settings_coach_quick_prompts_add_custom">Eigenen hinzufügen</string>
+    <string name="settings_coach_quick_prompts_custom_label">Beschriftung</string>
+    <string name="settings_coach_quick_prompts_custom_prompt">Prompttext</string>
+
     <string name="progress_range_week">1W</string>
 
     <string name="progress_range_month">1M</string>
@@ -2002,7 +2015,7 @@ für dich ein</string>
 
     <string name="settings_ai_reasoning_effort">Denkaufwand</string>
 
-    <string name="settings_ai_reasoning_effort_footer">OpenRouter-Modelle: legt das Denkbudget fest. Eigene Server und Ollama: sendet reasoning_effort, sofern der Server es unterstützt. Lehnt dein Server die Anfrage ab, wähl Automatisch.</string>
+    <string name="settings_ai_reasoning_effort_footer">Modelle mit Denkbudget: legt fest, wie intensiv sie denken. Eigene Server und Ollama: sendet reasoning_effort, sofern der Server es unterstützt. Lehnt dein Server die Anfrage ab, wähl Automatisch.</string>
 
     <string name="ai_reasoning_effort_auto">Automatisch</string>
 
@@ -2020,6 +2033,7 @@ für dich ein</string>
     <string name="settings_ai_vision_model_footer">Fotos verwenden dieses Modell; Text verwendet das Hauptmodell. Ohne Auswahl wird für alles das Hauptmodell verwendet.</string>
 
     <string name="settings_ai_coach_model">Coach-Modell</string>
+    <string name="settings_ai_coach_model_unset">(gleich wie Modell)</string>
 
     <string name="settings_ai_coach_model_footer">Coach verwendet dieses Modell. Essensprotokollierung und Ziel-Neuberechnung nutzen weiterhin das Hauptmodell. Ohne Auswahl verwendet auch Coach das Hauptmodell.</string>
 
@@ -2161,6 +2175,9 @@ für dich ein</string>
     <string name="settings_profile_rename">Profil umbenennen</string>
     <string name="settings_profile_delete">Profil löschen</string>
     <string name="settings_profile_delete_confirm">Dieses Profil löschen? Sein API-Schlüssel wird ebenfalls entfernt.</string>
+    <string name="settings_ai_switch_provider_title">Anbieter wechseln?</string>
+    <string name="settings_ai_switch_provider_body">Beim Wechsel werden der API-Schlüssel dieses Profils, der Endpunkt und die Vision- und Coach-Modell-Einstellungen gelöscht. Sie gehören zum alten Anbieter.</string>
+    <string name="settings_ai_switch_provider_confirm">Wechseln</string>
     <string name="settings_profile_fallback">Fallback-Profil</string>
     <string name="settings_profile_fallback_none">Ohne</string>
     <string name="sheet_profile_name">Profilname</string>
@@ -3153,7 +3170,7 @@ für dich ein</string>
 
     <string name="settings_ai_read_timeout_unit">s</string>
 
-    <string name="settings_ai_read_timeout_value">%1$d s</string>
+    <string name="settings_ai_timeout_override">%1$d s · Profil-Override</string>
 
     <string name="settings_goal_tier">Prompt für Ziele-Neuberechnung</string>
 
@@ -4222,6 +4239,11 @@ für dich ein</string>
         <item>Coach</item>
         <item>Tab</item>
         <item>ausblenden</item>
+    </string-array>
+    <string-array name="settings_search_kw_coach_quick_prompts">
+        <item>Coach</item>
+        <item>Prompts</item>
+        <item>Chips</item>
     </string-array>
     <string-array name="settings_search_kw_ai_provider">
         <item>Gemini</item>
