@@ -2848,4 +2848,11 @@ makrolar yeni kalori cəminə uyğun yenidən tarazlaşdırılır</string>
     <string name="export_settings_summary">Nizamlamaları JSON fayla saxlayır. API açarları daxil deyil.</string>
     <string name="export_settings_success">Parametrlər ixrac edildi.</string>
     <string name="export_settings_failed">Parametrlərin ixracı alınmadı: %1$s</string>
-</resources>
+    <string name="progress_sync_scale_metrics">Tərəzidən sinxronlaşdır</string>
+    <string name="progress_sync_scale_rationale">Chompass tərəzi ilə danışmaq üçün yaxınlıqdakı cihazlar icazəsinə ehtiyac duyur.</string>
+    <string name="progress_sync_scale_grant">İcazə ver</string>
+    <string name="progress_sync_scale_scanning">Tərəziniz axtarılır… üstünə çıxın</string>
+    <string name="progress_sync_scale_reading">%1$s cihazından oxunur…</string>
+    <string name="progress_sync_scale_done">%1$d yeni çəki verişi idxal edildi</string>
+    <string name="progress_sync_scale_failed">Tərəzi sinxronizasiyası alınmadı: %1$s</string>
+    </resources>

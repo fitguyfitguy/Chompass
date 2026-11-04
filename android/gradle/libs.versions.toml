@@ -27,8 +27,12 @@ splashscreen = "1.0.1"
 screenshot = "0.0.1-alpha15"
 litertlm = "0.16.1"
 robolectric = "4.15.1"
+blessed = "3.1.0"
+room = "2.8.5"
 
 [libraries]
+blessed-kotlin = { group = "com.github.weliem", name = "blessed-kotlin", version.ref = "blessed" }
+androidx-room-common = { group = "androidx.room", name = "room-common", version.ref = "room" }
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
 gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }

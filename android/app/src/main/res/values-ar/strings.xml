@@ -2891,4 +2891,11 @@
     <string name="export_settings_summary">يحفظ التفضيلات في ملف JSON. لا تُضمَّن مفاتيح API.</string>
     <string name="export_settings_success">تم تصدير الإعدادات.</string>
     <string name="export_settings_failed">فشل تصدير الإعدادات: %1$s</string>
-</resources>
+    <string name="progress_sync_scale_metrics">المزامنة من الميزان</string>
+    <string name="progress_sync_scale_rationale">يحتاج Chompass إلى إذن الأجهزة القريبة للتحدث مع ميزانك.</string>
+    <string name="progress_sync_scale_grant">منح</string>
+    <string name="progress_sync_scale_scanning">جارٍ البحث عن ميزانك… اصعد إليه</string>
+    <string name="progress_sync_scale_reading">جارٍ القراءة من %1$s…</string>
+    <string name="progress_sync_scale_done">تم استيراد %1$d وزنات جديدة</string>
+    <string name="progress_sync_scale_failed">فشلت مزامنة الميزان: %1$s</string>
+    </resources>

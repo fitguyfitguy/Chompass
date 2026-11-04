@@ -2863,4 +2863,11 @@ macro-urile reechilibrate la noul total caloric</string>
     <string name="export_settings_summary">Salvează preferințele într-un fișier JSON. Nu include chei API.</string>
     <string name="export_settings_success">Setări exportate.</string>
     <string name="export_settings_failed">Exportul setărilor a eșuat: %1$s</string>
-</resources>
+    <string name="progress_sync_scale_metrics">Sincronizează din cântar</string>
+    <string name="progress_sync_scale_rationale">Chompass are nevoie de permisiunea pentru dispozitivele din apropiere pentru a comunica cu cântarul tău.</string>
+    <string name="progress_sync_scale_grant">Permite</string>
+    <string name="progress_sync_scale_scanning">Se caută cântarul… urcă pe el</string>
+    <string name="progress_sync_scale_reading">Se citește de la %1$s…</string>
+    <string name="progress_sync_scale_done">%1$d cântăriri noi importate</string>
+    <string name="progress_sync_scale_failed">Sincronizarea cu cântarul a eșuat: %1$s</string>
+    </resources>

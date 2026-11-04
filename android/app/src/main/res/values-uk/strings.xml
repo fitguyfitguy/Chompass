@@ -2793,4 +2793,11 @@ LBM = вага × (1 − %жиру)</string>
     <string name="export_settings_summary">Зберігає налаштування у файл JSON. Ключі API не включаються.</string>
     <string name="export_settings_success">Налаштування експортовано.</string>
     <string name="export_settings_failed">Не вдалося експортувати налаштування: %1$s</string>
-</resources>
+    <string name="progress_sync_scale_metrics">Синхронізувати з вагами</string>
+    <string name="progress_sync_scale_rationale">Chompass потрібен дозвіл на пристрої поблизу, щоб зв\'язатися з вашими вагами.</string>
+    <string name="progress_sync_scale_grant">Дозволити</string>
+    <string name="progress_sync_scale_scanning">Шукаємо ваші ваги… станьте на них</string>
+    <string name="progress_sync_scale_reading">Читання з %1$s…</string>
+    <string name="progress_sync_scale_done">Імпортовано %1$d нових зважувань</string>
+    <string name="progress_sync_scale_failed">Не вдалося синхронізуватися з вагами: %1$s</string>
+    </resources>

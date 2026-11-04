@@ -2845,4 +2845,11 @@
     <string name="export_settings_summary">将偏好设置保存为 JSON 文件。不包含 API 密钥。</string>
     <string name="export_settings_success">设置已导出。</string>
     <string name="export_settings_failed">导出设置失败：%1$s</string>
-</resources>
+    <string name="progress_sync_scale_metrics">从体脂秤同步</string>
+    <string name="progress_sync_scale_rationale">Chompass 需要“附近设备”权限才能与您的体脂秤通信。</string>
+    <string name="progress_sync_scale_grant">授权</string>
+    <string name="progress_sync_scale_scanning">正在寻找您的体脂秤…请站上去</string>
+    <string name="progress_sync_scale_reading">正在从 %1$s 读取…</string>
+    <string name="progress_sync_scale_done">已导入 %1$d 条新的体重记录</string>
+    <string name="progress_sync_scale_failed">体脂秤同步失败：%1$s</string>
+    </resources>

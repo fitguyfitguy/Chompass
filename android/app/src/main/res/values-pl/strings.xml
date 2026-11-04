@@ -2888,4 +2888,11 @@ makro rebalansowane do nowej sumy kalorii</string>
     <string name="export_settings_summary">Zapisuje preferencje do pliku JSON. Nie zawiera kluczy API.</string>
     <string name="export_settings_success">Ustawienia wyeksportowane.</string>
     <string name="export_settings_failed">Eksport ustawień nie powiódł się: %1$s</string>
-</resources>
+    <string name="progress_sync_scale_metrics">Synchronizuj z wagą</string>
+    <string name="progress_sync_scale_rationale">Chompass potrzebuje uprawnienia do urządzeń w pobliżu, aby rozmawiać z Twoją wagą.</string>
+    <string name="progress_sync_scale_grant">Zezwól</string>
+    <string name="progress_sync_scale_scanning">Szukam Twojej wagi… wejdź na nią</string>
+    <string name="progress_sync_scale_reading">Odczyt z %1$s…</string>
+    <string name="progress_sync_scale_done">Zaimportowano %1$d nowych pomiarów wagi</string>
+    <string name="progress_sync_scale_failed">Synchronizacja z wagą nie powiodła się: %1$s</string>
+    </resources>

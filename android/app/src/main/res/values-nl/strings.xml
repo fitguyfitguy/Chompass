@@ -2847,4 +2847,11 @@ macro\'s opnieuw verdeeld over het nieuwe calorieëntotaal</string>
     <string name="export_settings_summary">Slaat voorkeuren op in een JSON-bestand. API-sleutels zijn niet inbegrepen.</string>
     <string name="export_settings_success">Instellingen geëxporteerd.</string>
     <string name="export_settings_failed">Exporteren van instellingen mislukt: %1$s</string>
-</resources>
+    <string name="progress_sync_scale_metrics">Van de weegschaal synchroniseren</string>
+    <string name="progress_sync_scale_rationale">Chompass heeft de toestemming voor apparaten in de buurt nodig om met je weegschaal te praten.</string>
+    <string name="progress_sync_scale_grant">Toestaan</string>
+    <string name="progress_sync_scale_scanning">Zoeken naar je weegschaal… stap erop</string>
+    <string name="progress_sync_scale_reading">Lezen van %1$s…</string>
+    <string name="progress_sync_scale_done">%1$d nieuwe metingen geïmporteerd</string>
+    <string name="progress_sync_scale_failed">Synchronisatie met weegschaal mislukt: %1$s</string>
+    </resources>
