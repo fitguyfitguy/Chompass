@@ -197,6 +197,13 @@ internal fun SettingsAiSection(
                     SettingFootnote(stringResource(R.string.settings_ai_allow_insecure_http_footer))
                 }
     }
+    // The overrides card only carries per-provider slots and knobs; on-device
+    // (and any provider with none of them) it would render as an empty titled
+    // card, so it hides entirely there.
+    if (ui.activeProvider != AIProvider.ON_DEVICE
+        || OpenAICompatibleClient.usesReasoningEffort(ui.activeProvider)
+        || (ui.activeProvider.usesConfigurableRequestTimeout && ui.directoryEntry == null)
+    ) {
     SectionCard(title = stringResource(R.string.settings_section_ai_model_overrides)) {
                 // Per-provider model slots and knobs, stored on the profile;
                 // subtitles show the effective value. Max response length is not
@@ -247,6 +254,7 @@ internal fun SettingsAiSection(
                         icon = Icons.Outlined.Speed
                     ) { onOpenSheet(SettingsSheet.AI_READ_TIMEOUT) }
                 }
+    }
     }
     SectionCard(title = stringResource(R.string.settings_section_ai_features)) {
                 val showGoalTier = ui.activeProvider.usesConfigurableRequestTimeout
