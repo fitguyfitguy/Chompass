@@ -28,7 +28,9 @@ ASSETS = ROOT / "scripts" / "assets"
 MARK_SVG = ASSETS / "chompass_icon_mark.svg"
 MARK_NOIR_SVG = ASSETS / "chompass_icon_mark_noir.svg"
 MARK_MASK_SVG = ASSETS / "chompass_icon_mark_mask.svg"
-RING_SVG = ASSETS / "chompass_icon_mark_ring.svg"
+# Tab tile: emitted by build_icon_mark.py (solid ink needle, cream tile) —
+# rasterize it instead of recomposing so SVG and raster stay pixel-consistent.
+FAVICON_SVG = ROOT / "website" / "static" / "img" / "favicon.svg"
 # Generated preview (brand tile) — not an editable source.
 MASTER_PREVIEW = ROOT / "scripts" / "chompass_icon_master.png"
 RES = ROOT / "android" / "app" / "src" / "main" / "res"
@@ -57,8 +59,6 @@ SAFE_ZONE_RATIO = 0.66
 
 # Brand tile: cream background, mark box as a fraction of the canvas.
 CREAM = (0xFF, 0xF6, 0xEC)
-# Tab-icon ring: Ripened t=0.68 (see build_icon_mark.py FAVICON_RING note).
-RING_TONE = (0xE0, 0x68, 0x5E)
 BRAND_BOX_RATIO = 0.76
 MASKABLE_CONTENT_RATIO = 0.70
 SPLASH_BOX_RATIO = 0.88
@@ -200,28 +200,6 @@ def compose_brand_icon(
 
     out = Image.new("RGBA", (size, size), (0, 0, 0, 0))
     out.paste(base, mask=mask.resize((size, size), Image.Resampling.LANCZOS))
-    return out
-
-
-def compose_ring_icon(
-    size: int,
-    rounded_mask: Image.Image,
-    ring_mask: Image.Image,
-    box_ratio: float = BRAND_BOX_RATIO,
-) -> Image.Image:
-    """Cream tile + ring only: the needle/hub are mush below ~32px, so the tab
-    icon drops them and carries the same single RING_TONE as favicon.svg."""
-    base = Image.new("RGBA", (size, size), (*CREAM, 255))
-    ring_px = round(size * box_ratio)
-    layer = Image.new("RGBA", (size, size), (0, 0, 0, 0))
-    layer.paste(
-        Image.new("RGBA", (ring_px, ring_px), (*RING_TONE, 255)),
-        mask=ring_mask.resize((ring_px, ring_px), Image.Resampling.LANCZOS),
-    )
-    base.alpha_composite(layer, ((size - ring_px) // 2, (size - ring_px) // 2))
-
-    out = Image.new("RGBA", (size, size), (0, 0, 0, 0))
-    out.paste(base, mask=rounded_mask.resize((size, size), Image.Resampling.LANCZOS))
     return out
 
 
@@ -433,7 +411,6 @@ def write_pwa_icons(
     color_raster: Image.Image,
     noir_raster: Image.Image,
     logo_mask: Image.Image,
-    ring_mask: Image.Image,
 ) -> None:
     """PWA, store-listing, and website icons.
 
@@ -462,14 +439,24 @@ def write_pwa_icons(
     WEBSITE_IMG.mkdir(parents=True, exist_ok=True)
     compose_mark_image(LOGO_SIZE, noir_raster, 1.0).save(WEBSITE_IMG / "logo.png", optimize=True)
 
-    # Browser tab: ring-only tile (needle drops below ~32px; see compose_ring_icon).
-    # Root .ico: Google and several browsers fetch /favicon.ico regardless of <link>
-    # tags, so it must come from the same generator, not a hand-made relic.
+    # Browser tab: rasterize favicon.svg (the tab tile's single source of truth)
+    # and apply the launcher squircle mask; the SVG's own rounded rect already
+    # matches SQUIRCLE_CORNER_RATIO. Root .ico: Google and several browsers
+    # fetch /favicon.ico regardless of <link> tags.
     WEBSITE_IMG.mkdir(parents=True, exist_ok=True)
-    compose_ring_icon(64, rounded_mask, ring_mask).save(
-        WEBSITE_IMG / "favicon.png", optimize=True
+    favicon_tile = rasterize_svg(FAVICON_SVG, RASTER_PX)
+    favicon_png = Image.new("RGBA", (64, 64), (0, 0, 0, 0))
+    favicon_png.paste(
+        favicon_tile.resize((64, 64), Image.Resampling.LANCZOS),
+        mask=rounded_mask.resize((64, 64), Image.Resampling.LANCZOS),
     )
-    compose_ring_icon(64, rounded_mask, ring_mask).save(
+    favicon_png.save(WEBSITE_IMG / "favicon.png", optimize=True)
+    favicon_masked_48 = Image.new("RGBA", (48, 48), (0, 0, 0, 0))
+    favicon_masked_48.paste(
+        favicon_tile.resize((48, 48), Image.Resampling.LANCZOS),
+        mask=rounded_mask.resize((48, 48), Image.Resampling.LANCZOS),
+    )
+    favicon_masked_48.save(
         WEBSITE_STATIC / "favicon.ico",
         sizes=[(16, 16), (32, 32), (48, 48)],
     )
@@ -479,9 +466,7 @@ def main() -> None:
     color_raster = rasterize_svg(MARK_SVG, RASTER_PX)
     noir_raster = rasterize_svg(MARK_NOIR_SVG, RASTER_PX)
     mask_raster = rasterize_svg(MARK_MASK_SVG, RASTER_PX)
-    ring_raster = rasterize_svg(RING_SVG, RASTER_PX)
     logo_mask = logo_mask_from_raster(mask_raster)
-    ring_mask = logo_mask_from_raster(ring_raster)
     rounded_mask = make_squircle_mask(RASTER_PX)
     circle_mask = make_circle_mask(RASTER_PX)
 
@@ -491,7 +476,7 @@ def main() -> None:
     write_density_icons(color_raster, logo_mask, rounded_mask, circle_mask)
     write_adaptive_icons(color_raster, logo_mask)
     write_splash_marks(color_raster, noir_raster)
-    write_pwa_icons(rounded_mask, color_raster, noir_raster, logo_mask, ring_mask)
+    write_pwa_icons(rounded_mask, color_raster, noir_raster, logo_mask)
 
     print(
         f"Generated icons from {MARK_SVG.relative_to(ROOT)} "
