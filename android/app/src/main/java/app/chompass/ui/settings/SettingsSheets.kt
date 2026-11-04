@@ -135,6 +135,17 @@ private fun ProviderPickerChipLabel(chip: ProviderPickerChip) {
             .padding(horizontal = 8.dp, vertical = 2.dp),
     )
 }
+/**
+ * True when switching the provider would clear stored state: the switch drops
+ * the key, endpoint and both per-feature model slots, so only warn when the
+ * active profile actually carries any of them.
+ */
+private fun providerSwitchClearsSettings(ui: SettingsUiState): Boolean =
+    ui.apiKeyMasked.isNotEmpty() ||
+        !ui.activeProfile?.baseUrl.isNullOrBlank() ||
+        ui.activeProfile?.visionModel != null ||
+        ui.activeProfile?.coachModel != null
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun SettingsSheets(
@@ -163,7 +174,9 @@ internal fun SettingsSheets(
             onDismiss()
         }
     }
-    LaunchedEffect(sheet, ui.activeProfile?.id, ui.activeProfile?.baseUrl, ui.activeProvider) {
+    // Bumped by the model sheet's Refresh footer to re-run the lineup fetch.
+    var modelSheetRefresh by remember(sheet) { mutableIntStateOf(0) }
+    LaunchedEffect(sheet, ui.activeProfile?.id, ui.activeProfile?.baseUrl, ui.activeProvider, modelSheetRefresh) {
         if (sheet == SettingsSheet.AI_MODEL && ui.activeProvider == AIProvider.OLLAMA) {
             vm.fetchOllamaModels()
         }
@@ -209,6 +222,7 @@ internal fun SettingsSheets(
             when (sheet) {
                 SettingsSheet.AI_PROVIDER -> {
                     var providerQuery by remember { mutableStateOf("") }
+                    var pendingProviderSwitch by remember { mutableStateOf<AIProvider?>(null) }
                     val context = LocalContext.current
                     val directory = vm.container.providerDirectory
                     val rows = buildProviderPickerRows(
@@ -245,8 +259,15 @@ internal fun SettingsSheets(
                         onSelect = { row ->
                             when (row) {
                                 is ProviderPickerRow.Builtin -> {
-                                    vm.setProfileProvider(row.provider)
-                                    onDismiss()
+                                    val target = row.provider
+                                    if (target != ui.activeProvider && providerSwitchClearsSettings(ui)) {
+                                        // A real switch drops the key, endpoint and both
+                                        // model slots — name exactly what clears first.
+                                        pendingProviderSwitch = target
+                                    } else {
+                                        vm.setProfileProvider(target)
+                                        onDismiss()
+                                    }
                                 }
                                 is ProviderPickerRow.Directory -> {
                                     vm.selectOpenAiEndpoint(row.entry.baseUrl)
@@ -257,6 +278,26 @@ internal fun SettingsSheets(
                             }
                         },
                     )
+                    pendingProviderSwitch?.let { target ->
+                        AlertDialog(
+                            onDismissRequest = { pendingProviderSwitch = null },
+                            containerColor = glassDialogColor(MaterialTheme.colorScheme.surfaceContainerHigh),
+                            title = { Text(stringResource(R.string.settings_ai_switch_provider_title)) },
+                            text = { Text(stringResource(R.string.settings_ai_switch_provider_body)) },
+                            confirmButton = {
+                                TextButton(onClick = {
+                                    pendingProviderSwitch = null
+                                    vm.setProfileProvider(target)
+                                    onDismiss()
+                                }) { Text(stringResource(R.string.settings_ai_switch_provider_confirm)) }
+                            },
+                            dismissButton = {
+                                TextButton(onClick = { pendingProviderSwitch = null }) {
+                                    Text(stringResource(R.string.action_cancel))
+                                }
+                            },
+                        )
+                    }
                     if (!directory?.entries.isNullOrEmpty()) {
                         Spacer(Modifier.height(8.dp))
                         Text(
@@ -319,6 +360,18 @@ internal fun SettingsSheets(
                             stringResource(R.string.settings_ollama_models_error)
                         ui.activeProvider == AIProvider.OLLAMA_CLOUD && ui.runtimeModelsLoading ->
                             stringResource(R.string.settings_ollama_models_loading)
+                        ui.activeProvider.supportsRuntimeLineup &&
+                            ui.activeProvider != AIProvider.OLLAMA &&
+                            ui.activeProvider != AIProvider.OLLAMA_CLOUD &&
+                            ui.activeProvider != AIProvider.CUSTOM_OPENAI &&
+                            ui.runtimeModelsLoading ->
+                            stringResource(R.string.settings_ollama_models_loading)
+                        ui.activeProvider.supportsRuntimeLineup &&
+                            ui.activeProvider != AIProvider.OLLAMA &&
+                            ui.activeProvider != AIProvider.OLLAMA_CLOUD &&
+                            ui.activeProvider != AIProvider.CUSTOM_OPENAI &&
+                            ui.runtimeModelsFailed ->
+                            stringResource(R.string.settings_ollama_models_error)
                         ui.activeProvider == AIProvider.CUSTOM_OPENAI && ui.customModelsLoading ->
                             stringResource(R.string.settings_custom_models_loading)
                         ui.activeProvider == AIProvider.CUSTOM_OPENAI && ui.customModelsError ->
@@ -330,6 +383,11 @@ internal fun SettingsSheets(
                     customField = if (ui.activeProvider.supportsCustomModelName) {
                         { m -> vm.setProfileModel(m); onDismiss() }
                     } else null,
+                    footerButton = {
+                        TextButton(onClick = { modelSheetRefresh++ }) {
+                            Text(stringResource(R.string.action_refresh))
+                        }
+                    },
                     onDismiss = onDismiss
                 )
                 SettingsSheet.COACH_MODEL -> ListSheet(

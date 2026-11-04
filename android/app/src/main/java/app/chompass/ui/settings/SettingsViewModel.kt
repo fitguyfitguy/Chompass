@@ -231,6 +231,8 @@ data class SettingsUiState(
     val runtimeModels: List<String>? = null,
     /** Ollama Cloud sheet is empty until this clears; other providers keep their curated list. */
     val runtimeModelsLoading: Boolean = false,
+    /** Last runtime lineup fetch failed; the model sheet footer surfaces it. */
+    val runtimeModelsFailed: Boolean = false,
     val appearanceMode: String = "system",
     /** "" = system default, or locale tag like "de", "zh-CN". */
     val appLanguage: String = "",
@@ -1241,6 +1243,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             ollamaModelsError = false,
             runtimeModels = null,
             runtimeModelsLoading = false,
+            runtimeModelsFailed = false,
         )
     }
 
@@ -1554,14 +1557,18 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         val key = container.keyStore.profileApiKey(active.id)
         val publicCatalog = provider == AIProvider.OLLAMA_CLOUD
         if (key.isNullOrBlank() && !publicCatalog) {
-            _ui.value = _ui.value.copy(runtimeModels = null, runtimeModelsLoading = false)
+            // No key: the curated starter lineup is the correct fallback, not an
+            // error — keep the footer quiet.
+            _ui.value = _ui.value.copy(
+                runtimeModels = null,
+                runtimeModelsLoading = false,
+                runtimeModelsFailed = false,
+            )
             return
         }
         val profileId = active.id
         viewModelScope.launch {
-            if (publicCatalog) {
-                _ui.value = _ui.value.copy(runtimeModelsLoading = true)
-            }
+            _ui.value = _ui.value.copy(runtimeModelsLoading = true, runtimeModelsFailed = false)
             val result = withContext(Dispatchers.IO) {
                 runCatching {
                     if (provider == AIProvider.OPENAI) {
@@ -1589,6 +1596,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             _ui.value = _ui.value.copy(
                 runtimeModels = result.getOrNull(),
                 runtimeModelsLoading = false,
+                runtimeModelsFailed = result.isFailure,
             )
         }
     }
