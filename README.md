@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="website/static/img/ring.svg" alt="Chompass ring" width="96" />
+<img src="website/static/img/logo.png alt="Chompass ring" width="96" />
 
 # Chompass
 
