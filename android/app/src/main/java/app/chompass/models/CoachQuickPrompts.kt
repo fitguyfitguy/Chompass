@@ -25,7 +25,6 @@ data class CoachQuickPromptEntry(
  * as the tracker quick-kind selection).
  */
 data class CoachQuickPrompts(val entries: List<CoachQuickPromptEntry>) {
-
     /** Stored entries with unknown builtin ids drop (garbage rule); customs keep. */
     fun resolveFor(builtinDefaults: List<CoachQuickPromptEntry>): List<CoachQuickPromptEntry> {
         val known = builtinDefaults.mapTo(HashSet()) { it.id }
