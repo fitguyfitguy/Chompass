@@ -687,7 +687,6 @@
     <string name="ai_provider_subtitle_ollama_cloud">Ollama\'s gehoste modellen</string>
     <string name="settings_section_ai_profile">Profiel</string>
     <string name="settings_section_ai_connection">Verbinding</string>
-    <string name="settings_section_ai_advanced">Geavanceerd</string>
     <string name="settings_ai_key_test">Testen</string>
     <string name="settings_ai_key_test_failed">Sleutel geweigerd: %1$s</string>
     <string name="settings_ai_key_remove_title">API-sleutel verwijderen?</string>
@@ -1392,7 +1391,6 @@
     <string name="settings_ai_privacy_ondevice">Volledig privé: voedselanalyse, «Wat als?» en doelschattingen draaien op dit apparaat. Er wordt niets naar een server gestuurd.</string>
     <string name="settings_ai_read_timeout">AI-leestimeout</string>
     <string name="settings_ai_read_timeout_unit">s</string>
-    <string name="settings_ai_read_timeout_value">%1$d s</string>
     <string name="settings_goal_tier">Prompt voor doelherberekening</string>
     <string name="settings_goal_tier_footer">Hoeveel gegevens de doelherberekening naar het model stuurt. Veilig stuurt compacte samenvattingen, geschikt voor kleine of lokale modellen. Slim stuurt je volledige gewicht- en voedingsgeschiedenis, zodat een groot model trends zelf kan beoordelen. Auto kiest op basis van de modelnaam.</string>
     <string name="goal_tier_auto">Auto</string>

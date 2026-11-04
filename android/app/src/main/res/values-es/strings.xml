@@ -754,7 +754,6 @@
     <string name="ai_provider_subtitle_ollama_cloud">Modelos alojados de Ollama</string>
     <string name="settings_section_ai_profile">Perfil</string>
     <string name="settings_section_ai_connection">Conexión</string>
-    <string name="settings_section_ai_advanced">Avanzado</string>
     <string name="settings_ai_key_test">Probar</string>
     <string name="settings_ai_key_test_failed">Clave rechazada: %1$s</string>
     <string name="settings_ai_key_remove_title">¿Eliminar la clave API?</string>
@@ -1478,7 +1477,6 @@
     <string name="settings_ai_privacy_ondevice">Totalmente privado: el análisis de alimentos, «¿Y si…?» y las estimaciones de objetivos se ejecutan en este dispositivo. No se envía nada a un servidor.</string>
     <string name="settings_ai_read_timeout">Tiempo de espera de lectura de IA</string>
     <string name="settings_ai_read_timeout_unit">s</string>
-    <string name="settings_ai_read_timeout_value">%1$d s</string>
     <string name="settings_goal_tier">Prompt de recálculo de objetivos</string>
     <string name="settings_goal_tier_footer">Cuántos datos envía el recálculo de objetivos al modelo. Seguro envía resúmenes compactos, ideal para modelos pequeños o locales. Inteligente envía todo tu historial de peso y comidas para que un modelo grande juzgue las tendencias por sí mismo. Automático elige según el nombre del modelo.</string>
     <string name="goal_tier_auto">Automático</string>

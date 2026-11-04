@@ -100,7 +100,6 @@
     <string name="ai_provider_subtitle_ollama_cloud">Хмарні моделі Ollama</string>
     <string name="settings_section_ai_profile">Профіль</string>
     <string name="settings_section_ai_connection">З\'єднання</string>
-    <string name="settings_section_ai_advanced">Додатково</string>
     <string name="settings_ai_key_test">Перевірити</string>
     <string name="settings_ai_key_test_failed">Ключ відхилено: %1$s</string>
     <string name="settings_ai_key_remove_title">Видалити ключ API?</string>
@@ -1364,7 +1363,6 @@
     <string name="settings_ai_privacy_ondevice">Повністю приватно: аналіз їжі, «Що як?» та оцінка цілей працюють на цьому пристрої. Нічого не надсилається на сервер.</string>
     <string name="settings_ai_read_timeout">Таймаут читання ШІ</string>
     <string name="settings_ai_read_timeout_unit">с</string>
-    <string name="settings_ai_read_timeout_value">%1$d с</string>
     <string name="settings_goal_tier">Промпт перерахунку цілей</string>
     <string name="settings_goal_tier_footer">Скільки даних перерахунок цілей надсилає моделі. Безпечний надсилає компактні підсумки — підходить для малих чи локальних моделей. Розумний надсилає повну історію твоєї ваги та харчування, щоб велика модель сама оцінила тренди. Авто обирає за назвою моделі.</string>
     <string name="goal_tier_auto">Авто</string>

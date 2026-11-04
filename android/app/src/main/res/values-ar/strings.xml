@@ -723,7 +723,6 @@
     <string name="ai_provider_subtitle_ollama_cloud">نماذج Ollama المستضافة</string>
     <string name="settings_section_ai_profile">الملف الشخصي</string>
     <string name="settings_section_ai_connection">الاتصال</string>
-    <string name="settings_section_ai_advanced">متقدم</string>
     <string name="settings_ai_key_test">اختبار</string>
     <string name="settings_ai_key_test_failed">تم رفض المفتاح: %1$s</string>
     <string name="settings_ai_key_remove_title">إزالة مفتاح API؟</string>
@@ -1425,7 +1424,6 @@
     <string name="settings_ai_privacy_ondevice">خاص تمامًا: تحليل الطعام و«ماذا لو؟» وتقديرات الأهداف تعمل على هذا الجهاز. لا يُرسل شيء إلى خادم.</string>
     <string name="settings_ai_read_timeout">مهلة قراءة الذكاء الاصطناعي</string>
     <string name="settings_ai_read_timeout_unit">ث</string>
-    <string name="settings_ai_read_timeout_value">%1$d ث</string>
     <string name="settings_goal_tier">مطالبة إعادة حساب الأهداف</string>
     <string name="settings_goal_tier_footer">مقدار البيانات التي ترسلها إعادة حساب الأهداف إلى النموذج. آمن يرسل ملخصات موجزة، وهو مناسب للنماذج الصغيرة أو المحلية. ذكي يرسل سجل وزنك وطعامك الكامل ليقدّر نموذج كبير الاتجاهات بنفسه. تلقائي يختار حسب اسم النموذج.</string>
     <string name="goal_tier_auto">تلقائي</string>
