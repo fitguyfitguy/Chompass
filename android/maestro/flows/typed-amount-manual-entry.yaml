@@ -42,7 +42,7 @@ name: Typed amount manual entry round trip
     speed: 90
 - assertVisible: ".*Radtest.*"               # entry lands in the diary list
 - tapOn: ".*Radtest.*"                       # newest match: reopen via edit sheet
-- swipe:                                     # macros sit below the details fold
-    start: "50%, 75%"
-    end: "50%, 30%"
+- scrollUntilVisible:                        # collapsed macro summary sits below details
+    element: "521"
+    direction: down
 - assertVisible: "521"                       # flushed draft value stuck (not 421)

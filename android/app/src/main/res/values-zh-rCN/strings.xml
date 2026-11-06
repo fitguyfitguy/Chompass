@@ -1114,6 +1114,15 @@
     <string name="home_calories_goal_plus_active">目标 %1$s + 主动 %2$s</string>
     <string name="home_calories_left">剩余 %1$s</string>
     <string name="home_calories_eaten_a11y">摄入 %1$s</string>
+    <string name="home_a11y_prev_day">前一天</string>
+    <string name="home_a11y_next_day">下一天</string>
+    <string name="home_planned_caption">+%1$s 已计划</string>
+    <string name="home_budget_legend_title">如何读懂表盘</string>
+    <string name="home_budget_legend_eaten">摄入</string>
+    <string name="home_budget_legend_estimated_active">估计的主动消耗</string>
+    <string name="home_budget_legend_live_burn">当前主动消耗</string>
+    <string name="home_budget_legend_over_typical">高于平常</string>
+    <string name="home_macro_card_summary">%1$s 千卡 · %2$s 蛋白质 · %3$s 碳水 · %4$s 脂肪 · %5$s 纤维</string>
     <string name="home_display_calorie_mode">热量表盘</string>
     <string name="home_display_group_calorie">热量表盘</string>
     <string name="home_display_calorie_mode_pointer">热量表盘模式</string>

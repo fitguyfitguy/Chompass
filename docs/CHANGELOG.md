@@ -9,6 +9,10 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 ### Changed
 
 - **Bluetooth scale sync now binds to your scale's saved user profile** (Android): when the scale asks who is weighing, the sync sheet lists the scale's saved slots to pick from, with a register-as-new-user option, and asks for the slot's 4-digit PIN when the scale wants one. The picked slot and PIN are remembered, so later syncs run without asking again. **Not yet verified on a real scale**: this beta ships the handshake ahead of the next hardware test session, so scale sync stays experimental for now; if your scale stalls or refuses the bind, tell the tracker what it did.
+- **The meal review sheet opens with just the essentials** (Android): the ingredient list and the full macro table now start collapsed behind one-line summaries, so name, meal, portion and calories come first when you log a meal. Tapping a summary opens the editable rows exactly as before.
+- **Planned meals now read on the calorie gauge** (Android): on days with planned meals, the ring shows the planned stretch beyond what you have already eaten, with a "+X planned" caption beside your remaining calories. The ⓘ budget breakdown now explains every color of the ring, including the planned stretch and the burn shades, and the planned stretch is spoken by screen readers.
+- **Days flip with a subtle animation** (Android): the date caption now cross-fades when you swipe to another day, and screen readers get previous-day and next-day actions on the calorie card.
+- **An empty food log offers Add food** (Android): a day with nothing logged or planned shows an Add food button right on the empty card, instead of text only.
 
 ## [6.2.0] - 2026-11-04
 

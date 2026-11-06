@@ -1053,6 +1053,15 @@
     <string name="home_calories_goal_plus_active">Ціль %1$s + %2$s активних</string>
     <string name="home_calories_left">Залишилось %1$s</string>
     <string name="home_calories_eaten_a11y">З\'їдено %1$s</string>
+    <string name="home_a11y_prev_day">Попередній день</string>
+    <string name="home_a11y_next_day">Наступний день</string>
+    <string name="home_planned_caption">+%1$s заплановано</string>
+    <string name="home_budget_legend_title">Як читати шкалу</string>
+    <string name="home_budget_legend_eaten">З\'їдено</string>
+    <string name="home_budget_legend_estimated_active">Розрахункові активні витрати</string>
+    <string name="home_budget_legend_live_burn">Активні витрати просто зараз</string>
+    <string name="home_budget_legend_over_typical">Понад звичайне</string>
+    <string name="home_macro_card_summary">%1$s ккал · %2$s Білок · %3$s Вуглеводи · %4$s Жири · %5$s Клітковина</string>
     <string name="home_display_calorie_mode">Шкала калорій</string>
     <string name="home_display_group_calorie">Шкала калорій</string>
     <string name="home_display_calorie_mode_pointer">Режим шкали калорій</string>

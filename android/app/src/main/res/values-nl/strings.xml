@@ -1084,6 +1084,15 @@
     <string name="home_calories_goal_plus_active">Doel %1$s + %2$s actief</string>
     <string name="home_calories_left">%1$s over</string>
     <string name="home_calories_eaten_a11y">Gegeten %1$s</string>
+    <string name="home_a11y_prev_day">Vorige dag</string>
+    <string name="home_a11y_next_day">Volgende dag</string>
+    <string name="home_planned_caption">+%1$s gepland</string>
+    <string name="home_budget_legend_title">De caloriemeter aflezen</string>
+    <string name="home_budget_legend_eaten">Gegeten</string>
+    <string name="home_budget_legend_estimated_active">Geschat actief verbruik</string>
+    <string name="home_budget_legend_live_burn">Actief verbruik nu</string>
+    <string name="home_budget_legend_over_typical">Boven normaal</string>
+    <string name="home_macro_card_summary">%1$s kcal · %2$s Eiwit · %3$s Koolhydraten · %4$s Vet · %5$s Vezels</string>
     <string name="home_display_calorie_mode">Caloriemeter</string>
     <string name="home_display_group_calorie">Caloriemeter</string>
     <string name="home_display_calorie_mode_pointer">Modus van de caloriemeter</string>

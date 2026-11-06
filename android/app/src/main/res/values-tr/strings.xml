@@ -1574,6 +1574,15 @@
     <string name="home_display_show_active_calories_desc">Kalori göstergesinde bugünün aktif yakımını göster.</string>
     <string name="home_calories_left">%1$s kaldı</string>
     <string name="home_calories_eaten_a11y">Yenilen %1$s</string>
+    <string name="home_a11y_prev_day">Önceki gün</string>
+    <string name="home_a11y_next_day">Sonraki gün</string>
+    <string name="home_planned_caption">+%1$s planlandı</string>
+    <string name="home_budget_legend_title">Gösterge nasıl okunur</string>
+    <string name="home_budget_legend_eaten">Yenilen</string>
+    <string name="home_budget_legend_estimated_active">Tahmini aktif yakım</string>
+    <string name="home_budget_legend_live_burn">Şu andaki aktif yakım</string>
+    <string name="home_budget_legend_over_typical">Tipikten fazla</string>
+    <string name="home_macro_card_summary">%1$s kcal · %2$s Protein · %3$s Karbonhidrat · %4$s Yağ · %5$s Lif</string>
     <string name="home_calorie_budget_sheet_title">Bugünün kalori bütçesi</string>
     <string name="home_calorie_budget_source_measured">Health Connect\'ten aktif kaloriler</string>
     <string name="home_calorie_budget_day_type_typical">Typical active burn for %1$s days is %2$d %4$s (14-day average is %3$d %4$s).</string>

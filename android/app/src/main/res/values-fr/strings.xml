@@ -1150,6 +1150,15 @@
     <string name="home_calories_goal_plus_active">Objectif %1$s + %2$s actives</string>
     <string name="home_calories_left">%1$s restantes</string>
     <string name="home_calories_eaten_a11y">Ingérées %1$s</string>
+    <string name="home_a11y_prev_day">Jour précédent</string>
+    <string name="home_a11y_next_day">Jour suivant</string>
+    <string name="home_planned_caption">+%1$s prévu</string>
+    <string name="home_budget_legend_title">Comment lire la jauge</string>
+    <string name="home_budget_legend_eaten">Ingérées</string>
+    <string name="home_budget_legend_estimated_active">Dépense active estimée</string>
+    <string name="home_budget_legend_live_burn">Dépense active en ce moment</string>
+    <string name="home_budget_legend_over_typical">Au-dessus de la normale</string>
+    <string name="home_macro_card_summary">%1$s kcal · %2$s Protéines · %3$s Glucides · %4$s Lipides · %5$s Fibres</string>
     <string name="home_display_calorie_mode">Jauge de calories</string>
     <string name="home_display_group_calorie">Jauge de calories</string>
     <string name="home_display_calorie_mode_pointer">Mode de la jauge de calories</string>

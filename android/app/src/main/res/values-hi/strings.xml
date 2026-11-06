@@ -1113,6 +1113,15 @@
     <string name="home_calories_goal_plus_active">लक्ष्य %1$s + %2$s सक्रिय</string>
     <string name="home_calories_left">%1$s शेष</string>
     <string name="home_calories_eaten_a11y">खाया %1$s</string>
+    <string name="home_a11y_prev_day">पिछला दिन</string>
+    <string name="home_a11y_next_day">अगला दिन</string>
+    <string name="home_planned_caption">+%1$s नियोजित</string>
+    <string name="home_budget_legend_title">गेज कैसे पढ़ें</string>
+    <string name="home_budget_legend_eaten">खाया</string>
+    <string name="home_budget_legend_estimated_active">अनुमानित सक्रिय खर्च</string>
+    <string name="home_budget_legend_live_burn">अभी का सक्रिय खर्च</string>
+    <string name="home_budget_legend_over_typical">सामान्य से अधिक</string>
+    <string name="home_macro_card_summary">%1$s kcal · %2$s प्रोटीन · %3$s कार्ब्स · %4$s फैट · %5$s फ़ाइबर</string>
     <string name="home_display_calorie_mode">कैलोरी गेज</string>
     <string name="home_display_group_calorie">कैलोरी गेज</string>
     <string name="home_display_calorie_mode_pointer">कैलोरी गेज मोड</string>

@@ -1155,6 +1155,15 @@
     <string name="home_calories_goal_plus_active">Objetivo %1$s + %2$s activas</string>
     <string name="home_calories_left">%1$s restantes</string>
     <string name="home_calories_eaten_a11y">Ingeridas %1$s</string>
+    <string name="home_a11y_prev_day">Día anterior</string>
+    <string name="home_a11y_next_day">Día siguiente</string>
+    <string name="home_planned_caption">+%1$s planificado</string>
+    <string name="home_budget_legend_title">Cómo leer el medidor</string>
+    <string name="home_budget_legend_eaten">Ingeridas</string>
+    <string name="home_budget_legend_estimated_active">Gasto activo estimado</string>
+    <string name="home_budget_legend_live_burn">Gasto activo ahora mismo</string>
+    <string name="home_budget_legend_over_typical">Por encima de lo típico</string>
+    <string name="home_macro_card_summary">%1$s kcal · %2$s Proteína · %3$s Carbohidratos · %4$s Grasas · %5$s Fibra</string>
     <string name="home_display_calorie_mode">Medidor de calorías</string>
     <string name="home_display_group_calorie">Medidor de calorías</string>
     <string name="home_display_calorie_mode_pointer">Modo del medidor de calorías</string>

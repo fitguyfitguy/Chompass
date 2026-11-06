@@ -2472,6 +2472,15 @@
     <string name="home_display_show_active_calories_desc">Show today’s active burn in the calorie gauge.</string>
     <string name="home_calories_left">%1$s left</string>
     <string name="home_calories_eaten_a11y">Eaten %1$s</string>
+    <string name="home_a11y_prev_day">Previous day</string>
+    <string name="home_a11y_next_day">Next day</string>
+    <string name="home_planned_caption">+%1$s planned</string>
+    <string name="home_budget_legend_title">How to read the ring</string>
+    <string name="home_budget_legend_eaten">Eaten</string>
+    <string name="home_budget_legend_estimated_active">Estimated active burn</string>
+    <string name="home_budget_legend_live_burn">Active burn right now</string>
+    <string name="home_budget_legend_over_typical">Above typical burn</string>
+    <string name="home_macro_card_summary">%1$s kcal · %2$s protein · %3$s carbs · %4$s fat · %5$s fiber</string>
     <string name="home_calorie_budget_sheet_title">Today’s calorie budget</string>
     <string name="home_calorie_budget_source_measured">Active calories from Health Connect</string>
     <string name="home_calorie_budget_day_type_typical">Typical active burn for %1$s days is %2$d %4$s (14-day average is %3$d %4$s).</string>

@@ -86,7 +86,7 @@ internal fun HomeLookPreview(
                 CalorieHero(
                     current = HomeLookSample.EATEN,
                     baseGoal = HomeLookSample.BASE_GOAL,
-                    planned = 0,
+                    planned = 560,
                     displayMode = display.calorieDisplayMode,
                     activeCalories = if (addActive) HomeLookSample.ACTIVE else 0,
                     activeCalorieSource = if (addActive) ActiveCalorieSource.ESTIMATED else null,

@@ -290,7 +290,7 @@ fun FoodResultSheet(
         microsCompositionSignature(effectiveAnalysis.constituents)
     }
     var constituentsExpanded by remember(effectiveAnalysis) {
-        mutableStateOf(effectiveAnalysis.constituents.isNotEmpty())
+        mutableStateOf(false)
     }
     var servingQuantityText by remember(effectiveAnalysis, servingUnitOptions, preferGramsByDefault) {
         mutableStateOf(
@@ -352,6 +352,7 @@ fun FoodResultSheet(
         logTime = reviewLogTimeAfterOverride(logTime, logTimeOverride, logTimeTouched)
     }
     var moreNutritionExpanded by remember { mutableStateOf(false) }
+    var macrosExpanded by remember { mutableStateOf(false) }
     var editableCalories by remember(effectiveAnalysis) { mutableStateOf(effectiveAnalysis.calories) }
     var editableProtein by remember(effectiveAnalysis) { mutableStateOf(effectiveAnalysis.protein) }
     var editableCarbs by remember(effectiveAnalysis) { mutableStateOf(effectiveAnalysis.carbs) }
@@ -411,11 +412,13 @@ fun FoodResultSheet(
         if (analysisReady && !wasReady) {
             nutritionUnlocked = false
             tipExpanded = false
+            macrosExpanded = false
         }
         if (!analysisReady) {
             nutritionUnlocked = false
             mealMenuExpanded = false
             servingMenuExpanded = false
+            macrosExpanded = false
         }
         wasReady = analysisReady
     }
@@ -1007,63 +1010,110 @@ fun FoodResultSheet(
                 )
             }
             item {
-                SheetPillCard {
-                    val unit = LocalEnergyUnit.current
-                    ReviewNutritionValueRow(
-                        label = stringResource(R.string.nutrition_label_calories),
-                        displayValue = "${math.scaledInt(EnergyFormat.quantity(editableCalories, unit))}",
-                        editValue = "${math.scaledInt(EnergyFormat.quantity(editableCalories, unit))}",
-                        unit = energyUnitLabel(),
-                        unlocked = nutritionUnlocked && analysisReady,
-                        accentColor = MaterialTheme.colorScheme.primary,
-                        onEdit = { editableCalories = EnergyFormat.toKcal(math.baseDoubleFromText(it).roundToInt(), unit); caloriesTouched = true }
-                    )
-                    SheetHairline()
-                    ReviewNutritionValueRow(
-                        label = stringResource(R.string.nutrition_label_protein),
-                        displayValue = MacroValueFormatter.string(math.scaledMacro(editableProtein)),
-                        editValue = MacroValueFormatter.string(math.scaledMacro(editableProtein)),
-                        unit = stringResource(R.string.unit_g),
-                        unlocked = nutritionUnlocked && analysisReady,
-                        accentColor = AppColors.Protein,
-                        onEdit = { editableProtein = math.baseDoubleFromText(it); proteinTouched = true }
-                    )
-                    SheetHairline()
-                    ReviewNutritionValueRow(
-                        label = stringResource(R.string.nutrition_label_carbs),
-                        displayValue = MacroValueFormatter.string(math.scaledMacro(editableCarbs)),
-                        editValue = MacroValueFormatter.string(math.scaledMacro(editableCarbs)),
-                        unit = stringResource(R.string.unit_g),
-                        unlocked = nutritionUnlocked && analysisReady,
-                        accentColor = AppColors.Carbs,
-                        onEdit = { editableCarbs = math.baseDoubleFromText(it); carbsTouched = true }
-                    )
-                    SheetHairline()
-                    ReviewNutritionValueRow(
-                        label = stringResource(R.string.nutrition_label_fat),
-                        displayValue = MacroValueFormatter.string(math.scaledMacro(editableFat)),
-                        editValue = MacroValueFormatter.string(math.scaledMacro(editableFat)),
-                        unit = stringResource(R.string.unit_g),
-                        unlocked = nutritionUnlocked && analysisReady,
-                        accentColor = AppColors.Fat,
-                        onEdit = { editableFat = math.baseDoubleFromText(it); fatTouched = true }
-                    )
-                    SheetHairline()
-                    ReviewNutritionValueRow(
-                        label = stringResource(R.string.nutrition_label_fiber),
-                        displayValue = math.displayD(math.scaledD(editableMicros.fiber)),
-                        editValue = math.editD(math.scaledD(editableMicros.fiber)),
-                        unit = stringResource(R.string.unit_g),
-                        unlocked = nutritionUnlocked && analysisReady,
-                        accentColor = AppColors.Fiber,
-                        onEdit = {
-                            editableMicros = editableMicros.with(
-                                MicronutrientField.FIBER,
-                                math.baseOptionalFromText(it),
-                            )
-                            microsTouched = true
+                val unit = LocalEnergyUnit.current
+                val kcalSummary = "${math.scaledInt(EnergyFormat.quantity(editableCalories, unit))}"
+                val proteinSummary = MacroValueFormatter.string(math.scaledMacro(editableProtein))
+                val carbsSummary = MacroValueFormatter.string(math.scaledMacro(editableCarbs))
+                val fatSummary = MacroValueFormatter.string(math.scaledMacro(editableFat))
+                val fiberSummary = math.displayD(math.scaledD(editableMicros.fiber))
+                val macrosRowsVisible = !analysisReady || macrosExpanded
+                Column {
+                    SheetPillRow(
+                        onClick = {
+                            if (!analysisReady) return@SheetPillRow
+                            if (macrosExpanded) MagnitudeDrafts.commitAll()
+                            macrosExpanded = !macrosExpanded
+                        },
+                        stateDescription = stringResource(
+                            if (macrosRowsVisible) R.string.cd_expanded else R.string.cd_collapsed,
+                        ),
+                    ) {
+                        Text(
+                            stringResource(
+                                R.string.home_macro_card_summary,
+                                kcalSummary,
+                                proteinSummary,
+                                carbsSummary,
+                                fatSummary,
+                                fiberSummary,
+                            ),
+                            fontSize = 16.sp,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.weight(1f),
+                        )
+                        Icon(
+                            if (macrosRowsVisible) Icons.Filled.KeyboardArrowDown
+                            else Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                    AnimatedVisibility(
+                        visible = macrosRowsVisible,
+                        enter = expandVertically(expandFrom = Alignment.Top, animationSpec = AppMotion.spatialSpring()),
+                        exit = shrinkVertically(shrinkTowards = Alignment.Top, animationSpec = AppMotion.spatialSpring()),
+                    ) {
+                        Column(Modifier.padding(top = 18.dp)) {
+                            SheetPillCard {
+                                ReviewNutritionValueRow(
+                                    label = stringResource(R.string.nutrition_label_calories),
+                                    displayValue = kcalSummary,
+                                    editValue = kcalSummary,
+                                    unit = energyUnitLabel(),
+                                    unlocked = nutritionUnlocked && analysisReady,
+                                    accentColor = MaterialTheme.colorScheme.primary,
+                                    onEdit = { editableCalories = EnergyFormat.toKcal(math.baseDoubleFromText(it).roundToInt(), unit); caloriesTouched = true }
+                                )
+                                SheetHairline()
+                                ReviewNutritionValueRow(
+                                    label = stringResource(R.string.nutrition_label_protein),
+                                    displayValue = proteinSummary,
+                                    editValue = proteinSummary,
+                                    unit = stringResource(R.string.unit_g),
+                                    unlocked = nutritionUnlocked && analysisReady,
+                                    accentColor = AppColors.Protein,
+                                    onEdit = { editableProtein = math.baseDoubleFromText(it); proteinTouched = true }
+                                )
+                                SheetHairline()
+                                ReviewNutritionValueRow(
+                                    label = stringResource(R.string.nutrition_label_carbs),
+                                    displayValue = carbsSummary,
+                                    editValue = carbsSummary,
+                                    unit = stringResource(R.string.unit_g),
+                                    unlocked = nutritionUnlocked && analysisReady,
+                                    accentColor = AppColors.Carbs,
+                                    onEdit = { editableCarbs = math.baseDoubleFromText(it); carbsTouched = true }
+                                )
+                                SheetHairline()
+                                ReviewNutritionValueRow(
+                                    label = stringResource(R.string.nutrition_label_fat),
+                                    displayValue = fatSummary,
+                                    editValue = fatSummary,
+                                    unit = stringResource(R.string.unit_g),
+                                    unlocked = nutritionUnlocked && analysisReady,
+                                    accentColor = AppColors.Fat,
+                                    onEdit = { editableFat = math.baseDoubleFromText(it); fatTouched = true }
+                                )
+                                SheetHairline()
+                                ReviewNutritionValueRow(
+                                    label = stringResource(R.string.nutrition_label_fiber),
+                                    displayValue = fiberSummary,
+                                    editValue = math.editD(math.scaledD(editableMicros.fiber)),
+                                    unit = stringResource(R.string.unit_g),
+                                    unlocked = nutritionUnlocked && analysisReady,
+                                    accentColor = AppColors.Fiber,
+                                    onEdit = {
+                                        editableMicros = editableMicros.with(
+                                            MicronutrientField.FIBER,
+                                            math.baseOptionalFromText(it),
+                                        )
+                                        microsTouched = true
+                                    }
+                                )
+                            }
                         }
-                    )
+                    }
                 }
             }
 

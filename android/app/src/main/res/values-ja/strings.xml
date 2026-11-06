@@ -1112,6 +1112,15 @@
     <string name="home_calories_goal_plus_active">目標 %1$s + 活動 %2$s</string>
     <string name="home_calories_left">残り %1$s</string>
     <string name="home_calories_eaten_a11y">摂取 %1$s</string>
+    <string name="home_a11y_prev_day">前日</string>
+    <string name="home_a11y_next_day">翌日</string>
+    <string name="home_planned_caption">+%1$s 予定</string>
+    <string name="home_budget_legend_title">リングの見方</string>
+    <string name="home_budget_legend_eaten">摂取</string>
+    <string name="home_budget_legend_estimated_active">推定活動消費</string>
+    <string name="home_budget_legend_live_burn">今の活動消費</string>
+    <string name="home_budget_legend_over_typical">通常より多い</string>
+    <string name="home_macro_card_summary">%1$s kcal · %2$s タンパク質 · %3$s 炭水化物 · %4$s 脂質 · %5$s 食物繊維</string>
     <string name="home_display_calorie_mode">カロリーゲージ</string>
     <string name="home_display_group_calorie">カロリーゲージ</string>
     <string name="home_display_calorie_mode_pointer">カロリーゲージのモード</string>

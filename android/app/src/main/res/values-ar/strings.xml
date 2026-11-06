@@ -1121,6 +1121,15 @@
     <string name="home_calories_goal_plus_active">الهدف %1$s + %2$s نشطة</string>
     <string name="home_calories_left">متبقٍ %1$s</string>
     <string name="home_calories_eaten_a11y">مأكول %1$s</string>
+    <string name="home_a11y_prev_day">اليوم السابق</string>
+    <string name="home_a11y_next_day">اليوم التالي</string>
+    <string name="home_planned_caption">+%1$s مخطَّط له</string>
+    <string name="home_budget_legend_title">كيفية قراءة مقياس السعرات</string>
+    <string name="home_budget_legend_eaten">مأكول</string>
+    <string name="home_budget_legend_estimated_active">الحرق النشط المقدر</string>
+    <string name="home_budget_legend_live_burn">الحرق النشط الآن</string>
+    <string name="home_budget_legend_over_typical">فوق المعتاد</string>
+    <string name="home_macro_card_summary">%1$s سعرة · %2$s البروتين · %3$s الكربوهيدرات · %4$s الدهون · %5$s الألياف</string>
     <string name="home_display_calorie_mode">مقياس السعرات</string>
     <string name="home_display_group_calorie">مقياس السعرات</string>
     <string name="home_display_calorie_mode_pointer">وضع مقياس السعرات</string>

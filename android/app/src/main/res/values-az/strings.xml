@@ -1105,6 +1105,15 @@ bilirsən?</string>
     <string name="home_calories_goal_plus_active">Məqsəd %1$s + %2$s aktiv</string>
     <string name="home_calories_left">%1$s qalıb</string>
     <string name="home_calories_eaten_a11y">Yeyilən %1$s</string>
+    <string name="home_a11y_prev_day">Əvvəlki gün</string>
+    <string name="home_a11y_next_day">Növbəti gün</string>
+    <string name="home_planned_caption">+%1$s planlaşdırılıb</string>
+    <string name="home_budget_legend_title">Kalori göstəricisini necə oxumaq olar</string>
+    <string name="home_budget_legend_eaten">Yeyilən</string>
+    <string name="home_budget_legend_estimated_active">Təxmini aktiv yanma</string>
+    <string name="home_budget_legend_live_burn">Hazırda aktiv yanma</string>
+    <string name="home_budget_legend_over_typical">Normadan çox</string>
+    <string name="home_macro_card_summary">%1$s kkal · %2$s Protein · %3$s Karbohidrat · %4$s Yağ · %5$s Lif</string>
     <string name="home_display_calorie_mode">Kalori göstəricisi</string>
     <string name="home_display_group_calorie">Kalori göstəricisi</string>
     <string name="home_display_calorie_mode_pointer">Kalori göstəricisi rejimi</string>

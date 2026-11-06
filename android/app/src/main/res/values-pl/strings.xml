@@ -1578,6 +1578,15 @@
     <string name="home_display_show_active_calories_desc">Pokazuj dzisiejsze aktywne spalanie we wskaźniku kalorii.</string>
     <string name="home_calories_left">%1$s zostało</string>
     <string name="home_calories_eaten_a11y">Zjedzone %1$s</string>
+    <string name="home_a11y_prev_day">Poprzedni dzień</string>
+    <string name="home_a11y_next_day">Następny dzień</string>
+    <string name="home_planned_caption">+%1$s zaplanowane</string>
+    <string name="home_budget_legend_title">Jak czytać wskaźnik</string>
+    <string name="home_budget_legend_eaten">Zjedzone</string>
+    <string name="home_budget_legend_estimated_active">Szacowane aktywne spalanie</string>
+    <string name="home_budget_legend_live_burn">Aktualne aktywne spalanie</string>
+    <string name="home_budget_legend_over_typical">Ponad typowe spalanie</string>
+    <string name="home_macro_card_summary">%1$s kcal · %2$s Białko · %3$s Węglowodany · %4$s Tłuszcz · %5$s Błonnik</string>
     <string name="home_calorie_budget_sheet_title">Dzisiejszy budżet kalorii</string>
     <string name="home_calorie_budget_source_measured">Aktywne kalorie z Health Connect</string>
     <string name="home_calorie_budget_day_type_typical">Typical active burn for %1$s days is %2$d %4$s (14-day average is %3$d %4$s).</string>

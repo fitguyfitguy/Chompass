@@ -1112,6 +1112,15 @@
     <string name="home_calories_goal_plus_active">목표 %1$s + 활동 %2$s</string>
     <string name="home_calories_left">남음 %1$s</string>
     <string name="home_calories_eaten_a11y">섭취 %1$s</string>
+    <string name="home_a11y_prev_day">이전 날</string>
+    <string name="home_a11y_next_day">다음 날</string>
+    <string name="home_planned_caption">+%1$s 계획됨</string>
+    <string name="home_budget_legend_title">게이지 읽는 방법</string>
+    <string name="home_budget_legend_eaten">섭취</string>
+    <string name="home_budget_legend_estimated_active">추정 활동 소비</string>
+    <string name="home_budget_legend_live_burn">현재 활동 소비</string>
+    <string name="home_budget_legend_over_typical">평소보다 많음</string>
+    <string name="home_macro_card_summary">%1$s kcal · %2$s 단백질 · %3$s 탄수화물 · %4$s 지방 · %5$s 식이섬유</string>
     <string name="home_display_calorie_mode">칼로리 게이지</string>
     <string name="home_display_group_calorie">칼로리 게이지</string>
     <string name="home_display_calorie_mode_pointer">칼로리 게이지 모드</string>
