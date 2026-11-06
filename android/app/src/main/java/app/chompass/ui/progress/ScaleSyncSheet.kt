@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bluetooth
 import androidx.compose.material3.Button
@@ -17,12 +18,18 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
@@ -44,6 +51,8 @@ fun ScaleSyncSheet(
     syncState: ScaleSyncState,
     onStart: () -> Unit,
     onCancel: () -> Unit,
+    onUserSelected: (Int) -> Unit,
+    onConsentEntered: (Int) -> Unit,
     onDismiss: () -> Unit,
 ) {
     val permissionLauncher = rememberLauncherForActivityResult(
@@ -115,6 +124,65 @@ fun ScaleSyncSheet(
                     text = stringResource(R.string.progress_sync_scale_reading, state.deviceName),
                     onCancel = onCancel,
                 )
+
+                is ScaleSyncState.AwaitingUser -> {
+                    Text(
+                        stringResource(R.string.progress_sync_scale_user_title),
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                    // The handler's labels end with its own localized
+                    // "create new user" row (id −1); one app-side register row
+                    // replaces it here.
+                    state.labels.forEachIndexed { index, label ->
+                        if (state.ids[index] == -1) return@forEachIndexed
+                        OutlinedButton(
+                            onClick = { onUserSelected(state.ids[index]) },
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
+                            Text(label)
+                        }
+                    }
+                    Button(
+                        onClick = { onUserSelected(-1) },
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        Text(stringResource(R.string.progress_sync_scale_user_new))
+                    }
+                    OutlinedButton(onClick = onCancel, modifier = Modifier.fillMaxWidth()) {
+                        Text(stringResource(R.string.action_cancel))
+                    }
+                }
+
+                is ScaleSyncState.AwaitingConsent -> {
+                    var consentText by remember { mutableStateOf("") }
+                    Text(
+                        stringResource(
+                            R.string.progress_sync_scale_consent_slot,
+                            state.scaleIndex,
+                            state.deviceName,
+                        ),
+                        fontSize = 14.sp,
+                    )
+                    OutlinedTextField(
+                        value = consentText,
+                        onValueChange = { consentText = it.filter { ch -> ch.isDigit() }.take(4) },
+                        label = { Text(stringResource(R.string.progress_sync_scale_consent_hint)) },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                    )
+                    Button(
+                        onClick = { consentText.toIntOrNull()?.let(onConsentEntered) },
+                        enabled = (consentText.toIntOrNull() ?: -1) in 0..9999,
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        Text(stringResource(R.string.action_ok))
+                    }
+                    OutlinedButton(onClick = onCancel, modifier = Modifier.fillMaxWidth()) {
+                        Text(stringResource(R.string.action_cancel))
+                    }
+                }
 
                 is ScaleSyncState.Done -> {
                     Text(

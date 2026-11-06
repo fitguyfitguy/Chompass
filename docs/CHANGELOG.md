@@ -4,6 +4,12 @@ All notable changes to Chompass are documented here.
 
 Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no internals). The version section is pasted verbatim onto the Codeberg release.
 
+## [Unreleased]
+
+### Changed
+
+- **Bluetooth scale sync now binds to your scale's saved user profile** (Android): when the scale asks who is weighing, the sync sheet lists the scale's saved slots to pick from, with a register-as-new-user option, and asks for the scale's 4-digit PIN when a slot needs one. The picked slot and PIN are remembered, so later syncs run without asking again.
+
 ## [6.2.0] - 2026-11-04
 
 ### Added

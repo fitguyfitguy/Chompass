@@ -2960,4 +2960,8 @@
     <string name="progress_sync_scale_reading">Reading from %1$s…</string>
     <string name="progress_sync_scale_done">Imported %1$d new weigh-ins</string>
     <string name="progress_sync_scale_failed">Scale sync failed: %1$s</string>
+    <string name="progress_sync_scale_user_title">Your scale asked who is weighing. Pick your profile:</string>
+    <string name="progress_sync_scale_user_new">Register as new user</string>
+    <string name="progress_sync_scale_consent_slot">Slot %1$d on %2$s needs the 4-digit PIN set on the scale.</string>
+    <string name="progress_sync_scale_consent_hint">PIN (4 digits)</string>
     </resources>

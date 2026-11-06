@@ -406,6 +406,8 @@ fun ProgressScreen(container: AppContainer, onOpenCustomize: (() -> Unit)? = nul
             syncState = syncState,
             onStart = { vm.startScaleSync() },
             onCancel = { vm.cancelScaleSync() },
+            onUserSelected = { vm.onScaleUserSelected(it) },
+            onConsentEntered = { vm.onScaleConsentEntered(it) },
             onDismiss = {
                 vm.cancelScaleSync()
                 showScaleSyncSheet = false

@@ -168,6 +168,14 @@ class ProgressViewModel(private val container: AppContainer) : ViewModel() {
         container.scaleSyncController.cancel()
     }
 
+    fun onScaleUserSelected(scaleIndex: Int) {
+        container.scaleSyncController.onUserSelected(scaleIndex)
+    }
+
+    fun onScaleConsentEntered(consent: Int) {
+        container.scaleSyncController.onConsentEntered(consent)
+    }
+
     init {
         viewModelScope.launch {
             val lastViewed = container.prefs.progressLastRangeId.first()

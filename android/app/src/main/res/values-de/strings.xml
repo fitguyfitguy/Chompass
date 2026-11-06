@@ -4407,4 +4407,8 @@ für dich ein</string>
     <string name="progress_sync_scale_reading">Lese von %1$s …</string>
     <string name="progress_sync_scale_done">%1$d neue Wiegungen importiert</string>
     <string name="progress_sync_scale_failed">Waage-Sync fehlgeschlagen: %1$s</string>
+    <string name="progress_sync_scale_user_title">Deine Waage fragt, wer wiegt. Wähle dein Profil:</string>
+    <string name="progress_sync_scale_user_new">Als neuen Benutzer registrieren</string>
+    <string name="progress_sync_scale_consent_slot">Platz %1$d an %2$s braucht die 4-stellige PIN von der Waage.</string>
+    <string name="progress_sync_scale_consent_hint">PIN (4 Ziffern)</string>
     </resources>

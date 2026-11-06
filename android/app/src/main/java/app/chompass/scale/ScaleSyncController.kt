@@ -7,6 +7,7 @@ import app.chompass.data.ProfileRepository
 import app.chompass.data.WeightRepository
 import app.chompass.models.Gender
 import app.chompass.models.UserProfile
+import com.health.openscale.core.bluetooth.BluetoothEvent
 import com.health.openscale.core.bluetooth.data.ScaleMeasurement
 import com.health.openscale.core.bluetooth.data.ScaleUser
 import com.health.openscale.core.bluetooth.scales.ScaleDeviceHandler
@@ -28,6 +29,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withTimeout
+import java.io.File
 import java.util.Date
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -37,6 +39,10 @@ sealed interface ScaleSyncState {
     data object Scanning : ScaleSyncState
     data class Connecting(val deviceName: String) : ScaleSyncState
     data class Reading(val deviceName: String) : ScaleSyncState
+    /** Scale asked which of its saved user slots to bind; labels align with ids. */
+    data class AwaitingUser(val labels: List<String>, val ids: List<Int>) : ScaleSyncState
+    /** Scale asked for a slot's PIN/consent code (0..9999). */
+    data class AwaitingConsent(val deviceName: String, val scaleIndex: Int) : ScaleSyncState
     data class Done(val importedCount: Int) : ScaleSyncState
     data class Failed(val message: String) : ScaleSyncState
 }
@@ -49,8 +55,11 @@ sealed interface ScaleSyncState {
  * file import). No Health Connect composition write-back — see docs/PARITY.md.
  *
  * The caller (UI) checks BLUETOOTH_SCAN/CONNECT permissions first; Android 12+
- * only. Interaction requests from handlers (user-slot confirmations) are logged
- * and auto-defaulted; the profile shim is the single app user.
+ * only. Interaction requests from handlers (user-slot pick, PIN/consent) surface
+ * as sheet states ([ScaleSyncState.AwaitingUser], [ScaleSyncState.AwaitingConsent])
+ * and come back through [onUserSelected] / [onConsentEntered]; the profile shim
+ * is the single app user. Slot mapping and consent persist across runs through
+ * [ScaleDriverSettings].
  */
 class ScaleSyncController(
     private val context: Context,
@@ -74,6 +83,19 @@ class ScaleSyncController(
     private var runScope: CoroutineScope? = null
     private val importMutex = Mutex()
 
+    /** Persistence scope for driver settings: must outlive [runScope], because
+     *  handlers keep persisting while the run tears down. */
+    private val settingsScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private val driverSettings = ScaleDriverSettings(
+        File(context.filesDir, "scale_driver.preferences_pb"),
+        settingsScope,
+    )
+
+    /** Device name captured when [ScaleSyncState.Reading] was entered, so a
+     *  prompt round-trip can restore the reading row. */
+    @Volatile
+    private var lastDeviceName: String? = null
+
     /** Profile snapshot built once per run (handlers call DataProvider synchronously). */
     @Volatile
     private var cachedUser: ScaleUser? = null
@@ -89,6 +111,7 @@ class ScaleSyncController(
         val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
         runScope = scope
         cachedUser = buildScaleUser()
+        driverSettings.load()
         val finished = CompletableDeferred<ScaleSyncState>()
         _state.value = ScaleSyncState.Scanning
 
@@ -112,8 +135,9 @@ class ScaleSyncController(
                     val name = _state.value.let { s ->
                         (s as? ScaleSyncState.Connecting)?.deviceName ?: "scale"
                     }
+                    lastDeviceName = name
                     _state.value = ScaleSyncState.Reading(name)
-                    h.attach(t, this, InMemoryDriverSettings(), this, scope)
+                    h.attach(t, this, driverSettings, this, scope)
                     h.handleConnected(user)
                 }
             },
@@ -176,6 +200,7 @@ class ScaleSyncController(
         transport = null
         runScope = null
         cachedUser = null
+        lastDeviceName = null
         publishedCount.set(0)
     }
 
@@ -216,12 +241,77 @@ class ScaleSyncController(
     }
 
     /**
-     * Contingency: some scales ask for user-slot confirmations. Auto-defaulted for
-     * now (log + ignore); if the device pass stalls here, wire a confirm step into
-     * ScaleSyncSheet and call handler.onUserInteractionFeedback.
+     * The handler asks the app user to pick a scale user slot (CHOOSE_USER) or
+     * enter the slot's PIN/consent code (ENTER_CONSENT). Both surface as sheet
+     * states; answers come back through [onUserSelected] / [onConsentEntered].
+     * Unreadable payloads keep the old behavior: log + ignore.
      */
-    override fun onUserInteractionRequired(interactionType: com.health.openscale.core.bluetooth.BluetoothEvent.UserInteractionType, data: Any?) {
-        LogManager.w(TAG, "handler requested user interaction $interactionType — auto-defaulted (no-op)")
+    override fun onUserInteractionRequired(interactionType: BluetoothEvent.UserInteractionType, data: Any?) {
+        when (interactionType) {
+            BluetoothEvent.UserInteractionType.CHOOSE_USER -> {
+                val (labels, ids) = normalizeChooseUser(data) ?: run {
+                    LogManager.w(TAG, "CHOOSE_USER with unreadable payload — ignored")
+                    return
+                }
+                LogManager.i(TAG, "CHOOSE_USER: ${ids.size} slots offered")
+                _state.value = ScaleSyncState.AwaitingUser(labels, ids)
+            }
+
+            BluetoothEvent.UserInteractionType.ENTER_CONSENT -> {
+                val scaleIndex = (data as? IntArray)?.getOrNull(0)
+                if (scaleIndex == null) {
+                    LogManager.w(TAG, "ENTER_CONSENT with unreadable payload — ignored")
+                    return
+                }
+                LogManager.i(TAG, "ENTER_CONSENT for slot $scaleIndex")
+                _state.value = ScaleSyncState.AwaitingConsent(lastDeviceName ?: "scale", scaleIndex)
+            }
+        }
+    }
+
+    /**
+     * Answers the AwaitingUser prompt: [scaleIndex] is the scale slot id from the
+     * sheet, −1 registers a new user on the scale (consent is auto-generated
+     * inside the handler). Restores Reading unless the handler already moved the
+     * state forward (it may raise ENTER_CONSENT inside the feedback call).
+     */
+    fun onUserSelected(scaleIndex: Int) {
+        if (_state.value !is ScaleSyncState.AwaitingUser) return
+        LogManager.i(TAG, "user picked slot $scaleIndex")
+        runScope?.launch {
+            try {
+                handler?.onUserInteractionFeedback(
+                    BluetoothEvent.UserInteractionType.CHOOSE_USER,
+                    0,
+                    scaleIndex,
+                )
+            } catch (e: Exception) {
+                LogManager.e(TAG, "CHOOSE_USER feedback failed: ${e.message}", e)
+            }
+            if (_state.value is ScaleSyncState.AwaitingUser) {
+                _state.value = ScaleSyncState.Reading(lastDeviceName ?: "scale")
+            }
+        }
+    }
+
+    /** Answers the AwaitingConsent prompt with the scale slot's PIN code (0..9999). */
+    fun onConsentEntered(consent: Int) {
+        val current = _state.value as? ScaleSyncState.AwaitingConsent ?: return
+        LogManager.i(TAG, "consent entered for slot ${current.scaleIndex}")
+        runScope?.launch {
+            try {
+                handler?.onUserInteractionFeedback(
+                    BluetoothEvent.UserInteractionType.ENTER_CONSENT,
+                    0,
+                    Pair(current.scaleIndex, consent),
+                )
+            } catch (e: Exception) {
+                LogManager.e(TAG, "ENTER_CONSENT feedback failed: ${e.message}", e)
+            }
+            if (_state.value is ScaleSyncState.AwaitingConsent) {
+                _state.value = ScaleSyncState.Reading(lastDeviceName ?: "scale")
+            }
+        }
     }
 
     override fun resolveString(resId: Int, vararg args: Any): String =
@@ -253,23 +343,25 @@ class ScaleSyncController(
     }
 }
 
-/** In-memory DriverSettings: handler tuning prefs don't need persistence across runs. */
-private class InMemoryDriverSettings : ScaleDeviceHandler.DriverSettings {
-    private val ints = mutableMapOf<String, Int>()
-    private val strings = mutableMapOf<String, String>()
-
-    override fun getInt(key: String, default: Int): Int = ints[key] ?: default
-    override fun putInt(key: String, value: Int) {
-        ints[key] = value
+/**
+ * Normalizes the CHOOSE_USER payload the vendored handlers emit: a pair of
+ * (labels, slot ids) where labels are a `CharSequence[]` (or `List`) and ids an
+ * `IntArray` (or `List` of numbers). The last id is typically −1, the
+ * "register a new user" row. Returns null for anything else — callers ignore
+ * those, matching the pre-handshake behavior.
+ */
+internal fun normalizeChooseUser(data: Any?): Pair<List<String>, List<Int>>? {
+    val pair = data as? Pair<*, *> ?: return null
+    val labels = when (val first = pair.first) {
+        is Array<*> -> first.map { it?.toString().orEmpty() }
+        is List<*> -> first.map { it?.toString().orEmpty() }
+        else -> return null
     }
-
-    override fun getString(key: String, default: String?): String? = strings[key] ?: default
-    override fun putString(key: String, value: String) {
-        strings[key] = value
+    val ids = when (val second = pair.second) {
+        is IntArray -> second.toList()
+        is List<*> -> second.map { (it as? Number)?.toInt() ?: return null }
+        else -> return null
     }
-
-    override fun remove(key: String) {
-        ints.remove(key)
-        strings.remove(key)
-    }
+    if (ids.isEmpty() || labels.size != ids.size) return null
+    return labels to ids
 }
