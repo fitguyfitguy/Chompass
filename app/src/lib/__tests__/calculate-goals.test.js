@@ -1,0 +1,291 @@
+// @ts-check
+import test from "node:test";
+import assert from "node:assert/strict";
+import {
+  parseGoalCalculation,
+  buildCalculateGoalsPrompt,
+  formulaDailyCalories,
+  recalculatedFromFormulas,
+  applyingAiGoals,
+  applyingFormulaGoals,
+  locksFromFilledCustoms,
+  lockConstraintsSection,
+  calculateGoalsWithAi,
+} from "../ai/calculate-goals.js";
+import { PROVIDERS } from "../ai/providers.js";
+
+test("parseGoalCalculation_clampsRanges", () => {
+  const goals = parseGoalCalculation(
+    `{"calories":99999,"protein":-5,"carbs":50,"fat":40,"reason":"test"}`
+  );
+  assert.equal(goals.calories, 6000);
+  assert.equal(goals.protein, 0);
+  assert.equal(goals.carbs, 50);
+  assert.equal(goals.fat, 40);
+  assert.equal(goals.reason, "test");
+});
+
+test("parseGoalCalculation_raisesBelowAbsoluteFloor", () => {
+  const goals = parseGoalCalculation(`{"calories":200,"protein":80,"carbs":50,"fat":40}`);
+  assert.equal(goals.calories, 1200);
+});
+
+test("parseGoalCalculation_extractsFencedJson", () => {
+  const goals = parseGoalCalculation(`Here you go:\n\`\`\`json\n{"calories":2100,"protein":140,"carbs":180,"fat":70,"reason":"ok"}\n\`\`\``);
+  assert.equal(goals.calories, 2100);
+  assert.equal(goals.protein, 140);
+  assert.equal(goals.reason, "ok");
+});
+
+test("formulaDailyCalories_ignoresCustomPin", () => {
+  const profile = {
+    sex: /** @type {const} */ ("male"),
+    age: 30,
+    heightCm: 180,
+    weightKg: 80,
+    activityLevel: /** @type {const} */ ("moderate"),
+    goal: /** @type {const} */ ("lose"),
+    weeklyChangeKg: 0.5,
+    ketoMode: false,
+    customCalories: 9999,
+  };
+  assert.notEqual(formulaDailyCalories(profile), 9999);
+  assert.equal(recalculatedFromFormulas(profile).customCalories, null);
+});
+
+test("applyingAiGoals_honorsLockedCaloriesAndWritesMacros", () => {
+  const profile = {
+    sex: /** @type {const} */ ("male"),
+    age: 30,
+    heightCm: 180,
+    weightKg: 80,
+    activityLevel: /** @type {const} */ ("moderate"),
+    goal: /** @type {const} */ ("maintain"),
+    weeklyChangeKg: null,
+    ketoMode: false,
+    customCalories: 1900,
+    caloriesLocked: true,
+    customProtein: 180,
+  };
+  const next = applyingAiGoals(profile, { calories: 1500, protein: 120, carbs: 100, fat: 40, reason: null });
+  assert.equal(next.customCalories, 1900);
+  // Unlocked macros take the budget rebalanced to 1900: P120/F40 with the fat
+  // floor at 48, carbs absorb (1900 - 4*120 - 9*48) / 4.
+  assert.equal(next.customProtein, 120);
+  assert.equal(next.customFat, 48);
+  assert.equal(next.customCarbs, 247);
+});
+
+test("applyingAiGoals_clampsBelowFloor", () => {
+  const profile = {
+    sex: /** @type {const} */ ("female"),
+    age: 60,
+    heightCm: 155,
+    weightKg: 52,
+    activityLevel: /** @type {const} */ ("sedentary"),
+    goal: /** @type {const} */ ("lose"),
+    weeklyChangeKg: 0.5,
+    ketoMode: false,
+    customCalories: null,
+  };
+  const next = applyingAiGoals(profile, { calories: 800, protein: 80, carbs: 80, fat: 40, reason: null });
+  assert.ok(next.customCalories >= 1200);
+});
+
+test("buildCalculateGoalsPrompt_includesFormulaAnchor", () => {
+  const profile = {
+    sex: /** @type {const} */ ("female"),
+    age: 28,
+    heightCm: 165,
+    weightKg: 62,
+    activityLevel: /** @type {const} */ ("light"),
+    goal: /** @type {const} */ ("maintain"),
+    weeklyChangeKg: null,
+    ketoMode: false,
+    customCalories: null,
+  };
+  const prompt = buildCalculateGoalsPrompt(profile, null, true, true);
+  assert.match(prompt, /APP FORMULA REFERENCE/);
+  assert.match(prompt, /Weight goal: maintain/);
+  assert.match(prompt, /Diet mode: standard/);
+  assert.match(prompt, /Never set calories below this user's BMR or 1200/);
+  assert.doesNotMatch(prompt, /800-6000/);
+});
+
+test("buildCalculateGoalsPrompt_disagreeingTrends_surfaceImpliedMaintenanceWithNote", () => {
+  const profile = {
+    sex: /** @type {const} */ ("male"),
+    age: 30,
+    heightCm: 180,
+    weightKg: 80,
+    activityLevel: /** @type {const} */ ("moderate"),
+    goal: /** @type {const} */ ("maintain"),
+    weeklyChangeKg: null,
+    ketoMode: false,
+    customCalories: null,
+  };
+  const forecast = {
+    hasEnoughData: true,
+    usesCalendarDayAverage: false,
+    avgDailyCalories: 2900,
+    loggedDayAvgCalories: 2900,
+    daysOfFoodData: 40,
+    calendarDaysInWindow: 91,
+    observedWeeklyChangeKg: -0.5,
+    weightEntriesUsed: 12,
+    tdee: 2500,
+    trendsDisagree: true,
+  };
+  const prompt = buildCalculateGoalsPrompt(profile, forecast, true, true);
+  assert.match(prompt, /Implied actual maintenance/);
+  assert.match(prompt, /the population formula and the scale trend disagree/);
+  assert.doesNotMatch(prompt, /do NOT use the implied maintenance/);
+  assert.match(prompt, /cap protein at 2\.2 g\/kg lean mass \(2\.4 g\/kg while losing\)/);
+  assert.match(prompt, /Fat: at least max\(0\.6 g\/kg bodyweight, 20% of calories\)\./);
+});
+
+test("buildCalculateGoalsPrompt_bodyFatMethod_surfacesTrustNote", () => {
+  const profile = {
+    sex: "male", age: 30, heightCm: 180, weightKg: 80,
+    activityLevel: "moderate", goal: "maintain", weeklyChangeKg: null,
+    ketoMode: false, customCalories: null,
+    bodyFatPercentage: 0.22,
+    bodyFatUpdatedAt: "2026-08-01T00:00:00Z",
+    bodyFatMethod: "bia8",
+  };
+  const prompt = buildCalculateGoalsPrompt(profile, null, true, true);
+  assert.match(prompt, /8-electrode BIA scale, trusted to ±3\.2 pp/);
+  const plain = buildCalculateGoalsPrompt({ ...profile, bodyFatMethod: null }, null, true, true);
+  assert.doesNotMatch(plain, /trusted to ±/);
+});
+
+test("buildCalculateGoalsPrompt_usesLoggedDayAverageForEmpiricalTdee", () => {
+  const profile = {
+    sex: /** @type {const} */ ("male"),
+    age: 30,
+    heightCm: 180,
+    weightKg: 80,
+    activityLevel: /** @type {const} */ ("moderate"),
+    goal: /** @type {const} */ ("lose"),
+    weeklyChangeKg: 0.5,
+    ketoMode: false,
+    customCalories: null,
+  };
+  const forecast = {
+    hasEnoughData: true,
+    usesCalendarDayAverage: true,
+    avgDailyCalories: 207,
+    loggedDayAvgCalories: 2096,
+    daysOfFoodData: 9,
+    calendarDaysInWindow: 91,
+    observedWeeklyChangeKg: -0.4,
+    weightEntriesUsed: 5,
+    tdee: 2500,
+    trendsDisagree: true,
+  };
+  const prompt = buildCalculateGoalsPrompt(profile, forecast, true, true);
+  assert.match(prompt, /avg 2096 kcal\/day across 9 logged days/);
+  assert.match(prompt, /do not use that as recorded intake/);
+  assert.doesNotMatch(prompt, /Logged intake: avg 207 kcal\/day across/);
+});
+
+test("buildCalculateGoalsPrompt_includesLockedCaloriesConstraint", () => {
+  const profile = {
+    sex: /** @type {const} */ ("male"),
+    age: 30,
+    heightCm: 180,
+    weightKg: 80,
+    activityLevel: /** @type {const} */ ("moderate"),
+    goal: /** @type {const} */ ("lose"),
+    weeklyChangeKg: 0.5,
+    ketoMode: false,
+    customCalories: 1900,
+    caloriesLocked: true,
+    lockedMacros: /** @type {const} */ (["protein"]),
+    customProtein: 180,
+  };
+  const prompt = buildCalculateGoalsPrompt(profile, null, true, true);
+  assert.match(prompt, /Calories locked at 1900/);
+  assert.match(prompt, /Protein locked at 180/);
+  assert.equal(lockConstraintsSection({ ...profile, caloriesLocked: false, lockedMacros: [] }), "");
+});
+
+test("locksFromFilledCustoms_locksCaloriesAndFirstTwoMacros", () => {
+  const locks = locksFromFilledCustoms({
+    customCalories: 1900,
+    customProtein: 180,
+    customCarbs: 200,
+    customFat: 70,
+  });
+  assert.equal(locks.caloriesLocked, true);
+  assert.deepEqual(locks.lockedMacros, ["protein", "carbs"]);
+  assert.deepEqual(
+    locksFromFilledCustoms({
+      customCalories: null,
+      customProtein: null,
+      customCarbs: null,
+      customFat: null,
+    }),
+    { caloriesLocked: false, lockedMacros: [] },
+  );
+});
+
+test("applyingFormulaGoals_keepsLockedCalories", () => {
+  const profile = {
+    sex: /** @type {const} */ ("male"),
+    age: 30,
+    heightCm: 180,
+    weightKg: 80,
+    activityLevel: /** @type {const} */ ("moderate"),
+    goal: /** @type {const} */ ("maintain"),
+    weeklyChangeKg: null,
+    ketoMode: false,
+    customCalories: 1900,
+    caloriesLocked: true,
+    customProtein: 180,
+    lockedMacros: /** @type {const} */ (["protein"]),
+    customCarbs: 200,
+    customFat: 70,
+  };
+  const next = applyingFormulaGoals(profile);
+  assert.equal(next.customCalories, 1900);
+  assert.equal(next.customProtein, 180);
+  assert.equal(next.customCarbs, null);
+  assert.equal(next.customFat, null);
+  assert.equal(next.caloriesLocked, true);
+});
+
+test("calculateGoalsWithAi_leavesCapToProviderDefault", async () => {
+  // Reasoning models on capped providers bill thinking tokens against
+  // max_tokens; the client no longer forces a floor — the send carries no
+  // cap and the provider default applies.
+  const original = PROVIDERS.anthropic.send;
+  /** @type {any[]} */
+  const requests = [];
+  PROVIDERS.anthropic.send = async (_config, req) => {
+    requests.push(req);
+    return { text: `{"calories":2100,"protein":140,"carbs":180,"fat":70,"reason":"ok"}` };
+  };
+  try {
+    await calculateGoalsWithAi({
+      providerId: "anthropic",
+      config: { apiKey: "test-key", model: "claude-haiku-4-5" },
+      profile: /** @type {any} */ ({
+        sex: "female",
+        age: 28,
+        heightCm: 165,
+        weightKg: 62,
+        activityLevel: "light",
+        goal: "maintain",
+        weeklyChangeKg: null,
+        ketoMode: false,
+        customCalories: null,
+      }),
+      prefsOverride: /** @type {any} */ ({ aiFeaturesEnabled: true }),
+    });
+  } finally {
+    PROVIDERS.anthropic.send = original;
+  }
+  assert.equal(requests.length, 1);
+  assert.equal(requests[0].maxTokens, undefined);
+});

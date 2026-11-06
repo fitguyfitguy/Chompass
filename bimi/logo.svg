@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.2" baseProfile="tiny-ps"
+    width="1024" height="1024" viewBox="0 0 1024 1024">
+  <title>Chompass</title>
+  <defs>
+    <linearGradient id="ripened" x1="102.4" y1="51.2" x2="921.6" y2="972.8"
+        gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFD9C2"/>
+      <stop offset="0.32" stop-color="#FF9A6C"/>
+      <stop offset="0.68" stop-color="#E0685E"/>
+      <stop offset="1" stop-color="#8C2E4A"/>
+    </linearGradient>
+  </defs>
+  <rect width="1024" height="1024" fill="#FFF6EC"/>
+  <path d="M 879.104 544.256 A 368.64 368.64 0 1 1 607.232 156.16 A 174.08 174.08 0 0 0 814.08 300.544 A 174.08 174.08 0 0 0 879.104 544.256 Z" stroke="url(#ripened)"
+      stroke-width="81.92" stroke-linecap="round"
+      stroke-linejoin="round" fill="none"/>
+  <path d="M 776.192 327.168 L 534.016 543.232 L 428.032 570.88 Z" fill="#1C131A"/>
+  <path d="M 776.192 327.168 L 428.032 570.88 L 489.984 480.768 Z" fill="#4A3346"/>
+  <circle cx="512" cy="512" r="35.84" fill="#FFF6EC"/>
+  <circle cx="512" cy="512" r="12.8" fill="#1C131A"/>
+</svg>
