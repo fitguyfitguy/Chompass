@@ -27,6 +27,7 @@ import app.chompass.services.KetoCarbRecommendationService
 import app.chompass.services.ai.AiError
 import app.chompass.services.ai.FoodAnalysisService
 import app.chompass.services.ai.GeminiClient
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -196,6 +197,10 @@ data class OnboardingState(
 class OnboardingViewModel(private val container: AppContainer) : ViewModel() {
     private val _ui = MutableStateFlow(OnboardingState())
     val ui: StateFlow<OnboardingState> = _ui.asStateFlow()
+
+    /** In-flight BUILDING_PLAN AI calc. Cancelled when the user backs out of the
+     *  step so re-entering reruns it instead of racing a stale attempt. */
+    private var planCalcJob: Job? = null
 
     init {
         viewModelScope.launch {
@@ -479,7 +484,8 @@ class OnboardingViewModel(private val container: AppContainer) : ViewModel() {
      *  user). On success seeds the custom targets the Plan Ready screen shows; on failure leaves
      *  them null so the formula values are used. Calls [onDone] either way. */
     fun buildPlanWithAI(onDone: () -> Unit) {
-        viewModelScope.launch {
+        planCalcJob?.cancel()
+        planCalcJob = viewModelScope.launch {
             val state = _ui.value
             val result = runCatching {
                 // A cold on-device engine load (60-90 s+ of uninterruptible
@@ -583,6 +589,12 @@ class OnboardingViewModel(private val container: AppContainer) : ViewModel() {
     }
 
     fun back() {
+        if (_ui.value.step == OnboardingStep.BUILDING_PLAN) {
+            // Leaving the build step stops the in-flight AI calc; advancing
+            // again reruns it fresh (buildPlanWithAI is cancel-and-relaunch).
+            planCalcJob?.cancel()
+            planCalcJob = null
+        }
         val prevStep = OnboardingStep.values().getOrNull(_ui.value.step.ordinal - 1) ?: return
         _ui.value = _ui.value.copy(step = prevStep)
     }

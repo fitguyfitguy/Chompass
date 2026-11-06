@@ -14,6 +14,10 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 - **Days flip with a subtle animation** (Android): the date caption now cross-fades when you swipe to another day, and screen readers get previous-day and next-day actions on the calorie card.
 - **An empty food log offers Add food** (Android): a day with nothing logged or planned shows an Add food button right on the empty card, instead of text only.
 
+### Fixed
+
+- **The plan-building screen can be left while it works** (Android): during onboarding, your nutrition plan is built while an animated checklist plays. When the AI answer takes a while, the back arrow at the top now stays available, so you can go back to the previous step instead of waiting — continuing afterwards restarts the build cleanly.
+
 ## [6.2.0] - 2026-11-04
 
 ### Added

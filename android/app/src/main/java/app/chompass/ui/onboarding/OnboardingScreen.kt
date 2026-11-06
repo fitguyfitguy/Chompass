@@ -65,8 +65,11 @@ fun OnboardingScreen(container: AppContainer, onComplete: () -> Unit) {
             .background(MaterialTheme.colorScheme.background)
     ) {
         // iOS shows a chevron-left back button + a thin Capsule progress bar at
-        // the top, only on steps 1..N-2 (hidden on Welcome and Review).
-        if (ui.step != OnboardingStep.WELCOME && ui.step != OnboardingStep.BUILDING_PLAN) {
+        // the top on every step except Welcome; the final step (DISCLAIMERS)
+        // drops only the chevron. BUILDING_PLAN keeps the header so the plan
+        // build has an exit: back returns to Provider and cancels the in-flight
+        // AI calc (rerun fresh if the user advances again).
+        if (ui.step != OnboardingStep.WELCOME) {
             Spacer(Modifier.height(12.dp))
             Row(
                 Modifier
