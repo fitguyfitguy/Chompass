@@ -138,7 +138,7 @@ internal fun MealSectionHeader(
         Row(
             Modifier
                 .fillMaxWidth()
-                .padding(start = 22.dp, end = 24.dp, top = 12.dp, bottom = if (summaryOnOwnLine) 0.dp else 6.dp),
+                .padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = if (summaryOnOwnLine) 0.dp else 6.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
@@ -174,7 +174,7 @@ internal fun MealSectionHeader(
                 mealMacroSummary(calories, macroChips, totalProtein, totalCarbs, totalFat, totalFiber, totalSugar),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 46.dp, end = 24.dp, bottom = 6.dp),
+                    .padding(start = 40.dp, end = 16.dp, bottom = 6.dp),
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Medium,
                 maxLines = 2,

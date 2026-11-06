@@ -691,7 +691,6 @@ fun HomeScreen(
                             }
                         }
                 ) {
-                    Spacer(Modifier.height(4.dp))
                     // Decorative day-swipe affordance: the chevrons fade with the
                     // hero drag handler's reachability (backward is always allowed;
                     // forward stops at the diary's today limit). Decorative only —
@@ -810,7 +809,7 @@ fun HomeScreen(
                         }
                         Spacer(Modifier.height(4.dp))
                     } else {
-                        Spacer(Modifier.height(12.dp))
+                        Spacer(Modifier.height(4.dp))
                     }
                     // Current/goal resolved once per state change instead of
                     // per card per recomposition (current() scans the day's
@@ -848,7 +847,7 @@ fun HomeScreen(
                         Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         ui.homeTopNutrients.forEach { nutrient ->
                             val (current, planned, goal) = macroCardValues.getValue(nutrient)
@@ -936,11 +935,11 @@ fun HomeScreen(
                             modifier = Modifier.padding(horizontal = 16.dp),
                         )
                     }
-                    Box(
+                    Row(
                         Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 8.dp),
-                        contentAlignment = Alignment.Center
+                            .padding(horizontal = 16.dp),
+                        horizontalArrangement = Arrangement.End,
                     ) {
                         Box(modifier = Modifier.clickable { nutritionDetailScope = "day" }) {
                             ViewMoreButton()
@@ -950,7 +949,7 @@ fun HomeScreen(
             }
 
             // Food log
-            item { Spacer(Modifier.height(8.dp)) }
+            item { Spacer(Modifier.height(4.dp)) }
             // Daily note (Codeberg #58a): day-scoped like the water card, so it
             // follows the selected day (today, past, or planned future). Only when the
             // optional tracker is enabled (Settings → Trackers & Reminders).
@@ -2439,7 +2438,6 @@ internal fun HomeScreenPreviewContent(
                 }
                 item {
                     Column {
-                        Spacer(Modifier.height(4.dp))
                         Text(
                             stringResource(R.string.home_today),
                             style = MaterialTheme.typography.labelLarge,
@@ -2468,7 +2466,7 @@ internal fun HomeScreenPreviewContent(
                         val previewResolvedTargets = remember(ui.profile, ui.date, ui.goalJournal) { ui.resolvedDayTargets }
                         Row(
                             Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-                            horizontalArrangement = Arrangement.spacedBy(4.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
                         ) {
                             if (ui.homeDisplay.showSteps) {
                                 StepsCard(
@@ -2503,15 +2501,15 @@ internal fun HomeScreenPreviewContent(
                                 )
                             }
                         }
-                        Box(
-                            Modifier.fillMaxWidth().padding(vertical = 8.dp),
-                            contentAlignment = Alignment.Center,
+                        Row(
+                            Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                            horizontalArrangement = Arrangement.End,
                         ) {
                             ViewMoreButton()
                         }
                     }
                 }
-                item { Spacer(Modifier.height(8.dp)) }
+                item { Spacer(Modifier.height(4.dp)) }
                 if (ui.diaryLoaded && mealGroups.isEmpty()) {
                     item { SectionHeader(if (isToday) stringResource(R.string.home_todays_food) else stringResource(R.string.home_food_log)) }
                     item {

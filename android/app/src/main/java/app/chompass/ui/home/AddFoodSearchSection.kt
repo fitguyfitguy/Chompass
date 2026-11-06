@@ -12,6 +12,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.border
@@ -19,6 +20,7 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.selection.toggleable
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import app.chompass.ui.components.pressScale
 import app.chompass.ui.theme.AppMotion
@@ -88,6 +90,7 @@ import androidx.compose.ui.input.key.type
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.RoundRect
 import androidx.compose.ui.geometry.toRect
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathMeasure
@@ -113,7 +116,6 @@ import app.chompass.services.grounding.DatabaseSearchResult
 import app.chompass.services.grounding.FoodSuggestion
 import app.chompass.services.grounding.SuggestionKind
 import app.chompass.ui.components.ChompassSheetLazyColumn
-import app.chompass.ui.components.ChompassTextField
 import app.chompass.ui.components.hazeGlassFill
 import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.components.energyText
@@ -161,10 +163,11 @@ internal fun AddFoodQueryRow(
     Column(Modifier.fillMaxWidth()) {
         // Full width: the field is the primary control, and sharing its row with
         // three buttons squeezed the placeholder into an ellipsis.
-        ChompassTextField(
+        AddFoodSearchField(
             value = query,
             onValueChange = onQueryChange,
             placeholder = stringResource(R.string.food_search_placeholder),
+            submit = submit,
             leadingIcon = {
                 Icon(
                     Icons.Filled.Search,
@@ -215,32 +218,7 @@ internal fun AddFoodQueryRow(
                     }
                 }
             },
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
-            // Whichever action the device's keyboard actually shows — Send,
-            // Done, Go, Search — runs the analysis rather than just closing the
-            // keyboard.
-            keyboardActions = KeyboardActions(
-                onSend = { submit() },
-                onDone = { submit() },
-                onGo = { submit() },
-                onSearch = { submit() },
-            ),
-            modifier = fieldModifier.onPreviewKeyEvent { event ->
-                if (event.type != KeyEventType.KeyUp) {
-                    false
-                } else {
-                    when (event.key) {
-                        // Enter only. Escape conventionally cancels, so leave it
-                        // to the platform rather than spending an AI call on it.
-                        Key.Enter, Key.NumPadEnter -> {
-                            submit()
-                            true
-                        }
-                        else -> false
-                    }
-                }
-            },
+            modifier = fieldModifier,
         )
         Spacer(Modifier.height(8.dp))
         // Labelled pills under the field rather than bare glyphs beside it:
@@ -318,6 +296,98 @@ internal fun AddFoodQueryRow(
             }
         }
     }
+}
+
+/**
+ * The Add Food query field on the tool row's chrome — same 12dp shape, hairline
+ * border and container fill as [AddFoodToolButton] — instead of
+ * ChompassTextField's outlined stroke, which drew a second heavy outline over
+ * the sheet's glass and let the content behind show through its transparent
+ * fill. Keyboard and Enter-key submit behavior are carried over unchanged.
+ */
+@Composable
+private fun AddFoodSearchField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    placeholder: String,
+    submit: () -> Unit,
+    leadingIcon: @Composable () -> Unit,
+    trailingIcon: (@Composable () -> Unit)?,
+    modifier: Modifier = Modifier,
+) {
+    val interaction = remember { MutableInteractionSource() }
+    val focused by interaction.collectIsFocusedAsState()
+    val shape = MaterialTheme.shapes.medium
+    val borderColor = if (focused) MaterialTheme.colorScheme.primary
+    else MaterialTheme.colorScheme.outlineVariant
+    val borderWidth = if (focused) 1.dp else 0.5.dp
+    BasicTextField(
+        value = value,
+        onValueChange = onValueChange,
+        singleLine = true,
+        textStyle = MaterialTheme.typography.bodyLarge.copy(
+            color = MaterialTheme.colorScheme.onSurface,
+        ),
+        cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+        // Whichever action the device's keyboard actually shows — Send,
+        // Done, Go, Search — runs the analysis rather than just closing the
+        // keyboard.
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
+        keyboardActions = KeyboardActions(
+            onSend = { submit() },
+            onDone = { submit() },
+            onGo = { submit() },
+            onSearch = { submit() },
+        ),
+        interactionSource = interaction,
+        // Enter only. Escape conventionally cancels, so leave it to the
+        // platform rather than spending an AI call on it.
+        modifier = modifier
+            .onPreviewKeyEvent { event ->
+                if (event.type != KeyEventType.KeyUp) {
+                    false
+                } else {
+                    when (event.key) {
+                        Key.Enter, Key.NumPadEnter -> {
+                            submit()
+                            true
+                        }
+                        else -> false
+                    }
+                }
+            }
+            .height(48.dp)
+            .clip(shape)
+            .background(MaterialTheme.colorScheme.surfaceContainerLow.copy(alpha = 0.92f))
+            .border(borderWidth, borderColor, shape),
+        decorationBox = { innerTextField ->
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                leadingIcon()
+                Box(
+                    Modifier.weight(1f),
+                    contentAlignment = Alignment.CenterStart,
+                ) {
+                    innerTextField()
+                    if (value.isEmpty()) {
+                        Text(
+                            placeholder,
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
+                }
+                trailingIcon?.invoke()
+            }
+        },
+    )
 }
 
 /**

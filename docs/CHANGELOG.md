@@ -4,6 +4,12 @@ All notable changes to Chompass are documented here.
 
 Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no internals). The version section is pasted verbatim onto the Codeberg release.
 
+## [Unreleased]
+
+### Changed
+
+- **The Home screen fits more of your day** (Android): the calorie ring keeps its size but sheds the slack around it, so the food log starts higher up; meal headers, the macro row and the View More link now share one margin. The Add Food search field matches the tool buttons beside it, and the meal review sheet's list reads on its own soft background instead of over the ring.
+
 ## [6.3.0] - 2026-11-06
 
 ### Changed

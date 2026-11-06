@@ -49,6 +49,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.progressBarRangeInfo
@@ -57,6 +58,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -648,12 +650,16 @@ private fun calorieArcContextDescription(input: CalorieHeroInput, d: CalorieHero
 
 /** Burn caption line: shades when active, else the live burn the user asked to see. */
 @Composable
-private fun CalorieBurnCaption(input: CalorieHeroInput, shadesActive: Boolean) {
+private fun CalorieBurnCaption(
+    input: CalorieHeroInput,
+    shadesActive: Boolean,
+    modifier: Modifier = Modifier,
+) {
     with(input) {
         if (shadesActive) {
-            BurnShadeCaption(burn = burnShade!!)
+            BurnShadeCaption(burn = burnShade!!, modifier = modifier)
         } else if (showActiveCalories && liveActiveBurn > 0) {
-            BurnCaption(active = liveActiveBurn)
+            BurnCaption(active = liveActiveBurn, modifier = modifier)
         }
     }
 }
@@ -695,15 +701,20 @@ private fun DefaultCalorieHero(input: CalorieHeroInput, modifier: Modifier = Mod
         BoxWithConstraints(
             modifier = modifier
                 .fillMaxWidth()
-                .padding(top = 8.dp, bottom = 12.dp),
+                .padding(top = 4.dp, bottom = 4.dp),
             contentAlignment = Alignment.TopCenter,
         ) {
             // The half-circle leaves an empty wedge at each top corner: the chips
             // sit in the left one, the calories-left caption in the right one.
             val sideMargin = ((maxWidth - 260.dp) / 2).coerceIn(0.dp, 200.dp)
             val cornerWidth = sideMargin + 48.dp
-            val showsChips = (dayTypeLabel != null && onDayTypeClick != null) ||
-                onUntrackedClick != null
+            val showDayTypeChip = dayTypeLabel != null && onDayTypeClick != null
+            val showUntrackedChip = onUntrackedClick != null
+            val showsChips = showDayTypeChip || showUntrackedChip
+            // Exactly one chip: hang its 48dp touch target into the empty wedge
+            // (topBand) so the pill's top stays level with the remaining text
+            // without growing the arc box. Two chips stack at natural height.
+            val singleChip = showDayTypeChip != showUntrackedChip
             val eatenA11y = stringResource(R.string.home_calories_eaten_a11y, energyText(current))
 
             CalorieArcCanvas(
@@ -740,22 +751,38 @@ private fun DefaultCalorieHero(input: CalorieHeroInput, modifier: Modifier = Mod
                     modifier = Modifier
                         .align(Alignment.TopStart)
                         .padding(start = 16.dp)
-                        .widthIn(max = (cornerWidth - 16.dp).coerceAtLeast(48.dp)),
-                    verticalArrangement = Arrangement.spacedBy(2.dp),
+                        .widthIn(max = (cornerWidth - 16.dp).coerceAtLeast(48.dp))
+                        .then(if (singleChip) Modifier.topBand(24.dp) else Modifier),
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
                 ) {
                     if (dayTypeLabel != null && onDayTypeClick != null) {
-                        DayTypeChip(label = dayTypeLabel, color = dayTypeColor, onClick = onDayTypeClick)
+                        DayTypeChip(
+                            label = dayTypeLabel,
+                            color = dayTypeColor,
+                            onClick = onDayTypeClick,
+                            modifier = if (showUntrackedChip) Modifier
+                            else Modifier.minimumInteractiveComponentSize(),
+                        )
                     }
                     if (onUntrackedClick != null) {
-                        UntrackedChip(untracked = untracked, onClick = onUntrackedClick)
+                        UntrackedChip(
+                            untracked = untracked,
+                            onClick = onUntrackedClick,
+                            modifier = if (showDayTypeChip) Modifier
+                            else Modifier.minimumInteractiveComponentSize(),
+                        )
                     }
                 }
             }
 
+            // Bowl stack inside the fixed 130dp canvas: 28dp above the number
+            // when the burn caption is off, 20dp when it is on (its own 4dp pad
+            // sits under the goal box), so both states clear the lower stroke.
+            val burnCaptionVisible = d.shadesActive || (showActiveCalories && liveActiveBurn > 0)
             Column(
                 modifier = Modifier
                     .align(Alignment.TopCenter)
-                    .padding(top = 30.dp),
+                    .padding(top = if (burnCaptionVisible) 20.dp else 28.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 // Counter swap: slide+fade when today's value changes.
@@ -808,48 +835,39 @@ private fun DefaultCalorieHero(input: CalorieHeroInput, modifier: Modifier = Mod
                         )
                     }
                 }
-                CalorieBurnCaption(input = input, shadesActive = d.shadesActive)
+                CalorieBurnCaption(
+                    input = input,
+                    shadesActive = d.shadesActive,
+                    modifier = Modifier.padding(top = 4.dp),
+                )
             }
 
-            // Calories left, top-right wedge. Planned caption stacks under it
-            // inside the same 48dp so the hero stays height-neutral.
+            // Calories left, top-right wedge. Planned caption stacks under it;
+            // the column is no longer pinned to 48dp — the wedge is taller than
+            // the two lines need.
             Column(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
-                    .padding(end = 16.dp)
-                    .height(48.dp),
+                    .padding(end = 16.dp),
                 horizontalAlignment = Alignment.End,
-                verticalArrangement = Arrangement.spacedBy(2.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
-                    verticalAlignment = Alignment.Top,
-                ) {
-                    Icon(
-                        Icons.Filled.LocalFireDepartment,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier
-                            .padding(top = 1.dp)
-                            .size(13.dp),
-                    )
-                    Text(
-                        text = stringResource(
-                            R.string.home_calories_left,
-                            LocaleFormat.integer(EnergyFormat.quantity(d.remaining, unit)),
-                        ),
-                        modifier = Modifier.widthIn(max = (cornerWidth - 17.dp).coerceAtLeast(48.dp)),
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.primary,
-                        maxLines = 1,
-                        autoSize = TextAutoSize.StepBased(
-                            minFontSize = 8.sp,
-                            maxFontSize = 12.sp,
-                            stepSize = 0.5.sp,
-                        ),
-                    )
-                }
+                Text(
+                    text = stringResource(
+                        R.string.home_calories_left,
+                        LocaleFormat.integer(EnergyFormat.quantity(d.remaining, unit)),
+                    ),
+                    modifier = Modifier.widthIn(max = (cornerWidth - 16.dp).coerceAtLeast(48.dp)),
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.primary,
+                    maxLines = 1,
+                    autoSize = TextAutoSize.StepBased(
+                        minFontSize = 8.sp,
+                        maxFontSize = 12.sp,
+                        stepSize = 0.5.sp,
+                    ),
+                )
                 plannedCaption?.let { caption ->
                     PlannedCaptionText(
                         text = caption,
@@ -940,7 +958,7 @@ private fun SideGaugeCalorieHero(input: CalorieHeroInput, modifier: Modifier = M
             }
             Column(
                 modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(2.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
                 Text(
                     text = LocaleFormat.integer(EnergyFormat.quantity(current, unit)),
@@ -1089,8 +1107,12 @@ private fun CompactArcCalorieHero(input: CalorieHeroInput, modifier: Modifier = 
             // wedge than the 260dp hero, so the corner caps scale with it.
             val sideMargin = ((maxWidth - 200.dp) / 2).coerceIn(0.dp, 200.dp)
             val cornerWidth = sideMargin + 40.dp
-            val showsChips = (dayTypeLabel != null && onDayTypeClick != null) ||
-                onUntrackedClick != null
+            val showDayTypeChip = dayTypeLabel != null && onDayTypeClick != null
+            val showUntrackedChip = onUntrackedClick != null
+            val showsChips = showDayTypeChip || showUntrackedChip
+            // Exactly one chip: hang its 48dp touch target into the empty wedge
+            // (topBand) without growing the arc box; two stack at natural height.
+            val singleChip = showDayTypeChip != showUntrackedChip
 
             CalorieArcCanvas(
                 modifier = Modifier
@@ -1123,14 +1145,26 @@ private fun CompactArcCalorieHero(input: CalorieHeroInput, modifier: Modifier = 
                     modifier = Modifier
                         .align(Alignment.TopStart)
                         .padding(start = 16.dp)
-                        .widthIn(max = (cornerWidth - 16.dp).coerceAtLeast(40.dp)),
-                    verticalArrangement = Arrangement.spacedBy(2.dp),
+                        .widthIn(max = (cornerWidth - 16.dp).coerceAtLeast(40.dp))
+                        .then(if (singleChip) Modifier.topBand(24.dp) else Modifier),
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
                 ) {
                     if (dayTypeLabel != null && onDayTypeClick != null) {
-                        DayTypeChip(label = dayTypeLabel, color = dayTypeColor, onClick = onDayTypeClick)
+                        DayTypeChip(
+                            label = dayTypeLabel,
+                            color = dayTypeColor,
+                            onClick = onDayTypeClick,
+                            modifier = if (showUntrackedChip) Modifier
+                            else Modifier.minimumInteractiveComponentSize(),
+                        )
                     }
                     if (onUntrackedClick != null) {
-                        UntrackedChip(untracked = untracked, onClick = onUntrackedClick)
+                        UntrackedChip(
+                            untracked = untracked,
+                            onClick = onUntrackedClick,
+                            modifier = if (showDayTypeChip) Modifier
+                            else Modifier.minimumInteractiveComponentSize(),
+                        )
                     }
                 }
             }
@@ -1202,7 +1236,7 @@ private fun CompactArcCalorieHero(input: CalorieHeroInput, modifier: Modifier = 
                     .padding(end = 16.dp)
                     .height(44.dp),
                 horizontalAlignment = Alignment.End,
-                verticalArrangement = Arrangement.spacedBy(2.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -1523,9 +1557,25 @@ private fun CompactHorizontalCalorieHero(input: CalorieHeroInput, modifier: Modi
     }
 }
 
+/**
+ * Reports a fixed [height] band while letting the measured content hang past
+ * it: the single-chip wedge keeps a 48dp touch target without growing the
+ * arc box.
+ */
+private fun Modifier.topBand(height: Dp): Modifier = layout { measurable, constraints ->
+    val placeable = measurable.measure(
+        constraints.copy(minHeight = 0, maxHeight = Constraints.Infinity),
+    )
+    layout(placeable.width, height.roundToPx()) { placeable.place(0, 0) }
+}
+
 /** Compact tappable pill beside the hero's remaining caption: today's day type (#60). */
 @Composable
-private fun UntrackedChip(untracked: Boolean, onClick: () -> Unit) {
+private fun UntrackedChip(
+    untracked: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val label = stringResource(
         if (untracked) R.string.home_untracked_chip else R.string.home_mark_untracked_chip,
     )
@@ -1539,9 +1589,11 @@ private fun UntrackedChip(untracked: Boolean, onClick: () -> Unit) {
         color = if (untracked) MaterialTheme.colorScheme.tertiaryContainer
             else MaterialTheme.colorScheme.surfaceVariant,
         interactionSource = chipInteraction,
-        modifier = Modifier
+        // No minimumInteractiveComponentSize here: it centers the pill in a
+        // 48dp slot, dropping it below the remaining-caption baseline. The
+        // arc heroes restore the 48dp touch via topBand on the single chip.
+        modifier = modifier
             .pressScale(chipInteraction)
-            .minimumInteractiveComponentSize()
             .widthIn(max = 140.dp)
             .semantics { contentDescription = a11y },
     ) {
@@ -1560,13 +1612,18 @@ private fun UntrackedChip(untracked: Boolean, onClick: () -> Unit) {
                 maxFontSize = 11.sp,
                 stepSize = 0.5.sp,
             ),
-            modifier = Modifier.padding(horizontal = 10.dp, vertical = 3.dp),
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
         )
     }
 }
 
 @Composable
-private fun DayTypeChip(label: String, color: Color? = null, onClick: () -> Unit) {
+private fun DayTypeChip(
+    label: String,
+    color: Color? = null,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val a11y = stringResource(R.string.home_day_type_chip_a11y, label)
     // Pinned color wins over the tonal container; light colors flip text dark.
     val container = color ?: MaterialTheme.colorScheme.secondaryContainer
@@ -1581,18 +1638,19 @@ private fun DayTypeChip(label: String, color: Color? = null, onClick: () -> Unit
         shape = CapsuleShape,
         color = container,
         interactionSource = chipInteraction,
-        modifier = Modifier
+        // Same reasoning as UntrackedChip: no 48dp slot, the pill aligns with
+        // the remaining caption; topBand restores the touch where it fits.
+        modifier = modifier
             .pressScale(chipInteraction)
             // The chip shares the remaining-caption line: cap it so a long
             // day-type name ellipsizes instead of pushing the caption around.
-            .minimumInteractiveComponentSize()
             .widthIn(max = 140.dp)
             .semantics { contentDescription = a11y },
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(2.dp),
-            modifier = Modifier.padding(start = 10.dp, end = 6.dp, top = 3.dp, bottom = 3.dp),
+            modifier = Modifier.padding(start = 10.dp, end = 6.dp, top = 4.dp, bottom = 4.dp),
         ) {
             Text(
                 label,
@@ -1621,14 +1679,14 @@ private fun DayTypeChip(label: String, color: Color? = null, onClick: () -> Unit
 }
 
 @Composable
-private fun BurnCaption(active: Int) {
+private fun BurnCaption(active: Int, modifier: Modifier = Modifier) {
     val tertiary = MaterialTheme.colorScheme.tertiary
     val activeQ = EnergyFormat.quantity(active, LocalEnergyUnit.current)
     val a11y = stringResource(R.string.home_active_burn_a11y, activeQ)
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(5.dp),
-        modifier = Modifier.semantics { contentDescription = a11y }
+        modifier = modifier.semantics { contentDescription = a11y }
     ) {
         Icon(
             Icons.Filled.LocalFireDepartment,
@@ -1647,7 +1705,7 @@ private fun BurnCaption(active: Int) {
 
 /** Energy-balance caption: live active vs the day's active norm, plus the over-typical state. */
 @Composable
-private fun BurnShadeCaption(burn: ActiveBurnShade) {
+private fun BurnShadeCaption(burn: ActiveBurnShade, modifier: Modifier = Modifier) {
     val tertiary = MaterialTheme.colorScheme.tertiary
     val success = MaterialTheme.colorScheme.success
     val unit = LocalEnergyUnit.current
@@ -1660,7 +1718,7 @@ private fun BurnShadeCaption(burn: ActiveBurnShade) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(5.dp),
-        modifier = Modifier.semantics { contentDescription = a11y }
+        modifier = modifier.semantics { contentDescription = a11y }
     ) {
         Icon(
             Icons.Filled.LocalFireDepartment,
@@ -1960,20 +2018,20 @@ internal fun ViewMoreButton() {
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .minimumInteractiveComponentSize()
-            .padding(horizontal = 10.dp, vertical = 8.dp)
+            .padding(horizontal = 10.dp)
     ) {
         Text(
             stringResource(R.string.home_view_more),
             fontSize = 14.sp,
             fontWeight = FontWeight.Medium,
-            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
+            color = MaterialTheme.colorScheme.primary
         )
         Spacer(Modifier.width(5.dp))
         Icon(
             Icons.AutoMirrored.Filled.KeyboardArrowRight,
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f),
-            modifier = Modifier.size(11.dp)
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.size(16.dp)
         )
     }
 }

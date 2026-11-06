@@ -630,6 +630,10 @@ fun FoodResultSheet(
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxWidth()
+                        // One reading plane for the review body: bare section
+                        // headers and the emoji composite over the Home arc
+                        // otherwise. The toolbar above stays on the glass lip.
+                        .background(MaterialTheme.colorScheme.surfaceContainerLow.copy(alpha = 0.96f))
                         .padding(horizontal = 20.dp)
                         .onFocusChanged { inputFocused = it.isFocused },
                     // Codeberg #14: block bottom-edge overscroll vs sheet
@@ -637,7 +641,7 @@ fun FoodResultSheet(
                     // gated (Codeberg #30): blocked while editing, else
                     // drag-from-content dismissal stays (raised thresholds).
                     blockTopEdge = inputFocused || typedContentChanged,
-                    verticalArrangement = Arrangement.spacedBy(18.dp)
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
             // Status strip while AI runs — also announces when editing unlocks.
             item {
@@ -732,7 +736,15 @@ fun FoodResultSheet(
                                 ),
                         )
                     } else {
-                        Text(effectiveAnalysis.emoji ?: "🍽", fontSize = 40.sp)
+                        Box(
+                            Modifier
+                                .size(72.dp)
+                                .clip(MaterialTheme.shapes.large)
+                                .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f)),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Text(effectiveAnalysis.emoji ?: "🍽", fontSize = 36.sp)
+                        }
                     }
                 }
             }
