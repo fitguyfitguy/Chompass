@@ -173,7 +173,7 @@ Providers, models, and speech. All of these exist on both clients unless marked.
 | --- | --- |
 | AI features | Master toggle. Off: no request goes to any LLM, and AI entry points hide. Barcode, search, and manual logging keep working. |
 | Show the coach tab (Android) | Hides Coach from the bottom bar without turning AI off. |
-| Provider | Android: 14 choices, including Ollama (local) and On-Device (Private) Gemma 4. PWA: Gemini, OpenAI, Anthropic, and OpenAI-compatible. |
+| Provider | Android: 15 choices, including Ollama (local), Ollama Cloud, and On-Device (Private) Gemma 4. PWA: Gemini, OpenAI, Anthropic, and OpenAI-compatible. |
 | Model | Chat/analysis model for that provider. Custom model id where the provider allows it. |
 | Vision model | Separate photo model. Android: OpenAI-compatible providers. PWA: OpenAI-compatible. |
 | Reasoning effort | Android: OpenRouter. PWA: OpenAI-compatible. |

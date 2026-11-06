@@ -87,7 +87,7 @@ Chompass is based on [Fud&nbsp;AI](https://github.com/apoorvdarshan/fud-ai) by *
 | Banner ads                  | Brief AdMob; removed in 3.0.3                          | **Never shipped**                          | **Never shipped**                              |
 | On-device AI (Gemma&nbsp;4) | No                                                     | **Yes** (opt-in)                           | No (cloud, your key)                                |
 | Barcode                     | ML Kit                                                 | **FOSS zxing-cpp**                         | Browser / OFF                                  |
-| Workouts library            | Yes (~120&nbsp;MB APK)                                 | **Omitted** ({{< apk_arm64_note >}} arm64) | Omitted                                        |
+| Workouts library            | Yes (87 MiB APK)                                       | **Omitted** ({{< apk_size_note >}} APK)    | Omitted                                        |
 | Keto / diet modes           | No                                                     | **Yes**                                    | **Yes**                                        |
 | Health Connect              | Partial                                                | **Steps, exercise, sleep, HR, hydration**  | No                                             |
 | Widgets / notifications     | Upstream set                                           | **Yes**                                    | No (installable PWA)                           |
@@ -97,7 +97,7 @@ Chompass is based on [Fud&nbsp;AI](https://github.com/apoorvdarshan/fud-ai) by *
 
 - **No ads, no analytics:** never shipped AdMob; no tracking SDKs
 - **FOSS barcode:** zxing-cpp on Android; browser / Open Food Facts in the PWA
-- **Lean APK:** no workouts tab or bundled exercise library ({{< apk_arm64_note >}} arm64 / {{< apk_universal_note >}} universal in v{{< site_version >}}, vs ~120 MB upstream with workouts)
+- **Lean APK:** no workouts tab or bundled exercise library ({{< apk_size_note >}} in v{{< site_version >}}, vs 87 MiB upstream v8.1)
 - **Open data:** export diary and body metrics; import JSON, CSV, openScale, Health Connect (Android app)
 - **PWA + Android:** installable PWA in any modern browser; Material 3 Android app; shared JSON contracts
 

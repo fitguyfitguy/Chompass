@@ -119,7 +119,7 @@ On both the [PWA](https://chompass.app/app/) and the Android app unless noted:
 - **Live calorie budget**: in Add Active mode the home ring grows the daily goal with the day's burn (Health Connect, a manual entry, or an estimate from your history).
 - **Health Connect**: steps, exercise, sleep, heart rate, hydration. Two-way with Gadgetbridge, openScale, and other Health Connect apps.
 - **Widgets and notifications**
-- **Size**: ~17 MiB arm64 / ~29 MiB universal. No ads, analytics, or workout library.
+- **Size**: ~21.5 MiB universal APK. No ads, analytics, or workout library.
 
 ## On-device AI
 
@@ -186,7 +186,7 @@ Chompass is based on [Fud AI](https://github.com/apoorvdarshan/fud-ai). Diary JS
 | Banner ads              | Brief AdMob; removed in 3.0.3                     | **Never shipped**                         | **Never shipped**                         |
 | On-device AI (Gemma 4)  | No                                                | **Yes** (opt-in)                          | No (cloud, your key)                      |
 | Barcode                 | ML Kit                                            | **FOSS zxing-cpp**                        | Browser / OFF                             |
-| Workouts library        | Yes (~120 MB APK)                                 | **Omitted** (~17 MiB arm64)               | Omitted                                   |
+| Workouts library        | Yes (87 MiB APK)                                  | **Omitted** (~21.5 MiB universal APK)     | Omitted                                   |
 | Keto / diet modes       | No                                                | **Yes**                                   | **Yes**                                   |
 | Health Connect          | Partial                                           | **Steps, exercise, sleep, HR, hydration** | No                                        |
 | Widgets / notifications | Upstream set                                      | **Yes**                                   | No (installable PWA)                      |
@@ -210,7 +210,7 @@ Chompass is free, ad-free, and open source. If you'd like to say thanks, you can
 
 Chompass is based on [Fud AI](https://github.com/apoorvdarshan/fud-ai).
 
-- Copyright (c) 2026 Apoorv Darshan — upstream portions, previously MIT (see [NOTICE](docs/NOTICE.md))
-- Modifications Copyright (c) 2026 fitguy — [GPL-3.0-or-later](LICENSE)
+- Copyright (c) 2026 Apoorv Darshan (upstream portions, previously MIT) (see [NOTICE](docs/NOTICE.md))
+- Modifications Copyright (c) 2026 fitguy, [GPL-3.0-or-later](LICENSE)
 
 See also [NOTICE](docs/NOTICE.md) and [ASSET_CREDITS.md](docs/ASSET_CREDITS.md).

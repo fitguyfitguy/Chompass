@@ -32,7 +32,7 @@
             <span class="platform-card__tag">android</span>
             <span class="platform-card__name">Get it on Obtainium</span>
             <span class="platform-card__desc">Keeps you updated straight from Codeberg releases.</span>
-            <span class="platform-card__link">{{ .Site.Params.apkArm64Note }} arm64 APK</span>
+            <span class="platform-card__link">{{ .Site.Params.apkSizeNote }} APK</span>
           </a>
           <a class="platform-card" href="{{ .Site.Params.releases }}">
             <span class="platform-card__tag">apk</span>
@@ -163,11 +163,11 @@
           <div>
             <span class="section-title__mark">[*]</span>
             <p>
-              Small app, honest claims: <strong>18</strong> languages,
+              <strong>18</strong> languages,
               <strong>4.6M+</strong> Open Food Facts products cached offline,
               <strong>~90%</strong> of typed entries with a stated portion within 20% of
-              true calories, and a <strong>~17&nbsp;MiB</strong> arm64 APK, about
-              <strong>14%</strong> of upstream Fud AI's 122&nbsp;MiB build. Zero ads, analytics, or
+              true calories, and a <strong>21.5&nbsp;MiB</strong> universal APK, about a
+              quarter of upstream Fud AI v8.1 (87&nbsp;MiB). No ads, analytics, or
               accounts.
             </p>
           </div>
@@ -208,10 +208,10 @@
           <div class="stat stat--wide">
             <span class="stat__mark">[*]</span>
             <div class="stat__label">
-              <span class="stat__name">arm64 APK vs upstream Fud AI</span>
-              <strong class="stat__value">~14%</strong>
+              <span class="stat__name">Universal APK vs upstream Fud AI</span>
+              <strong class="stat__value">~25%</strong>
             </div>
-            <p class="stat__desc">Chompass is a fork of Fud AI, so your diary JSON carries over. The 3.8.0 arm64 APK is 17&nbsp;MiB, about 14% of upstream v6.1's 122&nbsp;MiB universal build (29&nbsp;MiB universal ≈ 23%).</p>
+            <p class="stat__desc">Chompass is a fork of Fud AI, so diary JSON carries over. The v{{ .Site.Params.version }} universal APK is 21.5&nbsp;MiB; upstream v8.1 is 87&nbsp;MiB.</p>
           </div>
         </div>
         <p class="stats-note">

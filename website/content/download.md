@@ -69,15 +69,9 @@ Or paste `https://codeberg.org/fitguy/chompass` into Obtainium’s **Add App** s
 
 ## Android: Direct APK
 
-Latest **arm64** (most phones): [Chompass-fdroid-{{< site_version >}}-arm64-v8a.apk]({{< arm64_apk_url >}}) ({{< apk_arm64_note >}}).
+One universal APK (64- and 32-bit ARM, no x86): [Chompass-fdroid-{{< site_version >}}.apk]({{< apk_url >}}) ({{< apk_size_note >}}).
 
-All builds, checksums, and release notes: [Codeberg Releases](https://codeberg.org/fitguy/chompass/releases) (v{{< site_version >}}).
-
-| APK             | Use when                 | Size (v{{< site_version >}}) |
-| --------------- | ------------------------ | ---------------------------- |
-| **arm64-v8a**   | Most modern phones       | {{< apk_arm64_note >}}       |
-| **armeabi-v7a** | Older 32-bit devices     | ~6 MiB                       |
-| **universal**   | ARM phones (64 and 32 bit). No Intel/x86. | {{< apk_universal_note >}}   |
+Checksums and release notes: [Codeberg Releases](https://codeberg.org/fitguy/chompass/releases) (v{{< site_version >}}).
 
 Package ID: `app.chompass`
 

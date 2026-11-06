@@ -12,8 +12,7 @@ summaryLength = 20
   # entry module fetch fresh (module graph still revalidates via ETag).
   # Kept separate from `version` so a demo fix never looks like a release.
   demoVersion = '3.8.0-d4'
-  apkArm64Note = '~17 MiB'
-  apkUniversalNote = '~19 MiB'
+  apkSizeNote = '~21.5 MiB'
   repo = 'https://codeberg.org/fitguy/chompass'
   releases = 'https://codeberg.org/fitguy/chompass/releases'
   fdroid = 'https://f-droid.org/packages/app.chompass/'
