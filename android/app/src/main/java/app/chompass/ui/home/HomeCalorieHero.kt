@@ -283,8 +283,8 @@ private const val PlannedSegmentAlpha = 0.50f
  * The hero's 180° arc as one shared canvas: a circle at 2:1 or a shallow
  * ellipse on wider canvases. The oval spans the width minus the stroke and
  * exactly twice the height, so the diameter sits on the canvas's bottom edge.
- * Fills, the planned ghost, burn shades, the ADD_ACTIVE bonus tail, and the
- * base-boundary notch are angle-based and identical for every variant; only
+ * Fills, the planned ghost, burn shades, and the ADD_ACTIVE bonus tail are
+ * angle-based and identical for every variant; only
  * the canvas size and stroke differ.
  */
 @Composable
@@ -333,7 +333,7 @@ private fun CalorieArcCanvas(
         val topLeft = Offset(inset, inset)
         val cx = size.width / 2f
         val cy = size.height
-        // Notch endpoints ride the ellipse's stroke band: semi-axes at the
+        // Tick endpoints ride the ellipse's stroke band: semi-axes at the
         // mid-radius, pulled 2dp inside the band edges.
         val aMid = arcSize.width / 2f
         val bMid = arcSize.height / 2f
@@ -354,10 +354,11 @@ private fun CalorieArcCanvas(
         // bonus tail) paint on top and stay readable when intake covers
         // the active zone. The consumed stretch gets a translucent eaten
         // pass back over the shades (below), so the burn still reads as
-        // partly eaten instead of one solid band. Notch still last.
+        // partly eaten instead of one solid band.
         val eatenRatio = if (freezeProgress) fillRatio else animatedRatio.value
         val eatenDegrees = 180f * eatenRatio
-        var notchAngle: Float? = null
+        // Activity-zone start (the base boundary) for the consumed re-pass.
+        var zoneStartAngle: Float? = null
         if (plannedFillRatio > fillRatio) {
             drawArc(
                 color = progressColor.copy(alpha = 0.35f),
@@ -439,7 +440,7 @@ private fun CalorieArcCanvas(
                     style = Stroke(width = strokePx, cap = StrokeCap.Round)
                 )
             }
-            notchAngle = 180f + baseAngle
+            zoneStartAngle = 180f + baseAngle
         } else if (displayMode == HomeCalorieDisplayMode.ADD_ACTIVE && activeCalories > 0 && effectiveGoal > 0) {
             // Activity-earned zone: [baseGoal → effectiveGoal], a fixed-tint
             // segment on the same budget axis. Drawn after the eaten fill so
@@ -457,7 +458,7 @@ private fun CalorieArcCanvas(
                     size = arcSize,
                     style = Stroke(width = strokePx, cap = StrokeCap.Round)
                 )
-                notchAngle = 180f + baseSweep
+                zoneStartAngle = 180f + baseSweep
             }
         }
         // Consumed stretch of the activity zone: the shades above sit over the
@@ -469,7 +470,7 @@ private fun CalorieArcCanvas(
         // ramp here would make that separation vary along the band.
         // eatenDegrees is the visible fill tip (frozen or animated); reused above
         // for the planned segment so that band starts where eaten ends.
-        notchAngle?.let { zoneStart ->
+        zoneStartAngle?.let { zoneStart ->
             val zoneStartDegrees = zoneStart - 180f
             val consumedSweep = (eatenDegrees - zoneStartDegrees).coerceIn(0f, 180f - zoneStartDegrees)
             if (consumedSweep > 0f) {
@@ -484,37 +485,18 @@ private fun CalorieArcCanvas(
                 )
             }
         }
-        // Base-boundary notch, drawn on top of the eaten fill: where your
-        // sedentary budget ends and the activity-earned zone begins. Riding
-        // above the fill keeps the boundary readable even when eaten crosses
-        // it — the fill visibly extends past the notch into the activity zone.
-        notchAngle?.let { angle ->
-            val notchRad = Math.toRadians(angle.toDouble())
-            drawLine(
-                color = muted,
-                start = Offset(
-                    cx + (aIn * Math.cos(notchRad)).toFloat(),
-                    cy + (bIn * Math.sin(notchRad)).toFloat(),
-                ),
-                end = Offset(
-                    cx + (aOut * Math.cos(notchRad)).toFloat(),
-                    cy + (bOut * Math.sin(notchRad)).toFloat(),
-                ),
-                strokeWidth = 2.dp.toPx(),
-            )
-        }
         if (plannedFillRatio > fillRatio) {
             val plannedEndAngle = 180f + 180f * plannedFillRatio.coerceIn(0f, 1f)
-            val notchRad = Math.toRadians(plannedEndAngle.toDouble())
+            val tickRad = Math.toRadians(plannedEndAngle.toDouble())
             drawLine(
                 color = muted,
                 start = Offset(
-                    cx + (aIn * Math.cos(notchRad)).toFloat(),
-                    cy + (bIn * Math.sin(notchRad)).toFloat(),
+                    cx + (aIn * Math.cos(tickRad)).toFloat(),
+                    cy + (bIn * Math.sin(tickRad)).toFloat(),
                 ),
                 end = Offset(
-                    cx + (aOut * Math.cos(notchRad)).toFloat(),
-                    cy + (bOut * Math.sin(notchRad)).toFloat(),
+                    cx + (aOut * Math.cos(tickRad)).toFloat(),
+                    cy + (bOut * Math.sin(tickRad)).toFloat(),
                 ),
                 strokeWidth = 2.dp.toPx(),
             )
@@ -1343,8 +1325,8 @@ private fun CompactHorizontalCalorieHero(input: CalorieHeroInput, modifier: Modi
                     size = Size(size.width * d.fillRatio, size.height),
                     cornerRadius = CornerRadius(radius, radius),
                 )
-                // Where the active zone starts; the notch and the consumed pass
-                // below both key off it.
+                // Where the active zone starts; the consumed pass below keys
+                // off it.
                 var boundaryX: Float? = null
                 if (d.shadesActive && burnShade != null) {
                     val shade = burnShade!!
@@ -1386,8 +1368,8 @@ private fun CompactHorizontalCalorieHero(input: CalorieHeroInput, modifier: Modi
                     }
                     boundaryX = baseX
                 } else if (displayMode == HomeCalorieDisplayMode.ADD_ACTIVE && d.target > baseGoal) {
-                    // Existing flat activity-earned zone, plus the same base notch
-                    // the arc draws in this state.
+                    // Existing flat activity-earned zone, mirroring the arc's
+                    // zone in this state.
                     val baseX = size.width * (baseGoal.toFloat() / d.target).coerceIn(0f, 1f)
                     drawRoundRect(
                         activeColor,
@@ -1410,9 +1392,6 @@ private fun CompactHorizontalCalorieHero(input: CalorieHeroInput, modifier: Modi
                             size = Size(consumedW, size.height),
                             cornerRadius = CornerRadius(radius, radius),
                         )
-                    }
-                    if (baseX > 0f) {
-                        drawLine(muted, Offset(baseX, 0f), Offset(baseX, size.height), strokeWidth = 2.dp.toPx())
                     }
                 }
                 if (d.plannedFillRatio > d.fillRatio) {
