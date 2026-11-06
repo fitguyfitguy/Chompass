@@ -183,22 +183,6 @@ Chompass is based on [Fud AI](https://github.com/apoorvdarshan/fud-ai). Diary JS
 
 **Settings → Import Weight & Body Data** also accepts Chompass JSON/CSV, [openScale](https://f-droid.org/en/packages/com.health.openscale/) CSV, and common weight CSVs. Body-circumference sites have no Health Connect record type, so use file transfer for those.
 
-| Feature                 | [Fud AI](https://github.com/apoorvdarshan/fud-ai) | Chompass Android                          | [Chompass PWA](https://chompass.app/app/) |
-| ----------------------- | ------------------------------------------------- | ----------------------------------------- | ----------------------------------------- |
-| Banner ads              | Brief AdMob; removed in 3.0.3                     | **Never shipped**                         | **Never shipped**                         |
-| On-device AI (Gemma 4)  | No                                                | **Yes** (opt-in)                          | No (cloud, your key)                      |
-| Hosted AI subscription  | Plus/Pro on Google Play                           | **None** (BYOK or on-device)              | **None** (BYOK)                           |
-| Barcode                 | ML Kit                                            | **FOSS zxing-cpp**                        | Browser / OFF                             |
-| Workouts library        | Yes (87 MiB APK)                                  | **Omitted** (~21.5 MiB universal APK)     | Omitted                                   |
-| Keto / diet modes       | No                                                | **Yes**                                   | **Yes**                                   |
-| Health Connect          | Yes (nutrition, weight, body fat, workout burn)   | **Yes, plus steps, exercise, sleep, HR, hydration** | No                                    |
-| Widgets / notifications | Yes                                               | **Yes**                                   | No (installable PWA)                      |
-| Languages               | 19                                                | **18**                                    | **18** (core screens)                     |
-| Distribution            | App Store / Google Play                           | **F-Droid** / Obtainium / Codeberg        | **PWA**                                   |
-| Open diary / body JSON  | JSON export                                       | **Yes**                                   | **Same contracts as Android**             |
-
-Sources: [Fud AI releases](https://github.com/apoorvdarshan/fud-ai/releases), [Chompass releases](https://codeberg.org/fitguy/chompass/releases). Maintainer matrix: [`docs/PARITY.md`](docs/PARITY.md). Release notes: [`docs/CHANGELOG.md`](docs/CHANGELOG.md).
-
 ## Privacy
 
 No ads, analytics, or tracking SDKs. Food logs, body metrics, and Coach chat stay on the device unless you export them, sync through Health Connect, or use WebDAV. Cloud AI requests go only to the provider you configure. API keys are encrypted at rest and are not sent to a Chompass server. **On-Device (Private)** keeps food analysis on the phone.

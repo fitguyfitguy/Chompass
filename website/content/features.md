@@ -82,23 +82,9 @@ The [settings guide](/settings/) lists every toggle on Android and the PWA. Excl
 
 Chompass is based on [Fud&nbsp;AI](https://github.com/apoorvdarshan/fud-ai) by **Apoorv Darshan**. Huge thanks for the open, bring-your-own-key food logger. Prefer workouts and the full upstream set? Use [Fud&nbsp;AI](https://github.com/apoorvdarshan/fud-ai).
 
-| Feature                     | [Fud&nbsp;AI](https://github.com/apoorvdarshan/fud-ai) | Chompass Android                           | [Chompass&nbsp;PWA](https://chompass.app/app/) |
-| --------------------------- | ------------------------------------------------------ | ------------------------------------------ | ---------------------------------------------- |
-| Banner ads                  | Brief AdMob; removed in 3.0.3                          | **Never shipped**                          | **Never shipped**                              |
-| On-device AI (Gemma&nbsp;4) | No                                                     | **Yes** (opt-in)                           | No (cloud, your key)                                |
-| Hosted AI subscription      | Plus/Pro on Google Play                                | **None** (BYOK or on-device)               | **None** (BYOK)                                |
-| Barcode                     | ML Kit                                                 | **FOSS zxing-cpp**                         | Browser / OFF                                  |
-| Workouts library            | Yes (87 MiB APK)                                       | **Omitted** ({{< apk_size_note >}} APK)    | Omitted                                        |
-| Keto / diet modes           | No                                                     | **Yes**                                    | **Yes**                                        |
-| Health Connect              | Yes (nutrition, weight, body fat, workout burn)        | **Yes, plus steps, exercise, sleep, HR, hydration** | No                                    |
-| Widgets / notifications     | Yes                                                    | **Yes**                                    | No (installable PWA)                           |
-| Languages                   | 19                                                     | **18**                                     | **18** (core screens)                          |
-| Distribution                | App Store / Google Play                                | **F-Droid** / Obtainium / Codeberg         | **PWA** in any modern browser                  |
-| Open diary / body JSON      | JSON export                                            | **Yes**                                    | **Same contracts as Android**                  |
-
 - **Open data:** export diary and body metrics; import JSON, CSV, openScale, Health Connect (Android app)
 - **PWA + Android:** installable PWA in any modern browser; Material 3 Android app; shared JSON contracts
 
 Barcode scanning uses FOSS zxing-cpp on Android and a vendored zxing-wasm build in the browser. Product data comes from Open Food Facts (ODbL) and offline USDA and Swiss databases. Licenses and full list: [Credits](/credits/).
 
-Full comparison also lives in the [project README](https://codeberg.org/fitguy/chompass). Upstream: [Fud&nbsp;AI releases](https://github.com/apoorvdarshan/fud-ai/releases).
+Upstream: [Fud&nbsp;AI releases](https://github.com/apoorvdarshan/fud-ai/releases).
