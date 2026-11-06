@@ -295,6 +295,7 @@ if [[ "$ASSETS_ONLY" -eq 0 ]]; then
       --repo "$CODEBERG_REPO" \
       "${RELEASE_FLAGS[@]}" \
       --tag "$TAG" \
+      --target "$(git rev-parse HEAD)" \
       --title "$TITLE" \
       --note "$NOTES" 2>&1)"; then
       if echo "$err" | rg -qi 'already a release'; then
