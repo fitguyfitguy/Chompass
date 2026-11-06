@@ -4,7 +4,7 @@ All notable changes to Chompass are documented here.
 
 Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no internals). The version section is pasted verbatim onto the Codeberg release.
 
-## [6.3.0-beta.1] - 2026-11-06
+## [6.3.0] - 2026-11-06
 
 ### Changed
 
