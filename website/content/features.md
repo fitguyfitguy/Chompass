@@ -47,7 +47,7 @@ The [Chompass PWA](https://chompass.app/app/) runs in any modern browser on phon
 
 **On-Device (Private)** in Settings → AI & Speech runs Gemma 4 Edge (E2B or E4B) via LiteRT-LM. One-time download (about 2.4-3.4 GB). No API key and no server upload for food text or photo analysis. Cloud AI remains more accurate; optional fallback retries in the cloud when on-device fails. The PWA has no on-device option; it always uses cloud AI with your own key.
 
-## Accuracy, honestly
+## Accuracy
 
 Accuracy comes down to the model you pick, not a Chompass secret. We test against labeled datasets and publish the results instead of quoting a single accuracy number.
 
@@ -95,10 +95,9 @@ Chompass is based on [Fud&nbsp;AI](https://github.com/apoorvdarshan/fud-ai) by *
 | Distribution                | Play-focused                                           | **F-Droid** / Obtainium / Codeberg         | **PWA** in any modern browser                  |
 | Open diary / body JSON      | Upstream formats                                       | **Yes**                                    | **Same contracts as Android**                  |
 
-- **No ads, no analytics:** never shipped AdMob; no tracking SDKs
-- **FOSS barcode:** zxing-cpp on Android; browser / Open Food Facts in the PWA
-- **Lean APK:** no workouts tab or bundled exercise library ({{< apk_size_note >}} in v{{< site_version >}}, vs 87 MiB upstream v8.1)
 - **Open data:** export diary and body metrics; import JSON, CSV, openScale, Health Connect (Android app)
 - **PWA + Android:** installable PWA in any modern browser; Material 3 Android app; shared JSON contracts
+
+Barcode scanning uses FOSS zxing-cpp on Android and a vendored zxing-wasm build in the browser. Product data comes from Open Food Facts (ODbL) and offline USDA and Swiss databases. Licenses and full list: [Credits](/credits/).
 
 Full comparison also lives in the [project README](https://codeberg.org/fitguy/chompass). Upstream: [Fud&nbsp;AI releases](https://github.com/apoorvdarshan/fud-ai/releases).

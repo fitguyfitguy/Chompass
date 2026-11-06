@@ -54,6 +54,10 @@ Chompass does not sell or share your health data for advertising.
 
 Shared meals use a `chompass://` deep link (Android) or a hash URL on the web app, with base64-encoded nutrition JSON. Links leave your device through the app or messenger you choose.
 
+## Licenses
+
+Third-party components and their licenses: [Credits](/credits/).
+
 ## Contact
 
 Source and issues: [codeberg.org/fitguy/chompass](https://codeberg.org/fitguy/chompass).

@@ -6,7 +6,7 @@
 
 **Private calorie tracking for Android and the browser**
 
-Bring your own AI key. On Android you can also run Gemma 4 on-device. No ads, no analytics, no account.
+Bring your own AI key. On Android you can also run Gemma 4 on-device. No ads, no analytics, no account. Free software under GPL-3.0.
 
 [Website](https://chompass.app/) · [Download](https://chompass.app/download/) · [Web app](https://chompass.app/app/) · [Privacy](docs/PRIVACY.md)
 
@@ -89,6 +89,8 @@ Material 3 dark theme (light theme also available). Full captures live in [`docs
 ## Features
 
 On both the [PWA](https://chompass.app/app/) and the Android app unless noted:
+
+The pitch in one line: private by default (no ads, no analytics, no account), your AI key or none, open JSON export and import, and a 21.5 MiB APK.
 
 ### Logging
 
@@ -213,4 +215,4 @@ Chompass is based on [Fud AI](https://github.com/apoorvdarshan/fud-ai).
 - Copyright (c) 2026 Apoorv Darshan (upstream portions, previously MIT) (see [NOTICE](docs/NOTICE.md))
 - Modifications Copyright (c) 2026 fitguy, [GPL-3.0-or-later](LICENSE)
 
-See also [NOTICE](docs/NOTICE.md) and [ASSET_CREDITS.md](docs/ASSET_CREDITS.md).
+See also [NOTICE](docs/NOTICE.md) and [ASSET_CREDITS.md](docs/ASSET_CREDITS.md). Credits with the full library list: https://chompass.app/credits/.

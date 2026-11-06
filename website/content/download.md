@@ -63,7 +63,7 @@ Package `app.chompass` ([listing](https://f-droid.org/packages/app.chompass/)). 
 
 [![Get it on Obtainium](https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png)](https://apps.obtainium.imranr.dev/redirect?r=obtainium%3A%2F%2Fadd%2Fhttps%3A%2F%2Fcodeberg.org%2Ffitguy%2Fchompass)
 
-That confirms the Codeberg app source, then keeps you updated from releases.
+It installs from Codeberg releases and keeps the app updated automatically.
 
 Or paste `https://codeberg.org/fitguy/chompass` into Obtainium’s **Add App** screen.
 
