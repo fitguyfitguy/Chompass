@@ -33,7 +33,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
@@ -137,6 +136,7 @@ import app.chompass.ui.navigation.BottomNavScrollPadding
 import app.chompass.ui.navigation.BottomFabScrollClearance
 import app.chompass.ui.navigation.BottomOverlayPadding
 import app.chompass.ui.theme.AppMotion
+import app.chompass.ui.theme.CapsuleShape
 import app.chompass.ui.theme.dayTypeColor
 import app.chompass.ui.theme.nutrientAccentColor
 import kotlinx.coroutines.flow.first
@@ -739,7 +739,7 @@ fun HomeScreen(
                                     )
                                     Spacer(Modifier.width(6.dp))
                                     Surface(
-                                        shape = CircleShape,
+                                        shape = CapsuleShape,
                                         color = MaterialTheme.colorScheme.primaryContainer,
                                     ) {
                                         Row(

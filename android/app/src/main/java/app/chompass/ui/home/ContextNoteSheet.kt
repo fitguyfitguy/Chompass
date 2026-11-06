@@ -25,7 +25,6 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddAPhoto
@@ -159,7 +158,7 @@ fun ContextNoteSheet(
                             contentScale = androidx.compose.ui.layout.ContentScale.Crop,
                             modifier = Modifier
                                 .size(240.dp)
-                                .clip(RoundedCornerShape(percent = 50))
+                                .clip(CircleShape)
                         )
                     }
                 }

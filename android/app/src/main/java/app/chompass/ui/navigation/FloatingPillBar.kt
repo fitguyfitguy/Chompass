@@ -27,6 +27,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.CircleShape
+import app.chompass.ui.theme.CapsuleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Badge
@@ -128,15 +129,15 @@ fun ChompassFloatingPillBar(items: List<FloatingPillItem>, modifier: Modifier = 
                     .height(FloatingPillHeight)
                     .hazeGlassFill(
                         MaterialTheme.colorScheme.surfaceContainer,
-                        CircleShape,
+                        CapsuleShape,
                         LocalBottomBarHaze.current,
                     )
                     .border(
                         0.5.dp,
                         MaterialTheme.colorScheme.outlineVariant,
-                        CircleShape,
+                        CapsuleShape,
                     ),
-                shape = CircleShape,
+                shape = CapsuleShape,
                 color = Color.Transparent,
             ) {
                 BoxWithConstraints(modifier = Modifier.padding(horizontal = PillInset)) {
@@ -193,7 +194,7 @@ private fun SelectionIndicator(span: IntRange?, modifier: Modifier = Modifier) {
             .absoluteOffset { IntOffset(left, 0) }
             .width(with(density) { width.toDp() })
             .height(PillActionHeight)
-            .background(MaterialTheme.colorScheme.secondaryContainer, CircleShape),
+            .background(MaterialTheme.colorScheme.secondaryContainer, CapsuleShape),
     )
 }
 
@@ -248,7 +249,7 @@ private fun RowScope.PillAction(
                 .fillMaxWidth()
                 .height(PillActionHeight)
                 .pressScale(interactionSource)
-                .clip(CircleShape)
+                .clip(CapsuleShape)
                 .clickable(
                     interactionSource = interactionSource,
                     indication = LocalIndication.current,

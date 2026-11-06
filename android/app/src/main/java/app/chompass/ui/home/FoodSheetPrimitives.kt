@@ -30,7 +30,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
+import app.chompass.ui.theme.CapsuleShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.CircularProgressIndicator
@@ -328,7 +328,7 @@ internal fun SheetToolbarPill(
     modifier: Modifier = Modifier,
 ) {
 
-    val shape = CircleShape
+    val shape = CapsuleShape
     val isDark = isDarkTheme()
     val horizontalPadding = when {
         compact && bold -> 12.dp
@@ -387,7 +387,7 @@ internal fun SheetPillRow(
     stateDescription: String? = null,
     content: @Composable RowScope.() -> Unit
 ) {
-    val shape = RoundedCornerShape(percent = 50)
+    val shape = CapsuleShape
     val rowFill = MaterialTheme.colorScheme.surfaceContainerLow.copy(alpha = 0.92f)
     val rowBorder = MaterialTheme.colorScheme.outlineVariant
     val rowInteraction = remember { MutableInteractionSource() }

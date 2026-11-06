@@ -21,7 +21,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
@@ -81,6 +80,7 @@ import app.chompass.ui.navigation.LocalEnergyUnit
 import app.chompass.ui.components.pressScale
 import app.chompass.ui.components.AnimatedNumberText
 import app.chompass.ui.theme.AppMotion
+import app.chompass.ui.theme.CapsuleShape
 import app.chompass.ui.theme.heroGradientEnd
 import app.chompass.ui.theme.success
 import app.chompass.ui.progress.LegendSwatch
@@ -1556,7 +1556,7 @@ private fun UntrackedChip(untracked: Boolean, onClick: () -> Unit) {
     val chipInteraction = remember { MutableInteractionSource() }
     Surface(
         onClick = onClick,
-        shape = CircleShape,
+        shape = CapsuleShape,
         color = if (untracked) MaterialTheme.colorScheme.tertiaryContainer
             else MaterialTheme.colorScheme.surfaceVariant,
         interactionSource = chipInteraction,
@@ -1599,7 +1599,7 @@ private fun DayTypeChip(label: String, color: Color? = null, onClick: () -> Unit
     val chipInteraction = remember { MutableInteractionSource() }
     Surface(
         onClick = onClick,
-        shape = CircleShape,
+        shape = CapsuleShape,
         color = container,
         interactionSource = chipInteraction,
         modifier = Modifier

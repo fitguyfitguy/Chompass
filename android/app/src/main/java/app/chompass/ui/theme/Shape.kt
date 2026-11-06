@@ -16,6 +16,9 @@ val Shapes = Shapes(
 /**
  * Fixed-height / pill-height containers: chips, pills, capsule input bars.
  * Stays a perfect capsule even when the content grows (e.g. multiline input).
+ * True circles (avatars, dots, badges, icon-only round buttons) keep
+ * [CircleShape]; this token is for pill-height surfaces so shape language is
+ * greppable in one place.
  *
  * Growable containers MUST use fixed M3 slots instead (sheets/dialogs
  * [Shapes.extraLarge], cards [Shapes.large]); percent-based corner shapes are
