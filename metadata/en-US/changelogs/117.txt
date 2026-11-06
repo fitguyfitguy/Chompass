@@ -1,0 +1,9 @@
+• Offline product data packs: download two optional barcode packs, USDA branded foods and Open Food Facts Germany, in Settings → Food & Entry. When Open Food Facts doesn't know a barcode, or the network is down, the scan answers from the pack with name, brand and calories for the serving. Wi-Fi-only by default (Android).
+• Sync weigh-ins straight from your Bluetooth scale (experimental): Progress → Scale metrics finds your Beurer, Sanitas, SilverCrest, Crane or Medisana scale and imports the new weigh-ins it reads, no CSV export detour. The scale-side user and PIN handshake is not wired yet, so treat imports as experimental until the follow-up lands (Android).
+• Pick a classic docked bottom bar: Settings → Display gains a Navigation bar row with the floating pill and a classic docked bar. Both run the same tabs (Android).
+• Export settings to a file: Settings → Data & Backup writes your preferences to a Chompass-settings.json document you pick. Export only, and anything key-shaped like API keys never leaves the device (Android).
+• Coach quick prompts, your way: reorder the chips above the Coach input, remove the ones you never use, add your own one-tap prompts, or hide the strip entirely (Android).
+• A separate Food model for logging: pin a cheap, fast model for meal logging while Coach stays on a stronger one (Android).
+• Anthropic starts on the Claude 5.5 models: Claude Haiku 5.5 first, with Claude Sonnet 5.5 next. The web app carries the same defaults (Android and web app).
+• A launcher icon that follows the system theme: in dark mode the home-screen tile switches to the plum tile with the glow mark, in light mode it stays the cream brand tile (Android).
+• Fixed: repeat barcode scans no longer re-download the product photo, connection errors name the host that failed, and settings search finds Saved foods (Android).
