@@ -66,12 +66,17 @@ class BodyCompositionRepositoryTest {
 
     @Test
     fun `inserting a lean mass stamps the profile and marks auto goals stale`() = runBlocking {
+        // Fresh relative to the REAL clock: staleness reads Instant.now(), so a
+        // date anchored to this class's frozen `now` ages past the 90-day window
+        // (that happened 2026-11-08). The frozen clock stays for the day-grouping
+        // tests above, which need their entries on one calendar day.
+        val entryAt = Instant.now().minusSeconds(2 * 3_600L)
         // Auto-sourced goal so the re-clamp path is live.
         profiles.save(profiles.current()!!.copy(goalSource = GoalSource.FORMULA))
-        repo.upsert(BodyCompositionEntry(date = at(2), leanMassKg = 61.0))
+        repo.upsert(BodyCompositionEntry(date = entryAt, leanMassKg = 61.0))
         val profile = profiles.current()!!
         assertEquals(61.0, profile.measuredLeanMassKg!!, 0.0001)
-        assertEquals(at(2), profile.leanMassUpdatedAt)
+        assertEquals(entryAt, profile.leanMassUpdatedAt)
         // Katch-McArdle now runs on the measured reading.
         assertTrue(profile.usesMeasuredLeanMassForBMR)
         assertEquals(370.0 + 21.6 * 61.0, profile.bmr, 0.0001)
