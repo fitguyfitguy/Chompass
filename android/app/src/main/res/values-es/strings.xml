@@ -1415,11 +1415,6 @@
     </plurals>
     <string name="paste_at_original_times">Pegar en los horarios originales</string>
     <string name="paste_at_current_time">Pegar a la hora actual</string>
-    <string name="paste_selected_destination">Este día</string>
-    <string name="paste_today_destination">Hoy</string>
-    <string name="paste_tomorrow_destination">Mañana</string>
-    <string name="paste_phrase_original_times">%1$s en los horarios originales</string>
-    <string name="paste_phrase_current_time">%1$s a la hora actual</string>
     <string name="placeholder_hour">Hora</string>
     <string name="placeholder_minute">Minuto</string>
     <string name="progress_activity_exercise_week">Ejercicio (7d)</string>

@@ -1351,11 +1351,6 @@ bilirsən?</string>
     </plurals>
     <string name="paste_at_original_times">Orijinal vaxtlarda yapışdır</string>
     <string name="paste_at_current_time">Cari vaxtda yapışdır</string>
-    <string name="paste_selected_destination">Seçilən gün</string>
-    <string name="paste_today_destination">Bu gün</string>
-    <string name="paste_tomorrow_destination">Sabah</string>
-    <string name="paste_phrase_original_times">%1$s orijinal vaxtlarda</string>
-    <string name="paste_phrase_current_time">%1$s cari vaxtda</string>
     <string name="placeholder_hour">Saat</string>
     <string name="placeholder_minute">Dəqiqə</string>
     <string name="progress_activity_exercise_week">Məşqlər (7g)</string>

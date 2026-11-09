@@ -1351,11 +1351,6 @@
     </plurals>
     <string name="paste_at_original_times">Lipește la orele originale</string>
     <string name="paste_at_current_time">Lipește la ora curentă</string>
-    <string name="paste_selected_destination">Această zi</string>
-    <string name="paste_today_destination">Azi</string>
-    <string name="paste_tomorrow_destination">Mâine</string>
-    <string name="paste_phrase_original_times">%1$s la orele originale</string>
-    <string name="paste_phrase_current_time">%1$s la ora curentă</string>
     <string name="placeholder_hour">Oră</string>
     <string name="placeholder_minute">Minut</string>
     <string name="progress_activity_exercise_week">Antrenamente (7z)</string>

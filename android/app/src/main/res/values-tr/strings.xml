@@ -1620,11 +1620,6 @@
     </plurals>
     <string name="paste_at_original_times">Orijinal saatlerde yapıştır</string>
     <string name="paste_at_current_time">Geçerli saatte yapıştır</string>
-    <string name="paste_selected_destination">Bu gün</string>
-    <string name="paste_today_destination">Bugün</string>
-    <string name="paste_tomorrow_destination">Yarın</string>
-    <string name="paste_phrase_original_times">%1$s orijinal saatlerde</string>
-    <string name="paste_phrase_current_time">%1$s geçerli saatte</string>
     <string name="cd_favorited">Favorilere eklendi</string>
     <string name="cd_move_up">Yukarı taşı</string>
     <string name="cd_move_down">Aşağı taşı</string>

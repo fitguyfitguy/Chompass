@@ -1721,11 +1721,6 @@
     </plurals>
     <string name="paste_at_original_times">Вставить в исходное время</string>
     <string name="paste_at_current_time">Вставить в текущее время</string>
-    <string name="paste_selected_destination">Этот день</string>
-    <string name="paste_today_destination">Сегодня</string>
-    <string name="paste_tomorrow_destination">Завтра</string>
-    <string name="paste_phrase_original_times">%1$s в исходное время</string>
-    <string name="paste_phrase_current_time">%1$s в текущее время</string>
     <string name="progress_chart_loading">Загрузка графика…</string>
     <string name="progress_wellness_hydration_format">%1$s мл</string>
     <string name="progressive_meal_add_another">Добавить ещё</string>

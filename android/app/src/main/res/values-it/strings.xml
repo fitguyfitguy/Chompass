@@ -1313,11 +1313,6 @@
     </plurals>
     <string name="paste_at_original_times">Incolla agli orari originali</string>
     <string name="paste_at_current_time">Incolla all’ora corrente</string>
-    <string name="paste_selected_destination">Questo giorno</string>
-    <string name="paste_today_destination">Oggi</string>
-    <string name="paste_tomorrow_destination">Domani</string>
-    <string name="paste_phrase_original_times">%1$s agli orari originali</string>
-    <string name="paste_phrase_current_time">%1$s all’ora corrente</string>
     <string name="placeholder_hour">Ora</string>
     <string name="placeholder_minute">Minuto</string>
     <string name="progress_activity_exercise_week">Allenamenti (7g)</string>

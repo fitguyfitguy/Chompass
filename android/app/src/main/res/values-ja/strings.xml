@@ -1351,11 +1351,6 @@
     </plurals>
     <string name="paste_at_original_times">元の時刻に貼り付け</string>
     <string name="paste_at_current_time">現在時刻に貼り付け</string>
-    <string name="paste_selected_destination">この日</string>
-    <string name="paste_today_destination">今日</string>
-    <string name="paste_tomorrow_destination">明日</string>
-    <string name="paste_phrase_original_times">%1$s を元の時刻に</string>
-    <string name="paste_phrase_current_time">%1$s を現在時刻に</string>
     <string name="placeholder_hour">時</string>
     <string name="placeholder_minute">分</string>
     <string name="progress_activity_exercise_week">運動（7日）</string>

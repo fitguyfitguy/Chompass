@@ -2522,11 +2522,6 @@
     </plurals>
     <string name="paste_at_original_times">Paste at original times</string>
     <string name="paste_at_current_time">Paste at current time</string>
-    <string name="paste_selected_destination">This day</string>
-    <string name="paste_today_destination">Today</string>
-    <string name="paste_tomorrow_destination">Tomorrow</string>
-    <string name="paste_phrase_original_times">%1$s at the original times</string>
-    <string name="paste_phrase_current_time">%1$s at the current time</string>
     <string name="recovered_review_chip">Recovered analysis: %1$s</string>
     <string name="cd_discard_recovered_review">Discard recovered analysis</string>
     <string name="cd_favorited">Favorited</string>

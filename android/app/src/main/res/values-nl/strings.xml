@@ -1327,11 +1327,6 @@
     </plurals>
     <string name="paste_at_original_times">Plakken op de oorspronkelijke tijden</string>
     <string name="paste_at_current_time">Plakken op de huidige tijd</string>
-    <string name="paste_selected_destination">Deze dag</string>
-    <string name="paste_today_destination">Vandaag</string>
-    <string name="paste_tomorrow_destination">Morgen</string>
-    <string name="paste_phrase_original_times">%1$s op de oorspronkelijke tijden</string>
-    <string name="paste_phrase_current_time">%1$s op de huidige tijd</string>
     <string name="placeholder_hour">Uur</string>
     <string name="placeholder_minute">Minuut</string>
     <string name="progress_activity_exercise_week">Trainingen (7d)</string>

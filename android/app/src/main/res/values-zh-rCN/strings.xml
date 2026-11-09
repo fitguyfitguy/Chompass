@@ -1353,11 +1353,6 @@
     </plurals>
     <string name="paste_at_original_times">按原始时间粘贴</string>
     <string name="paste_at_current_time">按当前时间粘贴</string>
-    <string name="paste_selected_destination">这一天</string>
-    <string name="paste_today_destination">今天</string>
-    <string name="paste_tomorrow_destination">明天</string>
-    <string name="paste_phrase_original_times">%1$s 按原始时间</string>
-    <string name="paste_phrase_current_time">%1$s 按当前时间</string>
     <string name="placeholder_hour">小时</string>
     <string name="placeholder_minute">分钟</string>
     <string name="progress_activity_exercise_week">锻炼（7天）</string>

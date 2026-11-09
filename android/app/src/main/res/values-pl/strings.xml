@@ -1628,11 +1628,6 @@
     </plurals>
     <string name="paste_at_original_times">Wklej o oryginalnych godzinach</string>
     <string name="paste_at_current_time">Wklej o bieżącej godzinie</string>
-    <string name="paste_selected_destination">Ten dzień</string>
-    <string name="paste_today_destination">Dziś</string>
-    <string name="paste_tomorrow_destination">Jutro</string>
-    <string name="paste_phrase_original_times">%1$s o oryginalnych godzinach</string>
-    <string name="paste_phrase_current_time">%1$s o bieżącej godzinie</string>
     <string name="cd_favorited">Dodano do ulubionych</string>
     <string name="cd_move_up">Przesuń w górę</string>
     <string name="cd_move_down">Przesuń w dół</string>

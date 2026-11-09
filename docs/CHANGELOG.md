@@ -8,7 +8,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ### Added
 
-- **Choose where copied entries go** (Android): copying diary rows now opens a paste sheet instead of a floating paste chip. Pick the day on the week strip, then paste to this day, today or tomorrow, each at the current time or at the rows' original times. Pasting onto another day switches the diary to it, and an undo snackbar removes the pasted rows. Design and translations by Philip Whiteside. Closes Codeberg [#140](https://codeberg.org/fitguy/Chompass/pulls/140)
+- **Choose where copied entries go** (Android): copying diary rows now opens a paste sheet instead of a floating paste chip. Pick the day on the week strip, then paste at the rows' original times or at the current time. Pasting onto another day switches the diary to it, and an undo snackbar removes the pasted rows. Design and translations by Philip Whiteside. Closes Codeberg [#140](https://codeberg.org/fitguy/Chompass/pulls/140)
 
 ### Changed
 

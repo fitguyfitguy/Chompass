@@ -41,7 +41,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Event
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Today
 import androidx.compose.material.icons.outlined.ContentCopy
@@ -1210,8 +1209,6 @@ fun HomeScreen(
                 val selectedDatesText = remember(pasteTargetDate) {
                     pasteTargetDate.format(pasteDateFormat)
                 }
-                val todayDateText = LocalDate.now().format(pasteDateFormat)
-                val tomorrowDateText = LocalDate.now().plusDays(1).format(pasteDateFormat)
                 val pasteSheetState = rememberChompassSheetState()
                 fun finishPaste(actionId: String, action: () -> Unit) {
                     if (completingPasteAction != null) return
@@ -1282,34 +1279,41 @@ fun HomeScreen(
                             typeNamesByDate = pasteStripMarkers.second,
                             untrackedDates = pasteStripUntracked,
                         )
-                        PasteActionRow(
-                            title = stringResource(R.string.paste_at_original_times),
-                            times = originalTimes,
-                            phraseTemplate = R.string.paste_phrase_original_times,
-                            selectedDate = selectedDatesText,
-                            todayDate = todayDateText,
-                            tomorrowDate = tomorrowDateText,
-                            enabled = !pasteBusy && completingPasteAction == null,
-                            completingAction = completingPasteAction,
-                            actionPrefix = "original",
-                            onSelected = { finishPaste("original-selected") { vm.pasteEntriesAtOriginalTimes(copied, pasteTargetDate) } },
-                            onToday = { finishPaste("original-today") { vm.pasteEntriesAtOriginalTimesToday(copied) } },
-                            onTomorrow = { finishPaste("original-tomorrow") { vm.pasteEntriesAtOriginalTimesTomorrow(copied) } },
-                        )
-                        PasteActionRow(
-                            title = stringResource(R.string.paste_at_current_time),
-                            times = loggingTimeText,
-                            phraseTemplate = R.string.paste_phrase_current_time,
-                            selectedDate = selectedDatesText,
-                            todayDate = todayDateText,
-                            tomorrowDate = tomorrowDateText,
-                            enabled = !pasteBusy && completingPasteAction == null,
-                            completingAction = completingPasteAction,
-                            actionPrefix = "current",
-                            onSelected = { finishPaste("current-selected") { vm.copyEntriesToDate(copied, pasteTargetDate) } },
-                            onToday = { finishPaste("current-today") { vm.pasteEntriesAtCurrentTimeToday(copied) } },
-                            onTomorrow = { finishPaste("current-tomorrow") { vm.pasteEntriesAtCurrentTimeTomorrow(copied) } },
-                        )
+                        Column(
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                        ) {
+                            PasteQuickActionButton(
+                                destination = stringResource(R.string.paste_at_original_times),
+                                targetDate = selectedDatesText,
+                                times = originalTimes,
+                                icon = Icons.Filled.AddCircle,
+                                enabled = !pasteBusy && completingPasteAction == null,
+                                completed = completingPasteAction == "original",
+                                onClick = {
+                                    val target = pasteTargetDate
+                                    val rows = copied
+                                    finishPaste("original") {
+                                        vm.pasteEntriesAtOriginalTimes(rows, target)
+                                    }
+                                },
+                            )
+                            PasteQuickActionButton(
+                                destination = stringResource(R.string.paste_at_current_time),
+                                targetDate = selectedDatesText,
+                                times = loggingTimeText,
+                                icon = Icons.Filled.Today,
+                                enabled = !pasteBusy && completingPasteAction == null,
+                                completed = completingPasteAction == "current",
+                                onClick = {
+                                    val target = pasteTargetDate
+                                    val rows = copied
+                                    finishPaste("current") {
+                                        vm.copyEntriesToDate(rows, target)
+                                    }
+                                },
+                            )
+                        }
                     }
                 }
             }
@@ -2516,61 +2520,9 @@ fun HomeScreen(
 }
 
 @Composable
-private fun PasteActionRow(
-    title: String,
-    times: String,
-    phraseTemplate: Int,
-    selectedDate: String,
-    todayDate: String,
-    tomorrowDate: String,
-    enabled: Boolean,
-    completingAction: String?,
-    actionPrefix: String,
-    onSelected: () -> Unit,
-    onToday: () -> Unit,
-    onTomorrow: () -> Unit,
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 6.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        Text(title, style = MaterialTheme.typography.labelLarge)
-        PasteQuickActionButton(
-            destination = stringResource(R.string.paste_selected_destination),
-            phrase = stringResource(phraseTemplate, selectedDate),
-            times = times,
-            icon = Icons.Filled.AddCircle,
-            enabled = enabled,
-            completed = completingAction == "$actionPrefix-selected",
-            onClick = onSelected,
-        )
-        PasteQuickActionButton(
-            destination = stringResource(R.string.paste_today_destination),
-            phrase = stringResource(phraseTemplate, todayDate),
-            times = times,
-            icon = Icons.Filled.Today,
-            enabled = enabled,
-            completed = completingAction == "$actionPrefix-today",
-            onClick = onToday,
-        )
-        PasteQuickActionButton(
-            destination = stringResource(R.string.paste_tomorrow_destination),
-            phrase = stringResource(phraseTemplate, tomorrowDate),
-            times = times,
-            icon = Icons.Filled.Event,
-            enabled = enabled,
-            completed = completingAction == "$actionPrefix-tomorrow",
-            onClick = onTomorrow,
-        )
-    }
-}
-
-@Composable
 private fun PasteQuickActionButton(
     destination: String,
-    phrase: String,
+    targetDate: String,
     times: String,
     icon: ImageVector,
     enabled: Boolean,
@@ -2593,10 +2545,10 @@ private fun PasteQuickActionButton(
                 destination,
                 style = MaterialTheme.typography.labelLarge,
                 fontWeight = FontWeight.SemiBold,
-                maxLines = 1,
+                maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
             )
-            Text(phrase, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(targetDate, maxLines = 1, overflow = TextOverflow.Ellipsis)
             Text(
                 times,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,

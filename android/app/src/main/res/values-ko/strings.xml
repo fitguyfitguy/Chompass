@@ -1351,11 +1351,6 @@
     </plurals>
     <string name="paste_at_original_times">원래 시간에 붙여넣기</string>
     <string name="paste_at_current_time">현재 시간에 붙여넣기</string>
-    <string name="paste_selected_destination">이 날</string>
-    <string name="paste_today_destination">오늘</string>
-    <string name="paste_tomorrow_destination">내일</string>
-    <string name="paste_phrase_original_times">%1$s 원래 시간에</string>
-    <string name="paste_phrase_current_time">%1$s 현재 시간에</string>
     <string name="placeholder_hour">시간</string>
     <string name="placeholder_minute">분</string>
     <string name="progress_activity_exercise_week">운동(7일)</string>

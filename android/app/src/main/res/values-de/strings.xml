@@ -2993,11 +2993,6 @@ für dich ein</string>
     </plurals>
     <string name="paste_at_original_times">Zu den ursprünglichen Zeiten einfügen</string>
     <string name="paste_at_current_time">Zur aktuellen Uhrzeit einfügen</string>
-    <string name="paste_selected_destination">Dieser Tag</string>
-    <string name="paste_today_destination">Heute</string>
-    <string name="paste_tomorrow_destination">Morgen</string>
-    <string name="paste_phrase_original_times">%1$s zu den ursprünglichen Zeiten</string>
-    <string name="paste_phrase_current_time">%1$s zur aktuellen Uhrzeit</string>
 
     <string name="recovered_review_chip">Wiederhergestellte Analyse: %1$s</string>
 

@@ -1329,11 +1329,6 @@
     </plurals>
     <string name="paste_at_original_times">Colar nos horários originais</string>
     <string name="paste_at_current_time">Colar no horário atual</string>
-    <string name="paste_selected_destination">Este dia</string>
-    <string name="paste_today_destination">Hoje</string>
-    <string name="paste_tomorrow_destination">Amanhã</string>
-    <string name="paste_phrase_original_times">%1$s nos horários originais</string>
-    <string name="paste_phrase_current_time">%1$s no horário atual</string>
     <string name="placeholder_hour">Hora</string>
     <string name="placeholder_minute">Minuto</string>
     <string name="progress_activity_exercise_week">Treinos (7d)</string>

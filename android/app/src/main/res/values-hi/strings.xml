@@ -1353,11 +1353,6 @@
     </plurals>
     <string name="paste_at_original_times">मूल समय पर पेस्ट करें</string>
     <string name="paste_at_current_time">वर्तमान समय पर पेस्ट करें</string>
-    <string name="paste_selected_destination">यह दिन</string>
-    <string name="paste_today_destination">आज</string>
-    <string name="paste_tomorrow_destination">कल</string>
-    <string name="paste_phrase_original_times">%1$s मूल समय पर</string>
-    <string name="paste_phrase_current_time">%1$s वर्तमान समय पर</string>
     <string name="placeholder_hour">घंटा</string>
     <string name="placeholder_minute">मिनट</string>
     <string name="progress_activity_exercise_week">कसरत (7दि)</string>

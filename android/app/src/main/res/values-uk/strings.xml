@@ -1301,11 +1301,6 @@
     </plurals>
     <string name="paste_at_original_times">Вставити в оригінальний час</string>
     <string name="paste_at_current_time">Вставити в поточний час</string>
-    <string name="paste_selected_destination">Цей день</string>
-    <string name="paste_today_destination">Сьогодні</string>
-    <string name="paste_tomorrow_destination">Завтра</string>
-    <string name="paste_phrase_original_times">%1$s в оригінальний час</string>
-    <string name="paste_phrase_current_time">%1$s в поточний час</string>
     <string name="placeholder_hour">Година</string>
     <string name="placeholder_minute">Хвилина</string>
     <string name="progress_activity_exercise_week">Тренування (7 дн.)</string>

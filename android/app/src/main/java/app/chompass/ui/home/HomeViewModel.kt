@@ -3817,29 +3817,9 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         }
     }
 
-    /** Paste [entries] onto the selected day at the current logging time. */
-    fun pasteEntriesAtCurrentTimeOnSelectedDate(entries: List<FoodEntry>) =
-        copyEntriesToDate(entries, _selectedDate.value)
-
-    /** Paste [entries] today at the current logging time. */
-    fun pasteEntriesAtCurrentTimeToday(entries: List<FoodEntry>) =
-        copyEntriesToDate(entries, LocalDate.now())
-
-    /** Paste [entries] tomorrow at the current logging time. */
-    fun pasteEntriesAtCurrentTimeTomorrow(entries: List<FoodEntry>) =
-        copyEntriesToDate(entries, LocalDate.now().plusDays(1))
-
-    /** Paste [entries] today at their original local times. */
-    fun pasteEntriesAtOriginalTimesToday(entries: List<FoodEntry>) =
-        pasteEntriesToDate(entries, LocalDate.now(), PasteTime.Original)
-
-    /** Paste [entries] tomorrow at their original local times. */
-    fun pasteEntriesAtOriginalTimesTomorrow(entries: List<FoodEntry>) =
-        pasteEntriesToDate(entries, LocalDate.now().plusDays(1), PasteTime.Original)
-
     /**
-     * Copy [entries] onto [targetDate] (Copy-from-day sheet; the target is the
-     * viewed day by default but is now pickable inside the sheet).
+     * Copy [entries] onto [targetDate] at the current logging time.
+     * The paste sheet's day circles pick [targetDate].
      */
     fun copyEntriesToDate(entries: List<FoodEntry>, targetDate: LocalDate) =
         pasteEntriesToDate(entries, targetDate, PasteTime.Logging)

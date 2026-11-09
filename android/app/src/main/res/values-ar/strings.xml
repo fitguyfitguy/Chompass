@@ -1369,11 +1369,6 @@
     </plurals>
     <string name="paste_at_original_times">اللصق في الأوقات الأصلية</string>
     <string name="paste_at_current_time">اللصق في الوقت الحالي</string>
-    <string name="paste_selected_destination">هذا اليوم</string>
-    <string name="paste_today_destination">اليوم</string>
-    <string name="paste_tomorrow_destination">غدًا</string>
-    <string name="paste_phrase_original_times">%1$s في الأوقات الأصلية</string>
-    <string name="paste_phrase_current_time">%1$s في الوقت الحالي</string>
     <string name="placeholder_hour">ساعة</string>
     <string name="placeholder_minute">دقيقة</string>
     <string name="progress_activity_exercise_week">التمارين (7أ)</string>
