@@ -211,7 +211,6 @@ private fun mealMacroSummary(
     }
 }
 
-
 internal data class FoodLogMealGroup(
     val id: String,
     val meal: String,
