@@ -84,6 +84,13 @@ if [[ "${SKIP_DEVICE}" -eq 0 ]]; then
   echo ""
   echo "==> Composing README feature shots"
   uv run --with pillow python "${ROOT}/scripts/build_feature_shots.py"
+
+# Published PNGs are committed to git; recaptures never delta, so compress
+# them hard (pngquant/Pillow palette, in place, never grows a file). The JVM
+# preview references are NOT compressed — they are the pixel gate.
+echo "==> Compressing published PNGs"
+uv run --with pillow python "${ROOT}/scripts/compress_pngs.py" \
+  "${ROOT}/docs/screenshots" "${ROOT}/release-screenshots"
 fi
 
 # After a capture docs/screenshots/ is dirty until committed — that counts as fresh.

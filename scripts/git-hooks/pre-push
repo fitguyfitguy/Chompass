@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# Pre-push size guard: reject pushes that add blobs over 1 MiB outside the
+# published-image/data allowlist. Binaries are immortal in git history and
+# every Codeberg fork is charged the full history against the contributor's
+# own 750 MiB quota (PR #140 hit exactly that).
+#
+# stdin is the pre-push protocol: <local ref> <local sha> <remote ref> <remote sha>
+# Installed via scripts/install_git_hooks.sh (core.hooksPath=scripts/git-hooks).
+set -euo pipefail
+
+zero=0000000000000000000000000000000000000000
+ranges=()
+
+while read -r local_ref local_sha _remote_ref remote_sha; do
+  [[ -n "$local_ref" ]] || continue
+  [[ "$local_sha" != "$zero" ]] || continue          # deletion: nothing new
+  if [[ "$remote_sha" == "$zero" ]]; then            # new remote ref: check everything
+    ranges+=("$local_sha")
+  else
+    ranges+=("$remote_sha..$local_sha")
+  fi
+done
+
+[[ ${#ranges[@]} -gt 0 ]] || exit 0
+
+CHECKER="$(cd "$(dirname "$0")/.." && pwd)/check_repo_size.sh"
+status=0
+for range in "${ranges[@]}"; do
+  "$CHECKER" --range "$range" || status=1
+done
+exit "$status"

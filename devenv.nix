@@ -22,6 +22,7 @@
   # F-Droid release build graph.
   # uv: parity validators and asset scripts (never bare python/pip).
   packages = [
+    pkgs.pngquant
     pkgs.android-tools
     pkgs.hugo
     pkgs.nodejs

@@ -1,0 +1,28 @@
+# Repository size guard: keep the git history small enough to fork.
+#
+# Every Codeberg fork is charged the full upstream history against the
+# contributor's own 750 MiB git quota (PR #140 was blocked by exactly that),
+# so binary churn in history is a contributor-facing bug, not just storage.
+# Mirrors scripts/git-hooks/pre-push: blobs > 1 MiB outside the published-image
+# allowlist fail the build, and the total pack size stays under a budget.
+name: Repo size
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  check-size:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Reject oversized new blobs and pack growth
+        run: |
+          set -euo pipefail
+          RANGE="origin/main..HEAD"
+          if ! git rev-parse --verify -q origin/main >/dev/null; then
+            RANGE="HEAD"
+          fi
+          ./scripts/check_repo_size.sh --range "$RANGE" --budget-mib 450
