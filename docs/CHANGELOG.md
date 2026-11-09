@@ -19,6 +19,8 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ### Fixed
 
+- **Sync from scale can finish a Beurer BF 105 weigh-in** (Android): finding the scale no longer drops the connection, and a reading that has no notification support no longer closes the app. A weigh-in can land on the Scale metrics card. Body fat and composition from this scale are not stored yet.
+
 - **Fluid ounces read right on the water card** (Android): an empty day showed "1 fl oz" instead of 0, and an 8 fl oz serving stored one ounce low and read back as 7. Conversions now round both ways, and the water goal rows in Settings show fluid ounces when your units are imperial, with a fluid-ounce goal wheel to match. Closes Codeberg [#163](https://codeberg.org/fitguy/Chompass/issues/163) by [@burdick-ryan](https://codeberg.org/burdick-ryan)
 - **Dialog buttons wrap in long languages** (Android): pairs like the Russian keep-editing and analyze-anyway buttons no longer clip off the dialog edge. The buttons wrap onto a second line when both labels do not fit on one. Closes Codeberg [#164](https://codeberg.org/fitguy/Chompass/issues/164) by [@rttnsprt](https://codeberg.org/rttnsprt)
 - **Burn bands shade over each other** (Android): on the calorie arc and the bar, each band covers the one under it, and every visible end stays rounded. A partial eat no longer ends in a square cut, and the join between bands no longer pinches or leaves a rectangular nick.

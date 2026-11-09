@@ -75,6 +75,9 @@ class ScaleBleTransport(
         BluetoothCentralManager(context, centralCallback, mainHandler)
     }
 
+    /** Scan hits, keyed by the address passed to [connect]. Not the live link. */
+    private val discovered = mutableMapOf<String, BluetoothPeripheral>()
+    /** Connected link only. Assigned in onConnected / onServicesDiscovered. */
     private var currentPeripheral: BluetoothPeripheral? = null
     private val deferredMap = mutableMapOf<UUID, CompletableDeferred<Unit>>()
 
@@ -82,7 +85,9 @@ class ScaleBleTransport(
     private val opWorker: Job = scope.launch {
         while (isActive) {
             val op = opQueue.receiveCatching().getOrNull() ?: break
-            op()
+            runCatching { op() }.onFailure {
+                LogManager.e(TAG, "gatt op failed: ${it.message}", it)
+            }
         }
     }
 
@@ -91,7 +96,14 @@ class ScaleBleTransport(
     }
 
     fun startScan() {
-        scope.launch { runCatching { central.scanForPeripherals() } }
+        scope.launch {
+            runCatching {
+                central.enableLogging()
+                central.scanForPeripherals()
+            }.onFailure {
+                LogManager.e(TAG, "scan start failed: ${it.message}", it)
+            }
+        }
     }
 
     fun stopScan() {
@@ -102,16 +114,24 @@ class ScaleBleTransport(
         scope.launch {
             delay(CONNECT_AFTER_SCAN_DELAY_MS.milliseconds)
             runCatching { central.stopScan() }
-            val peripheral = currentPeripheral
-            if (peripheral != null && peripheral.address == address) {
-                runCatching { central.connect(peripheral, peripheralCallback) }
-                    .onFailure { LogManager.e(TAG, "connect call failed: ${it.message}", it) }
+            val peripheral = discovered[address]
+            if (peripheral == null) {
+                LogManager.e(TAG, "connect: peripheral not retained $address", null)
+                onLinkLost("connect: peripheral not retained")
+                return@launch
             }
+            LogManager.i(TAG, "-> connect $address")
+            runCatching { central.connect(peripheral, peripheralCallback) }
+                .onFailure {
+                    LogManager.e(TAG, "connect call failed: ${it.message}", it)
+                    onLinkLost("connect call failed: ${it.message}")
+                }
         }
     }
 
     fun close() {
         stopScan()
+        discovered.clear()
         scope.launch {
             currentPeripheral?.let { runCatching { central.cancelConnection(it) } }
             runCatching { central.close() }
@@ -152,6 +172,7 @@ class ScaleBleTransport(
                     ?.mapValues { it.value.copyOf() }
                     ?: emptyMap(),
             )
+            discovered[peripheral.address] = peripheral
             LogManager.i(TAG, "scan hit ${info.name} (${info.address}) rssi=${info.rssi}")
             onScanned(info)
         }
@@ -220,9 +241,26 @@ class ScaleBleTransport(
     override fun setNotifyOn(service: UUID, characteristic: UUID) {
         opQueue.trySend {
             val p = currentPeripheral ?: return@trySend
+            val ch = p.getCharacteristic(service, characteristic)
+            if (ch == null) {
+                LogManager.w(TAG, "notify skipped, characteristic absent $characteristic")
+                return@trySend
+            }
+            val props = ch.properties
+            val canNotify = props and BluetoothGattCharacteristic.PROPERTY_NOTIFY != 0
+            val canIndicate = props and BluetoothGattCharacteristic.PROPERTY_INDICATE != 0
+            if (!canNotify && !canIndicate) {
+                LogManager.w(TAG, "notify skipped, no notify/indicate on $characteristic props=$props")
+                return@trySend
+            }
             LogManager.d(TAG, "-> set notify chr=$characteristic")
             deferredMap[characteristic] = CompletableDeferred()
-            val started = p.startNotify(service, characteristic)
+            val started = runCatching { p.startNotify(service, characteristic) }
+                .getOrElse {
+                    LogManager.w(TAG, "notify start threw for $characteristic: ${it.message}")
+                    completeDeferred(characteristic)
+                    return@trySend
+                }
             if (!started) {
                 LogManager.w(TAG, "failed to initiate notify for $characteristic")
                 completeDeferred(characteristic)

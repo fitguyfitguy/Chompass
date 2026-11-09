@@ -143,7 +143,11 @@ class ScaleSyncController(
             },
             onLinkLost = { reason ->
                 val current = _state.value
-                if (current is ScaleSyncState.Reading || current is ScaleSyncState.Connecting) {
+                if (current is ScaleSyncState.Reading ||
+                    current is ScaleSyncState.Connecting ||
+                    current is ScaleSyncState.AwaitingUser ||
+                    current is ScaleSyncState.AwaitingConsent
+                ) {
                     if (publishedCount.get() > 0) {
                         finished.complete(ScaleSyncState.Done(publishedCount.get()))
                     } else {
