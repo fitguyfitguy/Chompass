@@ -2904,13 +2904,13 @@ für dich ein</string>
 
     <string name="home_active_burn_a11y">Aktiver Kalorienverbrauch %1$d</string>
 
-    <string name="home_active_burn_caption_progress">%1$d von %2$d aktiv</string>
-    <string name="home_active_burn_caption_progress_day_type">%1$d von %2$d aktiv · %3$s</string>
+    <string name="home_active_burn_caption_progress">%1$d/%2$d aktiv</string>
+    <string name="home_active_burn_caption_progress_day_type">%1$d/%2$d aktiv · %3$s</string>
 
     <string name="home_active_burn_progress_a11y">Aktiver Kalorienverbrauch %1$d, typischer Wert %2$d</string>
     <string name="home_active_burn_progress_day_type_a11y">Aktiver Kalorienverbrauch %1$d, typischer Wert %2$d an %3$s-Tagen</string>
 
-    <string name="home_active_burn_over">+%1$d über dem typischen Wert</string>
+    <string name="home_active_burn_over">+%1$d drüber</string>
 
     <string name="home_active_burn_over_a11y">Aktiver Kalorienverbrauch %1$d, %2$d mehr als an einem typischen Tag</string>
 

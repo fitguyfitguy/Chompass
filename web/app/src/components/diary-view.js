@@ -282,7 +282,7 @@ function servingEchoText(entry) {
   )}`;
 }
 
-/** Android BurnShadeCaption: "380 of 560 active" (live of typical), else "560 active". */
+/** Android BurnShadeCaption: "380/560 active" (live/typical), else "560 active". The over-typical suffix is Android-only. */
 function burnCaptionText(zoneActive, burn) {
   if (!burn) return t("diary.burn_active", { amount: zoneActive });
   if (burn.live > 0 && burn.typical > 0) {

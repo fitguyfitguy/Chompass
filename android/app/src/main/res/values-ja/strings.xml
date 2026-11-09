@@ -1091,9 +1091,9 @@
     <string name="grounding_validation_notes">メモ：%1$s</string>
     <string name="home_active_burn_a11y">活動消費 %1$d</string>
     <string name="home_active_burn_caption">%1$d 活動</string>
-    <string name="home_active_burn_caption_progress">活動 %1$d / %2$d</string>
-    <string name="home_active_burn_caption_progress_day_type">%1$d of %2$d active · %3$s</string>
-    <string name="home_active_burn_over">通常より +%1$d</string>
+    <string name="home_active_burn_caption_progress">%1$d/%2$d 活動</string>
+    <string name="home_active_burn_caption_progress_day_type">%1$d/%2$d 活動 · %3$s</string>
+    <string name="home_active_burn_over">+%1$d 超</string>
     <string name="home_active_burn_over_a11y">活動消費 %1$d、通常の1日より %2$d 多い</string>
     <string name="home_active_burn_progress_a11y">活動消費 %1$d、通常 %2$d</string>
     <string name="home_active_burn_progress_day_type_a11y">Active burn %1$d, %2$d typical for %3$s days</string>

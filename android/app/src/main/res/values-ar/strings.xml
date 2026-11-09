@@ -1100,9 +1100,9 @@
     <string name="grounding_validation_notes">ملاحظات: %1$s</string>
     <string name="home_active_burn_a11y">الحرق النشط %1$d</string>
     <string name="home_active_burn_caption">%1$d نشط</string>
-    <string name="home_active_burn_caption_progress">%1$d من %2$d نشط</string>
-    <string name="home_active_burn_caption_progress_day_type">%1$d of %2$d active · %3$s</string>
-    <string name="home_active_burn_over">+%1$d فوق المعتاد</string>
+    <string name="home_active_burn_caption_progress">%1$d/%2$d نشط</string>
+    <string name="home_active_burn_caption_progress_day_type">%1$d/%2$d نشط · %3$s</string>
+    <string name="home_active_burn_over">+%1$d فوق</string>
     <string name="home_active_burn_over_a11y">الحرق النشط %1$d، %2$d فوق اليوم المعتاد</string>
     <string name="home_active_burn_progress_a11y">الحرق النشط %1$d، المعتاد %2$d</string>
     <string name="home_active_burn_progress_day_type_a11y">Active burn %1$d, %2$d typical for %3$s days</string>

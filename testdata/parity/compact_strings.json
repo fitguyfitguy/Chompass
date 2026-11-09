@@ -41,7 +41,10 @@
     "widget_protein",
     "widget_calories",
     "widget_carbs",
-    "widget_fat"
+    "widget_fat",
+    "home_active_burn_caption_progress",
+    "home_active_burn_caption_progress_day_type",
+    "home_active_burn_over"
   ],
   "perKeyOverrides": {
     "macro_status_over": { "maxChars": 20, "valueFirst": true },
@@ -55,7 +58,10 @@
     "meal_breakfast": { "maxChars": 14 },
     "meal_lunch": { "maxChars": 14 },
     "widget_carbs": { "maxChars": 14 },
-    "widget_calories": { "maxChars": 16 }
+    "widget_calories": { "maxChars": 16 },
+    "home_active_burn_caption_progress": { "maxChars": 18, "valueFirst": true },
+    "home_active_burn_caption_progress_day_type": { "maxChars": 25, "valueFirst": true },
+    "home_active_burn_over": { "maxChars": 14 }
   },
   "pwaKeyMap": {
     "nav_home": "nav.home",

@@ -3631,8 +3631,8 @@
     <issue
         id="PluralsCandidate"
         message="Formatting %d followed by words (&quot;active&quot;): This should probably be a plural rather than a string"
-        errorLine1="    &lt;string name=&quot;home_active_burn_caption_progress&quot;>%1$d of %2$d active&lt;/string>"
-        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        errorLine1="    &lt;string name=&quot;home_active_burn_caption_progress&quot;>%1$d/%2$d active&lt;/string>"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
             line="2355"
@@ -3642,8 +3642,8 @@
     <issue
         id="PluralsCandidate"
         message="Formatting %d followed by words (&quot;active&quot;): This should probably be a plural rather than a string"
-        errorLine1="    &lt;string name=&quot;home_active_burn_caption_progress_day_type&quot;>%1$d of %2$d active · %3$s&lt;/string>"
-        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        errorLine1="    &lt;string name=&quot;home_active_burn_caption_progress_day_type&quot;>%1$d/%2$d active · %3$s&lt;/string>"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
             line="2356"
@@ -3675,8 +3675,8 @@
     <issue
         id="PluralsCandidate"
         message="Formatting %d followed by words (&quot;over&quot;): This should probably be a plural rather than a string"
-        errorLine1="    &lt;string name=&quot;home_active_burn_over&quot;>+%1$d over typical&lt;/string>"
-        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        errorLine1="    &lt;string name=&quot;home_active_burn_over&quot;>+%1$d over&lt;/string>"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
             line="2359"

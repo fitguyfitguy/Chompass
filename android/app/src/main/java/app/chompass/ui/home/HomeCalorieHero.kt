@@ -43,9 +43,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.RoundRect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.luminance
@@ -394,6 +397,9 @@ private fun CalorieArcCanvas(
             size = arcSize,
             style = Stroke(width = strokePx, cap = StrokeCap.Round)
         )
+        // Round-capped band ends. The consumed overlay (below) extends past
+        // any of these the eaten tip has reached, so the semicircle is shaded.
+        val roundCapEnds = ArrayList<Float>(3)
         if (shadesActive && shade != null) {
             // Single energy scale, one meaning per shade:
             //  - estimated-active zone = fixed dim segment [base → base+typical].
@@ -406,41 +412,48 @@ private fun CalorieArcCanvas(
             val baseAngle = 180f * HomeCalorieDisplay.burnShadeBaseFraction(baseGoal, typical, live)
             val typicalSweep = 180f * HomeCalorieDisplay.burnShadeTypicalFraction(baseGoal, typical, live)
             if (typicalSweep > 0f) {
+                val sweep = typicalSweep.coerceAtMost(180f - baseAngle)
                 drawArc(
                     color = bonusColor,
                     startAngle = 180f + baseAngle,
-                    sweepAngle = typicalSweep.coerceAtMost(180f - baseAngle),
+                    sweepAngle = sweep,
                     useCenter = false,
                     topLeft = topLeft,
                     size = arcSize,
                     style = Stroke(width = strokePx, cap = StrokeCap.Round)
                 )
+                roundCapEnds += 180f + baseAngle + sweep
             }
             val liveSweep = 180f * HomeCalorieDisplay.burnShadeLiveFraction(baseGoal, live, typical)
             val liveMaxSweep = (180f - baseAngle).coerceAtLeast(0f)
             val withinTypicalSweep = liveSweep.coerceAtMost(typicalSweep)
             if (withinTypicalSweep > 0f) {
+                val sweep = withinTypicalSweep.coerceAtMost(liveMaxSweep)
                 drawArc(
                     color = liveBurnColor,
                     startAngle = 180f + baseAngle,
-                    sweepAngle = withinTypicalSweep.coerceAtMost(liveMaxSweep),
+                    sweepAngle = sweep,
                     useCenter = false,
                     topLeft = topLeft,
                     size = arcSize,
                     style = Stroke(width = strokePx, cap = StrokeCap.Round)
                 )
+                roundCapEnds += 180f + baseAngle + sweep
             }
             val overTypicalSweep = (liveSweep - typicalSweep).coerceAtLeast(0f)
             if (overTypicalSweep > 0f) {
+                val start = 180f + baseAngle + typicalSweep
+                val sweep = overTypicalSweep.coerceAtMost((liveMaxSweep - typicalSweep).coerceAtLeast(0f))
                 drawArc(
                     color = successColor,
-                    startAngle = 180f + baseAngle + typicalSweep,
-                    sweepAngle = overTypicalSweep.coerceAtMost((liveMaxSweep - typicalSweep).coerceAtLeast(0f)),
+                    startAngle = start,
+                    sweepAngle = sweep,
                     useCenter = false,
                     topLeft = topLeft,
                     size = arcSize,
                     style = Stroke(width = strokePx, cap = StrokeCap.Round)
                 )
+                roundCapEnds += start + sweep
             }
             zoneStartAngle = 180f + baseAngle
         } else if (displayMode == HomeCalorieDisplayMode.ADD_ACTIVE && activeCalories > 0 && effectiveGoal > 0) {
@@ -451,16 +464,18 @@ private fun CalorieArcCanvas(
             val baseSweep = 180f * (baseGoal.toFloat() / effectiveGoal.toFloat()).coerceIn(0f, 1f)
             val tailSweep = (180f - baseSweep).coerceAtLeast(0f)
             if (tailSweep > 0f) {
+                val start = 180f + baseSweep
                 drawArc(
                     color = bonusColor,
-                    startAngle = 180f + baseSweep,
+                    startAngle = start,
                     sweepAngle = tailSweep,
                     useCenter = false,
                     topLeft = topLeft,
                     size = arcSize,
                     style = Stroke(width = strokePx, cap = StrokeCap.Round)
                 )
-                zoneStartAngle = 180f + baseSweep
+                roundCapEnds += start + tailSweep
+                zoneStartAngle = start
             }
         }
         // Consumed stretch of the activity zone: the shades above sit over the
@@ -472,14 +487,26 @@ private fun CalorieArcCanvas(
         // ramp here would make that separation vary along the band.
         // eatenDegrees is the visible fill tip (frozen or animated); reused above
         // for the planned segment so that band starts where eaten ends.
+        // Round caps extend half a stroke past each endpoint. The overlay is a
+        // butt stroke extended by that angle, not a Round stroke: a Round cap
+        // here would stick a consumed semicircle past a partial eaten tip.
+        val capExtension = if (aMid > 0f) {
+            Math.toDegrees((strokePx / 2.0) / aMid.toDouble()).toFloat()
+        } else {
+            0f
+        }
         zoneStartAngle?.let { zoneStart ->
-            val zoneStartDegrees = zoneStart - 180f
-            val consumedSweep = (eatenDegrees - zoneStartDegrees).coerceIn(0f, 180f - zoneStartDegrees)
-            if (consumedSweep > 0f) {
+            val span = consumedShadeOverlaySpan(
+                zoneStart = zoneStart,
+                eatenEnd = 180f + eatenDegrees,
+                roundCapEnds = roundCapEnds,
+                capExtension = capExtension,
+            )
+            if (span != null) {
                 drawArc(
                     color = progressColor.copy(alpha = 0.55f),
-                    startAngle = zoneStart,
-                    sweepAngle = consumedSweep,
+                    startAngle = span.start,
+                    sweepAngle = span.sweep,
                     useCenter = false,
                     topLeft = topLeft,
                     size = arcSize,
@@ -654,15 +681,25 @@ private fun CalorieBurnCaption(
     input: CalorieHeroInput,
     shadesActive: Boolean,
     modifier: Modifier = Modifier,
+    maxWidth: Dp = Dp.Unspecified,
 ) {
+    val capped = if (maxWidth == Dp.Unspecified) modifier else modifier.widthIn(max = maxWidth)
     with(input) {
         if (shadesActive) {
-            BurnShadeCaption(burn = burnShade!!, modifier = modifier)
+            BurnShadeCaption(burn = burnShade!!, modifier = capped, center = maxWidth != Dp.Unspecified)
         } else if (showActiveCalories && liveActiveBurn > 0) {
-            BurnCaption(active = liveActiveBurn, modifier = modifier)
+            BurnCaption(active = liveActiveBurn, modifier = capped)
         }
     }
 }
+
+/**
+ * Bowl interior at the burn-caption line. The centered arcs have no parent
+ * width, so a long locale paints past the stroke unless the row is capped
+ * here. 200dp sits inside the 260dp arc's chord; 156dp inside the 200dp arc.
+ */
+private val DefaultArcBurnCaptionBudget = 200.dp
+private val CompactArcBurnCaptionBudget = 156.dp
 
 /**
  * Default centered arc: 260dp circle with the eaten number in the bowl, the goal
@@ -839,6 +876,7 @@ private fun DefaultCalorieHero(input: CalorieHeroInput, modifier: Modifier = Mod
                     input = input,
                     shadesActive = d.shadesActive,
                     modifier = Modifier.padding(top = 4.dp),
+                    maxWidth = DefaultArcBurnCaptionBudget,
                 )
             }
 
@@ -1227,7 +1265,11 @@ private fun CompactArcCalorieHero(input: CalorieHeroInput, modifier: Modifier = 
                         )
                     }
                 }
-                CalorieBurnCaption(input = input, shadesActive = d.shadesActive)
+                CalorieBurnCaption(
+                    input = input,
+                    shadesActive = d.shadesActive,
+                    maxWidth = CompactArcBurnCaptionBudget,
+                )
             }
 
             Column(
@@ -1360,8 +1402,10 @@ private fun CompactHorizontalCalorieHero(input: CalorieHeroInput, modifier: Modi
                     cornerRadius = CornerRadius(radius, radius),
                 )
                 // Where the active zone starts; the consumed pass below keys
-                // off it.
+                // off it. bandEnds are the round-rect tips, so the overlay can
+                // match a cap it has reached instead of leaving corner nicks.
                 var boundaryX: Float? = null
+                val bandEnds = ArrayList<Float>(3)
                 if (d.shadesActive && burnShade != null) {
                     val shade = burnShade!!
                     val baseX = size.width * HomeCalorieDisplay.burnShadeBaseFraction(baseGoal, shade.typical, shade.live)
@@ -1376,6 +1420,7 @@ private fun CompactHorizontalCalorieHero(input: CalorieHeroInput, modifier: Modi
                             size = Size(typicalW, size.height),
                             cornerRadius = CornerRadius(radius, radius),
                         )
+                        bandEnds += baseX + typicalW
                     }
                     // Live-active shade: opaque, grows from the base boundary through the
                     // typical zone.
@@ -1387,6 +1432,7 @@ private fun CompactHorizontalCalorieHero(input: CalorieHeroInput, modifier: Modi
                             size = Size(withinTypicalW, size.height),
                             cornerRadius = CornerRadius(radius, radius),
                         )
+                        bandEnds += baseX + withinTypicalW
                     }
                     // Over-typical stretch turns success color; the bar end is the
                     // expected-day target, so the live tip lands at the bar end.
@@ -1399,6 +1445,7 @@ private fun CompactHorizontalCalorieHero(input: CalorieHeroInput, modifier: Modi
                             size = Size(overW, size.height),
                             cornerRadius = CornerRadius(radius, radius),
                         )
+                        bandEnds += baseX + typicalW + overW
                     }
                     boundaryX = baseX
                 } else if (displayMode == HomeCalorieDisplayMode.ADD_ACTIVE && d.target > baseGoal) {
@@ -1411,20 +1458,34 @@ private fun CompactHorizontalCalorieHero(input: CalorieHeroInput, modifier: Modi
                         size = Size(size.width - baseX, size.height),
                         cornerRadius = CornerRadius(radius, radius),
                     )
+                    bandEnds += size.width
                     boundaryX = baseX
                 }
                 boundaryX?.let { baseX ->
-                    // Consumed stretch of the activity zone: the shades sit over
-                    // the eaten bar, so re-apply the eaten color from the base
-                    // boundary to the eaten tip. The burn bands stay readable and
-                    // eating into them visibly shades instead of one solid band.
+                    // Consumed stretch of the activity zone. Bar caps are inset,
+                    // so a rect that ends on a band end covers that cap. Match
+                    // the round end only when the eaten tip lands on one; a
+                    // partial eat uses a square right end so the band body is
+                    // covered up to the tip (a round end there leaves the band
+                    // showing in the corners). The left end stays round so the
+                    // overlay does not square off the zone-start cap.
                     val consumedW = (size.width * d.fillRatio - baseX).coerceIn(0f, size.width - baseX)
                     if (consumedW > 0f) {
-                        drawRoundRect(
+                        val endX = baseX + consumedW
+                        val right = consumedBarEndRadius(endX, bandEnds, radius)
+                        drawPath(
+                            Path().apply {
+                                addRoundRect(
+                                    RoundRect(
+                                        rect = Rect(baseX, 0f, endX, size.height),
+                                        topLeft = CornerRadius(radius, radius),
+                                        bottomLeft = CornerRadius(radius, radius),
+                                        topRight = CornerRadius(right, right),
+                                        bottomRight = CornerRadius(right, right),
+                                    ),
+                                )
+                            },
                             progressColor.copy(alpha = 0.55f),
-                            topLeft = Offset(baseX, 0f),
-                            size = Size(consumedW, size.height),
-                            cornerRadius = CornerRadius(radius, radius),
                         )
                     }
                 }
@@ -1705,7 +1766,11 @@ private fun BurnCaption(active: Int, modifier: Modifier = Modifier) {
 
 /** Energy-balance caption: live active vs the day's active norm, plus the over-typical state. */
 @Composable
-private fun BurnShadeCaption(burn: ActiveBurnShade, modifier: Modifier = Modifier) {
+private fun BurnShadeCaption(
+    burn: ActiveBurnShade,
+    modifier: Modifier = Modifier,
+    center: Boolean = false,
+) {
     val tertiary = MaterialTheme.colorScheme.tertiary
     val success = MaterialTheme.colorScheme.success
     val unit = LocalEnergyUnit.current
@@ -1715,16 +1780,22 @@ private fun BurnShadeCaption(burn: ActiveBurnShade, modifier: Modifier = Modifie
     val over = HomeCalorieDisplay.isActiveBurnOverTypical(burn.live, burn.typical)
     val dayType = burn.typicalDayTypeName.takeIf { burn.typicalIsDayType && !it.isNullOrBlank() }
     val a11y = burnShadeA11y(burn)
+    // weight needs a finite max. The arc passes widthIn; the side gauge and
+    // the bar are already bounded by their parent. A long day-type name
+    // shrinks, then ellipsizes, instead of painting past the arc.
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(5.dp),
-        modifier = modifier.semantics { contentDescription = a11y }
+        horizontalArrangement = Arrangement.spacedBy(
+            5.dp,
+            if (center) Alignment.CenterHorizontally else Alignment.Start,
+        ),
+        modifier = modifier.semantics { contentDescription = a11y },
     ) {
         Icon(
             Icons.Filled.LocalFireDepartment,
             contentDescription = null,
             tint = tertiary,
-            modifier = Modifier.size(11.dp)
+            modifier = Modifier.size(11.dp),
         )
         Text(
             if (dayType != null) {
@@ -1735,6 +1806,15 @@ private fun BurnShadeCaption(burn: ActiveBurnShade, modifier: Modifier = Modifie
             fontSize = 12.sp,
             fontWeight = FontWeight.SemiBold,
             color = tertiary,
+            maxLines = 1,
+            softWrap = false,
+            overflow = TextOverflow.Ellipsis,
+            autoSize = TextAutoSize.StepBased(
+                minFontSize = 8.sp,
+                maxFontSize = 12.sp,
+                stepSize = 0.5.sp,
+            ),
+            modifier = Modifier.weight(1f, fill = false),
         )
         if (over) {
             Text(
@@ -1742,6 +1822,8 @@ private fun BurnShadeCaption(burn: ActiveBurnShade, modifier: Modifier = Modifie
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Bold,
                 color = success,
+                maxLines = 1,
+                softWrap = false,
             )
         }
     }
@@ -2039,3 +2121,54 @@ internal fun ViewMoreButton() {
 /** Signed kcal for the derivation rows: "+250" / "-250" / "0" (mirrors RecalcResultSheet). */
 private fun signedKcal(value: Int): String =
     if (value > 0) "+" + LocaleFormat.integer(value) else LocaleFormat.integer(value)
+
+/**
+ * Butt-stroke span that covers [StrokeCap.Round] semicircles of burn bands
+ * the eaten tip has reached.
+ *
+ * A round cap extends [capExtension] degrees past its endpoint. A butt stroke
+ * that stops on the endpoint leaves that semicircle unshaded. The end grows
+ * only for band ends the eaten tip has reached, so a partial eat does not
+ * paint a consumed cap past the eaten amount.
+ */
+internal data class ShadeOverlaySpan(val start: Float, val sweep: Float)
+
+internal fun consumedShadeOverlaySpan(
+    zoneStart: Float,
+    eatenEnd: Float,
+    roundCapEnds: List<Float>,
+    capExtension: Float,
+    arcStart: Float = 180f,
+    arcSweep: Float = 180f,
+): ShadeOverlaySpan? {
+    if (eatenEnd <= zoneStart || capExtension < 0f) return null
+    val arcEnd = arcStart + arcSweep
+    val start = (zoneStart - capExtension).coerceIn(arcStart - capExtension, eatenEnd)
+    var end = eatenEnd
+    val reached = eatenEnd + 0.05f
+    for (bandEnd in roundCapEnds) {
+        if (bandEnd <= reached) {
+            val capEnd = bandEnd + capExtension
+            if (capEnd > end) end = capEnd
+        }
+    }
+    end = end.coerceAtMost(arcEnd + capExtension)
+    val sweep = end - start
+    if (sweep <= 0f) return null
+    return ShadeOverlaySpan(start, sweep)
+}
+
+/**
+ * Right-end radius of the bar's consumed overlay. Bar caps are inset, so a
+ * square end covers a cap the eaten tip has passed. Match the round end only
+ * when the tip lands on one, so the overlay does not square the shoulders.
+ */
+internal fun consumedBarEndRadius(
+    consumedEnd: Float,
+    bandEnds: List<Float>,
+    radius: Float,
+    slop: Float = 0.75f,
+): Float {
+    if (radius <= 0f) return 0f
+    return if (bandEnds.any { kotlin.math.abs(it - consumedEnd) <= slop }) radius else 0f
+}
