@@ -70,7 +70,10 @@ class BodyCompositionRepositoryTest {
         // date anchored to this class's frozen `now` ages past the 90-day window
         // (that happened 2026-11-08). The frozen clock stays for the day-grouping
         // tests above, which need their entries on one calendar day.
-        val entryAt = Instant.now().minusSeconds(2 * 3_600L)
+        // Stored Instants serialize as epoch millis (InstantSerializer), so the
+        // stamp comes back without sub-milli digits. Anchor the expectation the
+        // same way or this fails whenever the real clock rolls nanos.
+        val entryAt = Instant.now().minusSeconds(2 * 3_600L).truncatedTo(java.time.temporal.ChronoUnit.MILLIS)
         // Auto-sourced goal so the re-clamp path is live.
         profiles.save(profiles.current()!!.copy(goalSource = GoalSource.FORMULA))
         repo.upsert(BodyCompositionEntry(date = entryAt, leanMassKg = 61.0))
