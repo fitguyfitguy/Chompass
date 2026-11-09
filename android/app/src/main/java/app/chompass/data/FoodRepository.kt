@@ -763,9 +763,10 @@ class FoodRepository(
      *
      * Match priority: (1) [barcode] — the newest saved entry grounded in that
      * exact product (grounding source id or OFF product metadata); (2) name —
-     * [mergesWithSavedFood]. Candidates are the same newest-per-favoriteKey
-     * diary ∪ favorites collapse every other saved-food surface uses (see
-     * [buildSavedFoodIndex]).
+     * [mergesWithSavedFood]. Candidates are the newest-per-favoriteKey diary
+     * ∪ favorites collapse ([savedFoodTemplates]); the Add Food suggestion
+     * index ([buildSavedFoodIndex]) shares the identity but lets a favorited
+     * snapshot win as the re-log template.
      */
     suspend fun savedTemplateFor(rawName: String, barcode: String?): FoodEntry? =
         savedFoodTemplateFor(
@@ -1127,9 +1128,11 @@ fun mergesWithSavedFood(rawName: String, template: FoodEntry?): Boolean {
 }
 
 /**
- * Newest-per-identity saved templates from diary ∪ favorites — the same
- * collapse [buildSavedFoodIndex] performs: newest diary row per
- * [FoodEntry.favoriteKey], then favorites that were never logged.
+ * Newest-per-identity saved templates from diary ∪ favorites: newest diary
+ * row per [FoodEntry.favoriteKey], then favorites that were never logged.
+ * Unlike [buildSavedFoodIndex] this keeps the newest diary row as the
+ * template even when the food is favorited — scan identity reuse merges
+ * into the freshest log, not the favorited serving snapshot.
  */
 internal fun savedFoodTemplates(entries: List<FoodEntry>, favorites: List<FoodEntry>): List<FoodEntry> {
     val templates = LinkedHashMap<String, FoodEntry>()

@@ -36,9 +36,15 @@ fun SavedFoodIndexEntry.asSuggestion(): FoodSuggestion.SavedFood = FoodSuggestio
 )
 
 /**
- * Collapse diary rows and favorites into one suggestion index, newest template
- * per [FoodEntry.favoriteKey] — the same identity every other saved-food
+ * Collapse diary rows and favorites into one suggestion index per
+ * [FoodEntry.favoriteKey] — the same identity every other saved-food
  * surface uses (see [recentFoodTemplates] / [frequentFoodGroups]).
+ *
+ * The favorited serving snapshot wins as the one-tap re-log template when
+ * the key has one; otherwise the newest diary row is the template.
+ * [SavedFoodIndexEntry.lastLogged] still reports the newest diary timestamp
+ * (or the favorite's, when the key was never logged), so ordering by
+ * last-logged does not regress when the favorited snapshot is older.
  *
  * A food that is favorited is marked [SuggestionKind.FAVORITE] regardless of
  * how often it was logged; the rest split on log count so the row can say
@@ -56,22 +62,26 @@ internal fun buildSavedFoodIndex(
     val favoriteKeys = favorites.mapNotNull { it.favoriteKey.takeIf(String::isNotEmpty) }.toSet()
     val counts = mutableMapOf<String, Int>()
     val templates = LinkedHashMap<String, FoodEntry>()
+    val lastLogged = mutableMapOf<String, Instant>()
     for (entry in entries.sortedByDescending { it.timestamp }) {
         val key = entry.favoriteKey
         if (key.isEmpty()) continue
         if (key in hiddenKeys) continue
         counts[key] = (counts[key] ?: 0) + 1
-        // Sorted newest-first, so the first template seen for a key is the
-        // newest serving snapshot — what a re-log should offer.
+        // Sorted newest-first, so the first template / lastLogged seen for a
+        // key is the newest diary row — what ordering by last-logged needs.
         templates.putIfAbsent(key, entry)
+        lastLogged.putIfAbsent(key, entry.timestamp)
     }
-    // Favorites the user has never logged (or not inside the window) still
-    // belong in the index; they are the whole point of favoriting.
+    // A favorited serving snapshot is the one-tap template even when diary
+    // rows are newer. Favorites the user has never logged (or not inside the
+    // window) still belong in the index; they are the whole point of
+    // favoriting.
     for (favorite in favorites) {
         val key = favorite.favoriteKey
         if (key.isEmpty()) continue
         if (key in hiddenKeys) continue
-        templates.putIfAbsent(key, favorite)
+        templates[key] = favorite
     }
     return templates.map { (key, template) ->
         val count = counts[key] ?: 0
@@ -84,7 +94,7 @@ internal fun buildSavedFoodIndex(
             template = template,
             kind = kind,
             logCount = count,
-            lastLogged = template.timestamp,
+            lastLogged = lastLogged[key] ?: template.timestamp,
             normalizedName = QueryNormalizer.normalizeQuery(template.name),
             nameTokens = QueryNormalizer.normalizeTokens(template.name).toSet(),
         )

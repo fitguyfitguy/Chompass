@@ -65,6 +65,62 @@ class SavedFoodIndexTest {
     }
 
     @Test
+    fun favoriteSnapshotWinsAsTemplateOverNewerDiaryRow() {
+        val index = buildSavedFoodIndex(
+            entries = listOf(
+                entry("Oatmeal", Instant.parse("2024-06-02T12:00:00Z"), calories = 300),
+                entry("Oatmeal", Instant.parse("2024-06-01T12:00:00Z"), calories = 250),
+            ),
+            favorites = listOf(entry("Oatmeal", Instant.parse("2024-05-30T12:00:00Z"), calories = 200)),
+        )
+        val oatmeal = index.single()
+        assertEquals(200, oatmeal.template.calories)
+        assertEquals(SuggestionKind.FAVORITE, oatmeal.kind)
+        assertEquals(2, oatmeal.logCount)
+    }
+
+    @Test
+    fun lastLoggedStaysNewestDiaryTimestampDespiteOlderFavoriteTemplate() {
+        val newestDiary = Instant.parse("2024-06-02T12:00:00Z")
+        val index = buildSavedFoodIndex(
+            entries = listOf(
+                entry("Oatmeal", newestDiary, calories = 300),
+                entry("Oatmeal", Instant.parse("2024-06-01T12:00:00Z")),
+            ),
+            favorites = listOf(entry("Oatmeal", Instant.parse("2024-05-30T12:00:00Z"))),
+        )
+        assertEquals(newestDiary, index.single().lastLogged)
+    }
+
+    @Test
+    fun neverLoggedFavoriteUsesFavoriteTimestampAsLastLogged() {
+        val index = buildSavedFoodIndex(
+            entries = emptyList(),
+            favorites = listOf(entry("Protein Shake", Instant.parse("2024-05-15T08:00:00Z"))),
+        )
+        val shake = index.single()
+        assertEquals(Instant.parse("2024-05-15T08:00:00Z"), shake.lastLogged)
+        assertEquals(0, shake.logCount)
+    }
+
+    @Test
+    fun diaryOnlyKeysKeepNewestTemplateCountsAndLastLogged() {
+        val index = buildSavedFoodIndex(
+            entries = listOf(
+                entry("Toast", Instant.parse("2024-06-03T12:00:00Z"), calories = 150),
+                entry("Toast", Instant.parse("2024-06-02T12:00:00Z")),
+                entry("Toast", Instant.parse("2024-06-01T12:00:00Z")),
+            ),
+            favorites = emptyList(),
+        )
+        val toast = index.single()
+        assertEquals(150, toast.template.calories)
+        assertEquals(3, toast.logCount)
+        assertEquals(SuggestionKind.FREQUENT, toast.kind)
+        assertEquals(Instant.parse("2024-06-03T12:00:00Z"), toast.lastLogged)
+    }
+
+    @Test
     fun frequentThresholdSplitsRecentFromFrequent() {
         val index = buildSavedFoodIndex(
             entries = listOf(
