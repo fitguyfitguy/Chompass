@@ -20,6 +20,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 ### Fixed
 
 - **Fluid ounces read right on the water card** (Android): an empty day showed "1 fl oz" instead of 0, and an 8 fl oz serving stored one ounce low and read back as 7. Conversions now round both ways, and the water goal rows in Settings show fluid ounces when your units are imperial, with a fluid-ounce goal wheel to match. Closes Codeberg [#163](https://codeberg.org/fitguy/Chompass/issues/163) by [@burdick-ryan](https://codeberg.org/burdick-ryan)
+- **Dialog buttons wrap in long languages** (Android): pairs like the Russian keep-editing and analyze-anyway buttons no longer clip off the dialog edge. The buttons wrap onto a second line when both labels do not fit on one. Closes Codeberg [#164](https://codeberg.org/fitguy/Chompass/issues/164) by [@rttnsprt](https://codeberg.org/rttnsprt)
 - **The eaten tint covers the rounded ends of the burn bands** (Android): when today's intake reaches the activity part of the calorie arc or the bar, the eaten color now covers the rounded tips of those bands instead of leaving them sticking out.
 - **The active-burn line stays inside the arc** (Android): the line under the calorie number is shorter in every language, and a long day-type name shrinks to fit instead of running past the end of the arc.
 
