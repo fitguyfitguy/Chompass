@@ -2518,6 +2518,9 @@ macro-urile reechilibrate la noul total caloric</string>
         <item>calorii</item>
         <item>kcal</item>
         <item>obiectiv caloric</item>
+        <item>limită</item>
+        <item>manual</item>
+        <item>personalizat</item>
     </string-array>
     <string-array name="settings_search_kw_macro_protein">
         <item>macro</item>

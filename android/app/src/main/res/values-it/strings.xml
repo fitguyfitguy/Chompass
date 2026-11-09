@@ -2502,6 +2502,9 @@ macro riequilibrate al nuovo totale calorico</string>
         <item>calorie</item>
         <item>kcal</item>
         <item>obiettivo calorie</item>
+        <item>limite</item>
+        <item>manuale</item>
+        <item>personalizzato</item>
     </string-array>
     <string-array name="settings_search_kw_macro_protein">
         <item>macro</item>

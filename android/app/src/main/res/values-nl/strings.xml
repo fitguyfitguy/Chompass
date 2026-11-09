@@ -2502,6 +2502,9 @@ macro\'s opnieuw verdeeld over het nieuwe calorieëntotaal</string>
         <item>calorieën</item>
         <item>kcal</item>
         <item>caloriedoel</item>
+        <item>limiet</item>
+        <item>handmatig</item>
+        <item>eigen</item>
     </string-array>
     <string-array name="settings_search_kw_macro_protein">
         <item>macro</item>

@@ -2499,6 +2499,9 @@
         <item>カロリー</item>
         <item>kcal</item>
         <item>カロリー目標</item>
+        <item>制限</item>
+        <item>手動</item>
+        <item>カスタム</item>
     </string-array>
     <string-array name="settings_search_kw_macro_protein">
         <item>マクロ</item>

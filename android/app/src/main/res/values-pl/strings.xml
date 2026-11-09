@@ -2547,6 +2547,9 @@ makro rebalansowane do nowej sumy kalorii</string>
         <item>kalorie</item>
         <item>kcal</item>
         <item>cel kalorii</item>
+        <item>limit</item>
+        <item>ręcznie</item>
+        <item>własne</item>
     </string-array>
     <string-array name="settings_search_kw_macro_protein">
         <item>makro</item>

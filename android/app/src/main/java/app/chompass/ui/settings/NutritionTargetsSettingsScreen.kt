@@ -19,6 +19,7 @@ import app.chompass.AppContainer
 import app.chompass.R
 import app.chompass.ui.components.ChompassDialog
 import app.chompass.ui.components.ChompassDialogActions
+import app.chompass.ui.navigation.ChompassRoutes
 
 /**
  * Calories + macro targets, split out of Goals so that screen stays about the
@@ -97,6 +98,16 @@ fun NutritionTargetsSettingsScreen(
             onHealthEnergyGoalsToggle = ::onHealthEnergyGoalsToggle,
             onShowHealthEnergyGoalsInfo = { showHealthEnergyGoalsInfo = true },
             onThirdMacroLockBlocked = { showThirdMacroLockAlert = true },
+        )
+
+        // Rule C footer: the goal profile (weight, diet, activity) lives on the
+        // Goals screen — cross-linked both ways with this one.
+        RelatedLinks(
+            rows = listOf(
+                RelatedLink(label = stringResource(R.string.settings_section_goals)) {
+                    nav.navigate(ChompassRoutes.SETTINGS_GOALS)
+                },
+            ),
         )
     }
 

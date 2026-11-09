@@ -2499,6 +2499,9 @@
         <item>卡路里</item>
         <item>kcal</item>
         <item>卡路里目标</item>
+        <item>限制</item>
+        <item>手动</item>
+        <item>自定义</item>
     </string-array>
     <string-array name="settings_search_kw_macro_protein">
         <item>宏量营养素</item>

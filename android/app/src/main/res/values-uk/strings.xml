@@ -2452,6 +2452,9 @@ LBM = вага × (1 − %жиру)</string>
         <item>калорії</item>
         <item>kcal</item>
         <item>ціль калорій</item>
+        <item>ліміт</item>
+        <item>вручну</item>
+        <item>власний</item>
     </string-array>
     <string-array name="settings_search_kw_macro_protein">
         <item>макрос</item>

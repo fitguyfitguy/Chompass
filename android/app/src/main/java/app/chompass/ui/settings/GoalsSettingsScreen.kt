@@ -120,10 +120,14 @@ fun GoalsSettingsScreen(
         }
 
         // Rule C footer: destinations related to goals that live elsewhere
-        // (Water goal is edited on the Water screen; the formula register is a
-        // reference, not a goal).
+        // (Calorie targets are edited on Calories & Macros; Water goal is
+        // edited on the Water screen; the formula register is a reference,
+        // not a goal).
         RelatedLinks(
             rows = listOf(
+                RelatedLink(label = stringResource(R.string.settings_section_nutrition_targets)) {
+                    nav.navigate(ChompassRoutes.SETTINGS_NUTRITION_TARGETS)
+                },
                 RelatedLink(label = stringResource(R.string.settings_goal_phases_title)) {
                     nav.navigate(ChompassRoutes.GOAL_PHASES)
                 },

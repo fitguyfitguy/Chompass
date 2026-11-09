@@ -2500,6 +2500,9 @@
         <item>칼로리</item>
         <item>kcal</item>
         <item>칼로리 목표</item>
+        <item>제한</item>
+        <item>수동</item>
+        <item>사용자 지정</item>
     </string-array>
     <string-array name="settings_search_kw_macro_protein">
         <item>매크로</item>

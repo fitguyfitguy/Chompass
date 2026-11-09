@@ -2503,6 +2503,9 @@ makrolar yeni kalori cəminə uyğun yenidən tarazlaşdırılır</string>
         <item>kalori</item>
         <item>kcal</item>
         <item>kalori hədəfi</item>
+        <item>limit</item>
+        <item>əl ilə</item>
+        <item>fərdi</item>
     </string-array>
     <string-array name="settings_search_kw_macro_protein">
         <item>makro</item>

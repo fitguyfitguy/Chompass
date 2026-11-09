@@ -2554,6 +2554,9 @@
         <item>السعرات الحرارية</item>
         <item>kcal</item>
         <item>هدف السعرات</item>
+        <item>حد</item>
+        <item>يدوي</item>
+        <item>مخصص</item>
     </string-array>
     <string-array name="settings_search_kw_macro_protein">
         <item>ماكرو</item>

@@ -4045,6 +4045,9 @@ für dich ein</string>
         <item>Kalorien</item>
         <item>kcal</item>
         <item>Kalorienziel</item>
+        <item>Limit</item>
+        <item>manuell</item>
+        <item>benutzerdefiniert</item>
     </string-array>
     <string-array name="settings_search_kw_macro_protein">
         <item>Makro</item>
