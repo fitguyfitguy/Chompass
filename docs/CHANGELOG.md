@@ -13,6 +13,14 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 ### Changed
 
 - **The Home screen fits more of your day** (Android): the calorie ring keeps its size but sheds the slack around it, so the food log starts higher up; meal headers, the macro row and the View More link now share one margin. The Add Food search field matches the tool buttons beside it, and the meal review sheet's list reads on its own soft background instead of over the ring.
+- **Recipes log as one meal** (Android): recipes you build in the app now log the same way imported recipes do, as one named diary row with the ingredients listed inside, instead of one row per ingredient.
+- **Your favorited serving is the one-tap serving** (Android): re-logging a favorited food from Add Food suggestions now uses the serving you saved as a favorite, not whatever you logged most recently. The last-logged time still follows your newest diary entry.
+- **The calorie target row reads as editable** (Android): in Settings → Calories & Macros the Calories row now carries the same picker glyph as the other editable rows, so it is clear the row itself opens the target wheel next to the Locked chip. Settings → Goals and Settings → Calories & Macros now link to each other, and searching settings for target, limit, manual or custom finds the calorie row. Closes Codeberg [#162](https://codeberg.org/fitguy/Chompass/issues/162) by [@Andr01dx86](https://codeberg.org/Andr01dx86)
+
+### Fixed
+
+- **Fluid ounces read right on the water card** (Android): an empty day showed "1 fl oz" instead of 0, and an 8 fl oz serving stored one ounce low and read back as 7. Conversions now round both ways, and the water goal rows in Settings show fluid ounces when your units are imperial, with a fluid-ounce goal wheel to match. Closes Codeberg [#163](https://codeberg.org/fitguy/Chompass/issues/163) by [@burdick-ryan](https://codeberg.org/burdick-ryan)
+- **Dialog buttons wrap in long languages** (Android): pairs like the Russian keep-editing and analyze-anyway buttons no longer clip off the dialog edge. The buttons wrap onto a second line when both labels do not fit on one. Closes Codeberg [#164](https://codeberg.org/fitguy/Chompass/issues/164) by [@rttnsprt](https://codeberg.org/rttnsprt)
 
 ## [6.3.0] - 2026-11-06
 
