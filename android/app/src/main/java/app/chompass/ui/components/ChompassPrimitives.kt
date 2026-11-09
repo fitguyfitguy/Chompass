@@ -7,7 +7,8 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -310,6 +311,7 @@ fun ChompassTextButton(
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ChompassDialogActions(
     primaryText: String,
@@ -326,16 +328,20 @@ fun ChompassDialogActions(
         MagnitudeDrafts.commitAll()
         onPrimary()
     }
-    Row(
-        modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.End,
-        verticalAlignment = Alignment.CenterVertically,
+    // FlowRow instead of Row: long-locale pairs (e.g. "Продолжить редактирование"
+    // + "Всё равно анализировать") used to clip the primary button off the right
+    // edge; now the primary wraps onto a second line (Codeberg #164). Single-row
+    // rendering is unchanged: end-aligned with the same 6 dp gap.
+    FlowRow(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(6.dp, Alignment.End),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+        itemVerticalAlignment = Alignment.CenterVertically,
     ) {
         if (dismissText != null && onDismiss != null) {
             TextButton(onClick = onDismiss) {
-                Text(dismissText, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                Text(dismissText, maxLines = 2, softWrap = true, overflow = TextOverflow.Ellipsis)
             }
-            Spacer(Modifier.width(6.dp))
         }
         if (destructive) {
             TextButton(
@@ -345,11 +351,11 @@ fun ChompassDialogActions(
                     contentColor = MaterialTheme.colorScheme.error,
                 ),
             ) {
-                Text(primaryText, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                Text(primaryText, maxLines = 2, softWrap = true, overflow = TextOverflow.Ellipsis)
             }
         } else {
             TextButton(onClick = commitPrimary, enabled = primaryEnabled) {
-                Text(primaryText, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                Text(primaryText, maxLines = 2, softWrap = true, overflow = TextOverflow.Ellipsis)
             }
         }
     }
