@@ -8,7 +8,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ### Added
 
-- **Choose where copied entries go** (Android): copying diary rows now opens a paste sheet instead of a floating paste chip. Pick the day on the week strip, then paste at the rows' original times or at the current time. Pasting onto another day switches the diary to it, and an undo snackbar removes the pasted rows. Design and translations by Philip Whiteside. Closes Codeberg [#140](https://codeberg.org/fitguy/Chompass/pulls/140)
+- **Choose where copied entries go** (Android): copying diary rows now opens a paste sheet instead of a floating paste chip. Pick the day on the week strip, then paste at the rows' original times or at the current time. Scrolling the strip names the month of the week in view. Pasting onto another day switches the diary to it, and an undo snackbar removes the pasted rows. Design and translations by Philip Whiteside. Closes Codeberg [#140](https://codeberg.org/fitguy/Chompass/pulls/140)
 
 ### Changed
 
@@ -22,6 +22,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 - **Fluid ounces read right on the water card** (Android): an empty day showed "1 fl oz" instead of 0, and an 8 fl oz serving stored one ounce low and read back as 7. Conversions now round both ways, and the water goal rows in Settings show fluid ounces when your units are imperial, with a fluid-ounce goal wheel to match. Closes Codeberg [#163](https://codeberg.org/fitguy/Chompass/issues/163) by [@burdick-ryan](https://codeberg.org/burdick-ryan)
 - **Dialog buttons wrap in long languages** (Android): pairs like the Russian keep-editing and analyze-anyway buttons no longer clip off the dialog edge. The buttons wrap onto a second line when both labels do not fit on one. Closes Codeberg [#164](https://codeberg.org/fitguy/Chompass/issues/164) by [@rttnsprt](https://codeberg.org/rttnsprt)
 - **Burn bands shade over each other** (Android): on the calorie arc and the bar, each band covers the one under it, and every visible end stays rounded. A partial eat no longer ends in a square cut, and the join between bands no longer pinches or leaves a rectangular nick.
+- **The planned stretch no longer ends in a white line** (Android): that line was the planned-end mark, and it only showed on a day where planned food sat past what you had already eaten. The rounded end of the stretch is the mark now.
 - **The active-burn line stays inside the arc** (Android): the line under the calorie number is shorter in every language, and a long day-type name shrinks to fit instead of running past the end of the arc.
 
 ## [6.3.0] - 2026-11-06

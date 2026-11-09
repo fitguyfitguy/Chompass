@@ -306,7 +306,6 @@ private fun CalorieArcCanvas(
     bonusColor: Color,
     liveBurnColor: Color,
     successColor: Color,
-    muted: Color,
     shadesActive: Boolean,
     shade: ActiveBurnShade?,
     baseGoal: Int,
@@ -550,22 +549,7 @@ private fun CalorieArcCanvas(
                 )
             }
         }
-        if (plannedFillRatio > fillRatio) {
-            val plannedEndAngle = 180f + 180f * plannedFillRatio.coerceIn(0f, 1f)
-            val tickRad = Math.toRadians(plannedEndAngle.toDouble())
-            drawLine(
-                color = muted,
-                start = Offset(
-                    cx + (aIn * Math.cos(tickRad)).toFloat(),
-                    cy + (bIn * Math.sin(tickRad)).toFloat(),
-                ),
-                end = Offset(
-                    cx + (aOut * Math.cos(tickRad)).toFloat(),
-                    cy + (bOut * Math.sin(tickRad)).toFloat(),
-                ),
-                strokeWidth = 2.dp.toPx(),
-            )
-        }
+
     }
 }
 
@@ -767,8 +751,8 @@ private fun DefaultCalorieHero(input: CalorieHeroInput, modifier: Modifier = Mod
         val progressEndColor = heroGradientEnd(progressColor)
         val bonusColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.45f)
         val liveBurnColor = MaterialTheme.colorScheme.tertiary
-        val muted = MaterialTheme.colorScheme.onSurfaceVariant
         val tertiary = MaterialTheme.colorScheme.tertiary
+        val muted = MaterialTheme.colorScheme.onSurfaceVariant
         val successColor = MaterialTheme.colorScheme.success
 
         BoxWithConstraints(
@@ -805,7 +789,6 @@ private fun DefaultCalorieHero(input: CalorieHeroInput, modifier: Modifier = Mod
                 bonusColor = bonusColor,
                 liveBurnColor = liveBurnColor,
                 successColor = successColor,
-                muted = muted,
                 shadesActive = d.shadesActive,
                 shade = burnShade,
                 baseGoal = baseGoal,
@@ -1019,7 +1002,6 @@ private fun SideGaugeCalorieHero(input: CalorieHeroInput, modifier: Modifier = M
                     bonusColor = bonusColor,
                     liveBurnColor = liveBurnColor,
                     successColor = successColor,
-                    muted = muted,
                     shadesActive = d.shadesActive,
                     shade = burnShade,
                     baseGoal = baseGoal,
@@ -1203,7 +1185,6 @@ private fun CompactArcCalorieHero(input: CalorieHeroInput, modifier: Modifier = 
                 bonusColor = bonusColor,
                 liveBurnColor = liveBurnColor,
                 successColor = successColor,
-                muted = muted,
                 shadesActive = d.shadesActive,
                 shade = burnShade,
                 baseGoal = baseGoal,
@@ -1591,10 +1572,7 @@ private fun CompactHorizontalCalorieHero(input: CalorieHeroInput, modifier: Modi
                         )
                     }
                 }
-                if (d.plannedFillRatio > d.fillRatio) {
-                    val plannedX = size.width * d.plannedFillRatio
-                    drawLine(muted, Offset(plannedX, 0f), Offset(plannedX, size.height), strokeWidth = 2.dp.toPx())
-                }
+
             }
             // FlowRow: one line at 1x, wraps instead of squeezing to zero width
             // when localized labels grow at 1.3x on a narrow screen.

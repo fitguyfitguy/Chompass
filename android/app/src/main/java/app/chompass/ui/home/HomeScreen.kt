@@ -1278,6 +1278,7 @@ fun HomeScreen(
                             typeColorsByDate = pasteStripMarkers.first,
                             typeNamesByDate = pasteStripMarkers.second,
                             untrackedDates = pasteStripUntracked,
+                            showMonth = true,
                         )
                         Column(
                             modifier = Modifier.padding(horizontal = 16.dp),

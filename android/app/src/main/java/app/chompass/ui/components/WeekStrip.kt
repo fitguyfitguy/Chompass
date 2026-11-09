@@ -11,9 +11,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -21,6 +22,7 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -32,11 +34,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
@@ -100,6 +103,8 @@ fun WeekEnergyStrip(
     typeNamesByDate: Map<LocalDate, String> = emptyMap(),
     /** Dates marked not tracked (#106): muted tile + hollow dot. */
     untrackedDates: Set<LocalDate> = emptySet(),
+    /** Names the week in view. The paste sheet turns this on; Home already has a date line. */
+    showMonth: Boolean = false,
 ) {
     val firstDow = remember(weekStartDay) { weekStartDay.javaDay }
     val today = remember { LocalDate.now() }
@@ -127,23 +132,45 @@ fun WeekEnergyStrip(
 
     BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
         val pageWidth = maxWidth
-        LazyRow(
-            state = listState,
-            flingBehavior = flingBehavior,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            items((0 until TOTAL_WEEKS).toList()) { weekIndex ->
-                val weekStart = startOfCurrentWeek.plusWeeks((weekIndex - CURRENT_WEEK_INDEX).toLong())
-                Box(modifier = Modifier.width(pageWidth)) {
-                    WeekRow(
-                        weekStart = weekStart,
-                        selectedDate = selectedDate,
-                        today = today,
-                        onSelect = onSelect,
-                        typeColorsByDate = typeColorsByDate,
-                        typeNamesByDate = typeNamesByDate,
-                        untrackedDates = untrackedDates,
-                    )
+        val visibleWeekStart = if (showMonth) {
+            val pagePx = (pageWidth.value * LocalDensity.current.density).toInt().coerceAtLeast(1)
+            val pastHalf = listState.firstVisibleItemScrollOffset > pagePx / 2
+            val index = (listState.firstVisibleItemIndex + if (pastHalf) 1 else 0)
+                .coerceIn(0, TOTAL_WEEKS - 1)
+            startOfCurrentWeek.plusWeeks((index - CURRENT_WEEK_INDEX).toLong())
+        } else {
+            startOfCurrentWeek
+        }
+        Column(Modifier.fillMaxWidth()) {
+            if (showMonth) {
+                Text(
+                    text = weekMonthLabel(visibleWeekStart, today),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 2.dp),
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            LazyRow(
+                state = listState,
+                flingBehavior = flingBehavior,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                items((0 until TOTAL_WEEKS).toList()) { weekIndex ->
+                    val weekStart = startOfCurrentWeek.plusWeeks((weekIndex - CURRENT_WEEK_INDEX).toLong())
+                    Box(modifier = Modifier.width(pageWidth)) {
+                        WeekRow(
+                            weekStart = weekStart,
+                            selectedDate = selectedDate,
+                            today = today,
+                            onSelect = onSelect,
+                            typeColorsByDate = typeColorsByDate,
+                            typeNamesByDate = typeNamesByDate,
+                            untrackedDates = untrackedDates,
+                        )
+                    }
                 }
             }
         }
@@ -319,6 +346,18 @@ private fun narrowDay(dow: DayOfWeek): String {
     val locale = LocaleFormat.first(LocalConfiguration.current.locales[0])
     val formatter = remember(locale) { DateTimeFormatter.ofPattern("EEEEE", locale) }
     return formatter.format(dow)
+}
+
+@Composable
+private fun weekMonthLabel(weekStart: LocalDate, today: LocalDate): String {
+    val weekEnd = weekStart.plusDays(6)
+    val locale = LocaleFormat.first(LocalConfiguration.current.locales[0])
+    val showYear = weekStart.year != today.year || weekEnd.year != today.year
+    val pattern = if (showYear) "MMMM yyyy" else "MMMM"
+    val fmt = remember(locale, pattern) { DateTimeFormatter.ofPattern(pattern, locale) }
+    val start = weekStart.format(fmt)
+    val end = weekEnd.format(fmt)
+    return if (start == end) start else stringResource(R.string.plan_week_range, start, end)
 }
 
 /** Pure equivalent of [narrowDay] for tests: narrow weekday name in [locale]. */
