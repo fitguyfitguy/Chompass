@@ -50,12 +50,19 @@ Only these deviations from upstream bytes are allowed:
    `androidx.room:room-common` 2.8.5 (no Room runtime, no code generation).
 4. **Splits** (below) — verbatim declarations extracted from larger upstream
    files whose full contents would cascade in openScale's app layer.
+5. **HOLD** — `deltas/standard-weight-profile-hold.patch`, applied after
+   R-IMPORT on `StandardWeightProfileHandler.kt` only. The BF105 repeats the
+   weight indication before the body-composition packet. Publishing on that
+   repeat clears the buffer and drops fat. The patch holds the weight until
+   composition arrives, or for 3 seconds. On a pin bump, re-apply this patch.
+   If it fails, the check stops. Do not hand-merge the handler. Upstream the
+   patch, then drop this delta.
 
 ## Vendored files
 
 Tree path = upstream path with the `android_app/` prefix → `android/`.
-Hashes are of the **tree copy** (i.e. after the recorded delta for `R-IMPORT`
-rows). Verified by `scripts/vendor_openscale_check.sh`.
+Hashes are of the **tree copy** after the recorded deltas. Verified by
+`scripts/vendor_openscale_check.sh`.
 
 | Upstream path | Delta | sha256 (tree copy) |
 |---|---|---|
@@ -70,7 +77,7 @@ rows). Verified by `scripts/vendor_openscale_check.sh`.
 | android_app/app/src/main/java/com/health/openscale/core/bluetooth/scales/MedisanaBs44xHandler.kt | R-IMPORT | 3f8c1bd292c6e886331bd1c6fa00f75ee6ff7c1e7aba7d31bb5c189381b110f9 |
 | android_app/app/src/main/java/com/health/openscale/core/bluetooth/scales/ScaleDeviceHandler.kt | R-IMPORT | a59908aa742b07f2c0f72ad240edeb9e9d6188497e97d8c923a15a35465572dd |
 | android_app/app/src/main/java/com/health/openscale/core/bluetooth/scales/StandardBeurerSanitasHandler.kt | R-IMPORT | ba8ffffbd4ecd2b74646fc1db19e4f87b7eab2744e39703aadc0142b8e7df84b |
-| android_app/app/src/main/java/com/health/openscale/core/bluetooth/scales/StandardWeightProfileHandler.kt | R-IMPORT | b153e083dc661b6593c10aadbdb5153cf47952832f11813cbda8d3516646aeff |
+| android_app/app/src/main/java/com/health/openscale/core/bluetooth/scales/StandardWeightProfileHandler.kt | R-IMPORT+HOLD | ce56b30f4222670461c020e64307f265639cd0a6cdc1f675c651a90a83a68194 |
 | android_app/app/src/main/java/com/health/openscale/core/data/Enums.kt | R-IMPORT | 8a47508f2689aa4a8f14e11f2f54d16403778aaea9c8a26be613904eceb6362b |
 | android_app/app/src/main/java/com/health/openscale/core/data/Measurement.kt | - | 5e2b52be01d7c83c268574e85ad12f8700a81202e07291a34c4e706321a7af69 |
 | android_app/app/src/main/java/com/health/openscale/core/data/MeasurementType.kt | R-IMPORT | 5ff214acc8a4c82778cc688c9ecefb686648eebacd1e29fbeb8939d1875ce217 |

@@ -49,10 +49,22 @@ while IFS='|' read -r _ up delta sha _; do
     continue
   fi
   case "$delta" in
-    R-IMPORT) sed -i 's|^import com\.health\.openscale\.R$|import app.chompass.R|' "$tmp" ;;
+    R-IMPORT|R-IMPORT+HOLD)
+      sed -i 's|^import com\.health\.openscale\.R$|import app.chompass.R|' "$tmp"
+      ;;
     -) ;;
     *) echo "FAIL $up (unknown delta: $delta)"; rm -f "$tmp"; fail=$((fail + 1)); continue ;;
   esac
+  if [ "$delta" = "R-IMPORT+HOLD" ]; then
+    patched=$(mktemp)
+    if ! patch --forward --batch --silent -o "$patched" "$tmp" "$ROOT/third_party/openscale/deltas/standard-weight-profile-hold.patch"; then
+      echo "FAIL $up (hold patch did not apply)"
+      rm -f "$tmp" "$patched"
+      fail=$((fail + 1))
+      continue
+    fi
+    mv "$patched" "$tmp"
+  fi
   got=$(sha256sum "$tmp" | cut -d' ' -f1)
   rm -f "$tmp"
   if [ "$got" = "$sha" ]; then

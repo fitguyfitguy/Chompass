@@ -1,0 +1,129 @@
+--- StandardWeightProfileHandler.kt
++++ StandardWeightProfileHandler.kt
+@@ -30,6 +30,9 @@
+ import java.util.UUID
+ import kotlin.math.min
+ import kotlin.random.Random
++import kotlinx.coroutines.Job
++import kotlinx.coroutines.delay
++import kotlinx.coroutines.launch
+ import com.health.openscale.core.data.Kg
+ import com.health.openscale.core.data.Ohm
+ import com.health.openscale.core.data.Percent
+@@ -88,7 +91,12 @@
+     private val UDS_CP_RESP_USER_NOT_AUTHORIZED    = 0x05
+ 
+     // ---- Internal state -------------------------------------------------------
++    /** Weight-only hold. The BF105 sends composition a few milliseconds later; publishing the weight packet first clears the buffer and drops fat. */
++    private val compositionSettleMs = 3_000L
+     private var pendingMeasurement: ScaleMeasurement? = null
++    private var settleJob: Job? = null
++    /** Last published row, so a composition packet that loses the race can still merge onto it. */
++    private var lastPublished: ScaleMeasurement? = null
+     private var registeringNewUser = false
+     private var pendingAppUserId: Int? = null
+     private var pendingConsentForNewUser: Int? = null
+@@ -169,11 +177,9 @@
+     }
+ 
+     override fun onDisconnected() {
+-        pendingMeasurement?.let {
+-            publishTransformed(it)
+-            pendingMeasurement = null
+-        }
+-
++        settleJob?.cancel()
++        settleJob = null
++        pendingMeasurement?.let { publishHeld(it) }
+         super.onDisconnected()
+     }
+ 
+@@ -304,34 +310,65 @@
+     private fun handleNewMeasurement(newM: ScaleMeasurement) {
+         val prev = pendingMeasurement
+ 
+-        // Log for debugging
+         logD("mergeWithPrevious called: prev.userId=${prev?.userId}, newM.userId=${newM.userId}")
+ 
+         if (prev == null) {
+-            // First packet → just buffer it
++            val last = lastPublished
++            if (last != null && hasBodyComposition(last)) return
++            if (last != null && hasBodyComposition(newM) && usersCompatible(last, newM)) {
++                publishHeld(last.snapshot().mergeWith(newM))
++                return
++            }
+             pendingMeasurement = newM
++            armWeightSettle(newM)
+             return
+         }
+ 
+         if (prev.userId != -1) {
+-            // Merge fields from newM into prev
+             prev.mergeWith(newM)
+-
+-            // When we already have weight (or stabilized) → publish
+-            if (prev.hasWeight()) {
+-                publishTransformed(prev)
+-                pendingMeasurement = null
++            pendingMeasurement = prev
++            if (prev.hasWeight() && hasBodyComposition(prev)) {
++                publishHeld(prev)
+             } else {
+-                // Not yet all fields: keep buffering
+-                pendingMeasurement = prev
++                armWeightSettle(prev)
+             }
+         } else {
+-            // Different userId → publish old, start new
+-            publishTransformed(prev)
++            publishHeld(prev)
+             pendingMeasurement = newM
++            armWeightSettle(newM)
+         }
+     }
+ 
++    private fun hasBodyComposition(m: ScaleMeasurement): Boolean =
++        MeasurementType.BODY_FAT in m ||
++            MeasurementType.MUSCLE in m ||
++            MeasurementType.WATER in m ||
++            MeasurementType.LBM in m ||
++            MeasurementType.BONE in m
++
++    /** Unset slot (0xFF / -1) may merge onto a mapped user. Distinct mapped users stay apart. */
++    private fun usersCompatible(a: ScaleMeasurement, b: ScaleMeasurement): Boolean {
++        if (a.userId == 0xFF || a.userId == -1 || b.userId == 0xFF || b.userId == -1) return true
++        return a.userId == b.userId
++    }
++
++    private fun armWeightSettle(m: ScaleMeasurement) {
++        if (!m.hasWeight() || hasBodyComposition(m) || settleJob?.isActive == true) return
++        settleJob = scope.launch {
++            delay(compositionSettleMs)
++            val held = pendingMeasurement ?: return@launch
++            if (held.hasWeight() && !hasBodyComposition(held)) publishHeld(held)
++        }
++    }
++
++    private fun publishHeld(m: ScaleMeasurement) {
++        settleJob?.cancel()
++        settleJob = null
++        pendingMeasurement = null
++        lastPublished = m.snapshot()
++        publishTransformed(m)
++    }
++
+     private fun parseWeightToMeasurement(value: ByteArray): ScaleMeasurement? {
+         if (value.isEmpty()) return null
+         var offset = 0
+@@ -445,7 +482,9 @@
+             val w = massKg(u16le(value, offset), isKg); offset += 2
+             m[MeasurementType.WEIGHT] = Kg(w)
+         } else {
+-            pendingMeasurement?.get(MeasurementType.WEIGHT)?.value?.takeIf { it > 0f }?.let { m[MeasurementType.WEIGHT] = Kg(it) }
++            val heldKg = pendingMeasurement?.get(MeasurementType.WEIGHT)?.value
++                ?: lastPublished?.get(MeasurementType.WEIGHT)?.value
++            heldKg?.takeIf { it > 0f }?.let { m[MeasurementType.WEIGHT] = Kg(it) }
+         }
+ 
+         if (heightPresent) {
