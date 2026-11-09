@@ -5,63 +5,53 @@ import org.junit.Assert.assertNull
 import org.junit.Test
 
 /**
- * The consumed overlay is a butt stroke. Round caps extend past each band
- * end, so the overlay has to grow by that angle or the tips stay unshaded.
+ * The consumed overlay is the eaten extent clipped to the activity zone, and
+ * both surfaces draw it with round ends: a [StrokeCap.Round] stroke on the
+ * arc, a full round rect on the bar. The round caps themselves cover the
+ * zone-start cap behind the span and, ahead of it, the eaten tip and any band
+ * cap the tip has reached — so a partial eat never ends square. The span
+ * therefore stays exactly [zoneStart, eatenEnd]; the old scheme of growing a
+ * butt stroke by cap angles (and the bar's square-end shortcut) is gone.
  */
 class ConsumedShadeOverlayTest {
     @Test
-    fun eatenThroughArcEnd_coversTheOuterRoundCap() {
-        val span = consumedShadeOverlaySpan(
-            zoneStart = 300f,
-            eatenEnd = 360f,
-            roundCapEnds = listOf(330f, 360f),
-            capExtension = 4f,
-        )
-        assertEquals(296f, span!!.start, 0.01f)
-        assertEquals(68f, span.sweep, 0.01f)
-    }
-
-    @Test
-    fun partialEat_doesNotPaintPastTheEatenTip() {
+    fun partialEatInsideABand_spansFromZoneStartToTheTip() {
         val span = consumedShadeOverlaySpan(
             zoneStart = 250f,
             eatenEnd = 300f,
-            roundCapEnds = listOf(280f, 360f),
-            capExtension = 4f,
+            arcEnd = 360f,
         )
-        assertEquals(246f, span!!.start, 0.01f)
-        // 280's cap ends at 284, still inside the eaten tip. 360 is uneaten.
-        assertEquals(54f, span.sweep, 0.01f)
+        assertEquals(250f, span!!.start, 0.01f)
+        assertEquals(50f, span.sweep, 0.01f)
     }
 
     @Test
-    fun eatenJustReachingABandEnd_coversThatCap() {
+    fun eatenTipReachingABandEnd_stillEndsAtTheTip() {
+        // The band's forward cap is shaded by the overlay's own round end,
+        // not by growing the span past the eaten amount.
         val span = consumedShadeOverlaySpan(
             zoneStart = 250f,
             eatenEnd = 330f,
-            roundCapEnds = listOf(330f),
-            capExtension = 4f,
+            arcEnd = 360f,
         )
-        assertEquals(246f, span!!.start, 0.01f)
-        assertEquals(88f, span.sweep, 0.01f)
+        assertEquals(250f, span!!.start, 0.01f)
+        assertEquals(80f, span.sweep, 0.01f)
+    }
+
+    @Test
+    fun eatenPastTheZoneEnd_clampsToIt() {
+        val span = consumedShadeOverlaySpan(
+            zoneStart = 250f,
+            eatenEnd = 400f,
+            arcEnd = 360f,
+        )
+        assertEquals(250f, span!!.start, 0.01f)
+        assertEquals(110f, span.sweep, 0.01f)
     }
 
     @Test
     fun notYetInTheZone_drawsNothing() {
-        assertNull(
-            consumedShadeOverlaySpan(
-                zoneStart = 300f,
-                eatenEnd = 300f,
-                roundCapEnds = listOf(360f),
-                capExtension = 4f,
-            ),
-        )
-    }
-
-    @Test
-    fun barMatchesARoundEndOnlyWhenTheTipLandsOnIt() {
-        assertEquals(6f, consumedBarEndRadius(100f, listOf(80f, 100f), 6f), 0.01f)
-        assertEquals(0f, consumedBarEndRadius(90f, listOf(80f, 100f), 6f), 0.01f)
-        assertEquals(0f, consumedBarEndRadius(100f, emptyList(), 6f), 0.01f)
+        assertNull(consumedShadeOverlaySpan(zoneStart = 300f, eatenEnd = 300f, arcEnd = 360f))
+        assertNull(consumedShadeOverlaySpan(zoneStart = 300f, eatenEnd = 250f, arcEnd = 360f))
     }
 }

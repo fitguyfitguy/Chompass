@@ -377,6 +377,9 @@ private fun CalorieArcCanvas(
             val plannedDegrees = 180f * plannedFillRatio.coerceIn(0f, 1f)
             val plannedSweep = (plannedDegrees - eatenDegrees).coerceAtLeast(0f)
             if (plannedSweep > 0f) {
+                // Round far cap. The start cap sits under the eaten stroke
+                // drawn next, so the join stays one profile instead of a
+                // square cut at the eaten tip.
                 drawArc(
                     color = progressColor.copy(alpha = PlannedSegmentAlpha),
                     startAngle = 180f + eatenDegrees,
@@ -384,7 +387,7 @@ private fun CalorieArcCanvas(
                     useCenter = false,
                     topLeft = topLeft,
                     size = arcSize,
-                    style = Stroke(width = strokePx),
+                    style = Stroke(width = strokePx, cap = StrokeCap.Round),
                 )
             }
         }
@@ -397,9 +400,16 @@ private fun CalorieArcCanvas(
             size = arcSize,
             style = Stroke(width = strokePx, cap = StrokeCap.Round)
         )
-        // Round-capped band ends. The consumed overlay (below) extends past
-        // any of these the eaten tip has reached, so the semicircle is shaded.
-        val roundCapEnds = ArrayList<Float>(3)
+        // Half the stroke expressed in ring degrees at the semi-major axis.
+        // Band joins tuck this much underneath the band that follows, so the
+        // edge between two bands is one flush boundary instead of two stacked
+        // caps pinching the ring; the consumed overlay below needs no cap
+        // angles at all.
+        val capExtension = if (aMid > 0f) {
+            Math.toDegrees((strokePx / 2.0) / aMid.toDouble()).toFloat()
+        } else {
+            0f
+        }
         if (shadesActive && shade != null) {
             // Single energy scale, one meaning per shade:
             //  - estimated-active zone = fixed dim segment [base → base+typical].
@@ -411,8 +421,17 @@ private fun CalorieArcCanvas(
             val live = shade.live
             val baseAngle = 180f * HomeCalorieDisplay.burnShadeBaseFraction(baseGoal, typical, live)
             val typicalSweep = 180f * HomeCalorieDisplay.burnShadeTypicalFraction(baseGoal, typical, live)
+            val liveSweep = 180f * HomeCalorieDisplay.burnShadeLiveFraction(baseGoal, live, typical)
+            val liveMaxSweep = (180f - baseAngle).coerceAtLeast(0f)
+            val withinTypicalSweep = liveSweep.coerceAtMost(typicalSweep)
+            val overTypicalSweep = (liveSweep - typicalSweep).coerceAtLeast(0f)
+            // Estimated-active zone: round caps at both its own ends. When the
+            // over-typical stretch follows, the right end extends capExtension
+            // underneath it — hidden by that band's butt-started body — so the
+            // shared boundary stays flush.
             if (typicalSweep > 0f) {
-                val sweep = typicalSweep.coerceAtMost(180f - baseAngle)
+                val sweep = (typicalSweep + if (overTypicalSweep > 0f) capExtension else 0f)
+                    .coerceAtMost(180f - baseAngle)
                 drawArc(
                     color = bonusColor,
                     startAngle = 180f + baseAngle,
@@ -422,11 +441,10 @@ private fun CalorieArcCanvas(
                     size = arcSize,
                     style = Stroke(width = strokePx, cap = StrokeCap.Round)
                 )
-                roundCapEnds += 180f + baseAngle + sweep
             }
-            val liveSweep = 180f * HomeCalorieDisplay.burnShadeLiveFraction(baseGoal, live, typical)
-            val liveMaxSweep = (180f - baseAngle).coerceAtLeast(0f)
-            val withinTypicalSweep = liveSweep.coerceAtMost(typicalSweep)
+            // Live-active shade: opaque, grows from the base boundary through
+            // the typical zone, shading over the estimated zone; both ends are
+            // visible ends and stay round.
             if (withinTypicalSweep > 0f) {
                 val sweep = withinTypicalSweep.coerceAtMost(liveMaxSweep)
                 drawArc(
@@ -438,22 +456,45 @@ private fun CalorieArcCanvas(
                     size = arcSize,
                     style = Stroke(width = strokePx, cap = StrokeCap.Round)
                 )
-                roundCapEnds += 180f + baseAngle + sweep
             }
-            val overTypicalSweep = (liveSweep - typicalSweep).coerceAtLeast(0f)
+            // Over-typical stretch turns success color. It joins the estimated
+            // zone flush with a butt start over the tucked-under extension;
+            // the zone's far end gets a round cap, drawn as the circle a Round
+            // stroke would add there.
             if (overTypicalSweep > 0f) {
                 val start = 180f + baseAngle + typicalSweep
                 val sweep = overTypicalSweep.coerceAtMost((liveMaxSweep - typicalSweep).coerceAtLeast(0f))
-                drawArc(
-                    color = successColor,
-                    startAngle = start,
-                    sweepAngle = sweep,
-                    useCenter = false,
-                    topLeft = topLeft,
-                    size = arcSize,
-                    style = Stroke(width = strokePx, cap = StrokeCap.Round)
-                )
-                roundCapEnds += start + sweep
+                if (typicalSweep > 0f) {
+                    drawArc(
+                        color = successColor,
+                        startAngle = start,
+                        sweepAngle = sweep,
+                        useCenter = false,
+                        topLeft = topLeft,
+                        size = arcSize,
+                        style = Stroke(width = strokePx)
+                    )
+                    val capAngle = Math.toRadians((start + sweep).toDouble())
+                    drawCircle(
+                        successColor,
+                        radius = strokePx / 2f,
+                        center = Offset(
+                            cx + (aMid * Math.cos(capAngle)).toFloat(),
+                            cy + (bMid * Math.sin(capAngle)).toFloat(),
+                        ),
+                    )
+                } else {
+                    // No estimated stretch to join: both ends are visible ends.
+                    drawArc(
+                        color = successColor,
+                        startAngle = start,
+                        sweepAngle = sweep,
+                        useCenter = false,
+                        topLeft = topLeft,
+                        size = arcSize,
+                        style = Stroke(width = strokePx, cap = StrokeCap.Round)
+                    )
+                }
             }
             zoneStartAngle = 180f + baseAngle
         } else if (displayMode == HomeCalorieDisplayMode.ADD_ACTIVE && activeCalories > 0 && effectiveGoal > 0) {
@@ -474,7 +515,6 @@ private fun CalorieArcCanvas(
                     size = arcSize,
                     style = Stroke(width = strokePx, cap = StrokeCap.Round)
                 )
-                roundCapEnds += start + tailSweep
                 zoneStartAngle = start
             }
         }
@@ -487,20 +527,16 @@ private fun CalorieArcCanvas(
         // ramp here would make that separation vary along the band.
         // eatenDegrees is the visible fill tip (frozen or animated); reused above
         // for the planned segment so that band starts where eaten ends.
-        // Round caps extend half a stroke past each endpoint. The overlay is a
-        // butt stroke extended by that angle, not a Round stroke: a Round cap
-        // here would stick a consumed semicircle past a partial eaten tip.
-        val capExtension = if (aMid > 0f) {
-            Math.toDegrees((strokePx / 2.0) / aMid.toDouble()).toFloat()
-        } else {
-            0f
-        }
+        // The overlay is the eaten arc clipped to the zone: a Round-capped
+        // stroke from the zone start to the eaten tip. Its own caps cover the
+        // zone-start cap behind it and, ahead of it, the eaten tip and any
+        // band cap the tip has reached — so a partial eat ends in the same
+        // round profile as the fill, never in a butt edge.
         zoneStartAngle?.let { zoneStart ->
             val span = consumedShadeOverlaySpan(
                 zoneStart = zoneStart,
                 eatenEnd = 180f + eatenDegrees,
-                roundCapEnds = roundCapEnds,
-                capExtension = capExtension,
+                arcEnd = 360f,
             )
             if (span != null) {
                 drawArc(
@@ -510,7 +546,7 @@ private fun CalorieArcCanvas(
                     useCenter = false,
                     topLeft = topLeft,
                     size = arcSize,
-                    style = Stroke(width = strokePx),
+                    style = Stroke(width = strokePx, cap = StrokeCap.Round),
                 )
             }
         }
@@ -1389,63 +1425,138 @@ private fun CompactHorizontalCalorieHero(input: CalorieHeroInput, modifier: Modi
                     val plannedX = size.width * d.plannedFillRatio
                     val segW = plannedX - fillX
                     if (segW > 0f) {
-                        drawRect(
+                        // Square left meets the eaten bar at full height.
+                        // Round right is the planned end.
+                        drawPath(
+                            Path().apply {
+                                addRoundRect(
+                                    RoundRect(
+                                        rect = Rect(fillX, 0f, plannedX, size.height),
+                                        topRight = CornerRadius(radius, radius),
+                                        bottomRight = CornerRadius(radius, radius),
+                                    ),
+                                )
+                            },
                             progressColor.copy(alpha = PlannedSegmentAlpha),
-                            topLeft = Offset(fillX, 0f),
-                            size = Size(segW, size.height),
                         )
                     }
                 }
-                drawRoundRect(
-                    brush = eatenBrush,
-                    size = Size(size.width * d.fillRatio, size.height),
-                    cornerRadius = CornerRadius(radius, radius),
-                )
+                val eatenRight = size.width * d.fillRatio
+                val plannedFollows = d.plannedFillRatio > d.fillRatio && eatenRight > 0f
+                if (plannedFollows) {
+                    // Square right end meets the planned stretch at full height.
+                    // A round tip here leaves corner wedges against that edge.
+                    drawPath(
+                        Path().apply {
+                            addRoundRect(
+                                RoundRect(
+                                    rect = Rect(0f, 0f, eatenRight, size.height),
+                                    topLeft = CornerRadius(radius, radius),
+                                    bottomLeft = CornerRadius(radius, radius),
+                                ),
+                            )
+                        },
+                        eatenBrush,
+                    )
+                } else {
+                    drawRoundRect(
+                        brush = eatenBrush,
+                        size = Size(eatenRight, size.height),
+                        cornerRadius = CornerRadius(radius, radius),
+                    )
+                }
                 // Where the active zone starts; the consumed pass below keys
-                // off it. bandEnds are the round-rect tips, so the overlay can
-                // match a cap it has reached instead of leaving corner nicks.
+                // off it. Bands shade over each other from the zone start,
+                // every visible end stays round, and interior joins are flush.
                 var boundaryX: Float? = null
-                val bandEnds = ArrayList<Float>(3)
                 if (d.shadesActive && burnShade != null) {
                     val shade = burnShade!!
                     val baseX = size.width * HomeCalorieDisplay.burnShadeBaseFraction(baseGoal, shade.typical, shade.live)
                     val typicalW = (size.width * HomeCalorieDisplay.burnShadeTypicalFraction(baseGoal, shade.typical, shade.live))
                         .coerceAtMost(size.width - baseX)
                     val liveW = size.width * HomeCalorieDisplay.burnShadeLiveFraction(baseGoal, shade.live, shade.typical)
-                    // Estimated-active zone: fixed dim segment [base → base+typical].
-                    if (typicalW > 0f) {
-                        drawRoundRect(
-                            activeColor,
-                            topLeft = Offset(baseX, 0f),
-                            size = Size(typicalW, size.height),
-                            cornerRadius = CornerRadius(radius, radius),
-                        )
-                        bandEnds += baseX + typicalW
-                    }
-                    // Live-active shade: opaque, grows from the base boundary through the
-                    // typical zone.
                     val withinTypicalW = liveW.coerceAtMost(typicalW)
+                    val overW = (liveW - typicalW).coerceAtLeast(0f)
+                        .coerceAtMost((size.width - baseX - typicalW).coerceAtLeast(0f))
+                    // Estimated-active zone: fixed dim segment [base → base+typical].
+                    // Round at the zone start; when the over-typical stretch
+                    // follows, the right edge squares off and tucks up to half
+                    // a cap underneath it so the shared boundary is one flush
+                    // edge — with no stretch following, the rounded right end
+                    // is the zone end.
+                    if (typicalW > 0f) {
+                        if (overW > 0f) {
+                            drawPath(
+                                Path().apply {
+                                    addRoundRect(
+                                        RoundRect(
+                                            rect = Rect(
+                                                baseX,
+                                                0f,
+                                                baseX + typicalW + kotlin.math.min(radius, overW),
+                                                size.height,
+                                            ),
+                                            topLeft = CornerRadius(radius, radius),
+                                            bottomLeft = CornerRadius(radius, radius),
+                                        ),
+                                    )
+                                },
+                                activeColor,
+                            )
+                        } else {
+                            drawRoundRect(
+                                activeColor,
+                                topLeft = Offset(baseX, 0f),
+                                size = Size(typicalW, size.height),
+                                cornerRadius = CornerRadius(radius, radius),
+                            )
+                        }
+                    }
+                    // Live-active shade grows from the base boundary through the
+                    // typical zone, shading over the estimated zone. The right
+                    // end is round only when it is the zone end; when the
+                    // over-typical stretch follows, it meets that band flush.
                     if (withinTypicalW > 0f) {
-                        drawRoundRect(
-                            tertiary,
-                            topLeft = Offset(baseX, 0f),
-                            size = Size(withinTypicalW, size.height),
-                            cornerRadius = CornerRadius(radius, radius),
-                        )
-                        bandEnds += baseX + withinTypicalW
+                        if (overW > 0f) {
+                            drawPath(
+                                Path().apply {
+                                    addRoundRect(
+                                        RoundRect(
+                                            rect = Rect(baseX, 0f, baseX + withinTypicalW, size.height),
+                                            topLeft = CornerRadius(radius, radius),
+                                            bottomLeft = CornerRadius(radius, radius),
+                                        ),
+                                    )
+                                },
+                                tertiary,
+                            )
+                        } else {
+                            drawRoundRect(
+                                tertiary,
+                                topLeft = Offset(baseX, 0f),
+                                size = Size(withinTypicalW, size.height),
+                                cornerRadius = CornerRadius(radius, radius),
+                            )
+                        }
                     }
                     // Over-typical stretch turns success color; the bar end is the
                     // expected-day target, so the live tip lands at the bar end.
-                    val overW = (liveW - typicalW).coerceAtLeast(0f)
-                        .coerceAtMost((size.width - baseX - typicalW).coerceAtLeast(0f))
+                    // Square left edge joins the estimated zone flush over its
+                    // tucked-under extension; the rounded right end is the zone
+                    // end.
                     if (overW > 0f) {
-                        drawRoundRect(
+                        drawPath(
+                            Path().apply {
+                                addRoundRect(
+                                    RoundRect(
+                                        rect = Rect(baseX + typicalW, 0f, baseX + typicalW + overW, size.height),
+                                        topRight = CornerRadius(radius, radius),
+                                        bottomRight = CornerRadius(radius, radius),
+                                    ),
+                                )
+                            },
                             successColor,
-                            topLeft = Offset(baseX + typicalW, 0f),
-                            size = Size(overW, size.height),
-                            cornerRadius = CornerRadius(radius, radius),
                         )
-                        bandEnds += baseX + typicalW + overW
                     }
                     boundaryX = baseX
                 } else if (displayMode == HomeCalorieDisplayMode.ADD_ACTIVE && d.target > baseGoal) {
@@ -1458,34 +1569,25 @@ private fun CompactHorizontalCalorieHero(input: CalorieHeroInput, modifier: Modi
                         size = Size(size.width - baseX, size.height),
                         cornerRadius = CornerRadius(radius, radius),
                     )
-                    bandEnds += size.width
                     boundaryX = baseX
                 }
                 boundaryX?.let { baseX ->
-                    // Consumed stretch of the activity zone. Bar caps are inset,
-                    // so a rect that ends on a band end covers that cap. Match
-                    // the round end only when the eaten tip lands on one; a
-                    // partial eat uses a square right end so the band body is
-                    // covered up to the tip (a round end there leaves the band
-                    // showing in the corners). The left end stays round so the
-                    // overlay does not square off the zone-start cap.
-                    val consumedW = (size.width * d.fillRatio - baseX).coerceIn(0f, size.width - baseX)
-                    if (consumedW > 0f) {
-                        val endX = baseX + consumedW
-                        val right = consumedBarEndRadius(endX, bandEnds, radius)
-                        drawPath(
-                            Path().apply {
-                                addRoundRect(
-                                    RoundRect(
-                                        rect = Rect(baseX, 0f, endX, size.height),
-                                        topLeft = CornerRadius(radius, radius),
-                                        bottomLeft = CornerRadius(radius, radius),
-                                        topRight = CornerRadius(right, right),
-                                        bottomRight = CornerRadius(right, right),
-                                    ),
-                                )
-                            },
+                    // Consumed stretch of the activity zone: the same span the
+                    // arc tints, drawn as a full round rect. Both ends are
+                    // round — the left keeps the zone-start cap, the right is
+                    // the eaten tip's own cap shape — so a partial eat inside
+                    // a band ends round, never square.
+                    val span = consumedShadeOverlaySpan(
+                        zoneStart = baseX,
+                        eatenEnd = size.width * d.fillRatio,
+                        arcEnd = size.width,
+                    )
+                    if (span != null) {
+                        drawRoundRect(
                             progressColor.copy(alpha = 0.55f),
+                            topLeft = Offset(span.start, 0f),
+                            size = Size(span.sweep, size.height),
+                            cornerRadius = CornerRadius(radius, radius),
                         )
                     }
                 }
@@ -2123,52 +2225,24 @@ private fun signedKcal(value: Int): String =
     if (value > 0) "+" + LocaleFormat.integer(value) else LocaleFormat.integer(value)
 
 /**
- * Butt-stroke span that covers [StrokeCap.Round] semicircles of burn bands
- * the eaten tip has reached.
- *
- * A round cap extends [capExtension] degrees past its endpoint. A butt stroke
- * that stops on the endpoint leaves that semicircle unshaded. The end grows
- * only for band ends the eaten tip has reached, so a partial eat does not
- * paint a consumed cap past the eaten amount.
+ * Consumed overlay extent over the activity zone, shared by the arc and the
+ * bar: the eaten extent clipped to the zone — [zoneStart, eatenEnd], with the
+ * bar passing pixel x values and the arc ring degrees. Both surfaces draw the
+ * span with round ends ([StrokeCap.Round] stroke on the arc, full round rect
+ * on the bar), so the caps themselves cover the zone-start cap behind the
+ * span and, ahead of it, the eaten tip and any band cap it has reached. A
+ * partial eat never ends square, and no cap bookkeeping feeds the span.
+ * Returns null before the zone is reached.
  */
 internal data class ShadeOverlaySpan(val start: Float, val sweep: Float)
 
 internal fun consumedShadeOverlaySpan(
     zoneStart: Float,
     eatenEnd: Float,
-    roundCapEnds: List<Float>,
-    capExtension: Float,
-    arcStart: Float = 180f,
-    arcSweep: Float = 180f,
+    arcEnd: Float,
 ): ShadeOverlaySpan? {
-    if (eatenEnd <= zoneStart || capExtension < 0f) return null
-    val arcEnd = arcStart + arcSweep
-    val start = (zoneStart - capExtension).coerceIn(arcStart - capExtension, eatenEnd)
-    var end = eatenEnd
-    val reached = eatenEnd + 0.05f
-    for (bandEnd in roundCapEnds) {
-        if (bandEnd <= reached) {
-            val capEnd = bandEnd + capExtension
-            if (capEnd > end) end = capEnd
-        }
-    }
-    end = end.coerceAtMost(arcEnd + capExtension)
-    val sweep = end - start
+    if (eatenEnd <= zoneStart) return null
+    val sweep = eatenEnd.coerceAtMost(arcEnd) - zoneStart
     if (sweep <= 0f) return null
-    return ShadeOverlaySpan(start, sweep)
-}
-
-/**
- * Right-end radius of the bar's consumed overlay. Bar caps are inset, so a
- * square end covers a cap the eaten tip has passed. Match the round end only
- * when the tip lands on one, so the overlay does not square the shoulders.
- */
-internal fun consumedBarEndRadius(
-    consumedEnd: Float,
-    bandEnds: List<Float>,
-    radius: Float,
-    slop: Float = 0.75f,
-): Float {
-    if (radius <= 0f) return 0f
-    return if (bandEnds.any { kotlin.math.abs(it - consumedEnd) <= slop }) radius else 0f
+    return ShadeOverlaySpan(zoneStart, sweep)
 }
