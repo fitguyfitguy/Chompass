@@ -6,6 +6,8 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## [Unreleased]
 
+## [6.3.0] - 2026-11-06
+
 ### Added
 
 - **Choose where copied entries go** (Android): copying diary rows now opens a paste sheet instead of a floating paste chip. Pick the day on the week strip, then paste at the rows' original times or at the current time. Scrolling the strip names the month of the week in view. Pasting onto another day switches the diary to it, and an undo snackbar removes the pasted rows. Design and translations by Philip Whiteside. Closes Codeberg [#140](https://codeberg.org/fitguy/Chompass/pulls/140)
@@ -16,23 +18,8 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 - **Recipes log as one meal** (Android): recipes you build in the app now log the same way imported recipes do, as one named diary row with the ingredients listed inside, instead of one row per ingredient.
 - **Your favorited serving is the one-tap serving** (Android): re-logging a favorited food from Add Food suggestions now uses the serving you saved as a favorite, not whatever you logged most recently. The last-logged time still follows your newest diary entry.
 - **The calorie target row reads as editable** (Android): in Settings → Calories & Macros the Calories row now carries the same picker glyph as the other editable rows, so it is clear the row itself opens the target wheel next to the Locked chip. Settings → Goals and Settings → Calories & Macros now link to each other, and searching settings for target, limit, manual or custom finds the calorie row. Closes Codeberg [#162](https://codeberg.org/fitguy/Chompass/issues/162) by [@Andr01dx86](https://codeberg.org/Andr01dx86)
-
-### Fixed
-
-- **Sync from scale can finish a Beurer BF 105 weigh-in** (Android): finding the scale no longer drops the connection, and a reading that has no notification support no longer closes the app. A weigh-in lands on the Scale metrics card with the body fat, muscle, water and bone the scale sent in the same step, not weight alone.
-
-- **Fluid ounces read right on the water card** (Android): an empty day showed "1 fl oz" instead of 0, and an 8 fl oz serving stored one ounce low and read back as 7. Conversions now round both ways, and the water goal rows in Settings show fluid ounces when your units are imperial, with a fluid-ounce goal wheel to match. Closes Codeberg [#163](https://codeberg.org/fitguy/Chompass/issues/163) by [@burdick-ryan](https://codeberg.org/burdick-ryan)
-- **Dialog buttons wrap in long languages** (Android): pairs like the Russian keep-editing and analyze-anyway buttons no longer clip off the dialog edge. The buttons wrap onto a second line when both labels do not fit on one. Closes Codeberg [#164](https://codeberg.org/fitguy/Chompass/issues/164) by [@rttnsprt](https://codeberg.org/rttnsprt)
-- **Burn bands shade over each other** (Android): on the calorie arc and the bar, each band covers the one under it, and every visible end stays rounded. A partial eat no longer ends in a square cut, and the join between bands no longer pinches or leaves a rectangular nick.
-- **The planned stretch no longer ends in a white line** (Android): that line was the planned-end mark, and it only showed on a day where planned food sat past what you had already eaten. The rounded end of the stretch is the mark now.
-- **The active-burn line stays inside the arc** (Android): the line under the calorie number is shorter in every language, and a long day-type name shrinks to fit instead of running past the end of the arc.
-
-## [6.3.0] - 2026-11-06
-
-### Changed
-
 - **The calorie ring reads calmer** (Android): the thin tick mark that crossed the ring and the bar at your base budget is gone. The color change between your eaten budget and the burn shades marks that spot now; the planned stretch keeps its marker.
-- **Bluetooth scale sync now binds to your scale's saved user profile** (Android): when the scale asks who is weighing, the sync sheet lists the scale's saved slots to pick from, with a register-as-new-user option, and asks for the slot's 4-digit PIN when the scale wants one. The picked slot and PIN are remembered, so later syncs run without asking again. **Not yet verified on a real scale**: this beta ships the handshake ahead of the next hardware test session, so scale sync stays experimental for now; if your scale stalls or refuses the bind, tell the tracker what it did.
+- **Bluetooth scale sync now binds to your scale's saved user profile** (Android, WIP): when the scale asks who is weighing, the sync sheet lists the scale's saved slots to pick from, with a register-as-new-user option, and asks for the slot's 4-digit PIN when the scale wants one. The picked slot and PIN are remembered, so later syncs run without asking again. A Beurer BF 105 weigh-in now lands on the Scale metrics card with the body fat, muscle, water and bone from that step, not weight alone. Other scale families are still experimental. If your scale stalls or refuses the bind, tell the tracker what it did.
 - **The meal review sheet opens with just the essentials** (Android): the ingredient list and the full macro table now start collapsed behind one-line summaries, so name, meal, portion and calories come first when you log a meal. Tapping a summary opens the editable rows exactly as before.
 - **Planned meals now read on the calorie gauge** (Android): on days with planned meals, the ring shows the planned stretch beyond what you have already eaten, with a "+X planned" caption beside your remaining calories. The ⓘ budget breakdown now explains every color of the ring, including the planned stretch and the burn shades, and the planned stretch is spoken by screen readers.
 - **Days flip with a subtle animation** (Android): the date caption now cross-fades when you swipe to another day, and screen readers get previous-day and next-day actions on the calorie card.
@@ -40,7 +27,13 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ### Fixed
 
-- **The plan-building screen can be left while it works** (Android): during onboarding, your nutrition plan is built while an animated checklist plays. When the AI answer takes a while, the back arrow at the top now stays available, so you can go back to the previous step instead of waiting — continuing afterwards restarts the build cleanly.
+- **Sync from scale can finish a Beurer BF 105 weigh-in** (Android): finding the scale no longer drops the connection, and a reading that has no notification support no longer closes the app.
+- **Fluid ounces read right on the water card** (Android): an empty day showed "1 fl oz" instead of 0, and an 8 fl oz serving stored one ounce low and read back as 7. Conversions now round both ways, and the water goal rows in Settings show fluid ounces when your units are imperial, with a fluid-ounce goal wheel to match. Closes Codeberg [#163](https://codeberg.org/fitguy/Chompass/issues/163) by [@burdick-ryan](https://codeberg.org/burdick-ryan)
+- **Dialog buttons wrap in long languages** (Android): pairs like the Russian keep-editing and analyze-anyway buttons no longer clip off the dialog edge. The buttons wrap onto a second line when both labels do not fit on one. Closes Codeberg [#164](https://codeberg.org/fitguy/Chompass/issues/164) by [@rttnsprt](https://codeberg.org/rttnsprt)
+- **Burn bands shade over each other** (Android): on the calorie arc and the bar, each band covers the one under it, and every visible end stays rounded. A partial eat no longer ends in a square cut, and the join between bands no longer pinches or leaves a rectangular nick.
+- **The planned stretch no longer ends in a white line** (Android): that line was the planned-end mark, and it only showed on a day where planned food sat past what you had already eaten. The rounded end of the stretch is the mark now.
+- **The active-burn line stays inside the arc** (Android): the line under the calorie number is shorter in every language, and a long day-type name shrinks to fit instead of running past the end of the arc.
+- **The plan-building screen can be left while it works** (Android): during onboarding, your nutrition plan is built while an animated checklist plays. When the AI answer takes a while, the back arrow at the top now stays available, so you can go back to the previous step instead of waiting. Continuing afterwards restarts the build cleanly.
 
 ## [6.2.0] - 2026-11-04
 
