@@ -72,6 +72,8 @@ class ScaleSyncController(
         const val TAG = "ChompassScaleSync"
         const val SCAN_TIMEOUT_MS = 60_000L
         const val RUN_HARD_TIMEOUT_MS = 120_000L
+        /** After the last saved row, end the run so the sheet does not sit until the hard timeout. */
+        const val FINISH_QUIET_MS = 2_000L
     }
 
     private val _state = MutableStateFlow<ScaleSyncState>(ScaleSyncState.Idle)
@@ -113,6 +115,7 @@ class ScaleSyncController(
         cachedUser = buildScaleUser()
         driverSettings.load()
         val finished = CompletableDeferred<ScaleSyncState>()
+        runFinished = finished
         _state.value = ScaleSyncState.Scanning
 
         val ble = ScaleBleTransport(
@@ -142,14 +145,15 @@ class ScaleSyncController(
                 }
             },
             onLinkLost = { reason ->
+                handler?.handleDisconnected()
                 val current = _state.value
                 if (current is ScaleSyncState.Reading ||
                     current is ScaleSyncState.Connecting ||
                     current is ScaleSyncState.AwaitingUser ||
                     current is ScaleSyncState.AwaitingConsent
                 ) {
-                    if (publishedCount.get() > 0) {
-                        finished.complete(ScaleSyncState.Done(publishedCount.get()))
+                    if (sawPublish || publishedCount.get() > 0) {
+                        // The import quiet-finish owns the Done count.
                     } else {
                         finished.complete(ScaleSyncState.Failed(reason))
                     }
@@ -190,6 +194,7 @@ class ScaleSyncController(
     }
 
     fun cancel() {
+        handler?.handleDisconnected()
         runScope?.cancel()
         transport?.close()
         _state.value = ScaleSyncState.Idle
@@ -197,8 +202,15 @@ class ScaleSyncController(
     }
 
     private val publishedCount = AtomicInteger(0)
+    private var sawPublish = false
+    private var runFinished: CompletableDeferred<ScaleSyncState>? = null
+    private var finishQuiet: Job? = null
 
     private fun cleanupRun() {
+        finishQuiet?.cancel()
+        finishQuiet = null
+        runFinished = null
+        handler?.handleDisconnected()
         handler?.detach()
         handler = null
         transport = null
@@ -206,6 +218,7 @@ class ScaleSyncController(
         cachedUser = null
         lastDeviceName = null
         publishedCount.set(0)
+        sawPublish = false
     }
 
     // --- ScaleDeviceHandler.Callbacks ------------------------------------------
@@ -213,6 +226,7 @@ class ScaleSyncController(
     override fun onPublish(measurement: ScaleMeasurement) {
         val mapped = ScaleMeasurementMapper.map(measurement) ?: return
         if (mapped.weight == null && mapped.fat == null && mapped.composition == null) return
+        sawPublish = true
         LogManager.i(
             TAG,
             "publish -> weight=${mapped.weight != null} fat=${mapped.fat != null} comp=${mapped.composition != null}",
@@ -227,6 +241,19 @@ class ScaleSyncController(
             }
             if (changed > 0) {
                 publishedCount.addAndGet(changed)
+            }
+            scheduleFinishAfterPublish()
+        }
+    }
+
+    private fun scheduleFinishAfterPublish() {
+        val finished = runFinished ?: return
+        if (finished.isCompleted) return
+        finishQuiet?.cancel()
+        finishQuiet = runScope?.launch {
+            delay(FINISH_QUIET_MS)
+            if (!finished.isCompleted && publishedCount.get() > 0) {
+                finished.complete(ScaleSyncState.Done(publishedCount.get()))
             }
         }
     }
