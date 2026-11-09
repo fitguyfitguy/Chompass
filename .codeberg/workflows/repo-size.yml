@@ -25,4 +25,4 @@ jobs:
           if ! git rev-parse --verify -q origin/main >/dev/null; then
             RANGE="HEAD"
           fi
-          ./scripts/check_repo_size.sh --range "$RANGE" --budget-mib 450
+          ./scripts/check_repo_size.sh --range "$RANGE" --budget-mib 250
