@@ -85,7 +85,7 @@ fun WaterSettingsScreen(
             HorizontalDivider()
             SettingRow(
                 stringResource(R.string.settings_water_goal),
-                stringResource(R.string.settings_water_goal_summary, ui.waterDailyGoalMl),
+                formatWaterGoalSummary(ui.waterDailyGoalMl, ui.weightMetric),
                 icon = Icons.Outlined.WaterDrop,
             ) { sheet = SettingsSheet.WATER_GOAL }
             HorizontalDivider()
@@ -157,7 +157,7 @@ fun WaterSettingsScreen(
                     onChange = vm::setWaterFoodWaterEnabled,
                 )
                 HorizontalDivider()
-                WaterDynamicGoalPreviewRow(ui.waterDynamicGoalPreview)
+                WaterDynamicGoalPreviewRow(ui.waterDynamicGoalPreview, ui.weightMetric)
                 Column(
                     Modifier
                         .fillMaxWidth()
@@ -239,7 +239,7 @@ private fun waterRemindersSummary(ui: SettingsUiState): String {
 
 /** Static preview of today's dynamic goal with the input breakdown (no tap target). */
 @Composable
-internal fun WaterDynamicGoalPreviewRow(preview: WaterGoalBreakdown?) {
+internal fun WaterDynamicGoalPreviewRow(preview: WaterGoalBreakdown?, useMetric: Boolean) {
     if (preview == null) return
     Row(
         Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
@@ -266,7 +266,7 @@ internal fun WaterDynamicGoalPreviewRow(preview: WaterGoalBreakdown?) {
             )
         }
         Text(
-            stringResource(R.string.settings_water_goal_summary, preview.netGoalMl),
+            formatWaterGoalSummary(preview.netGoalMl, useMetric),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )

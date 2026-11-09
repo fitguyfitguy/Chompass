@@ -162,7 +162,7 @@ fun WaterCustomAmountSheet(
     onAdd: (Int) -> Unit,
 ) {
     val sheetState = rememberChompassSheetState()
-    var amountMl by remember { mutableStateOf(if (useMetric) 250 else 8) }
+    var amountMl by remember { mutableStateOf(if (useMetric) 250 else WaterAmountFormat.mlFromFlOz(8)) }
     val amountFlOz = WaterAmountFormat.flOzFromMl(amountMl)
 
     ChompassBottomSheet(

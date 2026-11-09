@@ -116,7 +116,7 @@ private fun WaterProgressContent(context: Context, snapshot: WidgetSnapshot) {
         } else {
             context.getString(
                 R.string.water_amount_fl_oz,
-                WaterAmountFormat.flOzFromMl(snapshot.waterNextDrinkMl),
+                WaterAmountFormat.flOzFromMl(snapshot.waterNextDrinkMl).coerceAtLeast(1),
             )
         }
         val fireZone = Instant.ofEpochMilli(fireMillis).atZone(ZoneId.systemDefault())

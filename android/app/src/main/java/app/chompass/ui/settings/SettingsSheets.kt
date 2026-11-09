@@ -1022,6 +1022,7 @@ internal fun SettingsSheets(
                 )
                 SettingsSheet.WATER_GOAL -> WaterGoalSheet(
                     current = ui.waterDailyGoalMl,
+                    useMetric = ui.weightMetric,
                     onSave = {
                         vm.setWaterDailyGoalMl(it)
                         onDismiss()

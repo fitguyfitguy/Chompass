@@ -561,20 +561,38 @@ internal fun GoalBodyFatSheet(currentGoal: Double?, currentBodyFat: Double?, onS
     Spacer(Modifier.height(8.dp))
 }
 
+/** Daily water goal wheel: ml-stepped in metric, fl-oz-stepped in imperial (#163). Stores ml. */
 @Composable
-internal fun WaterGoalSheet(current: Int, onSave: (Int) -> Unit, onDismiss: () -> Unit) {
+internal fun WaterGoalSheet(current: Int, useMetric: Boolean, onSave: (Int) -> Unit, onDismiss: () -> Unit) {
     val initialGoal = (((current.coerceIn(50, 10_000) + 25) / 50) * 50).coerceIn(50, 10_000)
     var goal by remember(current) { mutableIntStateOf(initialGoal) }
     Text(stringResource(R.string.settings_water_goal), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
     Spacer(Modifier.height(20.dp))
-    NumericWheelPicker(
-        value = goal,
-        onValueChange = { goal = it },
-        min = 50,
-        max = 10_000,
-        unit = stringResource(R.string.unit_ml),
-        step = 50,
-    )
+    if (useMetric) {
+        NumericWheelPicker(
+            value = goal,
+            onValueChange = { goal = it },
+            min = 50,
+            max = 10_000,
+            unit = stringResource(R.string.unit_ml),
+            step = 50,
+        )
+    } else {
+        var value by remember(goal) {
+            mutableIntStateOf(WaterAmountFormat.flOzFromMl(goal).coerceIn(1, 338))
+        }
+        NumericWheelPicker(
+            value = value,
+            onValueChange = {
+                value = it
+                goal = WaterAmountFormat.mlFromFlOz(it)
+            },
+            min = 1,
+            max = 338,
+            unit = stringResource(R.string.unit_fl_oz),
+            step = 1,
+        )
+    }
     Spacer(Modifier.height(8.dp))
     Text(
         stringResource(R.string.settings_water_goal_wheel_help),
@@ -793,6 +811,15 @@ internal fun FastingReminderLeadSheet(
     CancelSaveRow(onDismiss) { onSave(lead) }
     Spacer(Modifier.height(8.dp))
 }
+
+/** Daily water goal summary in the user's units; the stored value stays ml. */
+@Composable
+internal fun formatWaterGoalSummary(goalMl: Int, useMetric: Boolean): String =
+    if (useMetric) {
+        stringResource(R.string.settings_water_goal_summary, goalMl)
+    } else {
+        stringResource(R.string.water_amount_fl_oz, WaterAmountFormat.flOzFromMl(goalMl))
+    }
 
 internal fun formatWaterQuickPresetsSummary(presetsMl: List<Int>, useMetric: Boolean): String =
     presetsMl.joinToString(" · ") { ml ->

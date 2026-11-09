@@ -789,7 +789,7 @@ class ReminderReceiver : BroadcastReceiver() {
                         } else {
                             ctx.getString(
                                 R.string.water_amount_fl_oz,
-                                WaterAmountFormat.flOzFromMl(waterPlan.drinkMl),
+                                WaterAmountFormat.flOzFromMl(waterPlan.drinkMl).coerceAtLeast(1),
                             )
                         }
                         val interval = waterPlan.intervalMinutes

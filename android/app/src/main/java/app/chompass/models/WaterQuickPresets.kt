@@ -1,5 +1,7 @@
 package app.chompass.models
 
+import kotlin.math.roundToInt
+
 /**
  * User-configurable snap points for the Add food water slider. Always stored in ml;
  * imperial locales display fluid ounces in the UI.
@@ -35,12 +37,13 @@ data class WaterQuickPresets(
     }
 }
 
+/** ml ↔ fl oz conversions; nearest-integer rounding both ways, 0 ml stays 0 fl oz. */
 object WaterAmountFormat {
     private const val ML_PER_FL_OZ = 29.5735
 
     fun mlFromFlOz(flOz: Int): Int =
-        (flOz * ML_PER_FL_OZ).toInt().coerceIn(WaterQuickPresets.MIN_ML, 10_000)
+        (flOz * ML_PER_FL_OZ).roundToInt().coerceIn(WaterQuickPresets.MIN_ML, 10_000)
 
     fun flOzFromMl(ml: Int): Int =
-        (ml / ML_PER_FL_OZ).toInt().coerceAtLeast(1)
+        (ml / ML_PER_FL_OZ).roundToInt()
 }

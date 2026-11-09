@@ -42,7 +42,7 @@ fun TrackersSettingsScreen(
             SettingRow(
                 stringResource(R.string.settings_water_title),
                 if (ui.waterTrackingEnabled) {
-                    stringResource(R.string.settings_water_goal_summary, ui.waterDailyGoalMl)
+                    formatWaterGoalSummary(ui.waterDailyGoalMl, ui.weightMetric)
                 } else {
                     stringResource(R.string.settings_off)
                 },

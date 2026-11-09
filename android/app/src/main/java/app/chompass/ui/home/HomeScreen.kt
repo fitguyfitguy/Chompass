@@ -914,7 +914,7 @@ fun HomeScreen(
                             } else {
                                 stringResource(
                                     R.string.water_amount_fl_oz,
-                                    WaterAmountFormat.flOzFromMl(plan.drinkMl),
+                                    WaterAmountFormat.flOzFromMl(plan.drinkMl).coerceAtLeast(1),
                                 )
                             }
                             val fireZone = Instant.ofEpochMilli(plan.nextFireMillis)
