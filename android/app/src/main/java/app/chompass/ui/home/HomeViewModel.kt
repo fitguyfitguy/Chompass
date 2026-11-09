@@ -3792,7 +3792,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         }
     }
 
-    /** Log every ingredient of a Recipe as its own diary row, timestamped to the selected day. */
+    /** Log a Recipe as one named diary row (constituents inside), timestamped to the selected day. */
     fun logRecipe(recipe: app.chompass.models.Recipe) {
         viewModelScope.launch {
             val entries = container.recipeRepository.logRecipe(

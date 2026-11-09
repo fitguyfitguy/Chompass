@@ -62,8 +62,7 @@ data class ProgressiveMealDraft(
  *
  * Named draft ([name] non-blank after trim): one [FoodEntry] whose
  * [FoodEntry.constituents] are the builder items (Codeberg #91). Unnamed:
- * one row per item sharing [recipeLogId], same grouping as
- * [app.chompass.data.RecipeRepository.logRecipe]. Image persistence is the
+ * one row per item sharing [recipeLogId]. Image persistence is the
  * caller's job via [imageFilenameFor]. [resolveName] disambiguates the
  * composite meal name, and each ingredient name on the unnamed path.
  */

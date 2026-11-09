@@ -4,13 +4,12 @@ import app.chompass.models.FoodEntry
 import app.chompass.models.Recipe
 import kotlinx.coroutines.flow.Flow
 import java.time.Instant
-import java.util.UUID
 
 /**
  * CRUD + logging for [Recipe] (composable multi-ingredient saved meals).
  * A parallel entity to single-item Favorites in [FoodRepository] — recipes
  * are never favorited/duplicated through that path, and logging a recipe
- * writes one [app.chompass.models.FoodEntry] per ingredient via
+ * writes one named [app.chompass.models.FoodEntry] (with constituents) via
  * [FoodRepository.addEntry] so bucket persistence, Health Connect sync, and
  * the first-log review prompt all keep working unchanged.
  */
@@ -63,9 +62,9 @@ class RecipeRepository(
     }
 
     /**
-     * Logs a recipe. Mealie imports (`source` starts with `mealie:`) write one
-     * named [app.chompass.models.FoodEntry] with constituents. Hand-built
-     * recipes still explode to one diary row per ingredient.
+     * Logs a recipe as one named [app.chompass.models.FoodEntry] with its
+     * constituents — every recipe does ([Recipe.logsAsNamedMeal] is always
+     * true, hand-built included); `source` stays as import identity.
      *
      * Health Connect mirroring is the caller's job via
      * [FoodRepository.mirrorEntryToHealth] in the background after the sheet
@@ -77,15 +76,8 @@ class RecipeRepository(
         mealType: String = recipe.mealType,
         planned: Boolean = false,
     ): List<FoodEntry> {
-        if (recipe.logsAsNamedMeal) {
-            val entry = recipe.toNamedMealEntry(logDate, mealType).copy(planned = planned)
-            foodRepository.addEntries(listOf(entry), writeHealth = false)
-            return listOf(entry)
-        }
-        val recipeLogId = UUID.randomUUID()
-        val entries = recipe.ingredients.map { it.toFoodEntry(logDate, mealType, recipeLogId).copy(planned = planned) }
-        // One batched DataStore edit instead of one full-file write per ingredient.
-        foodRepository.addEntries(entries, writeHealth = false)
-        return entries
+        val entry = recipe.toNamedMealEntry(logDate, mealType).copy(planned = planned)
+        foodRepository.addEntries(listOf(entry), writeHealth = false)
+        return listOf(entry)
     }
 }

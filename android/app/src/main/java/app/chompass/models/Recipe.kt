@@ -112,43 +112,6 @@ data class RecipeIngredient(
         )
     }
 
-    /** Resolves this ingredient into a loggable diary row, tagged with the shared [recipeLogId]. */
-    fun toFoodEntry(logDate: Instant, mealType: String, recipeLogId: UUID): FoodEntry = FoodEntry(
-        name = name,
-        calories = calories,
-        protein = protein,
-        carbs = carbs,
-        fat = fat,
-        timestamp = logDate,
-        emoji = emoji,
-        source = FoodSource.MANUAL,
-        mealType = mealType,
-        sugar = sugar,
-        addedSugar = addedSugar,
-        fiber = fiber,
-        saturatedFat = saturatedFat,
-        monounsaturatedFat = monounsaturatedFat,
-        polyunsaturatedFat = polyunsaturatedFat,
-        cholesterol = cholesterol,
-        sodium = sodium,
-        potassium = potassium,
-        transFat = transFat,
-        calcium = calcium,
-        iron = iron,
-        magnesium = magnesium,
-        zinc = zinc,
-        vitaminA = vitaminA,
-        vitaminC = vitaminC,
-        vitaminD = vitaminD,
-        vitaminB12 = vitaminB12,
-        vitaminE = vitaminE,
-        vitaminK = vitaminK,
-        folate = folate,
-        omega3 = omega3,
-        caffeine = caffeine,
-        recipeLogId = recipeLogId,
-    )
-
     /**
      * FoodEntry view of this ingredient's base (1x) values, for the fill-missing
      * scan and prompt ([app.chompass.models.gapReport] / `FoodAnalysisService.fillEntry`
@@ -263,7 +226,12 @@ data class Recipe(
     val totalFiber: Double? get() = nutritionFiber ?: sumOptional { it.fiber }
     val totalSodium: Double? get() = nutritionSodium ?: sumOptional { it.sodium }
 
-    val logsAsNamedMeal: Boolean get() = source?.startsWith(MEALIE_SOURCE_PREFIX) == true
+    /**
+     * Every recipe logs as one named diary row — hand-built included.
+     * [MEALIE_SOURCE_PREFIX] stays as import identity only, not a
+     * logging-mode flag.
+     */
+    val logsAsNamedMeal: Boolean get() = true
 
     fun toNamedMealEntry(logDate: Instant, mealType: String = this.mealType): FoodEntry {
         val constituents = ingredients.map { ing ->

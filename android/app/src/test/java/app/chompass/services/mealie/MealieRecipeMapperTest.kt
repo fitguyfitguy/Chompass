@@ -185,9 +185,9 @@ class MealieRecipeMapperTest {
     }
 
     @Test
-    fun handBuiltRecipe_doesNotLogAsNamedMeal() {
+    fun handBuiltRecipe_logsAsNamedMeal() {
         val recipe = Recipe(name = "Hand", ingredients = emptyList())
-        assertFalse(recipe.logsAsNamedMeal)
+        assertTrue(recipe.logsAsNamedMeal)
         assertNull(recipe.source)
         assertEquals(0, recipe.totalCalories)
     }
