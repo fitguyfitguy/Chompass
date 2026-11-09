@@ -2508,8 +2508,21 @@
     <string name="cd_share_meal">Share meal</string>
     <string name="cd_copy_entries">Copy entries</string>
     <string name="cd_dismiss_paste">Dismiss paste</string>
-    <string name="paste_n_entries">Paste %1$d entries</string>
-    <string name="paste_busy">Pasting…</string>
+    <plurals name="paste_n_entries">
+        <item quantity="one">Paste 1 entry</item>
+        <item quantity="other">Paste %1$d entries</item>
+    </plurals>
+    <plurals name="paste_complete_n">
+        <item quantity="one">Pasted 1 entry</item>
+        <item quantity="other">Pasted %1$d entries</item>
+    </plurals>
+    <string name="paste_at_original_times">Paste at original times</string>
+    <string name="paste_at_current_time">Paste at current time</string>
+    <string name="paste_selected_destination">This day</string>
+    <string name="paste_today_destination">Today</string>
+    <string name="paste_tomorrow_destination">Tomorrow</string>
+    <string name="paste_phrase_original_times">%1$s at the original times</string>
+    <string name="paste_phrase_current_time">%1$s at the current time</string>
     <string name="recovered_review_chip">Recovered analysis: %1$s</string>
     <string name="cd_discard_recovered_review">Discard recovered analysis</string>
     <string name="cd_favorited">Favorited</string>

@@ -1303,8 +1303,21 @@
     <string name="onboarding_safety_settings_hint">Puoi rivedere le linee guida complete su Sicurezza e Medicina in Impostazioni.</string>
     <string name="onboarding_safety_title">Nota di sicurezza</string>
     <string name="onboarding_safety_water">Gli obiettivi di idratazione e i promemoria sono stime approssimative, non consigli medici. La sete è una guida migliore di qualsiasi app, e il tuo medico sa cosa è giusto per te.</string>
-    <string name="paste_busy">Incollaggio…</string>
-    <string name="paste_n_entries">Incolla %1$d voci</string>
+    <plurals name="paste_n_entries">
+        <item quantity="one">Incolla 1 voce</item>
+        <item quantity="other">Incolla %1$d voci</item>
+    </plurals>
+    <plurals name="paste_complete_n">
+        <item quantity="one">1 voce incollata</item>
+        <item quantity="other">%1$d voci incollate</item>
+    </plurals>
+    <string name="paste_at_original_times">Incolla agli orari originali</string>
+    <string name="paste_at_current_time">Incolla all’ora corrente</string>
+    <string name="paste_selected_destination">Questo giorno</string>
+    <string name="paste_today_destination">Oggi</string>
+    <string name="paste_tomorrow_destination">Domani</string>
+    <string name="paste_phrase_original_times">%1$s agli orari originali</string>
+    <string name="paste_phrase_current_time">%1$s all’ora corrente</string>
     <string name="placeholder_hour">Ora</string>
     <string name="placeholder_minute">Minuto</string>
     <string name="progress_activity_exercise_week">Allenamenti (7g)</string>

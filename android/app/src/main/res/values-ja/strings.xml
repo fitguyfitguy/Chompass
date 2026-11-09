@@ -1342,8 +1342,20 @@
     <string name="onboarding_safety_settings_hint">完全な安全・医療ガイドは設定で確認できます。</string>
     <string name="onboarding_safety_title">安全に関する注意</string>
     <string name="onboarding_safety_water">水分補給の目標や飲水リマインダーは大まかな推定であり、医療アドバイスではありません。喉の渇きはどのアプリよりも良い指標であり、あなたに合うことを知っているのは医師です。</string>
-    <string name="paste_busy">貼り付け中…</string>
-    <string name="paste_n_entries">%1$d 件の記録を貼り付け</string>
+    <plurals name="paste_n_entries">
+        <item quantity="other">%1$d 件の記録を貼り付け</item>
+    </plurals>
+    <plurals name="paste_complete_n">
+        <item quantity="one">1件の記録を貼り付けました</item>
+        <item quantity="other">%1$d件の記録を貼り付けました</item>
+    </plurals>
+    <string name="paste_at_original_times">元の時刻に貼り付け</string>
+    <string name="paste_at_current_time">現在時刻に貼り付け</string>
+    <string name="paste_selected_destination">この日</string>
+    <string name="paste_today_destination">今日</string>
+    <string name="paste_tomorrow_destination">明日</string>
+    <string name="paste_phrase_original_times">%1$s を元の時刻に</string>
+    <string name="paste_phrase_current_time">%1$s を現在時刻に</string>
     <string name="placeholder_hour">時</string>
     <string name="placeholder_minute">分</string>
     <string name="progress_activity_exercise_week">運動（7日）</string>

@@ -1401,8 +1401,21 @@
     <string name="onboarding_safety_settings_hint">Vous pouvez consulter l\'intégralité des consignes de sécurité et médicales dans les Réglages.</string>
     <string name="onboarding_safety_title">Avis de sécurité</string>
     <string name="onboarding_safety_water">Les objectifs d\'hydratation et les rappels de boisson sont des estimations approximatives, pas un avis médical. La soif est un meilleur guide que n\'importe quelle app, et votre médecin sait ce qui est bon pour vous.</string>
-    <string name="paste_busy">Collage…</string>
-    <string name="paste_n_entries">Coller %1$d entrées</string>
+    <plurals name="paste_n_entries">
+        <item quantity="one">Coller 1 entrée</item>
+        <item quantity="other">Coller %1$d entrées</item>
+    </plurals>
+    <plurals name="paste_complete_n">
+        <item quantity="one">1 entrée collée</item>
+        <item quantity="other">%1$d entrées collées</item>
+    </plurals>
+    <string name="paste_at_original_times">Coller aux heures d’origine</string>
+    <string name="paste_at_current_time">Coller à l’heure actuelle</string>
+    <string name="paste_selected_destination">Ce jour</string>
+    <string name="paste_today_destination">Aujourd’hui</string>
+    <string name="paste_tomorrow_destination">Demain</string>
+    <string name="paste_phrase_original_times">%1$s aux heures d’origine</string>
+    <string name="paste_phrase_current_time">%1$s à l’heure actuelle</string>
     <string name="placeholder_hour">Heure</string>
     <string name="placeholder_minute">Minute</string>
     <string name="progress_activity_exercise_week">Exercice (7 j)</string>

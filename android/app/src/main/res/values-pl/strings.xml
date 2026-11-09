@@ -1614,8 +1614,25 @@
     <string name="cd_share_meal">Udostępnij posiłek</string>
     <string name="cd_copy_entries">Kopiuj wpisy</string>
     <string name="cd_dismiss_paste">Odrzuć wklejanie</string>
-    <string name="paste_n_entries">Wklej wpisy (%1$d)</string>
-    <string name="paste_busy">Wklejanie…</string>
+    <plurals name="paste_n_entries">
+        <item quantity="one">Wklej 1 wpis</item>
+        <item quantity="few">Wklej %1$d wpisy</item>
+        <item quantity="many">Wklej %1$d wpisów</item>
+        <item quantity="other">Wklej %1$d wpisów</item>
+    </plurals>
+    <plurals name="paste_complete_n">
+        <item quantity="one">Wklejono 1 wpis</item>
+        <item quantity="few">Wklejono %1$d wpisy</item>
+        <item quantity="many">Wklejono %1$d wpisów</item>
+        <item quantity="other">Wklejono %1$d wpisów</item>
+    </plurals>
+    <string name="paste_at_original_times">Wklej o oryginalnych godzinach</string>
+    <string name="paste_at_current_time">Wklej o bieżącej godzinie</string>
+    <string name="paste_selected_destination">Ten dzień</string>
+    <string name="paste_today_destination">Dziś</string>
+    <string name="paste_tomorrow_destination">Jutro</string>
+    <string name="paste_phrase_original_times">%1$s o oryginalnych godzinach</string>
+    <string name="paste_phrase_current_time">%1$s o bieżącej godzinie</string>
     <string name="cd_favorited">Dodano do ulubionych</string>
     <string name="cd_move_up">Przesuń w górę</string>
     <string name="cd_move_down">Przesuń w dół</string>

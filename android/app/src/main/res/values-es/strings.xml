@@ -1405,8 +1405,21 @@
     <string name="onboarding_safety_settings_hint">Puedes revisar la guía completa de Seguridad y Medicina en Ajustes.</string>
     <string name="onboarding_safety_title">Aviso de seguridad</string>
     <string name="onboarding_safety_water">Los objetivos de hidratación y los recordatorios de bebida son estimaciones aproximadas, no consejo médico. La sed es mejor guía que cualquier app, y tu médico sabe lo que es adecuado para ti.</string>
-    <string name="paste_busy">Pegando…</string>
-    <string name="paste_n_entries">Pegar %1$d entradas</string>
+    <plurals name="paste_n_entries">
+        <item quantity="one">Pegar 1 registro</item>
+        <item quantity="other">Pegar %1$d registros</item>
+    </plurals>
+    <plurals name="paste_complete_n">
+        <item quantity="one">1 registro pegado</item>
+        <item quantity="other">%1$d registros pegados</item>
+    </plurals>
+    <string name="paste_at_original_times">Pegar en los horarios originales</string>
+    <string name="paste_at_current_time">Pegar a la hora actual</string>
+    <string name="paste_selected_destination">Este día</string>
+    <string name="paste_today_destination">Hoy</string>
+    <string name="paste_tomorrow_destination">Mañana</string>
+    <string name="paste_phrase_original_times">%1$s en los horarios originales</string>
+    <string name="paste_phrase_current_time">%1$s a la hora actual</string>
     <string name="placeholder_hour">Hora</string>
     <string name="placeholder_minute">Minuto</string>
     <string name="progress_activity_exercise_week">Ejercicio (7d)</string>

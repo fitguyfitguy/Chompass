@@ -1344,8 +1344,20 @@
     <string name="onboarding_safety_settings_hint">可在设置中查看完整的安全与医疗指南。</string>
     <string name="onboarding_safety_title">安全提示</string>
     <string name="onboarding_safety_water">补水目标和饮水提醒是粗略估算，不是医疗建议。口渴比任何应用都更能指引你，而你的医生知道什么适合你。</string>
-    <string name="paste_busy">粘贴中…</string>
-    <string name="paste_n_entries">粘贴 %1$d 条记录</string>
+    <plurals name="paste_n_entries">
+        <item quantity="other">粘贴 %1$d 条记录</item>
+    </plurals>
+    <plurals name="paste_complete_n">
+        <item quantity="one">已粘贴 1 条记录</item>
+        <item quantity="other">已粘贴 %1$d 条记录</item>
+    </plurals>
+    <string name="paste_at_original_times">按原始时间粘贴</string>
+    <string name="paste_at_current_time">按当前时间粘贴</string>
+    <string name="paste_selected_destination">这一天</string>
+    <string name="paste_today_destination">今天</string>
+    <string name="paste_tomorrow_destination">明天</string>
+    <string name="paste_phrase_original_times">%1$s 按原始时间</string>
+    <string name="paste_phrase_current_time">%1$s 按当前时间</string>
     <string name="placeholder_hour">小时</string>
     <string name="placeholder_minute">分钟</string>
     <string name="progress_activity_exercise_week">锻炼（7天）</string>

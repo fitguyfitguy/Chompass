@@ -1707,8 +1707,25 @@
     <string name="onboarding_privacy_ondevice_title">Локальная Gemma 4 (полная приватность)</string>
     <string name="onboarding_privacy_title">Приватность и твой ИИ-провайдер</string>
     <string name="onboarding_safety_water">Цели гидратации и напоминания о питье лишь приблизительные оценки, а не медицинские советы. Жажда подскажет лучше любого приложения, а врач знает, что подходит именно тебе.</string>
-    <string name="paste_busy">Вставка…</string>
-    <string name="paste_n_entries">Вставить %1$d записей</string>
+    <plurals name="paste_n_entries">
+        <item quantity="one">Вставить 1 запись</item>
+        <item quantity="few">Вставить %1$d записи</item>
+        <item quantity="many">Вставить %1$d записей</item>
+        <item quantity="other">Вставить %1$d записей</item>
+    </plurals>
+    <plurals name="paste_complete_n">
+        <item quantity="one">Вставлена 1 запись</item>
+        <item quantity="few">Вставлено %1$d записи</item>
+        <item quantity="many">Вставлено %1$d записей</item>
+        <item quantity="other">Вставлено %1$d записей</item>
+    </plurals>
+    <string name="paste_at_original_times">Вставить в исходное время</string>
+    <string name="paste_at_current_time">Вставить в текущее время</string>
+    <string name="paste_selected_destination">Этот день</string>
+    <string name="paste_today_destination">Сегодня</string>
+    <string name="paste_tomorrow_destination">Завтра</string>
+    <string name="paste_phrase_original_times">%1$s в исходное время</string>
+    <string name="paste_phrase_current_time">%1$s в текущее время</string>
     <string name="progress_chart_loading">Загрузка графика…</string>
     <string name="progress_wellness_hydration_format">%1$s мл</string>
     <string name="progressive_meal_add_another">Добавить ещё</string>

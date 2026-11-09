@@ -1351,8 +1351,29 @@
     <string name="onboarding_safety_settings_hint">يمكنك مراجعة إرشادات السلامة والطب الكاملة في الإعدادات.</string>
     <string name="onboarding_safety_title">إشعار السلامة</string>
     <string name="onboarding_safety_water">أهداف الترطيب وتذكيرات الشرب تقديرات تقريبية وليست نصيحة طبية. العطش دليل أفضل من أي تطبيق، وطبيبك يعرف ما هو مناسب لك.</string>
-    <string name="paste_busy">جارٍ اللصق…</string>
-    <string name="paste_n_entries">لصق %1$d سجل</string>
+    <plurals name="paste_n_entries">
+        <item quantity="zero">لصق إدخالات</item>
+        <item quantity="one">لصق إدخال واحد</item>
+        <item quantity="two">لصق إدخالَين</item>
+        <item quantity="few">لصق %1$d إدخالات</item>
+        <item quantity="many">لصق %1$d إدخالًا</item>
+        <item quantity="other">لصق %1$d إدخال</item>
+    </plurals>
+    <plurals name="paste_complete_n">
+        <item quantity="zero">لم تُلصق إدخالات</item>
+        <item quantity="one">تم لصق إدخال واحد</item>
+        <item quantity="two">تم لصق إدخالَين</item>
+        <item quantity="few">تم لصق %1$d إدخالات</item>
+        <item quantity="many">تم لصق %1$d إدخالًا</item>
+        <item quantity="other">تم لصق %1$d إدخال</item>
+    </plurals>
+    <string name="paste_at_original_times">اللصق في الأوقات الأصلية</string>
+    <string name="paste_at_current_time">اللصق في الوقت الحالي</string>
+    <string name="paste_selected_destination">هذا اليوم</string>
+    <string name="paste_today_destination">اليوم</string>
+    <string name="paste_tomorrow_destination">غدًا</string>
+    <string name="paste_phrase_original_times">%1$s في الأوقات الأصلية</string>
+    <string name="paste_phrase_current_time">%1$s في الوقت الحالي</string>
     <string name="placeholder_hour">ساعة</string>
     <string name="placeholder_minute">دقيقة</string>
     <string name="progress_activity_exercise_week">التمارين (7أ)</string>

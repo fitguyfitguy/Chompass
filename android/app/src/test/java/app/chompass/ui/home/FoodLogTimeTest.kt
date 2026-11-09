@@ -73,6 +73,93 @@ class FoodLogTimeTest {
         assertEquals("breakfast", mealIdForLogging(catalog, LocalTime.of(8, 0), LocalTime.of(19, 30)))
     }
 
+    // Paste at original times, onto another day: the Original branch keeps the
+    // source clock and meal slot (ignores the session override).
+    @Test
+    fun pasteOriginalTimes_anotherDay_keepsSourceClock() {
+        val source = Instant.parse("2026-08-20T08:30:15Z")
+        val target = today.plusDays(3)
+        val stamped = pasteTimestamp(
+            PasteTime.Original,
+            target,
+            sourceTimestamp = source,
+            now = now,
+            zone = zone,
+            logTimeOverride = LocalTime.of(13, 0),
+        )
+        val zoned = stamped.atZone(zone)
+        assertEquals(target, zoned.toLocalDate())
+        assertEquals(LocalTime.of(8, 30, 15), zoned.toLocalTime())
+        assertEquals(
+            MealType.BREAKFAST.id,
+            pasteMealType(
+                PasteTime.Original,
+                sourceMealType = MealType.BREAKFAST.id,
+                timesEnabled = true,
+                catalog = MealCatalog.Default,
+                logTimeOverride = null,
+                nowTime = LocalTime.of(19, 30),
+            ),
+        )
+    }
+
+    // "Tomorrow" paste at original times resolves to the next local date.
+    @Test
+    fun pasteTomorrow_isNextLocalDate() {
+        val tomorrow = today.plusDays(1)
+        val source = Instant.parse("2026-08-20T08:30:15Z")
+        val stamped = pasteTimestamp(
+            PasteTime.Original,
+            tomorrow,
+            sourceTimestamp = source,
+            now = now,
+            zone = zone,
+            logTimeOverride = null,
+        )
+        assertEquals(tomorrow, stamped.atZone(zone).toLocalDate())
+    }
+
+    // Current-time paste with a session clock override uses that clock, not now.
+    @Test
+    fun pasteCurrentTime_usesSessionOverride() {
+        val override = LocalTime.of(13, 0)
+        val stamped = pasteTimestamp(
+            PasteTime.Logging,
+            today,
+            sourceTimestamp = Instant.parse("2026-08-20T08:30:15Z"),
+            now = now,
+            zone = zone,
+            logTimeOverride = override,
+        )
+        val zoned = stamped.atZone(zone)
+        assertEquals(today, zoned.toLocalDate())
+        assertEquals(override, zoned.toLocalTime())
+    }
+
+    // Current-time paste re-slots the meal to the logging clock; the
+    // original-times path keeps the source meal id.
+    @Test
+    fun pasteMealId_reslottedOnlyAtCurrentTime() {
+        val catalog = MealCatalog.Default
+        val sourceMeal = MealType.BREAKFAST.id
+        val currentTime = LocalTime.of(19, 30)
+        // Logging with times on re-slots to the current clock.
+        assertEquals(
+            "dinner",
+            pasteMealType(PasteTime.Logging, sourceMeal, timesEnabled = true, catalog, logTimeOverride = null, currentTime),
+        )
+        // Logging with times off keeps the source slot.
+        assertEquals(
+            sourceMeal,
+            pasteMealType(PasteTime.Logging, sourceMeal, timesEnabled = false, catalog, logTimeOverride = null, currentTime),
+        )
+        // Original always keeps the source slot, even with times on.
+        assertEquals(
+            sourceMeal,
+            pasteMealType(PasteTime.Original, sourceMeal, timesEnabled = true, catalog, logTimeOverride = null, currentTime),
+        )
+    }
+
     @Test
     fun loggingSlotFor_keepsTemplateWhenTimesOff() {
         val catalog = MealCatalog.Default

@@ -1341,8 +1341,21 @@ bilirsən?</string>
     <string name="onboarding_safety_settings_hint">Tam Təhlükəsizlik və Tibb rəhbərliyini Parametrlərdə nəzərdən keçirə bilərsən.</string>
     <string name="onboarding_safety_title">Təhlükəsizlik bildirişi</string>
     <string name="onboarding_safety_water">Hidratasiya məqsədləri və içmə xatırlatmaları təxmini qiymətləndirmədir, tibbi məsləhət deyil. Susuzluq hər hansı tətbiqdən daha yaxşı bələdçidir və həkimin sənin üçün nəyin doğru olduğunu bilir.</string>
-    <string name="paste_busy">Yapışdırılır…</string>
-    <string name="paste_n_entries">%1$d qeyd yapışdır</string>
+    <plurals name="paste_n_entries">
+        <item quantity="one">1 qeyd yapışdır</item>
+        <item quantity="other">%1$d qeyd yapışdır</item>
+    </plurals>
+    <plurals name="paste_complete_n">
+        <item quantity="one">1 qeyd yapışdırıldı</item>
+        <item quantity="other">%1$d qeyd yapışdırıldı</item>
+    </plurals>
+    <string name="paste_at_original_times">Orijinal vaxtlarda yapışdır</string>
+    <string name="paste_at_current_time">Cari vaxtda yapışdır</string>
+    <string name="paste_selected_destination">Seçilən gün</string>
+    <string name="paste_today_destination">Bu gün</string>
+    <string name="paste_tomorrow_destination">Sabah</string>
+    <string name="paste_phrase_original_times">%1$s orijinal vaxtlarda</string>
+    <string name="paste_phrase_current_time">%1$s cari vaxtda</string>
     <string name="placeholder_hour">Saat</string>
     <string name="placeholder_minute">Dəqiqə</string>
     <string name="progress_activity_exercise_week">Məşqlər (7g)</string>

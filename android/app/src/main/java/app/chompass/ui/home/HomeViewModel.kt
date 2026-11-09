@@ -3817,39 +3817,103 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         }
     }
 
-    /** Copy rows onto the currently viewed day (selection-bar paste). */
-    fun copyEntriesToSelectedDay(entries: List<FoodEntry>) =
+    /** Paste [entries] onto the selected day at the current logging time. */
+    fun pasteEntriesAtCurrentTimeOnSelectedDate(entries: List<FoodEntry>) =
         copyEntriesToDate(entries, _selectedDate.value)
+
+    /** Paste [entries] today at the current logging time. */
+    fun pasteEntriesAtCurrentTimeToday(entries: List<FoodEntry>) =
+        copyEntriesToDate(entries, LocalDate.now())
+
+    /** Paste [entries] tomorrow at the current logging time. */
+    fun pasteEntriesAtCurrentTimeTomorrow(entries: List<FoodEntry>) =
+        copyEntriesToDate(entries, LocalDate.now().plusDays(1))
+
+    /** Paste [entries] today at their original local times. */
+    fun pasteEntriesAtOriginalTimesToday(entries: List<FoodEntry>) =
+        pasteEntriesToDate(entries, LocalDate.now(), PasteTime.Original)
+
+    /** Paste [entries] tomorrow at their original local times. */
+    fun pasteEntriesAtOriginalTimesTomorrow(entries: List<FoodEntry>) =
+        pasteEntriesToDate(entries, LocalDate.now().plusDays(1), PasteTime.Original)
 
     /**
      * Copy [entries] onto [targetDate] (Copy-from-day sheet; the target is the
      * viewed day by default but is now pickable inside the sheet).
      */
-    fun copyEntriesToDate(entries: List<FoodEntry>, targetDate: LocalDate) {
+    fun copyEntriesToDate(entries: List<FoodEntry>, targetDate: LocalDate) =
+        pasteEntriesToDate(entries, targetDate, PasteTime.Logging)
+
+    fun pasteEntriesAtOriginalTimes(entries: List<FoodEntry>, targetDate: LocalDate) =
+        pasteEntriesToDate(entries, targetDate, PasteTime.Original)
+
+    private fun pasteEntriesToDate(
+        entries: List<FoodEntry>,
+        targetDate: LocalDate,
+        pasteTime: PasteTime,
+    ) {
         if (entries.isEmpty() || _ui.value.saving) return
-        viewModelScope.launch {
+        pasteJob = viewModelScope.launch {
             if (_ui.value.saving) return@launch
             _ui.update { it.copy(saving = true) }
             try {
-                // Upstream #149 / Android 6.0: reused copies log at now + current meal
-                // (not the source entry's clock time / meal bucket). One batched
-                // DataStore edit instead of one full-file write per copied row;
+                val zone = ZoneId.systemDefault()
+                val now = Instant.now()
+                // One batched DataStore edit instead of one full-file write per copied row;
                 // Health Connect mirrors in the background.
-                val duplicated = entries.map {
-                    it.duplicatedForLogging(timestampForFoodLog(targetDate), loggingMealId(it.mealType))
-                        .copy(
-                            planned = plannedFor(
-                                _ui.value.mealPlanningEnabled,
-                                planAction = false,
-                                targetDate = targetDate,
-                                today = LocalDate.now(),
-                            )
-                        )
+                val duplicated = entries.map { entry ->
+                    // Logging: reuse at now + current meal (upstream #149 / Android 6.0).
+                    // Original: keep the source entry's clock time and meal bucket.
+                    val timestamp = pasteTimestamp(
+                        pasteTime,
+                        targetDate,
+                        entry.timestamp,
+                        now,
+                        zone,
+                        _ui.value.logTimeOverride,
+                    )
+                    val mealType = pasteMealType(
+                        pasteTime,
+                        entry.mealType,
+                        _ui.value.mealTimesEnabled,
+                        CurrentMealCatalog.value,
+                        _ui.value.logTimeOverride,
+                        LocalTime.now(),
+                    )
+                    entry.duplicatedForLogging(timestamp, mealType).copy(
+                        planned = plannedFor(
+                            _ui.value.mealPlanningEnabled,
+                            planAction = false,
+                            targetDate = targetDate,
+                            today = LocalDate.now(),
+                        ),
+                    )
                 }
                 container.foodRepository.addEntries(duplicated, writeHealth = false)
-                mirrorToHealthBackground(duplicated)
+                mirrorToHealthBackground(duplicated.filterNot { it.planned })
+                // Switch the diary view to the day pasted into.
+                _selectedDate.value = targetDate
+                lastPastedEntries = duplicated
             } finally {
                 _ui.update { it.copy(saving = false) }
+            }
+        }
+    }
+
+    private var lastPastedEntries: List<FoodEntry> = emptyList()
+    private var pasteJob: Job? = null
+
+    /** Remove the entries created by the most recent paste. */
+    fun undoPaste() {
+        viewModelScope.launch {
+            // Wait for the paste write to finish so a fast undo sees the real rows.
+            pasteJob?.join()
+            val entries = lastPastedEntries
+            if (entries.isEmpty()) return@launch
+            lastPastedEntries = emptyList()
+            entries.forEach { entry ->
+                container.foodRepository.deleteEntry(entry)
+                container.caffeineRepository.clearLinkedFood(entry.id)
             }
         }
     }
@@ -3941,10 +4005,13 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     private fun timestampForDate(day: LocalDate): Instant =
         timestampForLogging(day, Instant.now(), ZoneId.systemDefault(), timeOverride = null)
 
-    private fun timestampForFoodLog(day: LocalDate = _selectedDate.value): Instant =
+    private fun timestampForFoodLog(
+        day: LocalDate = _selectedDate.value,
+        now: Instant = Instant.now(),
+    ): Instant =
         timestampForLogging(
             day,
-            Instant.now(),
+            now,
             ZoneId.systemDefault(),
             _ui.value.logTimeOverride,
         )

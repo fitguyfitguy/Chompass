@@ -1342,8 +1342,20 @@
     <string name="onboarding_safety_settings_hint">전체 안전 및 의료 지침은 설정에서 볼 수 있어요.</string>
     <string name="onboarding_safety_title">안전 고지</string>
     <string name="onboarding_safety_water">수분 목표와 음수 알림은 대략적인 추정이며 의학적 조언이 아니에요. 갈증은 어떤 앱보다 나은 지표이며, 당신에게 맞는 것을 아는 것은 의사예요.</string>
-    <string name="paste_busy">붙여넣는 중…</string>
-    <string name="paste_n_entries">기록 %1$d개 붙여넣기</string>
+    <plurals name="paste_n_entries">
+        <item quantity="other">기록 %1$d개 붙여넣기</item>
+    </plurals>
+    <plurals name="paste_complete_n">
+        <item quantity="one">기록 1개를 붙여넣음</item>
+        <item quantity="other">기록 %1$d개를 붙여넣음</item>
+    </plurals>
+    <string name="paste_at_original_times">원래 시간에 붙여넣기</string>
+    <string name="paste_at_current_time">현재 시간에 붙여넣기</string>
+    <string name="paste_selected_destination">이 날</string>
+    <string name="paste_today_destination">오늘</string>
+    <string name="paste_tomorrow_destination">내일</string>
+    <string name="paste_phrase_original_times">%1$s 원래 시간에</string>
+    <string name="paste_phrase_current_time">%1$s 현재 시간에</string>
     <string name="placeholder_hour">시간</string>
     <string name="placeholder_minute">분</string>
     <string name="progress_activity_exercise_week">운동(7일)</string>

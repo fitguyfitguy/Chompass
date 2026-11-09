@@ -54,6 +54,41 @@ internal fun loggingSlotFor(
 ): String =
     if (!timesEnabled) templateMealType else mealIdForLogging(catalog, timeOverride, nowTime)
 
+/** Paste destination mode: log at the current clock, or keep the source row's clock. */
+internal enum class PasteTime { Logging, Original }
+
+/**
+ * Timestamp for a pasted row. Logging reuses the logging clock on [targetDate];
+ * Original keeps the source row's wall-clock time on [targetDate].
+ */
+internal fun pasteTimestamp(
+    pasteTime: PasteTime,
+    targetDate: LocalDate,
+    sourceTimestamp: Instant,
+    now: Instant,
+    zone: ZoneId,
+    logTimeOverride: LocalTime?,
+): Instant = when (pasteTime) {
+    PasteTime.Logging -> timestampForLogging(targetDate, now, zone, logTimeOverride)
+    PasteTime.Original -> timestampForLogging(targetDate, sourceTimestamp, zone, timeOverride = null)
+}
+
+/**
+ * Meal slot for a pasted row. Logging re-slots to the logging clock (via
+ * [loggingSlotFor]); Original keeps the source row's slot.
+ */
+internal fun pasteMealType(
+    pasteTime: PasteTime,
+    sourceMealType: String,
+    timesEnabled: Boolean,
+    catalog: MealCatalog,
+    logTimeOverride: LocalTime?,
+    nowTime: LocalTime,
+): String = when (pasteTime) {
+    PasteTime.Logging -> loggingSlotFor(sourceMealType, timesEnabled, catalog, logTimeOverride, nowTime)
+    PasteTime.Original -> sourceMealType
+}
+
 /** Planned iff mode is on and this is a plan action or the target day is in the future. */
 internal fun plannedFor(
     mode: Boolean,

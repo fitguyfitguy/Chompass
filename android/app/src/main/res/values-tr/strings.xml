@@ -1610,8 +1610,21 @@
     <string name="cd_share_meal">Öğünü paylaş</string>
     <string name="cd_copy_entries">Kayıtları kopyala</string>
     <string name="cd_dismiss_paste">Yapıştırmayı kapat</string>
-    <string name="paste_n_entries">%1$d kaydı yapıştır</string>
-    <string name="paste_busy">Yapıştırılıyor…</string>
+    <plurals name="paste_n_entries">
+        <item quantity="one">1 kaydı yapıştır</item>
+        <item quantity="other">%1$d kaydı yapıştır</item>
+    </plurals>
+    <plurals name="paste_complete_n">
+        <item quantity="one">1 kayıt yapıştırıldı</item>
+        <item quantity="other">%1$d kayıt yapıştırıldı</item>
+    </plurals>
+    <string name="paste_at_original_times">Orijinal saatlerde yapıştır</string>
+    <string name="paste_at_current_time">Geçerli saatte yapıştır</string>
+    <string name="paste_selected_destination">Bu gün</string>
+    <string name="paste_today_destination">Bugün</string>
+    <string name="paste_tomorrow_destination">Yarın</string>
+    <string name="paste_phrase_original_times">%1$s orijinal saatlerde</string>
+    <string name="paste_phrase_current_time">%1$s geçerli saatte</string>
     <string name="cd_favorited">Favorilere eklendi</string>
     <string name="cd_move_up">Yukarı taşı</string>
     <string name="cd_move_down">Aşağı taşı</string>

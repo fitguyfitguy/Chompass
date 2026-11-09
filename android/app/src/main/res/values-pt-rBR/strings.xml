@@ -1319,8 +1319,21 @@
     <string name="onboarding_safety_settings_hint">Você pode rever as diretrizes completas de Segurança e Medicina em Configurações.</string>
     <string name="onboarding_safety_title">Aviso de segurança</string>
     <string name="onboarding_safety_water">Metas de hidratação e lembretes para beber são estimativas aproximadas, não conselhos médicos. A sede é um guia melhor que qualquer app, e seu médico sabe o que é certo para você.</string>
-    <string name="paste_busy">Colando…</string>
-    <string name="paste_n_entries">Colar %1$d registros</string>
+    <plurals name="paste_n_entries">
+        <item quantity="one">Colar 1 registro</item>
+        <item quantity="other">Colar %1$d registros</item>
+    </plurals>
+    <plurals name="paste_complete_n">
+        <item quantity="one">1 registro colado</item>
+        <item quantity="other">%1$d registros colados</item>
+    </plurals>
+    <string name="paste_at_original_times">Colar nos horários originais</string>
+    <string name="paste_at_current_time">Colar no horário atual</string>
+    <string name="paste_selected_destination">Este dia</string>
+    <string name="paste_today_destination">Hoje</string>
+    <string name="paste_tomorrow_destination">Amanhã</string>
+    <string name="paste_phrase_original_times">%1$s nos horários originais</string>
+    <string name="paste_phrase_current_time">%1$s no horário atual</string>
     <string name="placeholder_hour">Hora</string>
     <string name="placeholder_minute">Minuto</string>
     <string name="progress_activity_exercise_week">Treinos (7d)</string>

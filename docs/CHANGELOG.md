@@ -6,6 +6,10 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## [Unreleased]
 
+### Added
+
+- **Choose where copied entries go** (Android): copying diary rows now opens a paste sheet instead of a floating paste chip. Pick the day on the week strip, then paste to this day, today or tomorrow, each at the current time or at the rows' original times. Pasting onto another day switches the diary to it, and an undo snackbar removes the pasted rows. Design and translations by Philip Whiteside. Closes Codeberg [#140](https://codeberg.org/fitguy/Chompass/pulls/140)
+
 ### Changed
 
 - **The Home screen fits more of your day** (Android): the calorie ring keeps its size but sheds the slack around it, so the food log starts higher up; meal headers, the macro row and the View More link now share one margin. The Add Food search field matches the tool buttons beside it, and the meal review sheet's list reads on its own soft background instead of over the ring.

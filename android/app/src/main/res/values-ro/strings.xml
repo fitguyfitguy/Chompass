@@ -1339,8 +1339,23 @@
     <string name="onboarding_safety_settings_hint">Poți revedea ghidurile complete de Siguranță și Medicină în Setări.</string>
     <string name="onboarding_safety_title">Mențiune de siguranță</string>
     <string name="onboarding_safety_water">Obiectivele de hidratare și mementourile de băut sunt estimări aproximative, nu sfaturi medicale. Setea este un ghid mai bun decât orice aplicație, iar medicul tău știe ce este potrivit pentru tine.</string>
-    <string name="paste_busy">Se lipește…</string>
-    <string name="paste_n_entries">Lipește %1$d înregistrări</string>
+    <plurals name="paste_n_entries">
+        <item quantity="one">Lipește 1 înregistrare</item>
+        <item quantity="few">Lipește %1$d înregistrări</item>
+        <item quantity="other">Lipește %1$d de înregistrări</item>
+    </plurals>
+    <plurals name="paste_complete_n">
+        <item quantity="one">1 înregistrare lipită</item>
+        <item quantity="few">%1$d înregistrări lipite</item>
+        <item quantity="other">%1$d de înregistrări lipite</item>
+    </plurals>
+    <string name="paste_at_original_times">Lipește la orele originale</string>
+    <string name="paste_at_current_time">Lipește la ora curentă</string>
+    <string name="paste_selected_destination">Această zi</string>
+    <string name="paste_today_destination">Azi</string>
+    <string name="paste_tomorrow_destination">Mâine</string>
+    <string name="paste_phrase_original_times">%1$s la orele originale</string>
+    <string name="paste_phrase_current_time">%1$s la ora curentă</string>
     <string name="placeholder_hour">Oră</string>
     <string name="placeholder_minute">Minut</string>
     <string name="progress_activity_exercise_week">Antrenamente (7z)</string>

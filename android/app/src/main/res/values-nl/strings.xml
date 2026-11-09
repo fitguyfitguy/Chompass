@@ -1317,8 +1317,21 @@
     <string name="onboarding_safety_settings_hint">Je kunt de volledige veiligheids- en medische richtlijnen bekijken in Instellingen.</string>
     <string name="onboarding_safety_title">Veiligheidsmededeling</string>
     <string name="onboarding_safety_water">Hydratatiedoelen en drinkherinneringen zijn ruwe schattingen, geen medisch advies. Dorst is een betere gids dan elke app, en je arts weet wat voor jou goed is.</string>
-    <string name="paste_busy">Plakken…</string>
-    <string name="paste_n_entries">%1$d items plakken</string>
+    <plurals name="paste_n_entries">
+        <item quantity="one">1 invoer plakken</item>
+        <item quantity="other">%1$d invoeren plakken</item>
+    </plurals>
+    <plurals name="paste_complete_n">
+        <item quantity="one">1 invoer geplakt</item>
+        <item quantity="other">%1$d invoeren geplakt</item>
+    </plurals>
+    <string name="paste_at_original_times">Plakken op de oorspronkelijke tijden</string>
+    <string name="paste_at_current_time">Plakken op de huidige tijd</string>
+    <string name="paste_selected_destination">Deze dag</string>
+    <string name="paste_today_destination">Vandaag</string>
+    <string name="paste_tomorrow_destination">Morgen</string>
+    <string name="paste_phrase_original_times">%1$s op de oorspronkelijke tijden</string>
+    <string name="paste_phrase_current_time">%1$s op de huidige tijd</string>
     <string name="placeholder_hour">Uur</string>
     <string name="placeholder_minute">Minuut</string>
     <string name="progress_activity_exercise_week">Trainingen (7d)</string>

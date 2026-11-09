@@ -1343,8 +1343,21 @@
     <string name="onboarding_safety_settings_hint">पूर्ण सुरक्षा और चिकित्सा मार्गदर्शन सेटिंग्स में देखा जा सकता है।</string>
     <string name="onboarding_safety_title">सुरक्षा सूचना</string>
     <string name="onboarding_safety_water">हाइड्रेशन लक्ष्य और पेय रिमाइंडर मोटे अनुमान हैं, चिकित्सीय सलाह नहीं। प्यास किसी भी ऐप से बेहतर मार्गदर्शक है, और आपका डॉक्टर जानता है कि आपके लिए क्या सही है।</string>
-    <string name="paste_busy">पेस्ट हो रहा है…</string>
-    <string name="paste_n_entries">%1$d प्रविष्टियां पेस्ट करें</string>
+    <plurals name="paste_n_entries">
+        <item quantity="one">1 प्रविष्टि पेस्ट करें</item>
+        <item quantity="other">%1$d प्रविष्टियां पेस्ट करें</item>
+    </plurals>
+    <plurals name="paste_complete_n">
+        <item quantity="one">1 प्रविष्टि पेस्ट की गई</item>
+        <item quantity="other">%1$d प्रविष्टियाँ पेस्ट की गईं</item>
+    </plurals>
+    <string name="paste_at_original_times">मूल समय पर पेस्ट करें</string>
+    <string name="paste_at_current_time">वर्तमान समय पर पेस्ट करें</string>
+    <string name="paste_selected_destination">यह दिन</string>
+    <string name="paste_today_destination">आज</string>
+    <string name="paste_tomorrow_destination">कल</string>
+    <string name="paste_phrase_original_times">%1$s मूल समय पर</string>
+    <string name="paste_phrase_current_time">%1$s वर्तमान समय पर</string>
     <string name="placeholder_hour">घंटा</string>
     <string name="placeholder_minute">मिनट</string>
     <string name="progress_activity_exercise_week">कसरत (7दि)</string>

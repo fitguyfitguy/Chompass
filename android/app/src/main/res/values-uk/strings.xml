@@ -1287,8 +1287,25 @@
     <string name="onboarding_safety_settings_hint">Повні вказівки з безпеки та медицини можна переглянути в Налаштуваннях.</string>
     <string name="onboarding_safety_title">Повідомлення про безпеку</string>
     <string name="onboarding_safety_water">Цілі гідратації та нагадування про пиття лише приблизні оцінки, а не медичні поради. Спрага підкаже краще за будь-який застосунок, а лікар знає, що підходить саме тобі.</string>
-    <string name="paste_busy">Вставлення…</string>
-    <string name="paste_n_entries">Вставити %1$d записів</string>
+    <plurals name="paste_n_entries">
+        <item quantity="one">Вставити 1 запис</item>
+        <item quantity="few">Вставити %1$d записи</item>
+        <item quantity="many">Вставити %1$d записів</item>
+        <item quantity="other">Вставити %1$d записів</item>
+    </plurals>
+    <plurals name="paste_complete_n">
+        <item quantity="one">Вставлено 1 запис</item>
+        <item quantity="few">Вставлено %1$d записи</item>
+        <item quantity="many">Вставлено %1$d записів</item>
+        <item quantity="other">Вставлено %1$d записів</item>
+    </plurals>
+    <string name="paste_at_original_times">Вставити в оригінальний час</string>
+    <string name="paste_at_current_time">Вставити в поточний час</string>
+    <string name="paste_selected_destination">Цей день</string>
+    <string name="paste_today_destination">Сьогодні</string>
+    <string name="paste_tomorrow_destination">Завтра</string>
+    <string name="paste_phrase_original_times">%1$s в оригінальний час</string>
+    <string name="paste_phrase_current_time">%1$s в поточний час</string>
     <string name="placeholder_hour">Година</string>
     <string name="placeholder_minute">Хвилина</string>
     <string name="progress_activity_exercise_week">Тренування (7 дн.)</string>
