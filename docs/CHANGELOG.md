@@ -8,6 +8,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ### Changed
 
+- **Every calorie layout glides** (Android): switching days, logging food, and a change in workout burn now spring the ring or the bar, including the planned stretch and the burn shades, and the calorie figures slide instead of snapping.
 - **Ingredient rows take less room** (Android): each ingredient in the meal editor now shows its name on one line, without a tall outlined field, so three ingredients fit in the list where two used to.
 
 ## [6.3.0] - 2026-11-06

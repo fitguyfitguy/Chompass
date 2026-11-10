@@ -5,9 +5,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.DeviceConfigurationOverride
 import androidx.compose.ui.test.FontScale
 import androidx.compose.ui.test.SemanticsNodeInteraction
@@ -15,12 +18,14 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.chompass.models.HomeCalorieDisplayMode
 import app.chompass.models.HomeCalorieHeroLayout
+import app.chompass.ui.navigation.LocalLaunchFillEpoch
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -214,6 +219,161 @@ class HomeCalorieHeroLayoutTest {
 
         assert(hero.height <= dp(180f)) {
             "horizontal variant is ${(hero.height / density().density).roundToInt()}dp; expected ~128dp"
+        }
+    }
+
+    @Test
+    fun compactHorizontal_daySwitchSpringsTheFill() {
+        val current = mutableStateOf(400)
+        composeRule.setContent {
+            CompositionLocalProvider(LocalLaunchFillEpoch provides 1) {
+                MaterialTheme {
+                    CalorieHero(
+                        current = current.value,
+                        baseGoal = 2000,
+                        activeCalories = 0,
+                        displayMode = HomeCalorieDisplayMode.STATIC,
+                        freezeProgress = false,
+                        layout = HomeCalorieHeroLayout.COMPACT_HORIZONTAL,
+                    )
+                }
+            }
+        }
+        composeRule.mainClock.autoAdvance = true
+        composeRule.mainClock.advanceTimeBy(2500)
+        composeRule.waitForIdle()
+        assertClose(barProgress(), 0.2f, 0.02f)
+
+        composeRule.mainClock.autoAdvance = false
+        current.value = 1600
+        // Semantics fetch registers the recomposer. The frozen test snaps to
+        // 0.8 on this same pump; here the first 16ms must still be the old fill.
+        barProgress()
+        composeRule.mainClock.advanceTimeBy(16)
+        val mid = barProgress()
+        assert(mid < 0.5f && mid > 0.18f) {
+            "day switch snapped or reset: progress=$mid"
+        }
+
+        composeRule.mainClock.autoAdvance = true
+        composeRule.mainClock.advanceTimeBy(2500)
+        composeRule.waitForIdle()
+        assertClose(barProgress(), 0.8f, 0.02f)
+        composeRule.onNodeWithContentDescription("Eaten 1,600 kcal").assertExists()
+    }
+
+    @Test
+    fun compactHorizontal_frozenFillSnaps() {
+        val current = mutableStateOf(400)
+        composeRule.mainClock.autoAdvance = false
+        composeRule.setContent {
+            CompositionLocalProvider(LocalLaunchFillEpoch provides 1) {
+                MaterialTheme {
+                    CalorieHero(
+                        current = current.value,
+                        baseGoal = 2000,
+                        activeCalories = 0,
+                        displayMode = HomeCalorieDisplayMode.STATIC,
+                        freezeProgress = true,
+                        layout = HomeCalorieHeroLayout.COMPACT_HORIZONTAL,
+                    )
+                }
+            }
+        }
+        composeRule.mainClock.advanceTimeByFrame()
+        assertClose(barProgress(), 0.2f, 0.001f)
+
+        current.value = 1600
+        barProgress()
+        composeRule.mainClock.advanceTimeByFrame()
+        assertClose(barProgress(), 0.8f, 0.001f)
+    }
+
+    @Test
+    fun defaultArc_daySwitchSpringsTheFill() = assertDaySwitchSprings(null)
+
+    @Test
+    fun sideGauge_daySwitchSpringsTheFill() = assertDaySwitchSprings(HomeCalorieHeroLayout.SIDE_GAUGE)
+
+    @Test
+    fun compactArc_daySwitchSpringsTheFill() = assertDaySwitchSprings(HomeCalorieHeroLayout.COMPACT_ARC)
+
+    @Test
+    fun defaultArc_frozenFillSnaps() = assertFrozenFillSnaps(null)
+
+    private fun assertDaySwitchSprings(layout: HomeCalorieHeroLayout?) {
+        val current = mutableStateOf(400)
+        composeRule.setContent {
+            CompositionLocalProvider(LocalLaunchFillEpoch provides 1) {
+                MaterialTheme {
+                    CalorieHero(
+                        current = current.value,
+                        baseGoal = 2000,
+                        activeCalories = 0,
+                        displayMode = HomeCalorieDisplayMode.STATIC,
+                        freezeProgress = false,
+                        layout = layout,
+                    )
+                }
+            }
+        }
+        composeRule.mainClock.autoAdvance = true
+        composeRule.mainClock.advanceTimeBy(2500)
+        composeRule.waitForIdle()
+        assertClose(barProgress(), 0.2f, 0.02f)
+
+        composeRule.mainClock.autoAdvance = false
+        current.value = 1600
+        barProgress()
+        composeRule.mainClock.advanceTimeBy(16)
+        val mid = barProgress()
+        assert(mid < 0.5f && mid > 0.18f) {
+            "day switch snapped or reset: progress=$mid"
+        }
+
+        composeRule.mainClock.autoAdvance = true
+        composeRule.mainClock.advanceTimeBy(2500)
+        composeRule.waitForIdle()
+        assertClose(barProgress(), 0.8f, 0.02f)
+        composeRule.onNodeWithContentDescription("Eaten 1,600 kcal").assertExists()
+    }
+
+    private fun assertFrozenFillSnaps(layout: HomeCalorieHeroLayout?) {
+        val current = mutableStateOf(400)
+        composeRule.mainClock.autoAdvance = false
+        composeRule.setContent {
+            CompositionLocalProvider(LocalLaunchFillEpoch provides 1) {
+                MaterialTheme {
+                    CalorieHero(
+                        current = current.value,
+                        baseGoal = 2000,
+                        activeCalories = 0,
+                        displayMode = HomeCalorieDisplayMode.STATIC,
+                        freezeProgress = true,
+                        layout = layout,
+                    )
+                }
+            }
+        }
+        composeRule.mainClock.advanceTimeByFrame()
+        assertClose(barProgress(), 0.2f, 0.001f)
+
+        current.value = 1600
+        barProgress()
+        composeRule.mainClock.advanceTimeByFrame()
+        assertClose(barProgress(), 0.8f, 0.001f)
+    }
+
+    private fun barProgress(): Float {
+        val node = composeRule.onNode(
+            SemanticsMatcher.keyIsDefined(SemanticsProperties.ProgressBarRangeInfo),
+        ).fetchSemanticsNode()
+        return node.config[SemanticsProperties.ProgressBarRangeInfo].current
+    }
+
+    private fun assertClose(actual: Float, expected: Float, tolerance: Float) {
+        assert(abs(actual - expected) <= tolerance) {
+            "progress $actual not within $tolerance of $expected"
         }
     }
 }
