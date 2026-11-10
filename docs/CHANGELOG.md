@@ -6,16 +6,6 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## [Unreleased]
 
-### Fixed
-
-- **Delete-undo no longer fights the Add button** (Android): the "Food removed" snackbar now appears above the floating Add button instead of underneath it, so tapping Undo always undoes instead of opening Add Food, and the undo window stays open for 10 seconds instead of 4.
-- **The camera shutter reads to TalkBack** (Android): the in-app camera's round shutter button now announces "Take photo" to screen readers and automation instead of being an unlabeled circle.
-
-### Changed
-
-- **Every calorie layout glides** (Android): switching days, logging food, and a change in workout burn now spring the ring or the bar, including the planned stretch and the burn shades, and the calorie figures slide instead of snapping.
-- **Ingredient rows take less room** (Android): each ingredient in the meal editor now shows its name on one line, without a tall outlined field, so three ingredients fit in the list where two used to.
-
 ## [6.3.0] - 2026-11-06
 
 ### Added
@@ -34,6 +24,8 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 - **Planned meals now read on the calorie gauge** (Android): on days with planned meals, the ring shows the planned stretch beyond what you have already eaten, with a "+X planned" caption beside your remaining calories. The ⓘ budget breakdown now explains every color of the ring, including the planned stretch and the burn shades, and the planned stretch is spoken by screen readers.
 - **Days flip with a subtle animation** (Android): the date caption now cross-fades when you swipe to another day, and screen readers get previous-day and next-day actions on the calorie card.
 - **An empty food log offers Add food** (Android): a day with nothing logged or planned shows an Add food button right on the empty card, instead of text only.
+- **Every calorie layout glides** (Android): switching days, logging food, and a change in workout burn now spring the ring or the bar, including the planned stretch and the burn shades, and the calorie figures slide instead of snapping.
+- **Ingredient rows take less room** (Android): each ingredient in the meal editor now shows its name on one line, without a tall outlined field, so three ingredients fit in the list where two used to.
 
 ### Fixed
 
@@ -44,6 +36,8 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 - **The planned stretch no longer ends in a white line** (Android): that line was the planned-end mark, and it only showed on a day where planned food sat past what you had already eaten. The rounded end of the stretch is the mark now.
 - **The active-burn line stays inside the arc** (Android): the line under the calorie number is shorter in every language, and a long day-type name shrinks to fit instead of running past the end of the arc.
 - **The plan-building screen can be left while it works** (Android): during onboarding, your nutrition plan is built while an animated checklist plays. When the AI answer takes a while, the back arrow at the top now stays available, so you can go back to the previous step instead of waiting. Continuing afterwards restarts the build cleanly.
+- **Delete-undo no longer fights the Add button** (Android): the "Food removed" snackbar now appears above the floating Add button instead of underneath it, so tapping Undo always undoes instead of opening Add Food, and the undo window stays open for 10 seconds instead of 4.
+- **The camera shutter reads to TalkBack** (Android): the in-app camera's round shutter button now announces "Take photo" to screen readers and automation instead of being an unlabeled circle.
 
 ## [6.2.0] - 2026-11-04
 
