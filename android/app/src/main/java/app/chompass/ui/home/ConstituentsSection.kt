@@ -1,10 +1,14 @@
 package app.chompass.ui.home
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Add
@@ -13,7 +17,6 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -25,7 +28,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
@@ -59,7 +66,7 @@ internal fun ConstituentsSection(
     optionalGoals: OptionalNutrientGoals? = null,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(4.dp)) {
         TextButton(onClick = { onExpandedChange(!expanded) }) {
             Icon(
                 imageVector = if (expanded) Icons.Filled.KeyboardArrowDown else Icons.AutoMirrored.Filled.KeyboardArrowRight,
@@ -138,21 +145,44 @@ private fun ConstituentRowCard(
         modifier = Modifier.fillMaxWidth(),
     ) {
         Column(
-            modifier = Modifier.padding(12.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
+            val nameLabel = stringResource(R.string.sheet_name)
             Row(verticalAlignment = Alignment.CenterVertically) {
                 if (!row.emoji.isNullOrBlank()) {
                     Text(row.emoji!!, fontSize = 20.sp, modifier = Modifier.padding(end = 8.dp))
                 }
-                OutlinedTextField(
+                BasicTextField(
                     value = row.name,
                     onValueChange = { onChange(row.copy(name = it)) },
-                    modifier = Modifier.weight(1f),
                     singleLine = true,
-                    label = { Text(stringResource(R.string.sheet_name)) },
+                    textStyle = TextStyle(
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium,
+                    ),
+                    cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+                    modifier = Modifier
+                        .weight(1f)
+                        .semantics { contentDescription = nameLabel },
+                    decorationBox = { inner ->
+                        Box {
+                            if (row.name.isEmpty()) {
+                                Text(
+                                    nameLabel,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    fontSize = 16.sp,
+                                )
+                            }
+                            inner()
+                        }
+                    },
                 )
-                IconButton(onClick = onRemove) {
+                IconButton(
+                    onClick = onRemove,
+                    modifier = Modifier.size(48.dp),
+                ) {
                     Icon(
                         Icons.Filled.Delete,
                         contentDescription = stringResource(R.string.sheet_constituents_remove),
@@ -163,6 +193,7 @@ private fun ConstituentRowCard(
                 quantityText = quantityText,
                 onQuantityChange = { applyQuantity(it) },
                 showQuantityCalc = false,
+                summaryPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
                 selectedUnitId = unitId,
                 onSelectedUnitChange = { id ->
                     unitId = id

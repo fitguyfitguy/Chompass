@@ -6,6 +6,10 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## [Unreleased]
 
+### Changed
+
+- **Ingredient rows take less room** (Android): each ingredient in the meal editor now shows its name on one line, without a tall outlined field, so three ingredients fit in the list where two used to.
+
 ## [6.3.0] - 2026-11-06
 
 ### Added
