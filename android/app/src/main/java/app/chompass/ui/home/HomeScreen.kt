@@ -596,10 +596,14 @@ fun HomeScreen(
         containerColor = Color.Transparent,
         snackbarHost = {
             // Custom docked bottom nav overlays the Scaffold; lift the host so
-            // snackbars (delete-undo, paste confirmation) are not hidden behind it.
+            // snackbars (delete-undo, paste confirmation) are not hidden behind
+            // the pill — and the docked Add FAB (audit R2, device 2026-11-10:
+            // the delete-undo action's tap zone sat under the FAB, so an Undo
+            // tap opened the hub). BottomFabScrollClearance is the same FAB
+            // footprint the food-log list already scrolls past (#156).
             ChompassSnackbarHost(
                 hostState = snackbarHostState,
-                modifier = Modifier.padding(bottom = BottomOverlayPadding),
+                modifier = Modifier.padding(bottom = BottomOverlayPadding + BottomFabScrollClearance),
             )
         },
     ) { padding ->
@@ -1096,7 +1100,9 @@ fun HomeScreen(
                                             val result = snackbarHostState.showSnackbar(
                                                 message = foodRemovedMessage,
                                                 actionLabel = undoLabel,
-                                                duration = SnackbarDuration.Short,
+                                                // Audit R2: Short expired before a
+                                                // user could react on-device.
+                                                duration = SnackbarDuration.Long,
                                             )
                                             if (result == SnackbarResult.ActionPerformed) {
                                                 haptics.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
