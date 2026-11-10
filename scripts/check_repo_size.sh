@@ -32,19 +32,20 @@ fail=0
 
 if [[ -n "$RANGE" ]]; then
   # New objects introduced by the range. Paths allowed to exceed the per-blob
-  # limit: published screenshots, store listing images, the USDA sqlite, JVM
-  # screenshotTest references.
+  # limit: published screenshots, store listing images, the offline food
+  # databases (USDA + Swiss, main and debug variants), the vendored zxing
+  # barcode reader, the brand icon source, and JVM screenshotTest references.
   offenders="$(
     git rev-list --objects "$RANGE" 2>/dev/null \
       | git cat-file --batch-check='%(objecttype) %(objectname) %(objectsize) %(rest)' 2>/dev/null \
       | awk -v limit="$LIMIT_BYTES" \
-          '$1 == "blob" && $3 > limit && ($4 == "" || $4 !~ /^(docs\/screenshots\/|metadata\/en-US\/images\/|android\/app\/src\/main\/assets\/usda\/|android\/app\/src\/screenshotTest(Debug|PlayDebug)\/reference\/)/) \
+          '$1 == "blob" && $3 > limit && ($4 == "" || $4 !~ /^(docs\/screenshots\/|metadata\/en-US\/images\/|android\/app\/src\/(main|debug)\/assets\/(usda|swiss)\/|web\/app\/vendor\/zxing\/|appicon\.png|android\/app\/src\/screenshotTest(Debug|PlayDebug)\/reference\/)/) \
            { printf "%7.2f MiB  %s\n", $3 / 1048576, ($4 == "" ? "(anonymous blob)" : $4) }'
   )"
   if [[ -n "$offenders" ]]; then
     echo "check_repo_size: blobs over $(( LIMIT_BYTES / 1024 )) KiB outside the allowlist in $RANGE:" >&2
     printf '  %s\n' "$offenders" >&2
-    echo "Allowed heavy paths: docs/screenshots/, metadata/en-US/images/, usda sqlite, screenshotTest refs." >&2
+    echo "Allowed heavy paths: docs/screenshots/, metadata/en-US/images/, usda+swiss sqlite, zxing wasm, appicon, screenshotTest refs." >&2
     fail=1
   fi
 fi
