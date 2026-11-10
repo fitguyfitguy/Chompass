@@ -427,6 +427,12 @@ fun AmbientBackground(
     val palette = ChompassTraitsDefaults.ambientPalette()
     val contrast = ChompassTraitsDefaults.ambientContrast()
     val saturation = ChompassTraitsDefaults.ambientSaturation()
+    // The tilt listener samples gravity at UI rate; a tilted phone never
+    // produces two identical low-passed offsets, so ungated it redraws the
+    // layer forever and the UI never goes idle (uiautomator "could not get
+    // idle state" on a cradled phone, 2026-11-10). Stand still together with
+    // the wax clock: battery saver and remove-animations pause the parallax.
+    val motionPaused = rememberSystemMotionPaused()
     val darkBackground = colorScheme.background.luminance() < 0.5f
     // Accent-derived triad: the theme accent plus two hue-rotated counterpoints,
     // so single-hue themes still read as a multi-color field. The macro palette
@@ -468,7 +474,9 @@ fun AmbientBackground(
             null
         }
     }
-    val tilt by rememberAmbientTilt(ChompassTraitsDefaults.ambientTilt())
+    val tilt by rememberAmbientTilt(
+        enabled = ChompassTraitsDefaults.ambientTilt() && !motionPaused.value,
+    )
 
     Box(
         modifier.graphicsLayer {

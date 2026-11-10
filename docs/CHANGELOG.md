@@ -38,6 +38,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 - **The plan-building screen can be left while it works** (Android): during onboarding, your nutrition plan is built while an animated checklist plays. When the AI answer takes a while, the back arrow at the top now stays available, so you can go back to the previous step instead of waiting. Continuing afterwards restarts the build cleanly.
 - **Delete-undo no longer fights the Add button** (Android): the "Food removed" snackbar now appears above the floating Add button instead of underneath it, so tapping Undo always undoes instead of opening Add Food, and the undo window stays open for 10 seconds instead of 4.
 - **The camera shutter reads to TalkBack** (Android): the in-app camera's round shutter button now announces "Take photo" to screen readers and automation instead of being an unlabeled circle.
+- **The ambient background stands still when your phone does** (Android): with animations removed in developer options or battery saver on, the wax field's tilt parallax now stops together with the wax drift, instead of redrawing the screen forever while the app sits idle.
 
 ## [6.2.0] - 2026-11-04
 
