@@ -6,6 +6,11 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## [Unreleased]
 
+### Fixed
+
+- **Delete-undo no longer fights the Add button** (Android): the "Food removed" snackbar now appears above the floating Add button instead of underneath it, so tapping Undo always undoes instead of opening Add Food, and the undo window stays open for 10 seconds instead of 4.
+- **The camera shutter reads to TalkBack** (Android): the in-app camera's round shutter button now announces "Take photo" to screen readers and automation instead of being an unlabeled circle.
+
 ### Changed
 
 - **Every calorie layout glides** (Android): switching days, logging food, and a change in workout burn now spring the ring or the bar, including the planned stretch and the burn shades, and the calorie figures slide instead of snapping.
