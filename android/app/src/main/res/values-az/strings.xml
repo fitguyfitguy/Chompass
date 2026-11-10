@@ -937,6 +937,7 @@ bilirsən?</string>
     <string name="cd_new_recipe">Yeni resept</string>
     <string name="cd_open_camera">Kameranı aç</string>
     <string name="cd_open_gallery">Qalereyanı aç</string>
+    <string name="cd_camera_shutter">Şəkil çək</string>
     <string name="cd_quantity_operator">%1$s kəmiyyətə daxil et</string>
     <string name="cd_remove_image">Şəkli sil</string>
     <string name="cd_selected">Seçilib</string>

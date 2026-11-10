@@ -920,6 +920,7 @@
     <string name="cd_new_recipe">Новий рецепт</string>
     <string name="cd_open_camera">Відкрити камеру</string>
     <string name="cd_open_gallery">Відкрити галерею</string>
+    <string name="cd_camera_shutter">Зробити фото</string>
     <string name="cd_quantity_operator">Вставити %1$s у кількість</string>
     <string name="cd_remove_image">Прибрати зображення</string>
     <string name="cd_selected">Вибрано</string>

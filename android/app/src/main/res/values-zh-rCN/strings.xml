@@ -946,6 +946,7 @@
     <string name="cd_new_recipe">新建食谱</string>
     <string name="cd_open_camera">打开相机</string>
     <string name="cd_open_gallery">打开相册</string>
+    <string name="cd_camera_shutter">拍照</string>
     <string name="cd_quantity_operator">将 %1$s 插入数量</string>
     <string name="cd_remove_image">移除图片</string>
     <string name="cd_selected">已选择</string>

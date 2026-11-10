@@ -48,6 +48,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -226,6 +229,8 @@ fun InAppCameraCaptureDialog(
                 )
             }
 
+            val shutterLabel = stringResource(R.string.cd_camera_shutter)
+
             if (onOpenGallery != null) {
                 IconButton(
                     onClick = {
@@ -290,6 +295,9 @@ fun InAppCameraCaptureDialog(
                     .clip(CircleShape)
                     .background(Color.White.copy(alpha = 0.95f))
                     .border(5.dp, MaterialTheme.colorScheme.primary, CircleShape)
+                    // Audit R9: the shutter's content is a decorative circle, so
+                    // TalkBack and uiautomator saw an unlabeled button.
+                    .semantics { contentDescription = shutterLabel }
             ) {
                 if (isCapturing) {
                     CircularProgressIndicator(

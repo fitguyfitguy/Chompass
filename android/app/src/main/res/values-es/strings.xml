@@ -1000,6 +1000,7 @@
     <string name="cd_new_recipe">Nueva receta</string>
     <string name="cd_open_camera">Abrir cámara</string>
     <string name="cd_open_gallery">Abrir galería</string>
+    <string name="cd_camera_shutter">Tomar foto</string>
     <string name="cd_quantity_operator">Insertar %1$s en la cantidad</string>
     <string name="cd_remove_image">Quitar imagen</string>
     <string name="cd_selected">Seleccionado</string>

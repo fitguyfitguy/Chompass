@@ -2557,6 +2557,7 @@
     <string name="cd_open_camera">Open camera</string>
     <string name="cd_close_camera">Close camera</string>
     <string name="cd_open_gallery">Open gallery</string>
+    <string name="cd_camera_shutter">Take photo</string>
 
     <!-- Localization pass: previously hardcoded UI strings -->
     <string name="unit_mcg">mcg</string>

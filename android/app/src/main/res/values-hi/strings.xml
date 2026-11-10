@@ -945,6 +945,7 @@
     <string name="cd_new_recipe">नई रेसिपी</string>
     <string name="cd_open_camera">कैमरा खोलें</string>
     <string name="cd_open_gallery">गैलरी खोलें</string>
+    <string name="cd_camera_shutter">फ़ोटो लें</string>
     <string name="cd_quantity_operator">%1$s को मात्रा में डालें</string>
     <string name="cd_remove_image">छवि हटाएं</string>
     <string name="cd_selected">चयनित</string>

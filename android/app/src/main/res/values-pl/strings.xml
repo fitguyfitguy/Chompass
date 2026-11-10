@@ -1652,6 +1652,7 @@
     <string name="cd_open_camera">Otwórz aparat</string>
     <string name="cd_close_camera">Zamknij aparat</string>
     <string name="cd_open_gallery">Otwórz galerię</string>
+    <string name="cd_camera_shutter">Zrób zdjęcie</string>
 
     <!-- Localization pass: previously hardcoded UI strings -->
     <string name="unit_mcg">mcg</string>

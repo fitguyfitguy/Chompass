@@ -918,6 +918,7 @@
     <string name="cd_new_recipe">Nova receita</string>
     <string name="cd_open_camera">Abrir câmera</string>
     <string name="cd_open_gallery">Abrir galeria</string>
+    <string name="cd_camera_shutter">Tirar foto</string>
     <string name="cd_quantity_operator">Inserir %1$s na quantidade</string>
     <string name="cd_remove_image">Remover imagem</string>
     <string name="cd_selected">Selecionado</string>

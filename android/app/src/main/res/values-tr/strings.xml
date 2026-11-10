@@ -1644,6 +1644,7 @@
     <string name="cd_open_camera">Kamerayı aç</string>
     <string name="cd_close_camera">Kamerayı kapat</string>
     <string name="cd_open_gallery">Galeriyi aç</string>
+    <string name="cd_camera_shutter">Fotoğraf çek</string>
 
     <!-- Localization pass: previously hardcoded UI strings -->
     <string name="unit_mcg">mcg</string>

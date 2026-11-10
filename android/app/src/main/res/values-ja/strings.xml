@@ -944,6 +944,7 @@
     <string name="cd_new_recipe">新しいレシピ</string>
     <string name="cd_open_camera">カメラを開く</string>
     <string name="cd_open_gallery">ギャラリーを開く</string>
+    <string name="cd_camera_shutter">写真を撮る</string>
     <string name="cd_quantity_operator">%1$s を数量に挿入</string>
     <string name="cd_remove_image">画像を削除</string>
     <string name="cd_selected">選択中</string>

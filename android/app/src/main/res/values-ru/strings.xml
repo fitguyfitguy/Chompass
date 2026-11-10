@@ -914,6 +914,7 @@
     <string name="cd_open_camera">Открыть камеру</string>
     <string name="cd_close_camera">Закрыть камеру</string>
     <string name="cd_open_gallery">Открыть галерею</string>
+    <string name="cd_camera_shutter">Сделать фото</string>
     
     <string name="unit_mcg">мкг</string>
     <string name="home_food_log">Журнал питания</string>

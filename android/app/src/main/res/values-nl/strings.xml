@@ -915,6 +915,7 @@
     <string name="cd_new_recipe">Nieuw recept</string>
     <string name="cd_open_camera">Camera openen</string>
     <string name="cd_open_gallery">Galerij openen</string>
+    <string name="cd_camera_shutter">Foto maken</string>
     <string name="cd_quantity_operator">%1$s invoegen in hoeveelheid</string>
     <string name="cd_remove_image">Afbeelding verwijderen</string>
     <string name="cd_selected">Geselecteerd</string>

@@ -949,6 +949,7 @@
     <string name="cd_new_recipe">وصفة جديدة</string>
     <string name="cd_open_camera">فتح الكاميرا</string>
     <string name="cd_open_gallery">فتح المعرض</string>
+    <string name="cd_camera_shutter">التقاط صورة</string>
     <string name="cd_quantity_operator">إدراج %1$s في الكمية</string>
     <string name="cd_remove_image">إزالة الصورة</string>
     <string name="cd_selected">محدد</string>

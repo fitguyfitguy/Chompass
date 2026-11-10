@@ -939,6 +939,7 @@
     <string name="cd_new_recipe">Rețetă nouă</string>
     <string name="cd_open_camera">Deschide camera</string>
     <string name="cd_open_gallery">Deschide galeria</string>
+    <string name="cd_camera_shutter">Fă o fotografie</string>
     <string name="cd_quantity_operator">Inserează %1$s în cantitate</string>
     <string name="cd_remove_image">Elimină imaginea</string>
     <string name="cd_selected">Selectat</string>

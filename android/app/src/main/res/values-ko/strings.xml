@@ -944,6 +944,7 @@
     <string name="cd_new_recipe">새 레시피</string>
     <string name="cd_open_camera">카메라 열기</string>
     <string name="cd_open_gallery">갤러리 열기</string>
+    <string name="cd_camera_shutter">사진 찍기</string>
     <string name="cd_quantity_operator">%1$s을(를) 수량에 삽입</string>
     <string name="cd_remove_image">이미지 제거</string>
     <string name="cd_selected">선택됨</string>
