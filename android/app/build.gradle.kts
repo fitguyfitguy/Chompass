@@ -59,6 +59,10 @@ android {
         unitTests {
             // Robolectric (AndroidAppIconManager tests) needs merged resources/manifest.
             isIncludeAndroidResources = true
+            // JVM unit tests touch android.util.Log (via the vendored LogManager);
+            // return defaults instead of throwing "not mocked" so pure-logic
+            // tests (vendored openScale handler tests) can run on the JVM.
+            isReturnDefaultValues = true
         }
     }
 
@@ -250,6 +254,8 @@ dependencies {
     implementation(libs.androidx.room.common)
 
     testImplementation(libs.junit)
+    testImplementation(libs.truth)
+    testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.robolectric)
     testImplementation("org.json:json:20240303")
     testImplementation(libs.mockwebserver)

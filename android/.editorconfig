@@ -12,3 +12,16 @@ ktlint_standard_no-trailing-spaces = enabled
 ktlint_standard_no-consecutive-blank-lines = enabled
 ktlint_standard_no-empty-first-line-in-class-body = enabled
 ktlint_standard_final-newline = enabled
+
+# Vendored openScale sources (main + tests) are upstream-verbatim and must never
+# be reformatted (third_party/openscale/SNAPSHOT.md policy (a)); upstream test
+# style opens class bodies with a blank line. Globs are relative to android/.
+[app/src/main/java/com/health/openscale/**.{kt,kts}]
+ktlint_standard_no-empty-first-line-in-class-body = disabled
+ktlint_standard_no-consecutive-blank-lines = disabled
+ktlint_standard_final-newline = disabled
+
+[app/src/test/java/com/health/openscale/**.{kt,kts}]
+ktlint_standard_no-empty-first-line-in-class-body = disabled
+ktlint_standard_no-consecutive-blank-lines = disabled
+ktlint_standard_final-newline = disabled

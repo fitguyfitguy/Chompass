@@ -1,7 +1,9 @@
 package app.chompass.ui.progress
 
 import android.Manifest
+import android.content.Intent
 import android.os.Build
+import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
@@ -126,22 +128,33 @@ fun ScaleSyncSheet(
                 )
 
                 is ScaleSyncState.AwaitingUser -> {
-                    Text(
-                        stringResource(R.string.progress_sync_scale_user_title),
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.SemiBold,
-                    )
-                    // The handler's labels end with its own localized
-                    // "create new user" row (id −1); one app-side register row
-                    // replaces it here.
-                    state.labels.forEachIndexed { index, label ->
-                        if (state.ids[index] == -1) return@forEachIndexed
-                        OutlinedButton(
-                            onClick = { onUserSelected(state.ids[index]) },
-                            modifier = Modifier.fillMaxWidth(),
-                        ) {
-                            Text(label)
+                    val hasSlots = state.ids.any { it != -1 }
+                    if (hasSlots) {
+                        Text(
+                            stringResource(R.string.progress_sync_scale_user_title),
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.SemiBold,
+                        )
+                        // The handler's labels end with its own localized
+                        // "create new user" row (id −1); one app-side register row
+                        // replaces it here.
+                        state.labels.forEachIndexed { index, label ->
+                            if (state.ids[index] == -1) return@forEachIndexed
+                            OutlinedButton(
+                                onClick = { onUserSelected(state.ids[index]) },
+                                modifier = Modifier.fillMaxWidth(),
+                            ) {
+                                Text(label)
+                            }
                         }
+                    } else {
+                        // The scale itself has no stored profiles (display shows
+                        // "U -"): guide to the SET button, or register from here.
+                        Text(
+                            stringResource(R.string.progress_sync_scale_empty_slots),
+                            fontSize = 14.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
                     }
                     Button(
                         onClick = { onUserSelected(-1) },
@@ -156,6 +169,13 @@ fun ScaleSyncSheet(
 
                 is ScaleSyncState.AwaitingConsent -> {
                     var consentText by remember { mutableStateOf("") }
+                    if (state.rejected) {
+                        Text(
+                            stringResource(R.string.progress_sync_scale_consent_rejected),
+                            fontSize = 14.sp,
+                            color = MaterialTheme.colorScheme.error,
+                        )
+                    }
                     Text(
                         stringResource(
                             R.string.progress_sync_scale_consent_slot,
@@ -179,6 +199,16 @@ fun ScaleSyncSheet(
                     ) {
                         Text(stringResource(R.string.action_ok))
                     }
+                    if (state.rejected) {
+                        // Escape hatch for a slot owned by the scale's own app:
+                        // register a fresh profile instead of fighting the code.
+                        OutlinedButton(
+                            onClick = { onUserSelected(-1) },
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
+                            Text(stringResource(R.string.progress_sync_scale_user_new))
+                        }
+                    }
                     OutlinedButton(onClick = onCancel, modifier = Modifier.fillMaxWidth()) {
                         Text(stringResource(R.string.action_cancel))
                     }
@@ -194,6 +224,38 @@ fun ScaleSyncSheet(
                         modifier = Modifier.fillMaxWidth(),
                     ) {
                         Text(stringResource(R.string.action_done))
+                    }
+                }
+
+                is ScaleSyncState.BondIssue -> {
+                    val context = androidx.compose.ui.platform.LocalContext.current
+                    Text(
+                        stringResource(R.string.progress_sync_scale_bt_unpair),
+                        fontSize = 14.sp,
+                        color = MaterialTheme.colorScheme.error,
+                    )
+                    Button(
+                        onClick = { context.startActivity(Intent(Settings.ACTION_BLUETOOTH_SETTINGS)) },
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        Text(stringResource(R.string.progress_sync_scale_bt_settings))
+                    }
+                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        OutlinedButton(
+                            onClick = {
+                                onCancel()
+                                onStart()
+                            },
+                            modifier = Modifier.weight(1f),
+                        ) {
+                            Text(stringResource(R.string.action_retry))
+                        }
+                        Button(
+                            onClick = onDismiss,
+                            modifier = Modifier.weight(1f),
+                        ) {
+                            Text(stringResource(R.string.action_done))
+                        }
                     }
                 }
 

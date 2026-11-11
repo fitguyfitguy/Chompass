@@ -6,6 +6,16 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## [Unreleased]
 
+### Added
+
+- **More scales sync straight into Chompass** (Android): Bluetooth scale sync now also understands generic SIG-standard scales (A&D UC-352BLE, Samsung GP-BELAD001BP0 and other PlainSIG models), Xiaomi Mi Scale v1/v2, and Renpho scales, alongside the Beurer/Sanitas/Medisana families. These three are verified against the upstream driver test suite, not on physical hardware — tell the tracker how yours behaves.
+- **A running scale sync survives the screen turning off** (Android): the sync runs as a foreground service with a progress notification while it talks to the scale, so a weigh-in keeps going with the screen off, and a brief connection drop now gets one automatic retry instead of ending the run.
+
+### Changed
+
+- **The scale sync sheet explains what the scale wants** (Android): when the scale has no saved profiles, the sheet says to create one on the scale itself (SET button, pick a slot) or register a new profile from the phone; a refused 4-digit code explains the mismatch and offers registering a new profile instead; and a scale that keeps failing to connect because of a stale pairing gets an unpair instruction with a button that opens Android's Bluetooth settings.
+- **Scale discovery scans smarter** (Android): the sync first scans for the Bluetooth services the supported families advertise, then falls back to a full scan — supported scales are found sooner, and scales that stay quiet are still found.
+
 ## [6.3.0] - 2026-11-06
 
 ### Added

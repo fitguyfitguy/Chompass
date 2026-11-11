@@ -10,6 +10,7 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE" />
 
     <!-- BLE scale sync (vendored openScale drivers; Android 12+ path only). -->
     <uses-permission
@@ -436,6 +437,12 @@
             android:foregroundServiceType="dataSync"
             android:exported="false"
             tools:node="merge" />
+
+        <!-- BLE scale sync run host; keeps a weigh-in alive with the screen off. -->
+        <service
+            android:name=".scale.ScaleSyncService"
+            android:foregroundServiceType="connectedDevice"
+            android:exported="false" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
