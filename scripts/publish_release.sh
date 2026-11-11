@@ -61,10 +61,9 @@ Options:
 After uploading assets, redeploys the Hugo site (scripts/deploy_pages.sh) unless
 --skip-pages is set. Keep website/hugo.toml params.version in sync with the release.
 
-Uploads the universal APK + SHA256SUMS. Resume with --assets-only after freeing
-space:
-  ./scripts/manage_release_assets.sh list
-  ./scripts/manage_release_assets.sh keep-n 5 -y
+Uploads the universal APK + SHA256SUMS. Resume with --assets-only after the
+release page exists:
+  ./scripts/publish_release.sh VERSION --assets-only
 EOF
       exit 0
       ;;
@@ -150,18 +149,23 @@ quota_help() {
 
 Codeberg release attachment quota exceeded.
 
-1. Inspect current attachments:
-     ./scripts/manage_release_assets.sh list
+Note: Forgejo rejects all writes while ANY quota category is over and reports
+it as attachment quota. Check the quota page first:
+  https://codeberg.org/user/settings (quota section)
 
-2. Free space (keep the last 3 to 5 releases, or prune ABI/play leftovers):
-     ./scripts/manage_release_assets.sh keep-n 5 -y
+1. Git repo over limit (e.g. after a history rewrite, before server gc):
+   asset pruning cannot help. Post a [STORAGE] request on
+   https://codeberg.org/Codeberg-e.V./requests asking for gc + recalc
+   (request 2709 is the precedent).
+
+2. Assets genuinely full: prune one release at a time (never bulk —
+   keep-n / keep-latest delete whole release pages):
+     ./scripts/manage_release_assets.sh list
      ./scripts/manage_release_assets.sh prune-abi-splits --before vX.Y.Z -y
+     ./scripts/manage_release_assets.sh prune-play-assets -y
 
 3. Resume this publish (uploads only missing assets):
      ./scripts/publish_release.sh VERSION --assets-only
-
-Request a quota increase (free for libre projects):
-  https://codeberg.org/Codeberg-e.V./requests
 EOF
 }
 

@@ -118,27 +118,20 @@ Notes come from the CHANGELOG section of the base version (`5.6.0` for
 commit `v<version>` and publish normally; delete the beta tag if you want a clean
 history.
 
-### Codeberg storage quota
+### Codeberg storage quotas
 
-Codeberg applies a combined quota for **releases, packages, LFS, and attachments** (default **1.5 GiB** per user/org, separate from the 750 MiB git-repo limit).
+Codeberg enforces two separate quotas: **git repository** (default **750 MiB**) and **assets** — releases, packages, LFS, attachments (default **1.5 GiB**). Check the quota page under user settings to see which category refused before acting.
 
-**Policy:** keep the **last 3 to 5** Codeberg releases (each with universal APK + `SHA256SUMS` only, no per-ABI splits, no release screenshots by default). Older releases are pruned only when quota demands it; the release notes stay visible for recent versions.
+**Git quota exceeded** (`quota exceeded` on `git push` or release creation): the pre-receive hook rejects **all writes** — pushes and release publication — while the counter is over. The reported size lags reality until Codeberg's server-side gc runs (it can take weeks), so a history rewrite does not lower it immediately; the 2026-11 rewrite went through exactly this ([request 2709](https://codeberg.org/Codeberg-e.V./requests/issues/2709)). Post a `[STORAGE]` request on [Codeberg-e.V./requests](https://codeberg.org/Codeberg-e.V./requests) asking for gc + recalc (plus a temporary raise only if the recalculated size still lands near the limit) instead of trying to push.
 
-**Symptoms:** `quota exceeded` from `tea`, or a release page with only some APKs attached.
-
-**Before publishing**, check attachment usage and drop releases older than the last 5:
-
-```bash
-./scripts/manage_release_assets.sh list
-./scripts/manage_release_assets.sh keep-n 5 -y
-```
-
-**On the kept release**, drop leftover ABI splits / play-flavor APKs if any:
+**Assets quota exceeded:** live attachments are small by policy — one universal APK + `SHA256SUMS` per release (old APKs were stripped in the 2026-11 history rewrite). Drop leftovers one release at a time:
 
 ```bash
 ./scripts/manage_release_assets.sh prune-abi-splits v1.14.10 -y
 ./scripts/manage_release_assets.sh prune-play-assets -y
 ```
+
+**Never run `keep-latest` / `keep-n` for quota reasons.** They delete whole release **pages** — notes and attachments together, not just files. This destroyed 32 release pages on 2026-11-10 during a misdiagnosed quota incident; the script now refuses both modes unless `--delete-pages` is passed.
 
 **Publish** uploads universal APK → checksums. If a run stops mid-way, resume without recreating the release:
 
@@ -148,7 +141,6 @@ Codeberg applies a combined quota for **releases, packages, LFS, and attachments
 
 **Screenshots:** `--with-screenshots` adds ~10 PNGs. Prefer committing `docs/screenshots/` for the README and skip attaching screenshots to Codeberg.
 
-**Need more quota?** Libre projects can request an increase (no payment): [Codeberg-e.V./requests](https://codeberg.org/Codeberg-e.V./requests). Check current usage under user/org settings on Codeberg.
 ## Release screenshots (real device)
 
 Published images are captured from the **real app on a physical device** — native
