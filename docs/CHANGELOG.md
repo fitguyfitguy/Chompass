@@ -16,6 +16,10 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 - **The scale sync sheet explains what the scale wants** (Android): when the scale has no saved profiles, the sheet says to create one on the scale itself (SET button, pick a slot) or register a new profile from the phone; a refused 4-digit code explains the mismatch and offers registering a new profile instead; and a scale that keeps failing to connect because of a stale pairing gets an unpair instruction with a button that opens Android's Bluetooth settings.
 - **Scale discovery scans smarter** (Android): the sync first scans for the Bluetooth services the supported families advertise, then falls back to a full scan — supported scales are found sooner, and scales that stay quiet are still found.
 
+### Fixed
+
+- **Home display toggles stay put** (Android): on Settings → Home display, a toggle like "Full nutrient names" could flip back on its own while the screen was still loading in the background. The setting you pick now stays picked.
+
 ## [6.3.0] - 2026-11-06
 
 ### Added

@@ -353,6 +353,7 @@ internal fun commitSettingsHydrate(
     incoming: SettingsUiState,
     writeGenAtStart: Int,
     writeGenNow: Int,
+    storePaintedHomeDisplay: HomeDisplayPreferences? = null,
 ): SettingsUiState {
     val hydrated = if (writeGenAtStart == writeGenNow) incoming
     else current.copy(
@@ -375,11 +376,19 @@ internal fun commitSettingsHydrate(
     // screen (add, provider, key, select) and a hydrate that started before them
     // must never repaint the pre-action profile. The init snapshot is only a
     // first paint, so anything the live state already holds wins.
+    // Home display is store-driven the same way (Codeberg #92): the Customize
+    // Home toggles write through [launchPref] without bumping the write gen,
+    // and the store collector repaints them within a frame — but the slow
+    // hydrate tail (weather, Health Connect, KeyStore) commits afterwards from
+    // its pre-toggle snapshot and used to flip the toggle visually back.
+    // null = the collector has not painted yet (cold start), so the snapshot
+    // still paints and no default flashes.
     return hydrated.copy(
         profiles = current.profiles.ifEmpty { incoming.profiles },
         activeProfile = current.activeProfile ?: incoming.activeProfile,
         fallbackProfileId = current.fallbackProfileId ?: incoming.fallbackProfileId,
         apiKeyMasked = current.apiKeyMasked.ifEmpty { incoming.apiKeyMasked },
+        homeDisplay = storePaintedHomeDisplay ?: incoming.homeDisplay,
     )
 }
 
@@ -409,6 +418,14 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
     private var lastRecalcSignature: String? = null
 
     private var settingsWriteGen = 0
+
+    /**
+     * Last emission of the home-display store collector, or null before its
+     * first paint. Lets [commitSettingsHydrate] keep the store-driven
+     * home-display slice over the (possibly stale) hydration snapshot —
+     * Codeberg #92. Main-thread only, like [settingsWriteGen].
+     */
+    private var paintedHomeDisplay: HomeDisplayPreferences? = null
 
     /** True when [profile]'s goal inputs differ from the last-recalculated baseline. */
     private fun needsRecalc(profile: app.chompass.models.UserProfile?): Boolean =
@@ -704,7 +721,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 val sheet = runCatching { container.prefs.loadLastGoalChangeSheet() }.getOrNull()
                 state to sheet
             }
-            _ui.value = commitSettingsHydrate(_ui.value, state, hydrateGen, settingsWriteGen)
+            _ui.value = commitSettingsHydrate(_ui.value, state, hydrateGen, settingsWriteGen, paintedHomeDisplay)
             if (hydrateGen == settingsWriteGen) {
                 _ui.update { it.copy(lastRecalcSheet = sheet) }
             } else {
@@ -713,7 +730,10 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         }
 
         container.prefs.homeDisplayPreferences
-            .onEach { display -> _ui.value = _ui.value.copy(homeDisplay = display) }
+            .onEach { display ->
+                paintedHomeDisplay = display
+                _ui.value = _ui.value.copy(homeDisplay = display)
+            }
             .launchIn(viewModelScope)
 
         // Weather input state (source, shared-app cache, Open-Meteo cache).
