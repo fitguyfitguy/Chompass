@@ -15,6 +15,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 - **The scale sync sheet explains what the scale wants** (Android): when the scale has no saved profiles, the sheet says to create one on the scale itself (SET button, pick a slot) or register a new profile from the phone; a refused 4-digit code explains the mismatch and offers registering a new profile instead; and a scale that keeps failing to connect because of a stale pairing gets an unpair instruction with a button that opens Android's Bluetooth settings.
 - **Scale discovery scans smarter** (Android): the sync first scans for the Bluetooth services the supported families advertise, then falls back to a full scan — supported scales are found sooner, and scales that stay quiet are still found.
+- **The photo note check asks once** (Android): when you analyze a photo without a note, the "Analyze now?" confirmation now appears only the first time. After you confirm once, later noteless single-photo logs run straight through; photos with a note and multi-photo logs still get their checks. Turning "Ask for a photo note" off and back on in Settings → Food & Entry brings the check back.
 
 ### Fixed
 

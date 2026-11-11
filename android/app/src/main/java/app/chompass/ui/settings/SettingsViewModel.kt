@@ -1005,7 +1005,10 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
     fun setAskPhotoNotePrompt(ask: Boolean) = updateUiPref(
         {
             container.prefs.setSkipPhotoNotePrompt(!ask)
-            if (ask) container.prefs.setPhotoNoteSkipCount(0)
+            if (ask) {
+                container.prefs.setPhotoNoteSkipCount(0)
+                container.prefs.setPhotoAnalyzeConfirmAcknowledged(false)
+            }
         },
         { copy(skipPhotoNotePrompt = !ask) },
     )

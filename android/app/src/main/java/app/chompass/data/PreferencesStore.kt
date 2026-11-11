@@ -580,6 +580,8 @@ class PreferencesStore(private val appContext: Context) : NutritionSyncStore {
     suspend fun setSkipPhotoNotePrompt(v: Boolean) = setSkipPhotoNotePromptImpl(v)
     val photoNoteSkipCount: Flow<Int> get() = photoNoteSkipCountImpl
     suspend fun setPhotoNoteSkipCount(v: Int) = setPhotoNoteSkipCountImpl(v)
+    val photoAnalyzeConfirmAcknowledged: Flow<Boolean> get() = photoAnalyzeConfirmAcknowledgedImpl
+    suspend fun setPhotoAnalyzeConfirmAcknowledged(v: Boolean) = setPhotoAnalyzeConfirmAcknowledgedImpl(v)
     val photoAccuracyGuideCount: Flow<Int> get() = photoAccuracyGuideCountImpl
     suspend fun setPhotoAccuracyGuideCount(v: Int) = setPhotoAccuracyGuideCountImpl(v)
     val mealConstituentsEnabled: Flow<Boolean> get() = mealConstituentsEnabledImpl

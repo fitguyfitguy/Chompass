@@ -2103,6 +2103,7 @@ fun HomeScreen(
             showDontAskAgain = !ui.skipPhotoNotePrompt &&
                 ui.photoNoteSkipCount >= HomeViewModel.PHOTO_NOTE_SKIP_OFFER_THRESHOLD,
             showAccuracyGuide = ui.photoAccuracyGuideCount < HomeViewModel.PHOTO_ACCURACY_GUIDE_COUNT,
+            analyzeConfirmAcknowledged = ui.photoAnalyzeConfirmAcknowledged,
             recentPrompts = recentPrompts,
             onAddPhoto = { note ->
                 if (stagedPhotoBytes.size < FoodPhotoSession.MAX_IMAGES) {
@@ -2117,13 +2118,13 @@ fun HomeScreen(
             onRemove = { index ->
                 photoSession.removeAt(index)
             },
-            onAnalyze = { note, grams, dontAskAgain ->
+            onAnalyze = { note, grams, dontAskAgain, acknowledgeConfirm ->
                 val images = photoSession.stagedImages.value
                 photoSession.clear()
                 initialPhotoNote = ""
                 if (!ui.isEntryAnalysisBusy) {
                     addFoodFlowActive = false
-                    vm.analyzePhotosFromStaging(images, note, grams, dontAskAgain)
+                    vm.analyzePhotosFromStaging(images, note, grams, dontAskAgain, acknowledgeConfirm)
                 }
             },
             onQueueForLater = { note, grams ->

@@ -197,6 +197,8 @@ data class HomeUiState(
     val skipPhotoNotePrompt: Boolean = false,
     /** Consecutive empty-note photo analyzes; at ≥3 offer “don’t ask again”. */
     val photoNoteSkipCount: Int = 0,
+    /** User confirmed the sparse “Analyze now?” dialog once; skip it on later noteless single-photo analyzes. */
+    val photoAnalyzeConfirmAcknowledged: Boolean = false,
     /** Completed photo staging Analyzes; tip card while below [HomeViewModel.PHOTO_ACCURACY_GUIDE_COUNT]. */
     val photoAccuracyGuideCount: Int = 0,
     val hasSeenCameraScaleTip: Boolean = true,
@@ -630,6 +632,7 @@ data class HomeUiState(
             recalcSheet == other.recalcSheet &&
             skipPhotoNotePrompt == other.skipPhotoNotePrompt &&
             photoNoteSkipCount == other.photoNoteSkipCount &&
+            photoAnalyzeConfirmAcknowledged == other.photoAnalyzeConfirmAcknowledged &&
             photoAccuracyGuideCount == other.photoAccuracyGuideCount &&
             hasSeenCameraScaleTip == other.hasSeenCameraScaleTip &&
             weightMetric == other.weightMetric &&
@@ -739,6 +742,7 @@ data class HomeUiState(
         result = 31 * result + (recalcSheet?.hashCode() ?: 0)
         result = 31 * result + skipPhotoNotePrompt.hashCode()
         result = 31 * result + photoNoteSkipCount
+        result = 31 * result + photoAnalyzeConfirmAcknowledged.hashCode()
         result = 31 * result + photoAccuracyGuideCount
         result = 31 * result + hasSeenCameraScaleTip.hashCode()
         result = 31 * result + weightMetric.hashCode()
@@ -1469,6 +1473,12 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             }
             .launchIn(viewModelScope)
 
+        container.prefs.photoAnalyzeConfirmAcknowledged
+            .onEach { acknowledged ->
+                _ui.update { it.copy(photoAnalyzeConfirmAcknowledged = acknowledged) }
+            }
+            .launchIn(viewModelScope)
+
         container.prefs.photoAccuracyGuideCount
             .onEach { count ->
                 _ui.update { it.copy(photoAccuracyGuideCount = count) }
@@ -2091,12 +2101,15 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     /**
      * Photo staging Analyze: update skip / don’t-ask prefs, then run [analyzePhotos].
      * [dontAskAgain] persists opt-out when the user checked the offer after ≥3 skips.
+     * [acknowledgeAnalyzeConfirm] persists the sparse “Analyze now?” confirmation so
+     * later noteless single-photo analyzes run without the dialog.
      */
     fun analyzePhotosFromStaging(
         imageBytesList: List<ByteArray>,
         note: String?,
         confirmedPortionGrams: Double?,
         dontAskAgain: Boolean = false,
+        acknowledgeAnalyzeConfirm: Boolean = false,
     ) {
         viewModelScope.launch {
             val trimmed = note?.trim().orEmpty()
@@ -2109,6 +2122,9 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 } else {
                     container.prefs.setPhotoNoteSkipCount(0)
                 }
+            }
+            if (acknowledgeAnalyzeConfirm) {
+                container.prefs.setPhotoAnalyzeConfirmAcknowledged(true)
             }
             val guideCount = _ui.value.photoAccuracyGuideCount
             if (guideCount < PHOTO_ACCURACY_GUIDE_COUNT) {

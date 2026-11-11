@@ -601,6 +601,14 @@ internal suspend fun PreferencesStore.setPhotoNoteSkipCountImpl(v: Int) {
         dataStore.edit { it[Keys.PHOTO_NOTE_SKIP_COUNT] = v.coerceAtLeast(0) }
     }
 
+/** When true, the sparse “Analyze now?” staging confirm stays dismissed. Default false. */
+internal val PreferencesStore.photoAnalyzeConfirmAcknowledgedImpl: Flow<Boolean> get() = dataStore.data.map {
+        it[Keys.PHOTO_ANALYZE_CONFIRM_ACKNOWLEDGED] ?: false
+    }
+internal suspend fun PreferencesStore.setPhotoAnalyzeConfirmAcknowledgedImpl(v: Boolean) {
+        dataStore.edit { it[Keys.PHOTO_ANALYZE_CONFIRM_ACKNOWLEDGED] = v }
+    }
+
 /** Completed photo staging Analyzes; tip card shows while below the guide threshold. */
 internal val PreferencesStore.photoAccuracyGuideCountImpl: Flow<Int> get() = dataStore.data.map {
         it[Keys.PHOTO_ACCURACY_GUIDE_COUNT] ?: 0

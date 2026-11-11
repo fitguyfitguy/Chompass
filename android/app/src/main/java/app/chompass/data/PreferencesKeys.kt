@@ -277,6 +277,11 @@ internal object Keys {
         /** Consecutive photo analyzes submitted with an empty note while the prompt was on. */
         val PHOTO_NOTE_SKIP_COUNT = intPreferencesKey("photoNoteSkipCount")
         /**
+         * User confirmed the sparse “Analyze now?” staging dialog (blank note +
+         * single photo) once; later noteless single-photo analyzes skip it.
+         */
+        val PHOTO_ANALYZE_CONFIRM_ACKNOWLEDGED = booleanPreferencesKey("photoAnalyzeConfirmAcknowledged")
+        /**
          * How many photo staging Analyzes the user has completed. Used to show
          * the accuracy tip card for the first few entries, then collapse to Info.
          */

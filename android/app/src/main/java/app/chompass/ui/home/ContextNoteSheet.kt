@@ -295,13 +295,15 @@ fun MultiPhotoCaptureSheet(
     requireNote: Boolean = true,
     /** After several empty-note analyzes, offer a persistent opt-out checkbox. */
     showDontAskAgain: Boolean = false,
+    /** User confirmed the sparse “Analyze now?” dialog once; later noteless single-photo analyzes skip it. */
+    analyzeConfirmAcknowledged: Boolean = false,
     /** First N photo Analyzes: show the prominent accuracy tip card. */
     showAccuracyGuide: Boolean = false,
     /** Codeberg #53: previously saved analysis prompts for quick reuse. */
     recentPrompts: List<String> = emptyList(),
     onAddPhoto: (note: String) -> Unit,
     onRemove: (Int) -> Unit,
-    onAnalyze: (note: String?, confirmedPortionGrams: Double?, dontAskAgain: Boolean) -> Unit,
+    onAnalyze: (note: String?, confirmedPortionGrams: Double?, dontAskAgain: Boolean, acknowledgeConfirm: Boolean) -> Unit,
     /** Codeberg #53: store photos + note WITHOUT an AI call, run later from the queue. */
     onQueueForLater: (note: String?, confirmedPortionGrams: Double?) -> Unit,
     onDismiss: () -> Unit,
@@ -317,26 +319,28 @@ fun MultiPhotoCaptureSheet(
     var autofilled by remember { mutableStateOf(false) }
     var showHistory by remember { mutableStateOf(false) }
 
-    fun commitAnalyze() {
+    fun commitAnalyze(acknowledgeConfirm: Boolean = false) {
         val trimmed = note.trim()
         onAnalyze(
             trimmed.takeIf { it.isNotEmpty() },
             parsePositiveGrams(weightText),
             dontAskAgain && showDontAskAgain,
+            acknowledgeConfirm,
         )
     }
 
     fun requestAnalyze() {
         val trimmed = note.trim()
-        if (needsAnalyzeConfirm(requireNote, trimmed.isEmpty(), imageBytesList.size)) {
+        if (needsAnalyzeConfirm(requireNote, trimmed.isEmpty(), imageBytesList.size, analyzeConfirmAcknowledged)) {
             pendingConfirm = true
         } else {
             commitAnalyze()
         }
     }
 
+    val sparseConfirm = note.isBlank() && imageBytesList.size < 2
     val confirmMessage = when {
-        note.isBlank() && imageBytesList.size < 2 ->
+        sparseConfirm ->
             stringResource(R.string.meal_photos_confirm_sparse)
         note.isBlank() ->
             stringResource(R.string.meal_photos_confirm_no_note)
@@ -355,7 +359,7 @@ fun MultiPhotoCaptureSheet(
                 primaryText = stringResource(R.string.meal_photos_confirm_continue),
                 onPrimary = {
                     pendingConfirm = false
-                    commitAnalyze()
+                    commitAnalyze(acknowledgeConfirm = sparseConfirm)
                 },
                 dismissText = stringResource(R.string.meal_photos_confirm_back),
                 onDismiss = { pendingConfirm = false },
@@ -641,7 +645,18 @@ internal fun parsePositiveGrams(text: String): Double? =
  * Analyze gate for the photo staging sheet. Turning off the “Ask for a photo
  * note” setting also disables the empty-note / single-photo confirmation, so
  * Analyze runs straight through. With the setting on, the confirmation still
- * appears for a blank note and/or a single photo.
+ * appears for a blank note and/or a single photo — except the sparse case
+ * (blank note + single photo) once the user has confirmed it: that
+ * acknowledgment is persisted and later sparse analyzes run without the
+ * dialog. Multi-photo and noted cases keep the confirmation every time.
  */
-internal fun needsAnalyzeConfirm(requireNote: Boolean, noteBlank: Boolean, imageCount: Int): Boolean =
-    requireNote && (noteBlank || imageCount < 2)
+internal fun needsAnalyzeConfirm(
+    requireNote: Boolean,
+    noteBlank: Boolean,
+    imageCount: Int,
+    analyzeConfirmAcknowledged: Boolean = false,
+): Boolean {
+    if (!requireNote) return false
+    if (analyzeConfirmAcknowledged && noteBlank && imageCount < 2) return false
+    return noteBlank || imageCount < 2
+}
