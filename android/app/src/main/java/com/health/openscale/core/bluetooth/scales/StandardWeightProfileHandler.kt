@@ -97,6 +97,8 @@ open class StandardWeightProfileHandler : ScaleDeviceHandler() {
     private var settleJob: Job? = null
     /** Last published row, so a composition packet that loses the race can still merge onto it. */
     private var lastPublished: ScaleMeasurement? = null
+    /** Wall clock of the last publish, to bound repeat-suppression when timestamps are absent. */
+    private var publishedAtMs = 0L
     private var registeringNewUser = false
     private var pendingAppUserId: Int? = null
     private var pendingConsentForNewUser: Int? = null
@@ -314,11 +316,13 @@ open class StandardWeightProfileHandler : ScaleDeviceHandler() {
 
         if (prev == null) {
             val last = lastPublished
-            if (last != null && hasBodyComposition(last)) return
-            if (last != null && hasBodyComposition(newM) && usersCompatible(last, newM)) {
+            if (last != null && !hasBodyComposition(last) &&
+                hasBodyComposition(newM) && usersCompatible(last, newM)
+            ) {
                 publishHeld(last.snapshot().mergeWith(newM))
                 return
             }
+            if (last != null && isRepeatOfPublished(last, newM)) return
             pendingMeasurement = newM
             armWeightSettle(newM)
             return
@@ -361,11 +365,29 @@ open class StandardWeightProfileHandler : ScaleDeviceHandler() {
         }
     }
 
+    /**
+     * The BF105 repeats its weight indication, and the repeat can arrive after
+     * the row already published (the settle window fired first). Treat a
+     * weight-only packet as that repeat — not a new weigh-in — only while it
+     * carries the published row's timestamp, or, when neither side has one,
+     * only within the settle window after publishing. Consecutive weigh-ins
+     * (different timestamp, or past the window) stay separate measurements.
+     */
+    private fun isRepeatOfPublished(last: ScaleMeasurement, newM: ScaleMeasurement): Boolean {
+        if (!hasBodyComposition(last)) return false
+        if (!usersCompatible(last, newM)) return false
+        val a = last.dateTime
+        val b = newM.dateTime
+        if (a != null && b != null) return a == b
+        return System.currentTimeMillis() - publishedAtMs < compositionSettleMs
+    }
+
     private fun publishHeld(m: ScaleMeasurement) {
         settleJob?.cancel()
         settleJob = null
         pendingMeasurement = null
         lastPublished = m.snapshot()
+        publishedAtMs = System.currentTimeMillis()
         publishTransformed(m)
     }
 
