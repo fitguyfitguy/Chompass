@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.sp
 import app.chompass.R
 import app.chompass.ui.components.DateWheelPicker
 import app.chompass.ui.components.DecimalWheelPicker
+import app.chompass.ui.components.parseTypedDate
 import app.chompass.ui.components.ChompassDialog
 import app.chompass.ui.components.ChompassPrimaryButton
 import app.chompass.ui.components.ChompassTextButton
@@ -59,6 +60,7 @@ internal fun AddWeightDialog(
     var metric by remember { mutableStateOf(useMetric) }
     var advanced by remember { mutableStateOf(false) }
     var pickedDate by remember { mutableStateOf(LocalDate.now()) }
+    var typedDateDigits by remember { mutableStateOf<String?>(null) }
     var hourText by remember { mutableStateOf(LocalTime.now().hour.toString().padStart(2, '0')) }
     var minuteText by remember { mutableStateOf(LocalTime.now().minute.toString().padStart(2, '0')) }
     ChompassDialog(onDismissRequest = onDismiss, scrollable = true) {
@@ -113,6 +115,7 @@ internal fun AddWeightDialog(
                 onSelect = { pickedDate = it },
                 minYear = LocalDate.now().year - 10,
                 maxYear = LocalDate.now().year,
+                onTypedDraftChange = { typedDateDigits = it },
                 modifier = Modifier.fillMaxWidth()
             )
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -148,7 +151,9 @@ internal fun AddWeightDialog(
                     val hour = hourText.toIntOrNull()?.coerceIn(0, 23) ?: LocalTime.now().hour
                     val minute = minuteText.toIntOrNull()?.coerceIn(0, 59) ?: LocalTime.now().minute
                     val loggedAt = if (advanced) {
-                        pickedDate.atTime(hour, minute).atZone(ZoneId.systemDefault()).toInstant()
+                        (parseTypedDate(typedDateDigits, LocalDate.now().year - 10, LocalDate.now().year)
+                            ?: pickedDate)
+                            .atTime(hour, minute).atZone(ZoneId.systemDefault()).toInstant()
                     } else {
                         Instant.now()
                     }
@@ -169,6 +174,7 @@ internal fun AddBodyFatDialog(
     var pct by remember { mutableStateOf(initialFraction * 100) }
     var advanced by remember { mutableStateOf(false) }
     var pickedDate by remember { mutableStateOf(LocalDate.now()) }
+    var typedDateDigits by remember { mutableStateOf<String?>(null) }
     var hourText by remember { mutableStateOf(LocalTime.now().hour.toString().padStart(2, '0')) }
     var minuteText by remember { mutableStateOf(LocalTime.now().minute.toString().padStart(2, '0')) }
     ChompassDialog(onDismissRequest = onDismiss, scrollable = true) {
@@ -211,6 +217,7 @@ internal fun AddBodyFatDialog(
                 onSelect = { pickedDate = it },
                 minYear = LocalDate.now().year - 10,
                 maxYear = LocalDate.now().year,
+                onTypedDraftChange = { typedDateDigits = it },
                 modifier = Modifier.fillMaxWidth()
             )
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -244,7 +251,9 @@ internal fun AddBodyFatDialog(
                     val hour = hourText.toIntOrNull()?.coerceIn(0, 23) ?: LocalTime.now().hour
                     val minute = minuteText.toIntOrNull()?.coerceIn(0, 59) ?: LocalTime.now().minute
                     val loggedAt = if (advanced) {
-                        pickedDate.atTime(hour, minute).atZone(ZoneId.systemDefault()).toInstant()
+                        (parseTypedDate(typedDateDigits, LocalDate.now().year - 10, LocalDate.now().year)
+                            ?: pickedDate)
+                            .atTime(hour, minute).atZone(ZoneId.systemDefault()).toInstant()
                     } else {
                         Instant.now()
                     }
