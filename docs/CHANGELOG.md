@@ -10,6 +10,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 - **More scales sync straight into Chompass** (Android): Bluetooth scale sync now also understands generic SIG-standard scales (A&D UC-352BLE, Samsung GP-BELAD001BP0 and other PlainSIG models), Xiaomi Mi Scale v1/v2, and Renpho scales, alongside the Beurer/Sanitas/Medisana families. These three are verified against the upstream driver test suite, not on physical hardware — tell the tracker how yours behaves.
 - **A running scale sync survives the screen turning off** (Android): the sync runs as a foreground service with a progress notification while it talks to the scale, so a weigh-in keeps going with the screen off, and a brief connection drop now gets one automatic retry instead of ending the run.
+- **Goal phases arrive in the web app** (web app): Settings → Goals gains Goal phases, matching the Android app — plan a cut, maintain or bulk window with its own calorie and macro targets over an inclusive date range. Day goals and the goal journal follow the window as it rolls, Progress shows how each phase went (average change per day, net, days logged), and removing a phase leaves manual day switches alone. It rides the profile, so backups and sync carry it with no format change.
 
 ### Changed
 

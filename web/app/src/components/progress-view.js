@@ -2,6 +2,7 @@
 import { weights, foodEntries, profile as profileStore, bodyFat, bodyComposition, prefs, goalJournal, untrackedDays } from "../lib/db.js";
 import { dailyTargets, estimatedSkeletalMuscleMassKgFromBody } from "../lib/chompass-core/formulas.js";
 import { journalAverage } from "../lib/chompass-core/macro-plan.js";
+import { phaseAdherence } from "../lib/chompass-core/goal-phase-edit.js";
 import { computeWeightForecast, suggestAdaptiveCalories } from "../lib/chompass-core/forecast.js";
 import {
   computeWeightTrend,
@@ -216,6 +217,31 @@ export class ProgressView extends HTMLElement {
     const completeMacroDays = [...totalsByDate.entries()]
       .filter(([d]) => d < today)
       .map(([, t]) => t);
+    // Goal phases (Progress v2): per-phase adherence lines (avg Δ/day · net
+    // over the window), mirroring Android's PhaseAdherenceRow. A day counts
+    // when it is inside the phase window with logged intake and a journaled
+    // goal; untracked days and today are excluded (same rollup as Android).
+    const goalPhases = prof?.goalPhases ?? [];
+    const signedEnergy = (v) =>
+      `${v > 0 ? "+" : ""}${formatNumber(energyQuantity(v, energyUnit), { maximumFractionDigits: 0 })} ${energyUnitLabel(energyUnit)}`;
+    const phaseRows = goalPhases.map((phase) => {
+      const r = phaseAdherence(
+        phase,
+        totalsByDate,
+        journal,
+        prof?.macroPlan ?? null,
+        baseTargets,
+        untrackedSet,
+        today,
+        startIso,
+        today,
+      );
+      const detail =
+        r.avgDelta == null
+          ? t("goal_phases.overlap_days", { count: String(r.overlapDays) })
+          : `${t("goal_phases.adherence_format", { delta: signedEnergy(r.avgDelta), net: signedEnergy(r.netKcal ?? 0) })} · ${t("goal_phases.overlap_days", { count: String(r.overlapDays) })}`;
+      return { phase, detail };
+    });
     const nutrientGoals = mergeOptionalGoals(appPrefs.optionalNutrientGoals);
     // #75: which non-macro nutrients the averages card shows (canonical order).
     const averagesSelection = normalizeAveragesSelection(
@@ -537,6 +563,25 @@ export class ProgressView extends HTMLElement {
             : barChartSvg(calorieBars, { target: targets?.calories ?? null, energyUnit })
         }
       </div>
+
+      ${
+        phaseRows.length
+          ? `<div class="card card--glass">
+        <h2 class="progress-title">${t("goal_phases.title")}</h2>
+        ${phaseRows
+          .map(
+            ({ phase, detail }) => `
+          <div class="day-type-row">
+            <div class="day-type-row__text">
+              <strong>${escapeHtml(phase.name)}</strong>
+              <span class="day-type-row__sub">${escapeHtml(detail)}</span>
+            </div>
+          </div>`,
+          )
+          .join("")}
+      </div>`
+          : ""
+      }
 
       ${
         targets

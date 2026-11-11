@@ -17,6 +17,7 @@
 import { profile as profileStore, goalJournal } from "./db.js";
 import { dailyTargets } from "./chompass-core/formulas.js";
 import { updatedJournalEntries } from "./chompass-core/macro-plan-edit.js";
+import { restampAssignments } from "./chompass-core/goal-phase-edit.js";
 import { goalJournalIdFor } from "./chompass-core/macro-plan.js";
 
 /** Local calendar day yyyy-MM-dd. */
@@ -35,8 +36,16 @@ function localCalendarDay(d = new Date()) {
  * @param {"PLAN"|"MANUAL_SWITCH"|"OVERRIDE"|"GAP_FILL"} [source]
  */
 export async function refreshGoalJournal(source = "PLAN") {
-  const prof = await profileStore.load();
+  let prof = await profileStore.load();
   if (!prof) return;
+  // Roll phase stamps with the keep window before resolving: far-future
+  // phases self-activate as their range arrives. restamp is idempotent, so
+  // the save → refresh loop converges (mirror of GoalJournalService.refresh).
+  const restamped = restampAssignments(prof, localCalendarDay());
+  if (restamped) {
+    await profileStore.save(restamped);
+    prof = restamped;
+  }
   const current = await goalJournal.all();
   const today = localCalendarDay();
   const base = dailyTargets(prof);
