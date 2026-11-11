@@ -754,7 +754,13 @@ object OpenFoodFactsService {
             ?: throw LookupException("This barcode was found, but nutrition data is incomplete. Scan the nutrition label instead.")
 
         val labeledGrams = labeledServingGrams(product)
-        val servingGrams = maxOf(labeledGrams ?: 100.0, 1.0)
+        val packageGramsValue = packageGrams(product)
+        // Portion basis: the labeled serving when OFF publishes one, else the
+        // whole package — the only portion a barcode proves. The old bare
+        // 100 g guess desynced the review sheet (Codeberg #168): the unit card
+        // opened "1 package ~100 g" while the package option carried the real
+        // weight, and only a quantity edit or save-reopen corrected it.
+        val servingGrams = maxOf(labeledGrams ?: packageGramsValue ?: 100.0, 1.0)
         val scale = servingGrams / 100.0
 
         fun servingValue(key: String): Double? {
@@ -775,10 +781,9 @@ object OpenFoodFactsService {
         val servingOption = labeledGrams?.let {
             ServingUnitOption(unit = "serving", gramsPerUnit = it, quantity = 1.0)
         }
-        val packageGramsValue = packageGrams(product)
         val servingOptions = buildList {
             if (servingOption != null) add(servingOption)
-            if (packageGramsValue != null && abs(packageGramsValue - servingGrams) > 0.01) {
+            if (packageGramsValue != null && (servingOption == null || abs(packageGramsValue - servingGrams) > 0.01)) {
                 add(ServingUnitOption(unit = "package", gramsPerUnit = packageGramsValue, quantity = 1.0))
             }
         }

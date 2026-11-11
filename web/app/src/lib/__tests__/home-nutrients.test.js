@@ -292,6 +292,46 @@ test("offMapProduct_skipsPackageOptionWhenEqualToServing", () => {
   assert.ok(!mapped.servingUnitOptions.some((o) => o.unit === "package"));
 });
 
+test("offMapProduct_packageOnly_usesPackageAsServingBasis", () => {
+  // Codeberg #168: with no labeled serving the package is the portion basis;
+  // the old 100 g guess opened "1 package" with 100 g totals.
+  const mapped = mapProduct(
+    {
+      product_name: "Matcha Oat Drink",
+      brands: "Oatly",
+      quantity: "250 ml",
+      product_quantity: 250,
+      product_quantity_unit: "ml",
+      nutriments: { "energy-kcal_100g": 59, proteins_100g: 1, carbohydrates_100g: 6.6, fat_100g: 3 },
+    },
+    "4250710502227"
+  );
+  assert.ok(mapped);
+  assert.equal(mapped.quantityG, 250);
+  assert.equal(mapped.calories, 148); // 59 × 2.5
+  assert.equal(mapped.proteinG, 2.5);
+  assert.equal(mapped.carbsG, 16.5);
+  assert.equal(mapped.fatG, 7.5);
+  const pkg = mapped.servingUnitOptions.find((o) => o.unit === "package");
+  assert.ok(pkg);
+  assert.equal(pkg.gramsPerUnit, 250);
+  assert.equal(mapped.selectedServingUnit, "package");
+  assert.equal(mapped.selectedServingQuantity, 1);
+});
+
+test("offMapProduct_noServingNoPackage_staysOnPlainGrams", () => {
+  const mapped = mapProduct(
+    {
+      product_name: "Mystery",
+      nutriments: { "energy-kcal_100g": 80, proteins_100g: 8, carbohydrates_100g: 6, fat_100g: 2 },
+    },
+    "123"
+  );
+  assert.ok(mapped);
+  assert.equal(mapped.quantityG, 100);
+  assert.equal(mapped.selectedServingUnit, "g");
+});
+
 test("offMapProduct_normalizesScoresAndClampsNova", () => {
   const mapped = mapProduct(
     {

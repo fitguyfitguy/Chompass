@@ -21,6 +21,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ### Fixed
 
+- **Barcode items open with the package weight** (Android, web app): when a barcode product has no labeled serving size, the review sheet showed "1 package" with the fallback 100 g totals, and only changing the quantity or saving set the real weight. The package size is now the portion basis, so a 250 ml drink opens as 1 package = 250 g with the macros to match. Closes Codeberg [#168](https://codeberg.org/fitguy/Chompass/issues/168)
 - **Home display toggles stay put** (Android): on Settings → Home display, a toggle like "Full nutrient names" could flip back on its own while the screen was still loading in the background. The setting you pick now stays picked.
 
 ## [6.3.0] - 2026-11-06
