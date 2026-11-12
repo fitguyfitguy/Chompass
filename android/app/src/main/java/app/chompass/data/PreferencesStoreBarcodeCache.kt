@@ -16,10 +16,19 @@ import kotlinx.serialization.builtins.serializer
 
 internal const val BARCODE_CACHE_MAX_ENTRIES = 500
 
+/**
+ * Bump when the FoodAnalysis barcode mapping changes meaning: entries written
+ * below this version hold stale portion bases (pre-#168 entries served the
+ * 100 g guess). Version 0 covers all entries written before the field existed.
+ */
+internal const val BARCODE_CACHE_SCHEMA = 2
+
 @Serializable
 data class CachedBarcodeProduct(
     val analysis: FoodAnalysis,
     val cachedAtEpochMs: Long,
+    /** Absent in pre-schema entries; see [BARCODE_CACHE_SCHEMA]. */
+    val schemaVersion: Int = 0,
 )
 
 internal val PreferencesStore.barcodeCacheImpl: Flow<Map<String, CachedBarcodeProduct>> get() = dataStore.data.map { prefs ->
@@ -48,7 +57,7 @@ internal suspend fun PreferencesStore.cacheBarcodeLookupImpl(barcode: String, an
             }.getOrNull()
         } ?: emptyMap()
         val updated = existing.toMutableMap()
-        updated[barcode] = CachedBarcodeProduct(analysis, System.currentTimeMillis())
+        updated[barcode] = CachedBarcodeProduct(analysis, System.currentTimeMillis(), BARCODE_CACHE_SCHEMA)
         val bounded = if (updated.size > BARCODE_CACHE_MAX_ENTRIES) {
             updated.entries.sortedByDescending { it.value.cachedAtEpochMs }
                 .take(BARCODE_CACHE_MAX_ENTRIES)

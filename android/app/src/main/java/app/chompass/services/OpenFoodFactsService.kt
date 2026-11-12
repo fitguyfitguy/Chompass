@@ -1,6 +1,7 @@
 package app.chompass.services
 
 import app.chompass.BuildConfig
+import app.chompass.data.BARCODE_CACHE_SCHEMA
 import app.chompass.data.PreferencesStore
 import app.chompass.models.FoodGroundingProvenance
 import app.chompass.models.FoodProductMetadata
@@ -239,7 +240,12 @@ object OpenFoodFactsService {
         photoStore: BarcodePhotoStore? = null,
         packs: PackResolver? = null,
     ): FoodAnalysis = withContext(Dispatchers.IO) {
-        prefs.barcodeCache.first()[code]?.let { return@withContext it.analysis }
+        // Schema-gated fast path: entries below BARCODE_CACHE_SCHEMA carry
+        // portion bases an older mapping wrote (pre-#168: the 100 g guess).
+        val cached = prefs.barcodeCache.first()[code]
+        if (cached != null && cached.schemaVersion >= BARCODE_CACHE_SCHEMA) {
+            return@withContext cached.analysis
+        }
 
         var result: FoodAnalysis? = null
         var failure: Exception? = null
@@ -256,6 +262,11 @@ object OpenFoodFactsService {
             // drops keys, retain deletes the photos whose keys are gone.
             photoStore?.retain(prefs.barcodeCache.first().keys)
             return@withContext result
+        }
+        // Offline with a stale entry: serve it rather than failing the scan;
+        // the next online scan of this code rewrites it at the current schema.
+        if (cached != null) {
+            return@withContext cached.analysis
         }
         // Pack fallback. OFF-NotFound implies the OFF-derived regional pack
         // misses too (same source), so the regional pack only answers the
