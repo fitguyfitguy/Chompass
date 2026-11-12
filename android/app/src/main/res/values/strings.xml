@@ -1493,6 +1493,7 @@
         <item>reminders</item>
         <item>streak</item>
         <item>summary</item>
+        <item>persistent</item>
         <item>weight reminder</item>
         <item>battery</item>
     </string-array>
@@ -2175,6 +2176,13 @@
     <string name="notif_channel_streak_desc">Daily reminder to log a meal and keep your streak.</string>
     <string name="notif_channel_daily">Daily Summary</string>
     <string name="notif_channel_daily_desc">End-of-day summary of your calories + macros.</string>
+    <string name="notif_channel_ongoing">Ongoing Summary</string>
+    <string name="notif_channel_ongoing_desc">Today\'s calories and macros, kept in the notification shade.</string>
+    <string name="notif_ongoing_title">%1$s of %2$s %3$s</string>
+    <string name="notif_ongoing_remaining">%1$s %2$s left</string>
+    <string name="notif_ongoing_over">%1$s %2$s over</string>
+    <string name="notif_ongoing_goal_reached">Daily goal reached</string>
+    <string name="notif_ongoing_macros">P %1$s/%2$d · C %3$s/%4$d · F %5$s/%6$d g</string>
     <string name="notif_channel_weight_goal">Weight Goal</string>
     <string name="notif_channel_weight_goal_desc">Celebration when you reach your goal weight.</string>
     <string name="notif_streak_title">Don\'t forget to log your meals</string>
@@ -2671,6 +2679,7 @@
     <string name="settings_notif_body_fat_reminder">Body fat reminder</string>
     <string name="settings_notif_water_reminder">Water reminder</string>
     <string name="settings_notif_goal_alerts">Goal reached alerts</string>
+    <string name="settings_notif_ongoing">Ongoing summary</string>
     <string name="settings_notif_app_updates">App updates</string>
     <string name="settings_notif_none_selected">No notification type is selected. You can keep notifications allowed and all reminders off.</string>
     <string name="settings_calc_calorie_target">Calorie target for goal</string>

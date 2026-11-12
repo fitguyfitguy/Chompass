@@ -53,6 +53,7 @@ class WidgetSnapshotWriter(
     private val waterRepository: app.chompass.data.WaterRepository,
     private val weatherRepository: app.chompass.data.WeatherRepository,
     private val caffeineRepository: CaffeineRepository,
+    private val notifications: NotificationService,
 ) {
     /** Bundled water inputs flowing through [observe]/[publish]. */
     internal data class WaterInputs(
@@ -236,6 +237,7 @@ class WidgetSnapshotWriter(
         }
         if (profile == null) {
             prefs.clearWidgetSnapshot()
+            syncOngoingSummary(null)
         } else {
             val display = prefs.homeDisplayPreferences.first()
             val selection = display.homeTopNutrients
@@ -380,6 +382,7 @@ class WidgetSnapshotWriter(
                 energyUnit = energyUnit,
             )
             prefs.setWidgetSnapshot(snapshot)
+            syncOngoingSummary(snapshot)
         }
         runCatching { CalorieAppWidget().updateAll(context) }
             .onFailure { Log.e(TAG, "CalorieAppWidget.updateAll failed", it) }
@@ -393,5 +396,18 @@ class WidgetSnapshotWriter(
 
     private companion object {
         const val TAG = "FudAIWidget"
+    }
+
+    /** Keep the ongoing notification in step with the snapshot it mirrors. */
+    private suspend fun syncOngoingSummary(snapshot: WidgetSnapshot?) {
+        if (snapshot != null &&
+            prefs.notificationsEnabled.first() &&
+            prefs.ongoingSummaryEnabled.first() &&
+            notifications.canPostNotifications()
+        ) {
+            notifications.showOngoingSummary(snapshot)
+        } else {
+            notifications.cancelOngoingSummary()
+        }
     }
 }

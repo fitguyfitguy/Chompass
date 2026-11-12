@@ -62,6 +62,7 @@ class WidgetSnapshotWriterTest {
             waterRepository = WaterRepository(prefs),
             weatherRepository = WeatherRepository(prefs, OpenMeteoClient(OkHttpClient())),
             caffeineRepository = CaffeineRepository(prefs),
+            notifications = NotificationService(app),
         )
         profiles.save(UserProfile(weightKg = 80.0))
     }

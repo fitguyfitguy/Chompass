@@ -6,6 +6,10 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## [Unreleased]
 
+### Added
+
+- **Today's numbers stay in the shade** (Android): Settings → Trackers & Reminders → Notifications gains an Ongoing summary switch. It keeps today's calories with a progress bar and your macros in a notification that stays visible and updates as you log, at midnight, and after a reboot. Closes Codeberg [#169](https://codeberg.org/fitguy/Chompass/issues/169)
+
 ### Changed
 
 - **Every calorie layout glides** (Android): switching days, logging food, and a change in workout burn now spring the ring or the bar, including the planned stretch and the burn shades, and the calorie figures slide instead of snapping.

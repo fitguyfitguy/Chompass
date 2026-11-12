@@ -132,6 +132,7 @@ data class SettingsUiState(
     val dailySummaryEnabled: Boolean = false,
     val dailySummaryHour: Int = 21,
     val dailySummaryMinute: Int = 0,
+    val ongoingSummaryEnabled: Boolean = false,
     val weightReminderEnabled: Boolean = true,
     val weightReminderHour: Int = 8,
     val weightReminderMinute: Int = 0,
@@ -592,6 +593,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                     dailySummaryEnabled = snap.dailySummaryEnabled,
                     dailySummaryHour = snap.dailySummaryHour,
                     dailySummaryMinute = snap.dailySummaryMinute,
+                    ongoingSummaryEnabled = snap.ongoingSummaryEnabled,
                     weightReminderEnabled = snap.weightReminderEnabled,
                     weightReminderHour = snap.weightReminderHour,
                     weightReminderMinute = snap.weightReminderMinute,
@@ -1734,6 +1736,14 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         { copy(dailySummaryHour = hour, dailySummaryMinute = minute) },
     )
 
+    fun setOngoingSummaryEnabled(v: Boolean) = updateUiPref(
+        {
+            container.prefs.setOngoingSummaryEnabled(v)
+            syncNotificationSchedules()
+        },
+        { copy(ongoingSummaryEnabled = v) },
+    )
+
     fun setWeightReminderEnabled(v: Boolean) = updateUiPref(
         {
             container.prefs.setWeightReminderEnabled(v)
@@ -1785,6 +1795,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 if (!enabled || !container.notifications.canPostNotifications()) {
                     container.notifications.cancelStreakReminder()
                     container.notifications.cancelDailySummary()
+                    container.notifications.cancelOngoingSummary()
                     container.notifications.cancelWeightReminder()
                     container.notifications.cancelBodyFatReminder()
                     container.notifications.cancelWaterReminder()
@@ -1807,6 +1818,17 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                     )
                 } else {
                     container.notifications.cancelDailySummary()
+                }
+
+                if (container.prefs.ongoingSummaryEnabled.first()) {
+                    val snapshot = container.prefs.widgetSnapshot.first()
+                    if (snapshot != null) {
+                        container.notifications.showOngoingSummary(snapshot)
+                    } else {
+                        container.notifications.cancelOngoingSummary()
+                    }
+                } else {
+                    container.notifications.cancelOngoingSummary()
                 }
 
                 if (container.prefs.weightReminderEnabled.first()) {

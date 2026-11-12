@@ -381,7 +381,7 @@ class AppContainer(app: ChompassApp) {
         ProviderDirectory.load(appContext)
     }
 
-    val widgetSnapshotWriter = WidgetSnapshotWriter(app, prefs, foodRepository, profileRepository, homeActivityReader, waterRepository, weatherRepository, caffeineRepository)
+    val widgetSnapshotWriter = WidgetSnapshotWriter(app, prefs, foodRepository, profileRepository, homeActivityReader, waterRepository, weatherRepository, caffeineRepository, notifications)
     val testDataSeeder = TestDataSeeder(this)
 
     private val healthConnectReadSync = HealthConnectReadSync(

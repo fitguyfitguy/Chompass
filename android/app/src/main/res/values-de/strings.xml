@@ -2514,6 +2514,16 @@ für dich ein</string>
 
     <string name="notif_channel_daily_desc">Tägliche Zusammenfassung deiner Kalorien und Makronährstoffe am Ende des Tages.</string>
 
+    <string name="notif_channel_ongoing">Dauerhafte Übersicht</string>
+
+    <string name="notif_channel_ongoing_desc">Kalorien und Makros von heute bleiben in den Benachrichtigungen sichtbar.</string>
+
+    <string name="notif_ongoing_title">%1$s von %2$s %3$s</string>
+    <string name="notif_ongoing_remaining">Noch %1$s %2$s</string>
+    <string name="notif_ongoing_over">%1$s %2$s drüber</string>
+    <string name="notif_ongoing_goal_reached">Tagesziel erreicht</string>
+    <string name="notif_ongoing_macros">P %1$s/%2$d · C %3$s/%4$d · F %5$s/%6$d g</string>
+
     <string name="notif_channel_weight_goal">Gewichtsziel</string>
 
     <string name="notif_channel_weight_goal_desc">Feier, wenn du dein Zielgewicht erreichst.</string>
@@ -3246,6 +3256,7 @@ für dich ein</string>
     <string name="settings_notif_water_reminder">Erinnerung zum Wassertrinken</string>
 
     <string name="settings_notif_goal_alerts">Benachrichtigungen bei Erreichen des Ziels</string>
+    <string name="settings_notif_ongoing">Dauerhafte Übersicht</string>
 
     <string name="settings_notif_app_updates">App-Updates</string>
 
@@ -4251,6 +4262,7 @@ für dich ein</string>
         <item>Erinnerungen</item>
         <item>Serien</item>
         <item>Zusammenfassung</item>
+        <item>dauerhaft</item>
         <item>Gewichtserinnerung</item>
         <item>Akku</item>
     </string-array>

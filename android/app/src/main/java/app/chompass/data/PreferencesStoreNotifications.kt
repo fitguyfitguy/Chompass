@@ -38,6 +38,11 @@ internal val PreferencesStore.dailySummaryMinuteImpl: Flow<Int>
 internal suspend fun PreferencesStore.setDailySummaryMinuteImpl(v: Int) =
     setIntPref(Keys.DAILY_MINUTE, v)
 
+internal val PreferencesStore.ongoingSummaryEnabledImpl: Flow<Boolean>
+    get() = boolPref(Keys.ONGOING_SUMMARY_ENABLED, false)
+internal suspend fun PreferencesStore.setOngoingSummaryEnabledImpl(v: Boolean) =
+    setBoolPref(Keys.ONGOING_SUMMARY_ENABLED, v)
+
 internal val PreferencesStore.weightReminderEnabledImpl: Flow<Boolean>
     get() = boolPref(Keys.WEIGHT_REMINDER_ENABLED, true)
 internal suspend fun PreferencesStore.setWeightReminderEnabledImpl(v: Boolean) =

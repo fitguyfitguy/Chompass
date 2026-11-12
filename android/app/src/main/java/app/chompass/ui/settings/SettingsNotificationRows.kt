@@ -7,6 +7,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.GraphicEq
 import androidx.compose.material.icons.outlined.LocalDining
 import androidx.compose.material.icons.outlined.MonitorWeight
+import androidx.compose.material.icons.outlined.NotificationsActive
 import androidx.compose.material.icons.outlined.Percent
 import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material.icons.outlined.SystemUpdate
@@ -89,6 +90,13 @@ internal fun NotificationTypeRows(
     }
     HorizontalDivider()
     ToggleRow(
+        stringResource(R.string.settings_notif_ongoing),
+        ui.ongoingSummaryEnabled,
+        icon = Icons.Outlined.NotificationsActive,
+        onChange = vm::setOngoingSummaryEnabled
+    )
+    HorizontalDivider()
+    ToggleRow(
         stringResource(R.string.settings_notif_weight_reminder),
         ui.weightReminderEnabled,
         icon = Icons.Outlined.MonitorWeight,
@@ -161,6 +169,7 @@ internal fun NotificationTypeRows(
     val waterReminderEffective = ui.waterTrackingEnabled && ui.waterReminderEnabled
     val noneSelected = !ui.streakReminderEnabled &&
         !ui.dailySummaryEnabled &&
+        !ui.ongoingSummaryEnabled &&
         !ui.weightReminderEnabled &&
         !ui.bodyFatReminderEnabled &&
         !waterReminderEffective &&
