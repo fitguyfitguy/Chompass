@@ -600,8 +600,8 @@ class HomeCalorieDisplayTest {
         assertEquals(620, state.activeBurnTypical)
         assertTrue(state.activeBurnShade?.typicalIsDayType == true)
         assertEquals("Training", state.activeBurnShade?.typicalDayTypeName)
-        assertEquals(0, state.budgetClassification.step)
-        assertEquals(400, state.budgetClassification.projectedActive)
-        assertEquals(state.baseCalorieGoal, state.heroCalorieGoal)
+        assertEquals(620, state.budgetClassification.projectedActive)
+        assertEquals(state.gaugeBaseCalorieGoal + 620, state.heroCalorieGoal)
+        assertEquals(null, state.dayTypePrompt)
     }
 }

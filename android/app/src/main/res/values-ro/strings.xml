@@ -2142,6 +2142,9 @@
     <string name="home_day_type_chip_a11y">Tipul zilei de azi: %1$s. Atinge pentru a schimba.</string>
     <string name="day_type_sheet_title">Tip de zi</string>
     <string name="day_type_sheet_subtitle">Trecește țintele de azi la alt tip de zi.</string>
+    <string name="home_day_type_diverge_named">Ora asta seamănă mai degrabă cu %1$s, nu cu %2$s.</string>
+    <string name="home_day_type_diverge_unnamed">Ora asta nu seamănă cu o zi %1$s.</string>
+    <string name="cd_dismiss_day_type_prompt">Închide sugestia de tip de zi</string>
     <string name="day_type_base_goals">Ținte de bază</string>
     <string name="day_type_clear_override">Elimină excepția de azi</string>
     <string name="day_type_edit_settings">Editează tipurile de zi</string>

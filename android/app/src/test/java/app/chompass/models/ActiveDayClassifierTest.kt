@@ -2,8 +2,7 @@ package app.chompass.models
 
 import java.time.LocalDate
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
+import org.junit.Assert.assertNull
 import org.junit.Test
 
 class ActiveDayClassifierTest {
@@ -21,90 +20,117 @@ class ActiveDayClassifierTest {
     private fun classify(
         minuteOfDay: Int = 540,
         isToday: Boolean = true,
-        liveActive: Int = 200,
+        blendedActive: Int = 600,
         dayTypeAverage: Int? = null,
-        hourlyByDay: Map<String, List<Int>> = hourly(),
         dayTypeDates: Set<String> = emptySet(),
     ) = ActiveDayClassifier.classify(
         today = today,
         minuteOfDay = minuteOfDay,
         isToday = isToday,
-        blendedActive = 600,
+        blendedActive = blendedActive,
         dayTypeAverage = dayTypeAverage,
         dayTypeName = if (dayTypeAverage != null) "Training" else null,
         mergedActiveByDay = daily,
-        hourlyByDay = hourlyByDay,
-        liveActive = liveActive,
+        hourlyByDay = hourly(),
+        liveActive = 0,
         dayTypeDates = dayTypeDates,
     )
 
     @Test
-    fun minuteZero_staysOnBlend() {
-        val result = classify(minuteOfDay = 0)
-        assertEquals(0, result.step)
-        assertEquals(600, result.projectedActive)
-    }
-
-    @Test
-    fun sameHourOnHardMedian_stepsToHarder() {
-        val result = classify(liveActive = 200)
-        assertEquals(2, result.step)
-        assertEquals(ActiveDayClassifier.Kind.HARDER, result.kind)
-        assertEquals(900, result.projectedActive)
-        assertTrue(result.hourlyReady)
-    }
-
-    @Test
-    fun closenessBetweenThresholds_leansHalfway() {
-        // Medians 40 and 200. live 160 is 40 from the hard median and 120 from
-        // the light one: closeness 0.75, inside [0.65, 0.85).
-        val result = classify(liveActive = 160)
-        assertEquals(1, result.step)
-        assertEquals(750, result.projectedActive)
-        assertEquals(ActiveDayClassifier.Kind.HARDER, result.kind)
-    }
-
-    @Test
-    fun fewerThanFiveSameHourSamples_staysOnBlend() {
+    fun minuteZero_withDayType_showsTheAverage() {
         val result = classify(
-            liveActive = 900,
-            hourlyByDay = hourly(hardDays = hardDates.take(4)),
-        )
-        assertEquals(0, result.step)
-        assertFalse(result.hourlyReady)
-        assertEquals(600, result.projectedActive)
-    }
-
-    @Test
-    fun dayTypeAverage_isDestinationNotKMeans() {
-        val result = classify(
-            liveActive = 200,
+            minuteOfDay = 0,
             dayTypeAverage = 900,
             dayTypeDates = hardDates.map { it.toString() }.toSet(),
         )
-        assertEquals(2, result.step)
-        assertEquals(ActiveDayClassifier.Kind.DAY_TYPE, result.kind)
         assertEquals(900, result.projectedActive)
-        assertEquals("Training", result.dayTypeName)
+        assertEquals(ActiveDayClassifier.Kind.DAY_TYPE, result.kind)
+    }
+
+    @Test
+    fun noDayType_staysOnBlend() {
+        val result = classify()
+        assertEquals(600, result.projectedActive)
+        assertEquals(ActiveDayClassifier.Kind.NONE, result.kind)
     }
 
     @Test
     fun dayTypeDestination_usesPastDaysNotCallerAverage() {
         val result = classify(
-            liveActive = 200,
             dayTypeAverage = 100,
             dayTypeDates = hardDates.map { it.toString() }.toSet(),
         )
         assertEquals(900, result.projectedActive)
-        assertEquals(ActiveDayClassifier.Kind.DAY_TYPE, result.kind)
     }
 
     @Test
-    fun pastDay_doesNotClassify() {
-        val result = classify(isToday = false, liveActive = 900)
-        assertEquals(0, result.step)
+    fun pastDay_doesNotProject() {
+        val result = classify(isToday = false, dayTypeAverage = 900)
         assertEquals(0, result.projectedActive)
-        assertEquals(ActiveDayClassifier.Kind.NONE, result.kind)
-        assertFalse(result.hourlyReady)
+    }
+
+    @Test
+    fun divergence_namesTheCloserDayType() {
+        val result = ActiveDayClassifier.divergence(
+            today = today,
+            minuteOfDay = 540,
+            liveActive = 40,
+            currentName = "Training",
+            currentDates = hardDates.map { it.toString() }.toSet(),
+            others = listOf(
+                ActiveDayClassifier.DayTypeGroup(
+                    profileId = "rest",
+                    name = "Rest",
+                    dates = lightDates.map { it.toString() }.toSet(),
+                ),
+            ),
+            hourlyByDay = hourly(),
+            mergedActiveByDay = daily,
+        )
+        assertEquals("Rest", result?.suggestedName)
+        assertEquals("rest", result?.suggestedProfileId)
+        assertEquals("Training", result?.currentName)
+    }
+
+    @Test
+    fun divergence_staysQuietWhenTheHourMatches() {
+        val result = ActiveDayClassifier.divergence(
+            today = today,
+            minuteOfDay = 540,
+            liveActive = 200,
+            currentName = "Training",
+            currentDates = hardDates.map { it.toString() }.toSet(),
+            others = listOf(
+                ActiveDayClassifier.DayTypeGroup(
+                    profileId = "rest",
+                    name = "Rest",
+                    dates = lightDates.map { it.toString() }.toSet(),
+                ),
+            ),
+            hourlyByDay = hourly(),
+            mergedActiveByDay = daily,
+        )
+        assertNull(result)
+    }
+
+    @Test
+    fun divergence_needsEnoughSameHourSamples() {
+        val result = ActiveDayClassifier.divergence(
+            today = today,
+            minuteOfDay = 540,
+            liveActive = 40,
+            currentName = "Training",
+            currentDates = hardDates.take(4).map { it.toString() }.toSet(),
+            others = listOf(
+                ActiveDayClassifier.DayTypeGroup(
+                    profileId = "rest",
+                    name = "Rest",
+                    dates = lightDates.map { it.toString() }.toSet(),
+                ),
+            ),
+            hourlyByDay = hourly(hardDays = hardDates.take(4)),
+            mergedActiveByDay = daily,
+        )
+        assertNull(result)
     }
 }

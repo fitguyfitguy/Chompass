@@ -736,25 +736,26 @@ private fun BudgetGoalLine(
     }
 }
 
-/** Spoken goal line. A classifying arc speaks the number on screen, not sedentary + live. */
+/** Spoken goal line. Speaks the number on screen when the arc is not sedentary + live. */
 @Composable
 private fun calorieBudgetDescription(input: CalorieHeroInput): String? = with(input) {
     if (displayMode != HomeCalorieDisplayMode.ADD_ACTIVE) return@with null
     val unit = LocalEnergyUnit.current
     val label = budgetClassLabel(budgetClass)
-    if (budgetClass != null) {
+    val decomposed = HomeCalorieDisplay.effectiveGoal(displayMode, baseGoal, activeCalories)
+    val shownTarget = displayTarget.coerceAtLeast(0)
+    if (budgetClass != null || shownTarget != decomposed) {
         val shown = stringResource(
             R.string.home_calorie_of_goal,
-            LocaleFormat.integer(EnergyFormat.quantity(displayTarget.coerceAtLeast(0), unit)),
+            LocaleFormat.integer(EnergyFormat.quantity(shownTarget, unit)),
             energyUnitLabel(),
         )
         return if (label != null) "$shown. $label" else shown
     }
-    val effectiveGoal = HomeCalorieDisplay.effectiveGoal(displayMode, baseGoal, activeCalories)
     val integratesBurn = activeCalories > 0 && displayMode != HomeCalorieDisplayMode.STATIC
     val base = stringResource(
         R.string.home_calorie_budget_a11y,
-        EnergyFormat.quantity(effectiveGoal, unit),
+        EnergyFormat.quantity(decomposed, unit),
         EnergyFormat.quantity(baseGoal, unit),
         EnergyFormat.quantity(activeCalories, unit),
         energyUnitLabel(),

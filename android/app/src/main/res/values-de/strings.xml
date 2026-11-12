@@ -2830,6 +2830,9 @@ für dich ein</string>
     <string name="untracked_sheet_kcal_optional">Grobe Kalorien (optional)</string>
     <string name="day_type_sheet_title">Tagestyp</string>
     <string name="day_type_sheet_subtitle">Wechsle die heutigen Ziele zu einem anderen Tagestyp.</string>
+    <string name="home_day_type_diverge_named">Diese Stunde wirkt eher wie %1$s, nicht wie %2$s.</string>
+    <string name="home_day_type_diverge_unnamed">Diese Stunde wirkt nicht wie ein %1$s-Tag.</string>
+    <string name="cd_dismiss_day_type_prompt">Tagestyp-Hinweis schließen</string>
     <string name="day_type_targets_summary">%1$s %5$s · %2$dP %3$dC %4$dF</string>
     <string name="day_type_active_typical">≈ %1$d %2$s aktiv typisch</string>
     <string name="day_type_base_goals">Basisziele</string>

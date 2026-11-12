@@ -187,6 +187,8 @@ data class HomeUiState(
     val healthEnergyActiveByDay: Map<String, Int> = emptyMap(),
     /** Internal same-hour HC active map (never synced). */
     val healthEnergyActiveByHour: Map<String, List<Int>> = emptyMap(),
+    /** ISO date the day-type switch prompt was dismissed. Hides it for that day. */
+    val dayTypePromptDismissedDay: String? = null,
     /** Manual active totals keyed by ISO date. */
     val manualActiveByDay: Map<String, Int> = emptyMap(),
     val activitySnapshot: HomeActivitySnapshot = HomeActivitySnapshot(date = LocalDate.now()),
@@ -544,8 +546,8 @@ data class HomeUiState(
     val activeBurnTypical: Int get() = typicalResolution.kcal
 
     /**
-     * Same-hour slide for today. Past days and a missing blend return a
-     * zero projection; the gauge then does not draw an expected arc.
+     * Day-type average from the start of today, else the blend. Same-hour
+     * history does not move this number.
      */
     val budgetClassification: app.chompass.models.ActiveDayClassifier.ActiveDayClassification get() {
         val today = LocalDate.now()
@@ -560,15 +562,9 @@ data class HomeUiState(
         } else {
             emptySet()
         }
-        val minute = if (viewingToday) {
-            val now = java.time.LocalTime.now()
-            now.hour * 60 + now.minute
-        } else {
-            0
-        }
         return app.chompass.models.ActiveDayClassifier.classify(
             today = today,
-            minuteOfDay = minute,
+            minuteOfDay = 0,
             isToday = viewingToday,
             blendedActive = blended,
             dayTypeAverage = dayTypeAverage,
@@ -583,9 +579,48 @@ data class HomeUiState(
         )
     }
 
-    /** Non-null only while the ring is on the classifying arc. */
+    /**
+     * Non-null when this hour looks significantly unlike today's day type.
+     * The ring stays on the day-type average; this only asks for a switch.
+     */
+    val dayTypePrompt: app.chompass.models.ActiveDayClassifier.DayTypeDivergence? get() {
+        if (date != LocalDate.now()) return null
+        if (dayTypePromptDismissedDay == date.toString()) return null
+        if (!activitySnapshot.energyLive) return null
+        val profileId = resolvedDayTargets.profileId ?: return null
+        val name = resolvedDayTargets.profileName ?: return null
+        if (dayTypeActiveStats.typicalFor(profileId) == null) return null
+        val daily = dayTypeActiveStats.daily
+        val currentDates = daily.filter { it.profileId == profileId }.map { it.date }.toSet()
+        val others = daily.groupBy { it.profileId }
+            .filterKeys { it != profileId }
+            .mapNotNull { (id, rows) ->
+                val label = rows.firstNotNullOfOrNull { it.profileName } ?: return@mapNotNull null
+                app.chompass.models.ActiveDayClassifier.DayTypeGroup(
+                    profileId = id,
+                    name = label,
+                    dates = rows.map { it.date }.toSet(),
+                )
+            }
+        val now = java.time.LocalTime.now()
+        return app.chompass.models.ActiveDayClassifier.divergence(
+            today = LocalDate.now(),
+            minuteOfDay = now.hour * 60 + now.minute,
+            liveActive = activitySnapshot.activeCalories.coerceAtLeast(0),
+            currentName = name,
+            currentDates = currentDates,
+            others = others,
+            hourlyByDay = healthEnergyActiveByHour,
+            mergedActiveByDay = app.chompass.models.DayTypeActiveStats.mergeDayTotals(
+                healthEnergyActiveByDay,
+                manualActiveByDay,
+            ),
+        )
+    }
+
+    /** The ring no longer slides, so the old class line stays off. */
     val budgetClassCue: app.chompass.models.ActiveDayClassifier.ActiveDayClassification?
-        get() = if (gaugeBudget.useExpectedArc) budgetClassification else null
+        get() = null
 
     /**
      * The hero ring's displayed calorie goal — the budget's display target:
@@ -676,6 +711,7 @@ data class HomeUiState(
             foodLogMacroChips == other.foodLogMacroChips &&
             measuredActiveAverageCalories == other.measuredActiveAverageCalories &&
             healthEnergyActiveByDay == other.healthEnergyActiveByDay &&
+            dayTypePromptDismissedDay == other.dayTypePromptDismissedDay &&
             healthEnergyActiveByHour == other.healthEnergyActiveByHour &&
             manualActiveByDay == other.manualActiveByDay &&
             activitySnapshot == other.activitySnapshot &&
@@ -787,6 +823,7 @@ data class HomeUiState(
         result = 31 * result + foodLogMacroChips.hashCode()
         result = 31 * result + measuredActiveAverageCalories
         result = 31 * result + healthEnergyActiveByDay.hashCode()
+        result = 31 * result + (dayTypePromptDismissedDay?.hashCode() ?: 0)
         result = 31 * result + healthEnergyActiveByHour.hashCode()
         result = 31 * result + manualActiveByDay.hashCode()
         result = 31 * result + activitySnapshot.hashCode()
@@ -2054,6 +2091,10 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             }
         }
     }
+    fun dismissDayTypePrompt() {
+        _ui.update { it.copy(dayTypePromptDismissedDay = LocalDate.now().toString()) }
+    }
+
 
     /**
      * Same-hour history for the ring. The first successful refresh of a day

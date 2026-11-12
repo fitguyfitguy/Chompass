@@ -2163,6 +2163,9 @@
     <string name="home_day_type_chip_a11y">Type de journée du jour : %1$s. Touchez pour changer.</string>
     <string name="day_type_sheet_title">Type de journée</string>
     <string name="day_type_sheet_subtitle">Passez les objectifs du jour à un autre type de journée.</string>
+    <string name="home_day_type_diverge_named">Cette heure ressemble plutôt à %1$s, pas à %2$s.</string>
+    <string name="home_day_type_diverge_unnamed">Cette heure ne ressemble pas à une journée %1$s.</string>
+    <string name="cd_dismiss_day_type_prompt">Fermer la suggestion de type de journée</string>
     <string name="day_type_base_goals">Objectifs de base</string>
     <string name="day_type_clear_override">Retirer la dérogation du jour</string>
     <string name="day_type_edit_settings">Modifier les types de journée</string>

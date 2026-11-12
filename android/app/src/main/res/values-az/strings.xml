@@ -2135,6 +2135,9 @@ bilirsən?</string>
     <string name="home_day_type_chip_a11y">Bugünkü gün tipi: %1$s. Dəyişmək üçün toxunun.</string>
     <string name="day_type_sheet_title">Gün tipi</string>
     <string name="day_type_sheet_subtitle">Bugünkü hədəfləri başqa gün tipinə keçirin.</string>
+    <string name="home_day_type_diverge_named">Bu saat daha çox %1$s kimi görünür, %2$s yox.</string>
+    <string name="home_day_type_diverge_unnamed">Bu saat %1$s günü kimi görünmür.</string>
+    <string name="cd_dismiss_day_type_prompt">Gün tipi təklifini bağla</string>
     <string name="day_type_base_goals">Əsas hədəflər</string>
     <string name="day_type_clear_override">Bugünkü istisnanı sil</string>
     <string name="day_type_edit_settings">Gün tiplərini redaktə et</string>

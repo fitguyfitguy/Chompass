@@ -2135,6 +2135,9 @@
     <string name="home_day_type_chip_a11y">Tipo di giornata di oggi: %1$s. Tocca per cambiare.</string>
     <string name="day_type_sheet_title">Tipo di giornata</string>
     <string name="day_type_sheet_subtitle">Passa gli obiettivi di oggi a un altro tipo di giornata.</string>
+    <string name="home_day_type_diverge_named">Quest\'ora somiglia di più a %1$s, non a %2$s.</string>
+    <string name="home_day_type_diverge_unnamed">Quest\'ora non sembra una giornata %1$s.</string>
+    <string name="cd_dismiss_day_type_prompt">Chiudi il suggerimento sul tipo di giornata</string>
     <string name="day_type_base_goals">Obiettivi base</string>
     <string name="day_type_clear_override">Rimuovi l\'eccezione di oggi</string>
     <string name="day_type_edit_settings">Modifica tipi di giornata</string>

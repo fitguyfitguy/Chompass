@@ -2170,6 +2170,9 @@
     <string name="home_day_type_chip_a11y">Typ dzisiejszego dnia: %1$s. Dotknij, aby przełączyć.</string>
     <string name="day_type_sheet_title">Typ dnia</string>
     <string name="day_type_sheet_subtitle">Przełącz dzisiejsze cele na inny typ dnia.</string>
+    <string name="home_day_type_diverge_named">Ta godzina wygląda bardziej jak %1$s, nie jak %2$s.</string>
+    <string name="home_day_type_diverge_unnamed">Ta godzina nie wygląda jak dzień %1$s.</string>
+    <string name="cd_dismiss_day_type_prompt">Zamknij sugestię typu dnia</string>
     <string name="day_type_base_goals">Cele podstawowe</string>
     <string name="day_type_clear_override">Usuń dzisiejszy wyjątek</string>
     <string name="day_type_edit_settings">Edytuj typy dni</string>

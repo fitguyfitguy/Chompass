@@ -2368,6 +2368,9 @@
     <string name="untracked_sheet_kcal_optional">Rough calories (optional)</string>
     <string name="day_type_sheet_title">Day type</string>
     <string name="day_type_sheet_subtitle">Switch today’s targets to another day type.</string>
+    <string name="home_day_type_diverge_named">This hour looks more like %1$s, not %2$s.</string>
+    <string name="home_day_type_diverge_unnamed">This hour doesn\'t look like a %1$s day.</string>
+    <string name="cd_dismiss_day_type_prompt">Dismiss day type suggestion</string>
     <string name="day_type_targets_summary">%1$s %5$s · %2$dP %3$dC %4$dF</string>
     <string name="day_type_active_typical">≈ %1$d %2$s active typical</string>
     <string name="day_type_base_goals">Base goals</string>

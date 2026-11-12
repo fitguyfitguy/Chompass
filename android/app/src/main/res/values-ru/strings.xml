@@ -2223,6 +2223,9 @@
     <string name="home_day_type_chip_a11y">Тип дня сегодня: %1$s. Нажмите, чтобы сменить.</string>
     <string name="day_type_sheet_title">Тип дня</string>
     <string name="day_type_sheet_subtitle">Переключить цели сегодняшнего дня на другой тип дня.</string>
+    <string name="home_day_type_diverge_named">Этот час больше похож на %1$s, а не на %2$s.</string>
+    <string name="home_day_type_diverge_unnamed">Этот час не похож на день «%1$s».</string>
+    <string name="cd_dismiss_day_type_prompt">Закрыть подсказку о типе дня</string>
     <string name="day_type_base_goals">Базовые цели</string>
     <string name="day_type_clear_override">Убрать исключение на сегодня</string>
     <string name="day_type_edit_settings">Изменить типы дней</string>

@@ -2132,6 +2132,9 @@
     <string name="home_day_type_chip_a11y">오늘의 데이 타입: %1$s. 탭하여 전환.</string>
     <string name="day_type_sheet_title">데이 타입</string>
     <string name="day_type_sheet_subtitle">오늘의 목표를 다른 데이 타입으로 전환해요.</string>
+    <string name="home_day_type_diverge_named">이 시간은 %2$s보다 %1$s에 더 가까워요.</string>
+    <string name="home_day_type_diverge_unnamed">이 시간은 %1$s 날로 보이지 않아요.</string>
+    <string name="cd_dismiss_day_type_prompt">데이 타입 제안 닫기</string>
     <string name="day_type_base_goals">기본 목표</string>
     <string name="day_type_clear_override">오늘의 재정의 지우기</string>
     <string name="day_type_edit_settings">데이 타입 편집</string>

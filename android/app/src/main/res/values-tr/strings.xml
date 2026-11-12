@@ -2154,6 +2154,9 @@
     <string name="home_day_type_chip_a11y">Bugünün gün tipi: %1$s. Değiştirmek için dokunun.</string>
     <string name="day_type_sheet_title">Gün tipi</string>
     <string name="day_type_sheet_subtitle">Bugünün hedeflerini başka bir gün tipine geçirin.</string>
+    <string name="home_day_type_diverge_named">Bu saat %2$s değil, daha çok %1$s gibi.</string>
+    <string name="home_day_type_diverge_unnamed">Bu saat bir %1$s günü gibi görünmüyor.</string>
+    <string name="cd_dismiss_day_type_prompt">Gün tipi önerisini kapat</string>
     <string name="day_type_base_goals">Temel hedefler</string>
     <string name="day_type_clear_override">Bugünün istisnasını kaldır</string>
     <string name="day_type_edit_settings">Gün tiplerini düzenle</string>

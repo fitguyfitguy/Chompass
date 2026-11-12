@@ -2134,6 +2134,9 @@
     <string name="home_day_type_chip_a11y">आज का दिन-प्रकार: %1$s। बदलने के लिए टैप करें।</string>
     <string name="day_type_sheet_title">दिन-प्रकार</string>
     <string name="day_type_sheet_subtitle">आज के लक्ष्यों को दूसरे दिन-प्रकार में बदलें।</string>
+    <string name="home_day_type_diverge_named">यह घंटा %2$s से ज़्यादा %1$s जैसा है।</string>
+    <string name="home_day_type_diverge_unnamed">यह घंटा %1$s दिन जैसा नहीं लगता।</string>
+    <string name="cd_dismiss_day_type_prompt">दिन-प्रकार सुझाव बंद करें</string>
     <string name="day_type_base_goals">मूल लक्ष्य</string>
     <string name="day_type_clear_override">आज का ओवरराइड हटाएँ</string>
     <string name="day_type_edit_settings">दिन-प्रकार संपादित करें</string>

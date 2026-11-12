@@ -2166,6 +2166,9 @@
     <string name="home_day_type_chip_a11y">نوع اليوم الحالي: %1$s. انقر للتبديل.</string>
     <string name="day_type_sheet_title">نوع اليوم</string>
     <string name="day_type_sheet_subtitle">بدّل أهداف اليوم إلى نوع يوم آخر.</string>
+    <string name="home_day_type_diverge_named">هذه الساعة أقرب إلى %1$s، لا إلى %2$s.</string>
+    <string name="home_day_type_diverge_unnamed">هذه الساعة لا تبدو كيوم %1$s.</string>
+    <string name="cd_dismiss_day_type_prompt">إغلاق اقتراح نوع اليوم</string>
     <string name="day_type_base_goals">الأهداف الأساسية</string>
     <string name="day_type_clear_override">إزالة تجاوز اليوم</string>
     <string name="day_type_edit_settings">تعديل أنواع الأيام</string>

@@ -2132,6 +2132,9 @@
     <string name="home_day_type_chip_a11y">今日日类型：%1$s。点按切换。</string>
     <string name="day_type_sheet_title">日类型</string>
     <string name="day_type_sheet_subtitle">将今日目标切换到另一个日类型。</string>
+    <string name="home_day_type_diverge_named">这个时段更像%1$s，而不是%2$s。</string>
+    <string name="home_day_type_diverge_unnamed">这个时段不像%1$s日。</string>
+    <string name="cd_dismiss_day_type_prompt">关闭日类型建议</string>
     <string name="day_type_base_goals">基础目标</string>
     <string name="day_type_clear_override">清除今日覆盖</string>
     <string name="day_type_edit_settings">编辑日类型</string>

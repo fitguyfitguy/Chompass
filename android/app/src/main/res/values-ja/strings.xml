@@ -2132,6 +2132,9 @@
     <string name="home_day_type_chip_a11y">今日のデイタイプ: %1$s。タップで切り替え。</string>
     <string name="day_type_sheet_title">デイタイプ</string>
     <string name="day_type_sheet_subtitle">今日の目標を別のデイタイプに切り替えます。</string>
+    <string name="home_day_type_diverge_named">この時間は%2$sより%1$sに見えます。</string>
+    <string name="home_day_type_diverge_unnamed">この時間は%1$sの日には見えません。</string>
+    <string name="cd_dismiss_day_type_prompt">デイタイプの提案を閉じる</string>
     <string name="day_type_base_goals">基本の目標</string>
     <string name="day_type_clear_override">今日の上書きを解除</string>
     <string name="day_type_edit_settings">デイタイプを編集</string>

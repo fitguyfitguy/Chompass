@@ -1397,10 +1397,20 @@ fun HomeScreen(
             !showCameraCapture &&
             !showMultiPhotoCapture &&
             !inSelectionMode
+        val dayTypePrompt = ui.dayTypePrompt
+        val showDayTypePrompt = dayTypePrompt != null &&
+            !showDayTypeSheet &&
+            !ui.showFoodResultSheet &&
+            !ui.showProgressiveMealSheet &&
+            !ui.showAnalysisQueue &&
+            !showAddFoodSheet &&
+            !showCameraCapture &&
+            !showMultiPhotoCapture &&
+            !inSelectionMode
         LaunchedEffect(fillGapsBanner != null) {
             if (FillGapsFeature.ENABLED && fillGapsBanner != null) vm.onFillGapsBannerShown()
         }
-        if (showRecoveredChip || showFillGapsChip) {
+        if (showRecoveredChip || showFillGapsChip || showDayTypePrompt) {
             Column(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
@@ -1410,6 +1420,52 @@ fun HomeScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
+                if (showDayTypePrompt && dayTypePrompt != null) {
+                    val promptText = if (dayTypePrompt.suggestedName != null) {
+                        stringResource(
+                            R.string.home_day_type_diverge_named,
+                            dayTypePrompt.suggestedName,
+                            dayTypePrompt.currentName,
+                        )
+                    } else {
+                        stringResource(R.string.home_day_type_diverge_unnamed, dayTypePrompt.currentName)
+                    }
+                    ChompassSurface(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { showDayTypeSheet = true },
+                        cornerRadius = 16.dp,
+                        padding = 0.dp,
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 16.dp, end = 4.dp, top = 2.dp, bottom = 2.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Text(
+                                promptText,
+                                modifier = Modifier.weight(1f),
+                                color = MaterialTheme.colorScheme.onSurface,
+                                fontWeight = FontWeight.Medium,
+                                fontSize = 14.sp,
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                            IconButton(
+                                onClick = vm::dismissDayTypePrompt,
+                                modifier = Modifier.size(44.dp),
+                            ) {
+                                Icon(
+                                    Icons.Filled.Close,
+                                    contentDescription = stringResource(R.string.cd_dismiss_day_type_prompt),
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.size(18.dp),
+                                )
+                            }
+                        }
+                    }
+                }
                 if (showFillGapsChip && fillGapsBanner != null) {
                     ChompassSurface(
                         modifier = Modifier

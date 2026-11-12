@@ -2133,6 +2133,9 @@
     <string name="home_day_type_chip_a11y">Dagtype van vandaag: %1$s. Tik om te wisselen.</string>
     <string name="day_type_sheet_title">Dagtype</string>
     <string name="day_type_sheet_subtitle">Zet de doelen van vandaag op een ander dagtype.</string>
+    <string name="home_day_type_diverge_named">Dit uur lijkt meer op %1$s, niet op %2$s.</string>
+    <string name="home_day_type_diverge_unnamed">Dit uur lijkt niet op een %1$s-dag.</string>
+    <string name="cd_dismiss_day_type_prompt">Dagtypesuggestie sluiten</string>
     <string name="day_type_base_goals">Basisdoelen</string>
     <string name="day_type_clear_override">Uitzondering van vandaag wissen</string>
     <string name="day_type_edit_settings">Dagtypes bewerken</string>
