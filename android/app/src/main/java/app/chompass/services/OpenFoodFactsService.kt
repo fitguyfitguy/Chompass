@@ -967,10 +967,14 @@ object OpenFoodFactsService {
             if (grams != null) return grams
         }
         val display = product.string("quantity") ?: return null
-        if (!Regex("""^[0-9]+(?:[.,][0-9]+)?\s*(?:kg|mg|g|oz|ml|l)$""", RegexOption.IGNORE_CASE).matches(display)) {
+        // OFF display strings carry the estimated sign ("400 g e" / "400 g ℮")
+        // and occasional NBSPs; normalize before the strict full-string match
+        // (device pass 2026-11-12: Nutella "400 g e" fell back to 100 g).
+        val normalized = display.replace('\u00A0', ' ').replace('\u202F', ' ')
+        if (!Regex("""^[0-9]+(?:[.,][0-9]+)?\s*(?:kg|mg|g|oz|ml|l)\s*[e℮]?$""", RegexOption.IGNORE_CASE).matches(normalized)) {
             return null
         }
-        return gramsFrom(display)
+        return gramsFrom(normalized)
     }
 
     private fun JSONObject.string(key: String): String? =
