@@ -3,6 +3,7 @@ package app.chompass.services
 import app.chompass.BuildConfig
 import app.chompass.data.BARCODE_CACHE_SCHEMA
 import app.chompass.data.PreferencesStore
+import app.chompass.debug.DebugTrace
 import app.chompass.models.FoodGroundingProvenance
 import app.chompass.models.FoodProductMetadata
 import app.chompass.models.NutrientBasis
@@ -243,7 +244,9 @@ object OpenFoodFactsService {
         // Schema-gated fast path: entries below BARCODE_CACHE_SCHEMA carry
         // portion bases an older mapping wrote (pre-#168: the 100 g guess).
         val cached = prefs.barcodeCache.first()[code]
+        DebugTrace.event("op=barcode phase=cache code=$code schema=${cached?.schemaVersion ?: -1}")
         if (cached != null && cached.schemaVersion >= BARCODE_CACHE_SCHEMA) {
+            DebugTrace.event("op=barcode phase=cache-hit code=$code")
             return@withContext cached.analysis
         }
 
@@ -257,15 +260,18 @@ object OpenFoodFactsService {
             failure = e
         }
         if (result != null) {
+            DebugTrace.event("op=barcode phase=network-ok code=$code")
             prefs.cacheBarcodeLookup(code, result)
             // Photo files never outlive their cache entries: LRU eviction (500)
             // drops keys, retain deletes the photos whose keys are gone.
             photoStore?.retain(prefs.barcodeCache.first().keys)
             return@withContext result
         }
+        DebugTrace.event("op=barcode phase=network-fail code=$code err=${failure?.javaClass?.simpleName}")
         // Offline with a stale entry: serve it rather than failing the scan;
         // the next online scan of this code rewrites it at the current schema.
         if (cached != null) {
+            DebugTrace.event("op=barcode phase=stale-serve code=$code schema=${cached.schemaVersion}")
             return@withContext cached.analysis
         }
         // Pack fallback. OFF-NotFound implies the OFF-derived regional pack
