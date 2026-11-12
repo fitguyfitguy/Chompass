@@ -1875,10 +1875,10 @@ fun HomeScreen(
                 savedMealsTab = null
                 returnToAddFoodGrid()
             },
-            // Tapping a Saved Meals row opens the FoodResultSheet for review
-            // instead of logging immediately — same UX as the photo flow.
-            // The sheet dismisses itself after every action, so each one ends
-            // the flow: only a plain back (no action) returns to the grid.
+            // Row tap quick-logs (same path as the + icon); long-press opens
+            // the FoodResultSheet for review. The sheet dismisses itself after
+            // every action, so each one ends the flow: only a plain back
+            // (no action) returns to the grid.
             onRelogEntry = { entry ->
                 addFoodFlowActive = false
                 vm.reviewSavedMeal(entry)

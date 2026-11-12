@@ -9,6 +9,7 @@ import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -301,7 +302,8 @@ fun SavedMealsSheet(
                                 isFavorite = entry.favoriteKey in favKeys,
                                 subtitle = null,
                                 imageStore = container.imageStore,
-                                onClick = { onRelogEntry(entry); onDismiss() },
+                                onClick = { onLogEntry(entry); onDismiss() },
+                                onLongClick = { onRelogEntry(entry); onDismiss() },
                                 onLog = { onLogEntry(entry); onDismiss() },
                             )
                         }
@@ -324,7 +326,8 @@ fun SavedMealsSheet(
                                     null
                                 },
                                 imageStore = container.imageStore,
-                                onClick = { onRelogEntry(group.template); onDismiss() },
+                                onClick = { onLogEntry(group.template); onDismiss() },
+                                onLongClick = { onRelogEntry(group.template); onDismiss() },
                                 onLog = { onLogEntry(group.template); onDismiss() },
                             )
                         }
@@ -350,7 +353,8 @@ fun SavedMealsSheet(
                                 isFavorite = true,
                                 subtitle = null,
                                 imageStore = container.imageStore,
-                                onClick = { onRelogEntry(entry); onDismiss() },
+                                onClick = { onLogEntry(entry); onDismiss() },
+                                onLongClick = { onRelogEntry(entry); onDismiss() },
                                 trailing = {
                                     IconButton(
                                         onClick = { onEditFavorite(entry) },
@@ -372,6 +376,7 @@ fun SavedMealsSheet(
                             favorites = favorites,
                             imageStore = container.imageStore,
                             onTap = { entry -> onRelogEntry(entry); onDismiss() },
+                            onLog = { entry -> onLogEntry(entry); onDismiss() },
                             onEdit = onEditFavorite,
                             onRemove = { entry ->
                                 scope.launch { container.foodRepository.toggleFavorite(entry) }
@@ -512,6 +517,7 @@ private fun FavoritesReorderableList(
     favorites: List<FoodEntry>,
     imageStore: FoodImageStore,
     onTap: (FoodEntry) -> Unit,
+    onLog: (FoodEntry) -> Unit,
     onEdit: (FoodEntry) -> Unit,
     onRemove: (FoodEntry) -> Unit,
     onMove: (Int, Int) -> Unit
@@ -538,7 +544,8 @@ private fun FavoritesReorderableList(
                     isFavorite = true,
                     subtitle = null,
                     imageStore = imageStore,
-                    onClick = { onTap(entry) },
+                    onClick = { onLog(entry) },
+                    onLongClick = { onTap(entry) },
                     trailing = {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
@@ -712,6 +719,7 @@ private fun SavedMealRow(
     subtitle: String?,
     imageStore: FoodImageStore,
     onClick: () -> Unit,
+    onLongClick: () -> Unit,
     onLog: (() -> Unit)? = null,
     trailing: (@Composable () -> Unit)? = null
 ) {
@@ -719,6 +727,8 @@ private fun SavedMealRow(
     val rowFill = MaterialTheme.colorScheme.surfaceContainerLow.copy(alpha = 0.92f)
     val rowBorder = MaterialTheme.colorScheme.outlineVariant
     val rowInteraction = remember { MutableInteractionSource() }
+    val logLabel = stringResource(R.string.cd_log)
+    val reviewLabel = stringResource(R.string.sheet_review_food)
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -730,7 +740,14 @@ private fun SavedMealRow(
                 rowBorder,
                 MaterialTheme.shapes.large
             )
-            .clickable(interactionSource = rowInteraction, indication = LocalIndication.current, onClick = onClick)
+            .combinedClickable(
+                interactionSource = rowInteraction,
+                indication = LocalIndication.current,
+                onClick = onClick,
+                onClickLabel = logLabel,
+                onLongClick = onLongClick,
+                onLongClickLabel = reviewLabel,
+            )
             .padding(horizontal = 12.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -812,8 +829,8 @@ private fun SavedMealRow(
 /**
  * Row for a saved [Recipe] — mirrors [SavedMealRow]'s shell, using the first
  * ingredient's emoji as the recipe's face and the summed macros as totals.
- * Tapping the row opens the recipe builder for editing; the trailing "+"
- * logs every ingredient immediately.
+ * Tapping the row logs it as one named diary row; long-press opens the
+ * recipe builder. The trailing "+" keeps the same log path.
  */
 @Composable
 private fun RecipeRow(
@@ -826,6 +843,8 @@ private fun RecipeRow(
     val rowFill = MaterialTheme.colorScheme.surfaceContainerLow.copy(alpha = 0.92f)
     val rowBorder = MaterialTheme.colorScheme.outlineVariant
     val rowInteraction = remember { MutableInteractionSource() }
+    val logLabel = stringResource(R.string.cd_log)
+    val editLabel = stringResource(R.string.cd_edit_recipe)
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -833,7 +852,14 @@ private fun RecipeRow(
             .pressScale(rowInteraction)
             .background(rowFill)
             .border(0.5.dp, rowBorder, MaterialTheme.shapes.large)
-            .clickable(interactionSource = rowInteraction, indication = LocalIndication.current, onClick = onEdit)
+            .combinedClickable(
+                interactionSource = rowInteraction,
+                indication = LocalIndication.current,
+                onClick = onLog,
+                onClickLabel = logLabel,
+                onLongClick = onEdit,
+                onLongClickLabel = editLabel,
+            )
             .padding(horizontal = 12.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)
