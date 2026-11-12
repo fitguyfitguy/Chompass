@@ -103,6 +103,8 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.time.Instant
 import java.time.LocalDate
@@ -981,6 +983,9 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     private val analysisRunGate = AnalysisRunGate()
     /** Last-requested-wins guard for [refreshActivitySnapshot] (Codeberg #22). */
     private val activitySnapshotGuard = ActivitySnapshotRefreshGuard()
+    /** One full hourly backfill per calendar day. Later refreshes only rewrite today. */
+    private var hourlyBackfillDay: LocalDate? = null
+    private val hourlyHistoryMutex = Mutex()
 
     /**
      * Bumped on any diary/favorites change (see the init combine) so the Add
@@ -2036,25 +2041,37 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 return@launch
             }
             val snapshot = container.homeActivityReader.readForDate(day)
-            if (
-                day == LocalDate.now() &&
-                snapshot.energyLive &&
-                snapshot.source != app.chompass.services.health.ActivityDataSource.DEBUG
-            ) {
-                runCatching {
-                    val slots = container.health.readHourlyActive(day) ?: return@runCatching
-                    val merged = app.chompass.models.HourlyActiveHistory.mergeDay(
-                        container.prefs.healthEnergyActiveByHour.first(),
-                        day,
-                        slots,
-                        day,
-                    )
-                    container.prefs.setHealthEnergyActiveByHour(merged)
-                }
-            }
             if (activitySnapshotGuard.isCurrent(gen)) {
                 _ui.update { it.copy(activitySnapshot = snapshot) }
             }
+            if (
+                day == LocalDate.now() &&
+                snapshot.energyLive &&
+                snapshot.source != ActivityDataSource.DEBUG
+            ) {
+                runCatching { refreshHourlyActiveHistory(day) }
+                    .onFailure { if (it is CancellationException) throw it }
+            }
+        }
+    }
+
+    /**
+     * Same-hour history for the ring. The first successful refresh of a day
+     * backfills past days; later refreshes only rewrite today, so a snapshot
+     * tick does not issue another 28 Health Connect reads.
+     */
+    private suspend fun refreshHourlyActiveHistory(day: LocalDate) {
+        hourlyHistoryMutex.withLock {
+            val existing = container.prefs.healthEnergyActiveByHour.first()
+            val backfill = hourlyBackfillDay != day
+            val next = if (backfill) {
+                container.health.readHourlyActiveBackfill(existing)
+            } else {
+                val slots = container.health.readHourlyActive(day) ?: return@withLock
+                app.chompass.models.HourlyActiveHistory.mergeDay(existing, day, slots, day)
+            }
+            if (next != existing) container.prefs.setHealthEnergyActiveByHour(next)
+            if (backfill) hourlyBackfillDay = day
         }
     }
 

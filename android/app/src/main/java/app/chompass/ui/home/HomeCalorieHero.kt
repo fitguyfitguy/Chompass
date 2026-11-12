@@ -736,11 +736,20 @@ private fun BudgetGoalLine(
     }
 }
 
-/** The budget-a11y truth for the goal line, exactly as the tall arc stated it. */
+/** Spoken goal line. A classifying arc speaks the number on screen, not sedentary + live. */
 @Composable
 private fun calorieBudgetDescription(input: CalorieHeroInput): String? = with(input) {
     if (displayMode != HomeCalorieDisplayMode.ADD_ACTIVE) return@with null
     val unit = LocalEnergyUnit.current
+    val label = budgetClassLabel(budgetClass)
+    if (budgetClass != null) {
+        val shown = stringResource(
+            R.string.home_calorie_of_goal,
+            LocaleFormat.integer(EnergyFormat.quantity(displayTarget.coerceAtLeast(0), unit)),
+            energyUnitLabel(),
+        )
+        return if (label != null) "$shown. $label" else shown
+    }
     val effectiveGoal = HomeCalorieDisplay.effectiveGoal(displayMode, baseGoal, activeCalories)
     val integratesBurn = activeCalories > 0 && displayMode != HomeCalorieDisplayMode.STATIC
     val base = stringResource(
@@ -750,13 +759,11 @@ private fun calorieBudgetDescription(input: CalorieHeroInput): String? = with(in
         EnergyFormat.quantity(activeCalories, unit),
         energyUnitLabel(),
     )
-    val spoken = if (integratesBurn && activeCalorieSource == ActiveCalorieSource.ESTIMATED) {
+    if (integratesBurn && activeCalorieSource == ActiveCalorieSource.ESTIMATED) {
         base + ". " + stringResource(R.string.home_calorie_active_estimated_a11y)
     } else {
         base
     }
-    val label = budgetClassLabel(budgetClass)
-    return if (label != null) "$spoken. $label" else spoken
 }
 
 @Composable
@@ -817,6 +824,22 @@ private fun PlannedCaptionText(
     }
 }
 
+/**
+ * Caption and ring speech compare live burn to the projection the arc draws,
+ * not to a day-type full-day typical the ring has not stepped toward.
+ */
+private fun shadeSpokenAsProjection(
+    burn: ActiveBurnShade,
+    cue: ActiveDayClassifier.ActiveDayClassification?,
+): ActiveBurnShade {
+    if (cue == null || burn.projectedActive <= 0) return burn
+    return burn.copy(
+        typical = burn.projectedActive,
+        typicalIsDayType = false,
+        typicalDayTypeName = null,
+    )
+}
+
 @Composable
 private fun burnShadeA11y(burn: ActiveBurnShade): String {
     val unit = LocalEnergyUnit.current
@@ -840,12 +863,14 @@ private fun calorieArcContextDescription(input: CalorieHeroInput, d: CalorieHero
     val parts = ArrayList<String>(2)
     plannedCaptionText(d.planned)?.let { parts += it }
     if (d.shadesActive) {
-        input.burnShade?.let { parts += burnShadeA11y(it) }
+        input.burnShade?.let {
+            parts += burnShadeA11y(shadeSpokenAsProjection(it, input.budgetClass))
+        }
     }
     return parts.joinToString(". ").ifEmpty { null }
 }
 
-/** Burn caption line: shades when active, else the live burn the user asked to see. */
+/** Burn caption: live against the projection when classifying, else the shade or the bare count. */
 @Composable
 private fun CalorieBurnCaption(
     input: CalorieHeroInput,
@@ -856,15 +881,18 @@ private fun CalorieBurnCaption(
 ) {
     val capped = if (maxWidth == Dp.Unspecified) modifier else modifier.widthIn(max = maxWidth)
     with(input) {
-        if (budgetClass != null) {
-            BurnCaption(
-                active = liveActiveBurn,
+        val shade = burnShade
+        val cue = budgetClass
+        if (shade != null && cue != null && shade.projectedActive > 0) {
+            BurnShadeCaption(
+                burn = shadeSpokenAsProjection(shade, cue),
                 modifier = capped,
+                center = maxWidth != Dp.Unspecified,
                 animateNumbers = animateNumbers,
             )
-        } else if (shadesActive) {
+        } else if (shadesActive && shade != null) {
             BurnShadeCaption(
-                burn = burnShade!!,
+                burn = shade,
                 modifier = capped,
                 center = maxWidth != Dp.Unspecified,
                 animateNumbers = animateNumbers,

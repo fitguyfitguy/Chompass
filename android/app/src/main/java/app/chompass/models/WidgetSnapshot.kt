@@ -62,7 +62,7 @@ data class WidgetSnapshot(
      * [resolvedEffectiveCalorieGoal]).
      */
     val displayGoalTarget: Int? = null,
-    /** The day's active norm backing [displayGoalTarget] (14-day measured average, else PAL estimate). */
+    /** Active kcal the expected arc is drawn against: the classified projection, not the full-day day-type typical. */
     val activeBurnTypical: Int? = null,
     /**
      * Classifying-arc step (0, 1, or 2). Null on snapshots that are not

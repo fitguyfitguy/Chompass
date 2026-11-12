@@ -282,9 +282,11 @@ internal class HealthConnectReader(
     }
 
     /**
-     * Today, plus [days] completed days before it (default 28: today-1 back
-     * through 27 more). A past date that already has a sample in every hour
-     * is skipped. Today is never skipped. A failed day is left unchanged.
+     * Today, plus [days] days before it (default 28). Today is always read.
+     * The last [HourlyActiveHistory.RECENT_REREAD_DAYS] are always read again,
+     * so a zero written before the watch synced does not freeze. Older days
+     * are skipped once every hour has a sample. A failed day is left unchanged.
+     * A bucket with no energy metric stays missing (-1), not zero.
      */
     suspend fun readHourlyActiveBackfill(
         existing: Map<String, List<Int>>,
@@ -296,7 +298,7 @@ internal class HealthConnectReader(
         for (offset in 1..days) {
             val date = today.minusDays(offset.toLong())
             val key = date.toString()
-            if (HourlyActiveHistory.isComplete(merged[key])) continue
+            if (!HourlyActiveHistory.needsRefresh(merged[key], offset)) continue
             val slots = readHourlyActive(date) ?: continue
             applyHourlyDay(merged, date, slots)
         }
@@ -322,12 +324,8 @@ internal class HealthConnectReader(
             if (start.toLocalDate() != date) continue
             val hour = start.hour
             if (hour !in 0..23) continue
-            val kcal = bucket.result[ActiveCaloriesBurnedRecord.ACTIVE_CALORIES_TOTAL]
-                ?.inKilocalories
-                ?.roundToInt()
-                ?.coerceAtLeast(0)
-                ?: 0
-            slots[hour] = kcal
+            val energy = bucket.result[ActiveCaloriesBurnedRecord.ACTIVE_CALORIES_TOTAL] ?: continue
+            slots[hour] = energy.inKilocalories.roundToInt().coerceAtLeast(0)
         }
         return slots.toList()
     }
@@ -356,11 +354,8 @@ internal class HealthConnectReader(
                 )
             }.getOrNull()
             if (result == null) continue
-            slots[hour] = result[ActiveCaloriesBurnedRecord.ACTIVE_CALORIES_TOTAL]
-                ?.inKilocalories
-                ?.roundToInt()
-                ?.coerceAtLeast(0)
-                ?: 0
+            val energy = result[ActiveCaloriesBurnedRecord.ACTIVE_CALORIES_TOTAL] ?: continue
+            slots[hour] = energy.inKilocalories.roundToInt().coerceAtLeast(0)
         }
         return slots.toList()
     }

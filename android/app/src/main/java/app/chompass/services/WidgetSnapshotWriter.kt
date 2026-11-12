@@ -311,12 +311,12 @@ class WidgetSnapshotWriter(
             val gaugeBase = gaugeBudget.base
             val activeCalories = gaugeBudget.creditedBurn
             val effectiveGoal = gaugeBudget.displayTarget
-            // Expected-day target mirroring the hero: base + the larger of the active
-            // norm and live burn. Written only when the budget draws the expected arc
-            // (ADD_ACTIVE hold-back with a live measured source — Health Connect
-            // energy or debug data, even at 0 in the morning); estimate/manual-only
-            // and full-credit days keep the effective goal and no active-burn
-            // caption in the widget.
+            // Expected-day target mirroring the hero: base + the larger of the
+            // classified projection and live burn. Written only when the budget
+            // draws the expected arc (ADD_ACTIVE hold-back with a live measured
+            // source — Health Connect energy or debug data, even at 0 in the
+            // morning); estimate/manual-only and full-credit days keep the
+            // effective goal and no class line in the widget.
             val displayGoalTarget = if (gaugeBudget.useExpectedArc) effectiveGoal else null
             val waterTodayMl = water.entries
                 .filter { it.date.atZone(ZoneId.systemDefault()).toLocalDate() == LocalDate.now() }
@@ -388,7 +388,7 @@ class WidgetSnapshotWriter(
                 gaugeBaseCalorieGoal = gaugeBase,
                 activeCalorieSource = burn?.source?.storageKey,
                 displayGoalTarget = displayGoalTarget,
-                activeBurnTypical = displayGoalTarget?.let { estimatedActive },
+                activeBurnTypical = if (gaugeBudget.useExpectedArc) classification.projectedActive else null,
                 budgetClassStep = if (gaugeBudget.useExpectedArc) classification.step else null,
                 budgetClassKind = if (gaugeBudget.useExpectedArc) classification.kind.name else null,
                 budgetClassTypeName = if (gaugeBudget.useExpectedArc) classification.dayTypeName else null,

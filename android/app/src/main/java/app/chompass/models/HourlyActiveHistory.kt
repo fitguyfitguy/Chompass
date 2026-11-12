@@ -11,12 +11,18 @@ import java.time.LocalDate
 object HourlyActiveHistory {
     const val HOURS = 24
     const val MISSING = -1
+    /** Yesterday and the day before are re-read even when complete. Watch sync lags. */
+    const val RECENT_REREAD_DAYS = 2
 
     fun emptyDay(): List<Int> = List(HOURS) { MISSING }
 
     /** Past day with a sample in every clock hour. Today is never treated as complete. */
     fun isComplete(slots: List<Int>?): Boolean =
         slots != null && slots.size == HOURS && slots.none { it < 0 }
+
+    /** True when a past day should be read again. [daysAgo] is 1 for yesterday. */
+    fun needsRefresh(slots: List<Int>?, daysAgo: Int, recentDays: Int = RECENT_REREAD_DAYS): Boolean =
+        daysAgo in 1..recentDays || !isComplete(slots)
 
     fun sanitize(map: Map<String, List<Int>>, today: LocalDate): Map<String, List<Int>> {
         val cutoff = today.minusDays(DayTypeActiveStats.HISTORY_KEEP_DAYS.toLong())

@@ -89,6 +89,17 @@ class ActiveDayClassifierTest {
     }
 
     @Test
+    fun dayTypeDestination_usesPastDaysNotCallerAverage() {
+        val result = classify(
+            liveActive = 200,
+            dayTypeAverage = 100,
+            dayTypeDates = hardDates.map { it.toString() }.toSet(),
+        )
+        assertEquals(900, result.projectedActive)
+        assertEquals(ActiveDayClassifier.Kind.DAY_TYPE, result.kind)
+    }
+
+    @Test
     fun pastDay_doesNotClassify() {
         val result = classify(isToday = false, liveActive = 900)
         assertEquals(0, result.step)

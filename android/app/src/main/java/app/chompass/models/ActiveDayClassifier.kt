@@ -35,9 +35,10 @@ object ActiveDayClassifier {
     private val none = ActiveDayClassification(0, 0, Kind.NONE, null, false)
 
     /**
-     * @param dayTypeDates ISO dates tagged with today's profile. Ignored unless
-     * [dayTypeAverage] is non-null. The contrast group is every completed day
-     * not in this set.
+     * @param dayTypeAverage Non-null selects the day-type path. The projected
+     * number is the mean of completed past days in [dayTypeDates], not this
+     * value: a caller average can include today's partial manual burn.
+     * @param dayTypeDates ISO dates tagged with today's profile.
      */
     fun classify(
         today: LocalDate,
@@ -58,11 +59,13 @@ object ActiveDayClassifier {
         }
         val completed = completedDays(today, mergedActiveByDay)
         val groups = if (dayTypeAverage != null) {
+            val destDates = completed.filter { it in dayTypeDates }
+            if (destDates.isEmpty()) return stay(blend)
             Groups(
                 destKind = Kind.DAY_TYPE,
-                destActive = dayTypeAverage.coerceAtLeast(0),
+                destActive = destDates.map { mergedActiveByDay.getValue(it) }.average().roundToInt(),
                 destName = dayTypeName,
-                destDates = completed.filter { it in dayTypeDates },
+                destDates = destDates,
                 contrastDates = completed.filter { it !in dayTypeDates },
             )
         } else {
@@ -148,8 +151,9 @@ object ActiveDayClassifier {
         hourlyReady = hourlyReady,
     )
 
+    /** Past days inside the day-type window. Today is excluded; so is the day just outside it. */
     private fun completedDays(today: LocalDate, merged: Map<String, Int>): List<String> =
-        (1..DayTypeActiveStats.WINDOW_DAYS).map { today.minusDays(it.toLong()).toString() }
+        (1 until DayTypeActiveStats.WINDOW_DAYS).map { today.minusDays(it.toLong()).toString() }
             .filter { (merged[it] ?: 0) > 0 }
 
     private fun usable(
