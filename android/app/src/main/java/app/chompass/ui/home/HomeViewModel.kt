@@ -546,8 +546,8 @@ data class HomeUiState(
     val activeBurnTypical: Int get() = typicalResolution.kcal
 
     /**
-     * Day-type average from the start of today, else the blend. Same-hour
-     * history does not move this number.
+     * Day-type average from the start of today. With no day type, the blend
+     * slides toward a same-hour guess.
      */
     val budgetClassification: app.chompass.models.ActiveDayClassifier.ActiveDayClassification get() {
         val today = LocalDate.now()
@@ -562,9 +562,15 @@ data class HomeUiState(
         } else {
             emptySet()
         }
+        val minute = if (viewingToday) {
+            val now = java.time.LocalTime.now()
+            now.hour * 60 + now.minute
+        } else {
+            0
+        }
         return app.chompass.models.ActiveDayClassifier.classify(
             today = today,
-            minuteOfDay = 0,
+            minuteOfDay = minute,
             isToday = viewingToday,
             blendedActive = blended,
             dayTypeAverage = dayTypeAverage,
@@ -618,9 +624,16 @@ data class HomeUiState(
         )
     }
 
-    /** The ring no longer slides, so the old class line stays off. */
+    /** Class line for an untyped-day guess. A named day type uses the chip and the switch prompt. */
     val budgetClassCue: app.chompass.models.ActiveDayClassifier.ActiveDayClassification?
-        get() = null
+        get() = if (
+            gaugeBudget.useExpectedArc &&
+            budgetClassification.kind != app.chompass.models.ActiveDayClassifier.Kind.DAY_TYPE
+        ) {
+            budgetClassification
+        } else {
+            null
+        }
 
     /**
      * The hero ring's displayed calorie goal — the budget's display target:

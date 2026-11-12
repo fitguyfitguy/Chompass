@@ -23,6 +23,8 @@ class ActiveDayClassifierTest {
         blendedActive: Int = 600,
         dayTypeAverage: Int? = null,
         dayTypeDates: Set<String> = emptySet(),
+        liveActive: Int = 0,
+        hourlyByDay: Map<String, List<Int>> = hourly(),
     ) = ActiveDayClassifier.classify(
         today = today,
         minuteOfDay = minuteOfDay,
@@ -31,8 +33,8 @@ class ActiveDayClassifierTest {
         dayTypeAverage = dayTypeAverage,
         dayTypeName = if (dayTypeAverage != null) "Training" else null,
         mergedActiveByDay = daily,
-        hourlyByDay = hourly(),
-        liveActive = 0,
+        hourlyByDay = hourlyByDay,
+        liveActive = liveActive,
         dayTypeDates = dayTypeDates,
     )
 
@@ -48,10 +50,18 @@ class ActiveDayClassifierTest {
     }
 
     @Test
-    fun noDayType_staysOnBlend() {
-        val result = classify()
+    fun noDayType_withoutHourlyEvidence_staysOnBlend() {
+        val result = classify(hourlyByDay = emptyMap())
         assertEquals(600, result.projectedActive)
         assertEquals(ActiveDayClassifier.Kind.NONE, result.kind)
+    }
+
+    @Test
+    fun noDayType_sameHourOnHardMedian_guessesHarder() {
+        val result = classify(liveActive = 200)
+        assertEquals(2, result.step)
+        assertEquals(ActiveDayClassifier.Kind.HARDER, result.kind)
+        assertEquals(900, result.projectedActive)
     }
 
     @Test

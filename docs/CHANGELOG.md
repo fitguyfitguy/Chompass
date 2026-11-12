@@ -19,7 +19,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 - **The photo note check asks once** (Android): when you analyze a photo without a note, the "Analyze now?" confirmation now appears only the first time. After you confirm once, later noteless single-photo logs run straight through; photos with a note and multi-photo logs still get their checks. Turning "Ask for a photo note" off and back on in Settings → Food & Entry brings the check back.
 - **Dates can be typed** (Android): date wheels gain the time picker's tap-to-type — tap the wheel to type the digits in your region's order (month/day/year or day/month/year), so jumping back a few weeks no longer means flicking through every month.
 - **Saved meals log on tap** (Android): tapping a saved meal or recipe in the list logs it right away; a long-press still opens the full review sheet.
-- **The calorie ring opens on the day type** (Android): with Health Connect, a training morning shows that day type's usual burn from the start, not a guessed slide. The number stays there. If this hour looks much more like another day type, Home asks you to switch; it does not change the budget on its own.
+- **The calorie ring opens on the day type** (Android): with Health Connect, a training morning shows that day type's usual burn from the start. The number stays there unless you switch. If this hour looks much more like another day type, Home asks. A day with no type still starts at your usual burn and moves toward a lighter or harder day only when the same hour of past days supports it.
 
 ### Fixed
 
