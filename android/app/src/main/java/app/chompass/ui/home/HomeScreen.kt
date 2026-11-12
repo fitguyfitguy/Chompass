@@ -488,9 +488,9 @@ fun HomeScreen(
         }
     }
     var selectedEntryIds by remember(ui.date) { mutableStateOf<Set<UUID>>(emptySet()) }
-    var pasteTargetDate by remember(ui.date) { mutableStateOf(selectedDate) }
+    var pasteTargetDate by remember { mutableStateOf(today) }
     fun resetPasteTargets() {
-        pasteTargetDate = selectedDate
+        pasteTargetDate = today
     }
     val selectedEntries = remember(ui.todayEntries, selectedEntryIds) {
         ui.todayEntries.filter { it.id in selectedEntryIds }
@@ -1172,6 +1172,7 @@ fun HomeScreen(
                     onClick = {
                         completingPasteAction = null
                         vm.setCopiedEntries(selectedEntries)
+                        pasteTargetDate = today
                         showPasteActions = true
                     },
                 ) {
