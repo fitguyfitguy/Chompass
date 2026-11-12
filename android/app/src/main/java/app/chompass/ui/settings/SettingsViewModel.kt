@@ -2388,6 +2388,12 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                     )
                     container.prefs.setHealthEnergyActiveByDay(merged)
                 }
+                runCatching {
+                    val hourly = container.health.readHourlyActiveBackfill(
+                        container.prefs.healthEnergyActiveByHour.first(),
+                    )
+                    container.prefs.setHealthEnergyActiveByHour(hourly)
+                }
             }
             container.prefs.setHealthEnergyGoalsEnabled(v)
             if (!v) container.prefs.clearHealthEnergyMeasuredActive()

@@ -76,6 +76,7 @@ class WidgetSnapshotWriter(
         // survives distinctUntilChanged — otherwise it could never republish.
         val measuredActive: Int = 0,
         val activeByDay: Map<String, Int> = emptyMap(),
+        val activeByHour: Map<String, List<Int>> = emptyMap(),
     )
 
     internal data class WaterDynamicInputs(
@@ -166,8 +167,11 @@ class WidgetSnapshotWriter(
         // snapshot without a diary write; carrying the values keeps the
         // chain distinct-until-changed on real content.
         prefs.healthEnergyMeasuredActive,
-        prefs.healthEnergyActiveByDay,
-    ) { core, water, energyUnit, measuredActive, activeByDay ->
+        combine(
+            prefs.healthEnergyActiveByDay,
+            prefs.healthEnergyActiveByHour,
+        ) { byDay, byHour -> byDay to byHour },
+    ) { core, water, energyUnit, measuredActive, history ->
         SnapshotInputs(
             core.first,
             core.second,
@@ -175,7 +179,8 @@ class WidgetSnapshotWriter(
             water = water,
             energyUnit = energyUnit,
             measuredActive = measuredActive,
-            activeByDay = activeByDay,
+            activeByDay = history.first,
+            activeByHour = history.second,
         )
     }
         .combine(caffeineRepository.entries) { inputs, caffeine ->
@@ -186,7 +191,7 @@ class WidgetSnapshotWriter(
             // Always publish from a fresh today read, never the trigger flow's
             // captured-at-collect list (see note above).
             val entries = foodRepository.entriesForDate(LocalDate.now()).first()
-            publish(entries, inputs.profile, inputs.appearance, inputs.water, inputs.caffeineEntries, inputs.energyUnit, inputs.measuredActive, inputs.activeByDay)
+            publish(entries, inputs.profile, inputs.appearance, inputs.water, inputs.caffeineEntries, inputs.energyUnit, inputs.measuredActive, inputs.activeByDay, inputs.activeByHour)
         }
 
     /**
@@ -216,7 +221,7 @@ class WidgetSnapshotWriter(
             ),
             entries = waterRepository.entries.first(),
         )
-        publish(entries, profile, appearance, water, caffeineRepository.entries.first(), prefs.energyUnit.first(), prefs.healthEnergyMeasuredActive.first(), prefs.healthEnergyActiveByDay.first())
+        publish(entries, profile, appearance, water, caffeineRepository.entries.first(), prefs.energyUnit.first(), prefs.healthEnergyMeasuredActive.first(), prefs.healthEnergyActiveByDay.first(), prefs.healthEnergyActiveByHour.first())
     }
 
     private suspend fun publish(
@@ -228,6 +233,7 @@ class WidgetSnapshotWriter(
         energyUnit: String = "kcal",
         measuredActive: Int,
         activeByDay: Map<String, Int>,
+        activeByHour: Map<String, List<Int>>,
     ) {
         // API < 33: nutrient labels/units follow the in-app language.
         val ctx = LocaleHelper.wrapIfLegacy(context)
@@ -250,24 +256,36 @@ class WidgetSnapshotWriter(
             val effectiveCalories = resolvedToday.targets.calories
             // Energy Burn measured active average overrides the PAL estimate for the ADD_ACTIVE
             // split, so the widget mirrors the home gauge (goal − measured active → base).
-            val dayTypeTypical = run {
-                val journal = prefs.goalJournal.first()
-                val merged = app.chompass.models.DayTypeActiveStats.mergeDayTotals(
-                    activeByDay,
-                    app.chompass.models.DayTypeActiveStats.sumManualByDay(prefs.manualActiveEntries.first()),
-                )
-                val stats = app.chompass.models.DayTypeActiveStats.compute(journal, merged, LocalDate.now())
-                stats.typicalFor(resolvedToday.profileId)
-            }
-            val estimatedActive = dayTypeTypical
-                ?: measuredActive.takeIf { it > 0 }
-                ?: profile.estimatedDailyActiveCalories
-            val manualToday = prefs.manualActiveEntries.first()
+            val journal = prefs.goalJournal.first()
+            val manualEntries = prefs.manualActiveEntries.first()
+            val merged = app.chompass.models.DayTypeActiveStats.mergeDayTotals(
+                activeByDay,
+                app.chompass.models.DayTypeActiveStats.sumManualByDay(manualEntries),
+            )
+            val stats = app.chompass.models.DayTypeActiveStats.compute(journal, merged, LocalDate.now())
+            val dayTypeTypical = stats.typicalFor(resolvedToday.profileId)
+            val blended = measuredActive.takeIf { it > 0 } ?: profile.estimatedDailyActiveCalories
+            val now = java.time.LocalTime.now()
+            val classification = app.chompass.models.ActiveDayClassifier.classify(
+                today = LocalDate.now(),
+                minuteOfDay = now.hour * 60 + now.minute,
+                isToday = true,
+                blendedActive = blended,
+                dayTypeAverage = dayTypeTypical,
+                dayTypeName = resolvedToday.profileName,
+                mergedActiveByDay = merged,
+                hourlyByDay = activeByHour,
+                liveActive = activity.activeCalories.coerceAtLeast(0),
+                dayTypeDates = if (dayTypeTypical != null) {
+                    stats.daily.filter { it.profileId == resolvedToday.profileId }.map { it.date }.toSet()
+                } else {
+                    emptySet()
+                },
+            )
+            val estimatedActive = dayTypeTypical ?: blended
+            val manualToday = manualEntries
                 .filter { it.date == LocalDate.now().toString() }
                 .sumOf { it.calories }
-            // Source label only (widget caption); the numbers below come from
-            // the same resolveGaugeBudget call the home hero uses, so the two
-            // can never disagree.
             val burn = HomeCalorieDisplay.resolveActiveBurn(
                 display.calorieDisplayMode,
                 activity,
@@ -284,9 +302,11 @@ class WidgetSnapshotWriter(
                 sedentaryBudget = sedentary,
                 energyLive = activity.energyLive,
                 measuredToday = activity.activeCalories,
-                estimatedDailyActive = estimatedActive,
+                estimatedDailyActive = blended,
                 manual = manualToday,
                 typical = estimatedActive,
+                projectedActive = classification.projectedActive,
+                classifying = activity.energyLive && classification.projectedActive > 0,
             )
             val gaugeBase = gaugeBudget.base
             val activeCalories = gaugeBudget.creditedBurn
@@ -369,6 +389,9 @@ class WidgetSnapshotWriter(
                 activeCalorieSource = burn?.source?.storageKey,
                 displayGoalTarget = displayGoalTarget,
                 activeBurnTypical = displayGoalTarget?.let { estimatedActive },
+                budgetClassStep = if (gaugeBudget.useExpectedArc) classification.step else null,
+                budgetClassKind = if (gaugeBudget.useExpectedArc) classification.kind.name else null,
+                budgetClassTypeName = if (gaugeBudget.useExpectedArc) classification.dayTypeName else null,
                 stepsToday = activity.steps,
                 stepGoal = display.stepGoal,
                 waterTrackingEnabled = water.enabled,

@@ -1094,6 +1094,16 @@
     <string name="home_active_burn_a11y">सक्रिय खर्च %1$d</string>
     <string name="home_active_burn_caption">%1$d सक्रिय</string>
     <string name="home_active_burn_caption_progress">%1$d/%2$d सक्रिय</string>
+    <string name="home_budget_class_usual">सामान्य दिन</string>
+    <string name="home_budget_class_lean_lighter">हल्का झुकाव</string>
+    <string name="home_budget_class_lean_harder">भारी झुकाव</string>
+    <string name="home_budget_class_lighter">हल्का दिन</string>
+    <string name="home_budget_class_harder">भारी दिन</string>
+    <string name="home_budget_class_lean_type">%1$s की ओर</string>
+    <string name="home_budget_class_type">%1$s दिन</string>
+    <string name="home_budget_class_sheet_hourly">एक ही घंटे का इतिहास अभी कम है. लक्ष्य सामान्य दिन रहता है.</string>
+    <string name="home_budget_class_sheet_usual">अभी वर्गीकृत नहीं. लक्ष्य सामान्य दिन है, अनुमानित ट्रेनिंग दिन नहीं.</string>
+    <string name="home_budget_class_sheet_moved">पिछले 28 दिनों से वर्गीकृत. सहेजा लक्ष्य नहीं बदला.</string>
     <string name="home_active_burn_caption_progress_day_type">%1$d/%2$d सक्रिय · %3$s</string>
     <string name="home_active_burn_over">+%1$d अधिक</string>
     <string name="home_active_burn_over_a11y">सक्रिय खर्च %1$d, सामान्य दिन से %2$d अधिक</string>

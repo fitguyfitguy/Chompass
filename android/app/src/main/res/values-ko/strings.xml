@@ -1093,6 +1093,16 @@
     <string name="home_active_burn_a11y">활동 소비 %1$d</string>
     <string name="home_active_burn_caption">활동 %1$d</string>
     <string name="home_active_burn_caption_progress">%1$d/%2$d 활동</string>
+    <string name="home_budget_class_usual">보통인 날</string>
+    <string name="home_budget_class_lean_lighter">더 가볍게</string>
+    <string name="home_budget_class_lean_harder">더 힘들게</string>
+    <string name="home_budget_class_lighter">가벼운 날</string>
+    <string name="home_budget_class_harder">힘든 날</string>
+    <string name="home_budget_class_lean_type">%1$s 쪽</string>
+    <string name="home_budget_class_type">%1$s인 날</string>
+    <string name="home_budget_class_sheet_hourly">같은 시간 기록이 아직 부족합니다. 목표는 보통인 날입니다.</string>
+    <string name="home_budget_class_sheet_usual">아직 분류되지 않았습니다. 목표는 보통인 날이며, 짐작한 운동일이 아닙니다.</string>
+    <string name="home_budget_class_sheet_moved">최근 28일로 분류했습니다. 저장한 목표는 그대로입니다.</string>
     <string name="home_active_burn_caption_progress_day_type">%1$d/%2$d 활동 · %3$s</string>
     <string name="home_active_burn_over">+%1$d 초과</string>
     <string name="home_active_burn_over_a11y">활동 소비 %1$d, 평소 하루보다 %2$d 초과</string>

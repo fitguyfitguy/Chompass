@@ -1093,6 +1093,16 @@
     <string name="home_active_burn_a11y">活動消費 %1$d</string>
     <string name="home_active_burn_caption">%1$d 活動</string>
     <string name="home_active_burn_caption_progress">%1$d/%2$d 活動</string>
+    <string name="home_budget_class_usual">ふだんの日</string>
+    <string name="home_budget_class_lean_lighter">軽め</string>
+    <string name="home_budget_class_lean_harder">ハードめ</string>
+    <string name="home_budget_class_lighter">軽い日</string>
+    <string name="home_budget_class_harder">ハードな日</string>
+    <string name="home_budget_class_lean_type">%1$s寄り</string>
+    <string name="home_budget_class_type">%1$sの日</string>
+    <string name="home_budget_class_sheet_hourly">同じ時刻の記録がまだ足りません。目標はふだんの日のままです。</string>
+    <string name="home_budget_class_sheet_usual">まだ分類していません。目標はふだんの日で、推測のトレーニング日ではありません。</string>
+    <string name="home_budget_class_sheet_moved">直近28日から分類しました。保存した目標は変わりません。</string>
     <string name="home_active_burn_caption_progress_day_type">%1$d/%2$d 活動 · %3$s</string>
     <string name="home_active_burn_over">+%1$d 超</string>
     <string name="home_active_burn_over_a11y">活動消費 %1$d、通常の1日より %2$d 多い</string>

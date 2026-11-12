@@ -1089,6 +1089,16 @@
     <string name="home_active_burn_a11y">Ars activ %1$d</string>
     <string name="home_active_burn_caption">%1$d active</string>
     <string name="home_active_burn_caption_progress">%1$d/%2$d active</string>
+    <string name="home_budget_class_usual">Zi obișnuită</string>
+    <string name="home_budget_class_lean_lighter">Mai ușoară</string>
+    <string name="home_budget_class_lean_harder">Mai grea</string>
+    <string name="home_budget_class_lighter">Zi ușoară</string>
+    <string name="home_budget_class_harder">Zi grea</string>
+    <string name="home_budget_class_lean_type">Spre %1$s</string>
+    <string name="home_budget_class_type">Zi %1$s</string>
+    <string name="home_budget_class_sheet_hourly">Încă puțin istoric la aceeași oră. Ținta rămâne ziua obișnuită.</string>
+    <string name="home_budget_class_sheet_usual">Încă neclasificat. Ținta e ziua obișnuită, nu o zi de antrenament ghicită.</string>
+    <string name="home_budget_class_sheet_moved">Clasificat din ultimele 28 de zile. Ținta salvată nu se schimbă.</string>
     <string name="home_active_burn_caption_progress_day_type">%1$d/%2$d active · %3$s</string>
     <string name="home_active_burn_over">+%1$d peste</string>
     <string name="home_active_burn_over_a11y">Ars activ %1$d, %2$d peste o zi normală</string>

@@ -68,6 +68,7 @@ class HomeCalorieHeroLayoutTest {
                         CalorieHero(
                             current = 1234,
                             baseGoal = 2000,
+                            displayTarget = 2000,
                             activeCalories = 0,
                             displayMode = HomeCalorieDisplayMode.STATIC,
                             dayTypeLabel = "Training day",
@@ -231,6 +232,7 @@ class HomeCalorieHeroLayoutTest {
                     CalorieHero(
                         current = current.value,
                         baseGoal = 2000,
+                        displayTarget = 2000,
                         activeCalories = 0,
                         displayMode = HomeCalorieDisplayMode.STATIC,
                         freezeProgress = false,
@@ -272,6 +274,7 @@ class HomeCalorieHeroLayoutTest {
                     CalorieHero(
                         current = current.value,
                         baseGoal = 2000,
+                        displayTarget = 2000,
                         activeCalories = 0,
                         displayMode = HomeCalorieDisplayMode.STATIC,
                         freezeProgress = true,
@@ -309,6 +312,7 @@ class HomeCalorieHeroLayoutTest {
                     CalorieHero(
                         current = current.value,
                         baseGoal = 2000,
+                        displayTarget = 2000,
                         activeCalories = 0,
                         displayMode = HomeCalorieDisplayMode.STATIC,
                         freezeProgress = false,
@@ -347,6 +351,7 @@ class HomeCalorieHeroLayoutTest {
                     CalorieHero(
                         current = current.value,
                         baseGoal = 2000,
+                        displayTarget = 2000,
                         activeCalories = 0,
                         displayMode = HomeCalorieDisplayMode.STATIC,
                         freezeProgress = true,

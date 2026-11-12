@@ -103,6 +103,7 @@ internal fun HomeLookPreview(
                     freezeProgress = true,
                     layout = display.calorieHeroLayout,
                     preview = true,
+                    displayTarget = HomeLookSample.BASE_GOAL + if (addActive) HomeLookSample.ACTIVE else 0,
                 )
             }
             if (display.showSteps) {

@@ -1086,6 +1086,16 @@ bilirsən?</string>
     <string name="home_active_burn_a11y">Aktiv yanma %1$d</string>
     <string name="home_active_burn_caption">%1$d aktiv</string>
     <string name="home_active_burn_caption_progress">%1$d/%2$d aktiv</string>
+    <string name="home_budget_class_usual">Adi gün</string>
+    <string name="home_budget_class_lean_lighter">Yüngülə</string>
+    <string name="home_budget_class_lean_harder">Ağırına</string>
+    <string name="home_budget_class_lighter">Yüngül gün</string>
+    <string name="home_budget_class_harder">Ağır gün</string>
+    <string name="home_budget_class_lean_type">%1$s tərəfə</string>
+    <string name="home_budget_class_type">%1$s günü</string>
+    <string name="home_budget_class_sheet_hourly">Eyni saat tarixçəsi azdır. Hədəf adi gün olaraq qalır.</string>
+    <string name="home_budget_class_sheet_usual">Hələ təsnif olunmayıb. Hədəf adi gündür, təxmin edilən məşq günü deyil.</string>
+    <string name="home_budget_class_sheet_moved">Son 28 gündən təsnif olundu. Saxlanan hədəf dəyişməyib.</string>
     <string name="home_active_burn_caption_progress_day_type">%1$d/%2$d aktiv · %3$s</string>
     <string name="home_active_burn_over">+%1$d artıq</string>
     <string name="home_active_burn_over_a11y">Aktiv yanma %1$d, normal gündən %2$d çox</string>

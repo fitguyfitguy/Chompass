@@ -161,6 +161,8 @@ internal object Keys {
         val HEALTH_ENERGY_MEASURED_ACTIVE = intPreferencesKey("healthEnergyMeasuredActiveCalories")
         /** Compact ISO-date → active kcal map (internal, never synced). Pruned to 60 days. */
         val HEALTH_ENERGY_ACTIVE_BY_DAY = stringPreferencesKey("healthEnergyActiveByDayJson")
+        /** ISO date → 24 hourly active kcal slots (internal, never synced). -1 = no sample. Pruned to 60 days. */
+        val HEALTH_ENERGY_ACTIVE_BY_HOUR = stringPreferencesKey("healthEnergyActiveByHourJson")
         val HEALTH_BACKGROUND_SYNC_ENABLED = booleanPreferencesKey("healthBackgroundSyncEnabled")
         val HEALTH_ENERGY_GOALS_PREVIOUS_TARGETS = stringPreferencesKey("healthEnergyGoalsPreviousTargets")
         val HEALTH_ENERGY_GOALS_LAST_AUTO_REFRESH_DAY = stringPreferencesKey("healthEnergyGoalsLastAutoRefreshDay")

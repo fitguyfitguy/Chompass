@@ -1095,6 +1095,16 @@
     <string name="home_active_burn_a11y">主动消耗 %1$d</string>
     <string name="home_active_burn_caption">%1$d 主动</string>
     <string name="home_active_burn_caption_progress">%1$d/%2$d 主动</string>
+    <string name="home_budget_class_usual">平常的一天</string>
+    <string name="home_budget_class_lean_lighter">偏轻</string>
+    <string name="home_budget_class_lean_harder">偏重</string>
+    <string name="home_budget_class_lighter">较轻的一天</string>
+    <string name="home_budget_class_harder">较重的一天</string>
+    <string name="home_budget_class_lean_type">偏向%1$s</string>
+    <string name="home_budget_class_type">%1$s日</string>
+    <string name="home_budget_class_sheet_hourly">同时段记录还不够。目标保持平常的一天。</string>
+    <string name="home_budget_class_sheet_usual">尚未分类。目标是平常的一天，不是猜的训练日。</string>
+    <string name="home_budget_class_sheet_moved">根据近28天分类。已保存的目标不变。</string>
     <string name="home_active_burn_caption_progress_day_type">%1$d/%2$d 主动 · %3$s</string>
     <string name="home_active_burn_over">+%1$d 超</string>
     <string name="home_active_burn_over_a11y">主动消耗 %1$d，比平常一天多 %2$d</string>

@@ -1131,6 +1131,16 @@
     <string name="home_active_burn_a11y">Dépense active %1$d</string>
     <string name="home_active_burn_caption">%1$d actif</string>
     <string name="home_active_burn_caption_progress">%1$d/%2$d actif</string>
+    <string name="home_budget_class_usual">Jour habituel</string>
+    <string name="home_budget_class_lean_lighter">Plutôt léger</string>
+    <string name="home_budget_class_lean_harder">Plutôt dur</string>
+    <string name="home_budget_class_lighter">Jour léger</string>
+    <string name="home_budget_class_harder">Jour dur</string>
+    <string name="home_budget_class_lean_type">Vers %1$s</string>
+    <string name="home_budget_class_type">Jour %1$s</string>
+    <string name="home_budget_class_sheet_hourly">Pas assez d\'historique à la même heure. L\'objectif reste votre jour habituel.</string>
+    <string name="home_budget_class_sheet_usual">Pas encore classé. L\'objectif est votre jour habituel, pas un jour d\'entraînement deviné.</string>
+    <string name="home_budget_class_sheet_moved">Classé sur vos 28 derniers jours. Votre objectif enregistré ne change pas.</string>
     <string name="home_active_burn_caption_progress_day_type">%1$d/%2$d actif · %3$s</string>
     <string name="home_active_burn_over">+%1$d de plus</string>
     <string name="home_active_burn_over_a11y">Dépense active %1$d, %2$d de plus qu\'un jour type</string>

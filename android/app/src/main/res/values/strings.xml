@@ -2462,6 +2462,16 @@
     <string name="home_active_burn_caption">%1$d active</string>
     <string name="home_active_burn_a11y">Active burn %1$d</string>
     <string name="home_active_burn_caption_progress">%1$d/%2$d active</string>
+    <string name="home_budget_class_usual">Usual day</string>
+    <string name="home_budget_class_lean_lighter">Leaning lighter</string>
+    <string name="home_budget_class_lean_harder">Leaning harder</string>
+    <string name="home_budget_class_lighter">Lighter day</string>
+    <string name="home_budget_class_harder">Harder day</string>
+    <string name="home_budget_class_lean_type">Leaning %1$s</string>
+    <string name="home_budget_class_type">%1$s day</string>
+    <string name="home_budget_class_sheet_hourly">Not enough same-hour history yet. Goal stays your usual day.</string>
+    <string name="home_budget_class_sheet_usual">Not classified yet. Goal is your usual day, not a guessed training day.</string>
+    <string name="home_budget_class_sheet_moved">Classified from your last 28 days. Your saved goal is unchanged.</string>
     <string name="home_active_burn_caption_progress_day_type">%1$d/%2$d active · %3$s</string>
     <string name="home_active_burn_progress_a11y">Active burn %1$d, %2$d typical</string>
     <string name="home_active_burn_progress_day_type_a11y">Active burn %1$d, %2$d typical for %3$s days</string>

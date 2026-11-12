@@ -2905,6 +2905,16 @@ für dich ein</string>
     <string name="home_active_burn_a11y">Aktiver Kalorienverbrauch %1$d</string>
 
     <string name="home_active_burn_caption_progress">%1$d/%2$d aktiv</string>
+    <string name="home_budget_class_usual">Üblicher Tag</string>
+    <string name="home_budget_class_lean_lighter">Eher leichter</string>
+    <string name="home_budget_class_lean_harder">Eher härter</string>
+    <string name="home_budget_class_lighter">Leichter Tag</string>
+    <string name="home_budget_class_harder">Härterer Tag</string>
+    <string name="home_budget_class_lean_type">Eher %1$s</string>
+    <string name="home_budget_class_type">%1$s-Tag</string>
+    <string name="home_budget_class_sheet_hourly">Noch zu wenig Stundenverlauf. Ziel bleibt dein üblicher Tag.</string>
+    <string name="home_budget_class_sheet_usual">Noch nicht eingeordnet. Ziel ist dein üblicher Tag, kein geratener Trainingstag.</string>
+    <string name="home_budget_class_sheet_moved">Eingeordnet aus den letzten 28 Tagen. Dein gespeichertes Ziel bleibt.</string>
     <string name="home_active_burn_caption_progress_day_type">%1$d/%2$d aktiv · %3$s</string>
 
     <string name="home_active_burn_progress_a11y">Aktiver Kalorienverbrauch %1$d, typischer Wert %2$d</string>

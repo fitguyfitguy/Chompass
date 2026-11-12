@@ -74,26 +74,45 @@ class HomeCalorieDisplayTest {
     // --- resolveGaugeBudget: hold-back default + full credit ---
 
     @Test
-    fun gaugeBudget_holdBack_projectsExpectedDay_notDoubleCredit() {
-        val budget = HomeCalorieDisplay.resolveGaugeBudget(
-            mode = HomeCalorieDisplayMode.ADD_ACTIVE,
-            fullCredit = false,
-            fullGoal = 2000,
-            sedentaryBudget = 1898,
-            energyLive = true,
-            measuredToday = 469,
-            estimatedDailyActive = 102,
-            manual = 0,
-            typical = 102,
-        )
-        assertEquals(1898, budget.base)
-        assertEquals(469, budget.creditedBurn)
-        // The ring projects the expected day (base + typical) — NOT base +
-        // measured, and never the full-credit 2469 either.
-        assertEquals(2367, budget.displayTarget)
-        assertEquals(2367, HomeCalorieDisplay.expectedTarget(1898, 102, 469))
-        assertTrue(budget.useExpectedArc)
+    fun gaugeBudget_classifying_projectsClassifiedActive_notFullDayTypical() {
+        val morning = holdBack(measured = 0, projected = 600, classifying = true)
+        assertEquals(2000, morning.displayTarget)
+        assertEquals(0, morning.creditedBurn)
+        assertTrue(morning.useExpectedArc)
+
+        val leaning = holdBack(measured = 0, projected = 750, classifying = true)
+        assertEquals(2150, leaning.displayTarget)
+
+        val liveGrows = holdBack(measured = 1000, projected = 600, classifying = true)
+        assertEquals(2400, liveGrows.displayTarget)
+        assertEquals(1000, liveGrows.creditedBurn)
+        assertTrue(liveGrows.useExpectedArc)
     }
+
+    @Test
+    fun gaugeBudget_pastDay_usesMeasuredNotExpectedTarget() {
+        val budget = holdBack(measured = 200, projected = 0, classifying = false)
+        assertEquals(1600, budget.displayTarget)
+        assertFalse(budget.useExpectedArc)
+    }
+
+    private fun holdBack(
+        measured: Int,
+        projected: Int,
+        classifying: Boolean,
+    ) = HomeCalorieDisplay.resolveGaugeBudget(
+        mode = HomeCalorieDisplayMode.ADD_ACTIVE,
+        fullCredit = false,
+        fullGoal = 2000,
+        sedentaryBudget = 1400,
+        energyLive = true,
+        measuredToday = measured,
+        estimatedDailyActive = 400,
+        manual = 0,
+        typical = 900,
+        projectedActive = projected,
+        classifying = classifying,
+    )
 
     @Test
     fun gaugeBudget_fullCredit_stacksMeasuredOnFullGoal() {
@@ -107,6 +126,8 @@ class HomeCalorieDisplayTest {
             estimatedDailyActive = 102,
             manual = 0,
             typical = 102,
+            projectedActive = 0,
+            classifying = false,
         )
         assertEquals(2000, budget.base)
         assertEquals(469, budget.creditedBurn)
@@ -127,6 +148,8 @@ class HomeCalorieDisplayTest {
             estimatedDailyActive = 102,
             manual = 0,
             typical = 102,
+            projectedActive = 0,
+            classifying = false,
         )
         // A morning with measured 0 keeps the full goal, not the sedentary budget.
         assertEquals(2000, budget.displayTarget)
@@ -145,6 +168,8 @@ class HomeCalorieDisplayTest {
             estimatedDailyActive = 400,
             manual = 50,
             typical = 400,
+            projectedActive = 0,
+            classifying = false,
         )
         // The PAL estimate already sits inside the full goal — only the manual
         // eat-back is added on top.
@@ -165,6 +190,8 @@ class HomeCalorieDisplayTest {
             estimatedDailyActive = 400,
             manual = 50,
             typical = 400,
+            projectedActive = 0,
+            classifying = false,
         )
         // The flag never turns STATIC into ADD_ACTIVE.
         assertEquals(2000, budget.base)
@@ -535,7 +562,7 @@ class HomeCalorieDisplayTest {
 
     @Test
     fun activeBurnTypical_usesPerTypeAverageWhenEnoughSamples() {
-        val today = LocalDate.parse("2026-09-01")
+        val today = LocalDate.now()
         val journal = (0..5).map { i ->
             val d = today.minusDays(i.toLong()).toString()
             GoalJournalEntry(

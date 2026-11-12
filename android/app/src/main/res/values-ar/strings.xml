@@ -1102,6 +1102,16 @@
     <string name="home_active_burn_a11y">الحرق النشط %1$d</string>
     <string name="home_active_burn_caption">%1$d نشط</string>
     <string name="home_active_burn_caption_progress">%1$d/%2$d نشط</string>
+    <string name="home_budget_class_usual">يوم عادي</string>
+    <string name="home_budget_class_lean_lighter">أخف</string>
+    <string name="home_budget_class_lean_harder">أشد</string>
+    <string name="home_budget_class_lighter">يوم أخف</string>
+    <string name="home_budget_class_harder">يوم أشد</string>
+    <string name="home_budget_class_lean_type">نحو %1$s</string>
+    <string name="home_budget_class_type">يوم %1$s</string>
+    <string name="home_budget_class_sheet_hourly">لا يكفي سجل الساعة نفسها بعد. الهدف يبقى يومك العادي.</string>
+    <string name="home_budget_class_sheet_usual">لم يُصنَّف بعد. الهدف يومك العادي، لا يوم تدريب مخمَّن.</string>
+    <string name="home_budget_class_sheet_moved">صُنّف من آخر 28 يومًا. هدفك المحفوظ لم يتغير.</string>
     <string name="home_active_burn_caption_progress_day_type">%1$d/%2$d نشط · %3$s</string>
     <string name="home_active_burn_over">+%1$d فوق</string>
     <string name="home_active_burn_over_a11y">الحرق النشط %1$d، %2$d فوق اليوم المعتاد</string>

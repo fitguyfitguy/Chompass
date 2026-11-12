@@ -198,6 +198,8 @@ data class ActiveBurnShade(
     val typicalIsDayType: Boolean = false,
     val typicalDayTypeName: String? = null,
     val blendedTypical: Int = 0,
+    /** Classified active layer the arc projects. 0 when the shade is not classifying. */
+    val projectedActive: Int = 0,
 )
 
 /** The gauge's single budget decision — see [HomeCalorieDisplay.resolveGaugeBudget]. */
@@ -208,7 +210,7 @@ data class GaugeBudget(
     val creditedBurn: Int,
     /** Number the hero's goal / ring end shows. */
     val displayTarget: Int,
-    /** True when the ring draws the expected-day arc (ADD_ACTIVE hold-back with a live source). */
+    /** True when the arc end is the classified projection, grown only when live + manual pass it. */
     val useExpectedArc: Boolean,
 )
 
@@ -290,13 +292,15 @@ object HomeCalorieDisplay {
      *
      * Hold-back (default, fullCredit == false): the ADD_ACTIVE split — the
      * stored goal minus a typical day's active burn becomes the sedentary
-     * base, today's burn is layered on top, and with a live measured source
-     * the ring projects the expected day ([expectedTarget]).
+     * base, today's burn is layered on top. With a live measured source and a
+     * classification, the arc end is [projectedActive], grown only when live
+     * burn plus manual kcal pass it. It is not max(day-type or 14-day typical, live).
      *
-     * Full credit: the base is the full stored goal (no split, no 14-day
-     * average, no PAL estimate) and only today's measured burn plus manual
-     * burns are added. A morning with measured 0 keeps the full goal; a big
-     * workout is not eaten back twice through the average.
+     * A past day with live energy, or today without a classification, shows
+     * sedentary plus that day's measured burn and manual kcal. No expected arc.
+     *
+     * Full credit: the base is the full stored goal (no split, no projection)
+     * and only today's measured burn plus manual burns are added.
      */
     fun resolveGaugeBudget(
         mode: HomeCalorieDisplayMode,
@@ -308,12 +312,13 @@ object HomeCalorieDisplay {
         estimatedDailyActive: Int,
         manual: Int,
         typical: Int,
+        projectedActive: Int,
+        classifying: Boolean,
     ): GaugeBudget {
         val goal = fullGoal.coerceAtLeast(0)
         val sedentary = sedentaryBudget.coerceAtLeast(0)
         val manualKcal = manual.coerceAtLeast(0)
         if (mode != HomeCalorieDisplayMode.ADD_ACTIVE) {
-            // STATIC: full goal + deliberate manual eat-backs only.
             return GaugeBudget(
                 base = goal,
                 creditedBurn = manualKcal,
@@ -336,16 +341,27 @@ object HomeCalorieDisplay {
         } else {
             estimatedDailyActive.takeIf { it > 0 } ?: 0
         }) + manualKcal
-        val useExpectedArc = energyLive && typical > 0
+        if (energyLive && classifying && projectedActive > 0) {
+            return GaugeBudget(
+                base = sedentary,
+                creditedBurn = credited,
+                displayTarget = expectedTarget(sedentary, projectedActive, measured + manualKcal),
+                useExpectedArc = true,
+            )
+        }
+        if (energyLive) {
+            return GaugeBudget(
+                base = sedentary,
+                creditedBurn = credited,
+                displayTarget = (sedentary + measured + manualKcal).coerceAtLeast(0),
+                useExpectedArc = false,
+            )
+        }
         return GaugeBudget(
             base = sedentary,
             creditedBurn = credited,
-            displayTarget = if (useExpectedArc) {
-                expectedTarget(sedentary, typical, measured + manualKcal)
-            } else {
-                effectiveGoal(HomeCalorieDisplayMode.ADD_ACTIVE, sedentary, credited)
-            },
-            useExpectedArc = useExpectedArc,
+            displayTarget = effectiveGoal(HomeCalorieDisplayMode.ADD_ACTIVE, sedentary, credited),
+            useExpectedArc = false,
         )
     }
 

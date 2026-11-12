@@ -183,6 +183,8 @@ data class HomeUiState(
     val measuredActiveAverageCalories: Int = 0,
     /** Internal 60-day HC active-by-day map (never synced). */
     val healthEnergyActiveByDay: Map<String, Int> = emptyMap(),
+    /** Internal same-hour HC active map (never synced). */
+    val healthEnergyActiveByHour: Map<String, List<Int>> = emptyMap(),
     /** Manual active totals keyed by ISO date. */
     val manualActiveByDay: Map<String, Int> = emptyMap(),
     val activitySnapshot: HomeActivitySnapshot = HomeActivitySnapshot(date = LocalDate.now()),
@@ -482,6 +484,7 @@ data class HomeUiState(
         val sedentary = measuredActiveAverageCalories.takeIf { it > 0 }
             ?.let { (baseCalorieGoal - it).coerceAtLeast(0) }
             ?: p.sedentaryCalorieBudget(baseCalorieGoal)
+        val classification = budgetClassification
         return HomeCalorieDisplay.resolveGaugeBudget(
             mode = homeDisplay.calorieDisplayMode,
             fullCredit = homeDisplay.fullCreditActiveBurn,
@@ -493,6 +496,8 @@ data class HomeUiState(
                 ?: p.estimatedDailyActiveCalories,
             manual = manualActiveKcal,
             typical = activeBurnTypical,
+            projectedActive = classification.projectedActive,
+            classifying = date == LocalDate.now() && classification.projectedActive > 0,
         )
     }
     val gaugeBaseCalorieGoal: Int get() = gaugeBudget.base
@@ -537,6 +542,50 @@ data class HomeUiState(
     val activeBurnTypical: Int get() = typicalResolution.kcal
 
     /**
+     * Same-hour slide for today. Past days and a missing blend return a
+     * zero projection; the gauge then does not draw an expected arc.
+     */
+    val budgetClassification: app.chompass.models.ActiveDayClassifier.ActiveDayClassification get() {
+        val today = LocalDate.now()
+        val viewingToday = date == today
+        val blended = measuredActiveAverageCalories.takeIf { it > 0 }
+            ?: profile?.estimatedDailyActiveCalories
+            ?: 0
+        val profileId = if (viewingToday) resolvedDayTargets.profileId else null
+        val dayTypeAverage = if (viewingToday) dayTypeActiveStats.typicalFor(profileId) else null
+        val tagged = if (dayTypeAverage != null && profileId != null) {
+            dayTypeActiveStats.daily.filter { it.profileId == profileId }.map { it.date }.toSet()
+        } else {
+            emptySet()
+        }
+        val minute = if (viewingToday) {
+            val now = java.time.LocalTime.now()
+            now.hour * 60 + now.minute
+        } else {
+            0
+        }
+        return app.chompass.models.ActiveDayClassifier.classify(
+            today = today,
+            minuteOfDay = minute,
+            isToday = viewingToday,
+            blendedActive = blended,
+            dayTypeAverage = dayTypeAverage,
+            dayTypeName = if (dayTypeAverage != null) resolvedDayTargets.profileName else null,
+            mergedActiveByDay = app.chompass.models.DayTypeActiveStats.mergeDayTotals(
+                healthEnergyActiveByDay,
+                manualActiveByDay,
+            ),
+            hourlyByDay = healthEnergyActiveByHour,
+            liveActive = activitySnapshot.activeCalories.coerceAtLeast(0),
+            dayTypeDates = tagged,
+        )
+    }
+
+    /** Non-null only while the ring is on the classifying arc. */
+    val budgetClassCue: app.chompass.models.ActiveDayClassifier.ActiveDayClassification?
+        get() = if (gaugeBudget.useExpectedArc) budgetClassification else null
+
+    /**
      * The hero ring's displayed calorie goal — the budget's display target:
      * ADD_ACTIVE hold-back grows to the expected-day target when live burn
      * exceeds the norm, full credit stacks measured burn on the full goal,
@@ -558,7 +607,8 @@ data class HomeUiState(
         // cards scale against the ring exactly as before the day plan existed.
         val base = resolvedDayTargets.targets.calories
         if (base <= 0) return 1f
-        return (heroCalorieGoal.toFloat() / base).coerceAtLeast(1f)
+        val scale = heroCalorieGoal.toFloat() / base
+        return if (gaugeBudget.useExpectedArc) scale.coerceIn(0.5f, 2.0f) else scale.coerceAtLeast(1f)
     }
 
     /**
@@ -586,6 +636,7 @@ data class HomeUiState(
             typicalIsDayType = typicalResolution.typicalIsDayType,
             typicalDayTypeName = resolvedDayTargets.profileName,
             blendedTypical = measuredActiveAverageCalories,
+            projectedActive = budgetClassification.projectedActive,
         )
     }
 
@@ -623,6 +674,7 @@ data class HomeUiState(
             foodLogMacroChips == other.foodLogMacroChips &&
             measuredActiveAverageCalories == other.measuredActiveAverageCalories &&
             healthEnergyActiveByDay == other.healthEnergyActiveByDay &&
+            healthEnergyActiveByHour == other.healthEnergyActiveByHour &&
             manualActiveByDay == other.manualActiveByDay &&
             activitySnapshot == other.activitySnapshot &&
             optionalNutrientGoals == other.optionalNutrientGoals &&
@@ -733,6 +785,7 @@ data class HomeUiState(
         result = 31 * result + foodLogMacroChips.hashCode()
         result = 31 * result + measuredActiveAverageCalories
         result = 31 * result + healthEnergyActiveByDay.hashCode()
+        result = 31 * result + healthEnergyActiveByHour.hashCode()
         result = 31 * result + manualActiveByDay.hashCode()
         result = 31 * result + activitySnapshot.hashCode()
         result = 31 * result + optionalNutrientGoals.hashCode()
@@ -1445,6 +1498,12 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             }
             .launchIn(viewModelScope)
 
+        container.prefs.healthEnergyActiveByHour
+            .onEach { map ->
+                _ui.update { it.copy(healthEnergyActiveByHour = map) }
+            }
+            .launchIn(viewModelScope)
+
         _selectedDate
             .onEach { refreshActivitySnapshot() }
             .launchIn(viewModelScope)
@@ -1977,6 +2036,22 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 return@launch
             }
             val snapshot = container.homeActivityReader.readForDate(day)
+            if (
+                day == LocalDate.now() &&
+                snapshot.energyLive &&
+                snapshot.source != app.chompass.services.health.ActivityDataSource.DEBUG
+            ) {
+                runCatching {
+                    val slots = container.health.readHourlyActive(day) ?: return@runCatching
+                    val merged = app.chompass.models.HourlyActiveHistory.mergeDay(
+                        container.prefs.healthEnergyActiveByHour.first(),
+                        day,
+                        slots,
+                        day,
+                    )
+                    container.prefs.setHealthEnergyActiveByHour(merged)
+                }
+            }
             if (activitySnapshotGuard.isCurrent(gen)) {
                 _ui.update { it.copy(activitySnapshot = snapshot) }
             }

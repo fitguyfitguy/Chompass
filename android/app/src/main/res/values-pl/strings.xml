@@ -1568,6 +1568,16 @@
     <string name="home_active_burn_caption">%1$d aktywnych</string>
     <string name="home_active_burn_a11y">Aktywne spalanie %1$d</string>
     <string name="home_active_burn_caption_progress">%1$d/%2$d aktyw.</string>
+    <string name="home_budget_class_usual">Zwykły dzień</string>
+    <string name="home_budget_class_lean_lighter">Lżej</string>
+    <string name="home_budget_class_lean_harder">Ciężej</string>
+    <string name="home_budget_class_lighter">Lżejszy dzień</string>
+    <string name="home_budget_class_harder">Cięższy dzień</string>
+    <string name="home_budget_class_lean_type">W stronę %1$s</string>
+    <string name="home_budget_class_type">Dzień %1$s</string>
+    <string name="home_budget_class_sheet_hourly">Za mało historii o tej godzinie. Cel zostaje zwykłym dniem.</string>
+    <string name="home_budget_class_sheet_usual">Jeszcze bez klasy. Cel to zwykły dzień, nie zgadnięty dzień treningu.</string>
+    <string name="home_budget_class_sheet_moved">Sklasyfikowano z ostatnich 28 dni. Zapisany cel bez zmian.</string>
     <string name="home_active_burn_caption_progress_day_type">%1$d/%2$d aktyw. · %3$s</string>
     <string name="home_active_burn_progress_a11y">Aktywne spalanie %1$d, typowe %2$d</string>
     <string name="home_active_burn_progress_day_type_a11y">Active burn %1$d, %2$d typical for %3$s days</string>

@@ -1638,6 +1638,16 @@
     <string name="home_active_burn_a11y">Активный расход %1$d</string>
     <string name="home_active_burn_caption">%1$d активных</string>
     <string name="home_active_burn_caption_progress">%1$d/%2$d активных</string>
+    <string name="home_budget_class_usual">Обычный день</string>
+    <string name="home_budget_class_lean_lighter">Ближе к лёгкому</string>
+    <string name="home_budget_class_lean_harder">Ближе к тяжёлому</string>
+    <string name="home_budget_class_lighter">Лёгкий день</string>
+    <string name="home_budget_class_harder">Тяжёлый день</string>
+    <string name="home_budget_class_lean_type">Ближе к %1$s</string>
+    <string name="home_budget_class_type">День %1$s</string>
+    <string name="home_budget_class_sheet_hourly">Мало истории за этот час. Цель остаётся обычным днём.</string>
+    <string name="home_budget_class_sheet_usual">Ещё не классифицировано. Цель — обычный день, не угаданный тренировочный.</string>
+    <string name="home_budget_class_sheet_moved">Классификация по последним 28 дням. Сохранённая цель не меняется.</string>
     <string name="home_active_burn_caption_progress_day_type">%1$d/%2$d активных · %3$s</string>
     <string name="home_active_burn_over">+%1$d сверх</string>
     <string name="home_active_burn_over_a11y">Активный расход %1$d, на %2$d больше обычного дня</string>

@@ -64,6 +64,15 @@ data class WidgetSnapshot(
     val displayGoalTarget: Int? = null,
     /** The day's active norm backing [displayGoalTarget] (14-day measured average, else PAL estimate). */
     val activeBurnTypical: Int? = null,
+    /**
+     * Classifying-arc step (0, 1, or 2). Null on snapshots that are not
+     * classifying, including ones written by older builds.
+     */
+    val budgetClassStep: Int? = null,
+    /** [ActiveDayClassifier.Kind.name]. Null when [budgetClassStep] is null. */
+    val budgetClassKind: String? = null,
+    /** Day-type name for a DAY_TYPE class line. Null for unsupervised classes. */
+    val budgetClassTypeName: String? = null,
     val stepsToday: Long? = null,
     val stepGoal: Int? = null,
     /** Defaults preserve decoding of snapshots written before the Water widget. */

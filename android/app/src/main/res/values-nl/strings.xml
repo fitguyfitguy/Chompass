@@ -1065,6 +1065,16 @@
     <string name="home_active_burn_a11y">Actief verbruik %1$d</string>
     <string name="home_active_burn_caption">%1$d actief</string>
     <string name="home_active_burn_caption_progress">%1$d/%2$d actief</string>
+    <string name="home_budget_class_usual">Gewone dag</string>
+    <string name="home_budget_class_lean_lighter">Lichter</string>
+    <string name="home_budget_class_lean_harder">Zwaarder</string>
+    <string name="home_budget_class_lighter">Lichtere dag</string>
+    <string name="home_budget_class_harder">Zwaardere dag</string>
+    <string name="home_budget_class_lean_type">Richting %1$s</string>
+    <string name="home_budget_class_type">%1$s-dag</string>
+    <string name="home_budget_class_sheet_hourly">Nog te weinig geschiedenis op dit uur. Doel blijft je gewone dag.</string>
+    <string name="home_budget_class_sheet_usual">Nog niet ingedeeld. Doel is je gewone dag, geen geraden trainingsdag.</string>
+    <string name="home_budget_class_sheet_moved">Ingedeeld op je laatste 28 dagen. Je opgeslagen doel blijft.</string>
     <string name="home_active_burn_caption_progress_day_type">%1$d/%2$d actief · %3$s</string>
     <string name="home_active_burn_over">+%1$d meer</string>
     <string name="home_active_burn_over_a11y">Actief verbruik %1$d, %2$d boven een normale dag</string>
