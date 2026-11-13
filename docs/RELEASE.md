@@ -114,15 +114,18 @@ export CODEBERG_LOGIN=codeberg-release
 ```
 
 Notes come from the CHANGELOG section of the base version (`5.6.0` for
-`5.6.0-beta.1`) with a beta preamble. When the beta graduates, re-tag the final
-commit `v<version>` and publish normally; delete the beta tag if you want a clean
-history.
+`5.6.0-beta.1`) with a beta preamble. The script targets the existing
+`v<version>` commit when that tag is already local, not whatever HEAD is
+now, so later unreleased commits are not published as that beta. Do not
+move a pushed beta tag onto those commits. When the beta graduates, re-tag
+the final commit `v<version>` and publish normally; delete the beta tag if
+you want a clean history.
 
 ### Codeberg storage quotas
 
 Codeberg enforces two separate quotas: **git repository** (default **750 MiB**) and **assets** — releases, packages, LFS, attachments (default **1.5 GiB**). Check the quota page under user settings to see which category refused before acting.
 
-**Git quota exceeded** (`quota exceeded` on `git push` or release creation): the pre-receive hook rejects **all writes** — pushes and release publication — while the counter is over. The reported size lags reality until Codeberg's server-side gc runs (it can take weeks), so a history rewrite does not lower it immediately; the 2026-11 rewrite went through exactly this ([request 2709](https://codeberg.org/Codeberg-e.V./requests/issues/2709)). Post a `[STORAGE]` request on [Codeberg-e.V./requests](https://codeberg.org/Codeberg-e.V./requests) asking for gc + recalc (plus a temporary raise only if the recalculated size still lands near the limit) instead of trying to push.
+**Git quota exceeded** (`quota exceeded` on `git push` or release creation): the pre-receive hook rejects **all writes** — pushes and release publication — while the counter is over. The reported size lags reality until Codeberg's server-side gc runs (it can take weeks), so a history rewrite does not lower it immediately; the 2026-11 rewrite went through exactly this ([request 2709](https://codeberg.org/Codeberg-e.V./requests/issues/2709)). Post a `[STORAGE]` request on [Codeberg-e.V./requests](https://codeberg.org/Codeberg-e.V./requests) asking for gc + recalc (plus a temporary raise only if the recalculated size still lands near the limit) instead of trying to push. After a rewrite, do not `git push --tags` or `--follow-tags` until `git ls-remote --tags origin` matches local tags: this clone's older tags still point at pre-rewrite commits, and a tag push would put that history back.
 
 **Assets quota exceeded:** live attachments are small by policy — one universal APK + `SHA256SUMS` per release (old APKs were stripped in the 2026-11 history rewrite). Drop leftovers one release at a time:
 

@@ -292,14 +292,25 @@ if [[ "$ASSETS_ONLY" -eq 0 ]]; then
   if release_exists; then
     echo "Release $TAG already exists — uploading any missing assets."
   else
-    echo "==> Creating release $TAG"
+    # tea 0.16's default target is wrong, so pass one. Use the tag's
+    # commit when it already exists: HEAD may have moved past the cut,
+    # and HEAD is not on the remote until main is pushed.
+    if git rev-parse -q --verify "refs/tags/${TAG}^{}" >/dev/null; then
+      TARGET="$(git rev-parse "refs/tags/${TAG}^{}")"
+    else
+      TARGET="$(git rev-parse HEAD)"
+    fi
+    if [[ "$TARGET" != "$(git rev-parse HEAD)" ]]; then
+      echo "Release target is ${TAG} (${TARGET:0:12}), not HEAD ($(git rev-parse --short HEAD))."
+    fi
+    echo "==> Creating release $TAG (target ${TARGET:0:12})"
     err=""
     if ! err="$(run_tea releases create \
       --login "$LOGIN" \
       --repo "$CODEBERG_REPO" \
       "${RELEASE_FLAGS[@]}" \
       --tag "$TAG" \
-      --target "$(git rev-parse HEAD)" \
+      --target "$TARGET" \
       --title "$TITLE" \
       --note "$NOTES" 2>&1)"; then
       if echo "$err" | rg -qi 'already a release'; then
