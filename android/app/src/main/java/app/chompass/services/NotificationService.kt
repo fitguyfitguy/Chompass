@@ -10,6 +10,11 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.text.SpannableStringBuilder
+import android.text.Spanned
+import android.text.style.ForegroundColorSpan
+import android.widget.RemoteViews
+import android.view.View
 import app.chompass.services.update.AndroidUpdateChecker
 import app.chompass.utils.LocaleHelper
 import android.os.Build
@@ -26,11 +31,11 @@ import app.chompass.models.WaterAmountFormat
 import app.chompass.models.EnergyFormat
 import app.chompass.models.EnergyUnit
 import app.chompass.models.LocaleFormat
-import app.chompass.models.MacroValueFormatter
 import app.chompass.models.WidgetSnapshot
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
+import kotlin.math.roundToInt
 
 /**
  * Schedules + fires the local reminders the app supports:
@@ -271,15 +276,29 @@ class NotificationService(private val context: Context) {
             )
             else -> localizedContext.getString(R.string.notif_ongoing_goal_reached)
         }
-        val macros = localizedContext.getString(
-            R.string.notif_ongoing_macros,
-            MacroValueFormatter.string(snapshot.protein),
-            snapshot.proteinGoal,
-            MacroValueFormatter.string(snapshot.carbs),
-            snapshot.carbsGoal,
-            MacroValueFormatter.string(snapshot.fat),
-            snapshot.fatGoal,
-        )
+        val macros = RemoteViews(context.packageName, R.layout.notification_ongoing).apply {
+            setTextViewText(R.id.ongoing_title, title)
+            setTextViewText(R.id.ongoing_status, status)
+            setTextViewText(
+                R.id.ongoing_macro_protein,
+                macroText(R.string.macro_glyph_protein, snapshot.protein, snapshot.proteinGoal),
+            )
+            setTextViewText(
+                R.id.ongoing_macro_carbs,
+                macroText(R.string.macro_glyph_carbs, snapshot.carbs, snapshot.carbsGoal),
+            )
+            setTextViewText(
+                R.id.ongoing_macro_fat,
+                macroText(R.string.macro_glyph_fat, snapshot.fat, snapshot.fatGoal),
+            )
+            setTextViewText(R.id.ongoing_macro_unit, " ${localizedContext.getString(R.string.unit_g)}")
+
+            if (goal > 0) {
+                setProgressBar(R.id.ongoing_progress, goal, eaten.coerceIn(0, goal), false)
+            } else {
+                setViewVisibility(R.id.ongoing_progress, View.GONE)
+            }
+        }
         val open = PendingIntent.getActivity(
             context, REQUEST_ONGOING,
             ChompassLaunchIntents.openApp(context, destination = null),
@@ -289,7 +308,7 @@ class NotificationService(private val context: Context) {
             .setSmallIcon(R.drawable.ic_launcher_monochrome)
             .setContentTitle(title)
             .setContentText(status)
-            .setStyle(NotificationCompat.BigTextStyle().bigText("$status\n$macros"))
+            .setCustomBigContentView(macros)
             .setContentIntent(open)
             .setOngoing(true)
             .setOnlyAlertOnce(true)
@@ -307,6 +326,10 @@ class NotificationService(private val context: Context) {
     fun cancelOngoingSummary() {
         runCatching { NotificationManagerCompat.from(context).cancel(ONGOING_NOTIFICATION_ID) }
     }
+
+    /** Whole-gram macros, each in a notification-shade-safe accent for the current mode. */
+    private fun macroText(glyphRes: Int, value: Double, goal: Int): String =
+        "${localizedContext.getString(glyphRes)} ${LocaleFormat.integer(value.roundToInt())}/${LocaleFormat.integer(goal)}"
 
     fun scheduleWeightReminder(hour: Int = 8, minute: Int = 0) = schedule(
         REQUEST_WEIGHT, hour, minute, CHANNEL_WEIGHT_LOG,

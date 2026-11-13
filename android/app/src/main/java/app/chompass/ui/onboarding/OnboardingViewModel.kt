@@ -74,6 +74,7 @@ data class OnboardingDraft(
     val goalWeightKg: Double,
     val weeklyChangeKg: Double,
     val notificationsEnabled: Boolean,
+    val ongoingSummaryEnabled: Boolean = false,
     val healthConnectEnabled: Boolean,
     val aiProvider: AIProvider,
     val aiModel: String,
@@ -90,6 +91,7 @@ private fun OnboardingState.toDraft() = OnboardingDraft(
     activity = activity, goal = goal, dietMode = dietMode, ketoCarbMode = ketoCarbMode,
     ketoCarbManualTarget = ketoCarbManualTarget, goalWeightKg = goalWeightKg, weeklyChangeKg = weeklyChangeKg,
     notificationsEnabled = notificationsEnabled, healthConnectEnabled = healthConnectEnabled,
+    ongoingSummaryEnabled = ongoingSummaryEnabled,
     aiProvider = aiProvider, aiModel = aiModel,
     customCalories = customCalories, customProtein = customProtein, customCarbs = customCarbs, customFat = customFat,
 )
@@ -103,6 +105,7 @@ private fun OnboardingState.applyDraft(draft: OnboardingDraft) = copy(
     ketoCarbManualTarget = draft.ketoCarbManualTarget, goalWeightKg = draft.goalWeightKg,
     weeklyChangeKg = draft.weeklyChangeKg,
     notificationsEnabled = draft.notificationsEnabled, healthConnectEnabled = draft.healthConnectEnabled,
+    ongoingSummaryEnabled = draft.ongoingSummaryEnabled,
     aiProvider = draft.aiProvider, aiModel = draft.aiModel,
     customCalories = draft.customCalories, customProtein = draft.customProtein,
     customCarbs = draft.customCarbs, customFat = draft.customFat,
@@ -136,6 +139,7 @@ data class OnboardingState(
     val heightMetric: Boolean = false,
     val weightMetric: Boolean = false,
     val notificationsEnabled: Boolean = false,
+    val ongoingSummaryEnabled: Boolean = false,
     val healthConnectEnabled: Boolean = false,
     val homeDisplay: HomeDisplayPreferences = HomeDisplayPreferences(),
     val aiProvider: AIProvider = AIProvider.GEMINI,
@@ -268,7 +272,13 @@ class OnboardingViewModel(private val container: AppContainer) : ViewModel() {
     }
     fun setWeeklyChange(v: Double) { _ui.value = _ui.value.copy(weeklyChangeKg = v) }
     fun setNotificationsEnabled(v: Boolean) {
-        _ui.value = _ui.value.copy(notificationsEnabled = v)
+        _ui.value = _ui.value.copy(
+            notificationsEnabled = v,
+            ongoingSummaryEnabled = _ui.value.ongoingSummaryEnabled && v,
+        )
+    }
+    fun setOngoingSummaryEnabled(v: Boolean) {
+        _ui.value = _ui.value.copy(ongoingSummaryEnabled = v)
     }
     fun setHealthConnectEnabled(v: Boolean) {
         _ui.value = _ui.value.copy(healthConnectEnabled = v)
@@ -616,6 +626,7 @@ class OnboardingViewModel(private val container: AppContainer) : ViewModel() {
                 )
             }
             container.prefs.setNotificationsEnabled(state.notificationsEnabled)
+            container.prefs.setOngoingSummaryEnabled(state.ongoingSummaryEnabled)
             container.prefs.setHealthConnectEnabled(state.healthConnectEnabled)
             // Resolve (or lazily create) the onboarding profile, then persist the final
             // provider/model choice and the entered key onto it.
@@ -636,6 +647,9 @@ class OnboardingViewModel(private val container: AppContainer) : ViewModel() {
             container.prefs.setAdaptiveGoalsLastCheckDay(LocalDate.now().toString())
             container.prefs.setOnboardingCompleted(true)
             container.prefs.setOnboardingDraft(null)
+            // Publish today's snapshot so an ongoing summary enabled here is
+            // posted without waiting for the first diary write.
+            container.widgetSnapshotWriter.refresh()
             onDone()
         }
     }

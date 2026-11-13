@@ -93,6 +93,7 @@ internal fun NotificationTypeRows(
         stringResource(R.string.settings_notif_ongoing),
         ui.ongoingSummaryEnabled,
         icon = Icons.Outlined.NotificationsActive,
+        description = stringResource(R.string.notif_channel_ongoing_desc),
         onChange = vm::setOngoingSummaryEnabled
     )
     HorizontalDivider()

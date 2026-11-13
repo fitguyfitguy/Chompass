@@ -7,4 +7,11 @@
          in-app Appearance setting (Light/Dark/System). The Compose theme draws
          the actual mode; this file only feeds the pre-Compose splash. -->
     <color name="app_splash_background">#FF170E16</color>
+
+    <!-- Notification shade colors (Codeberg #169), not the app appearance. -->
+    <color name="notification_ongoing_title">#FFE6E1E5</color>
+    <color name="notification_ongoing_secondary">#FFCAC4D0</color>
+    <color name="notification_ongoing_protein">#FFA8C7FA</color>
+    <color name="notification_ongoing_carbs">#FFFFD27A</color>
+    <color name="notification_ongoing_fat">#FFFFB3C7</color>
 </resources>

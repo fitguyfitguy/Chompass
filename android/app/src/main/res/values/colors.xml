@@ -14,4 +14,13 @@
     <color name="chompass_surface">#FFFFFFFF</color>
     <color name="chompass_on_surface">#FF1C131A</color>
     <color name="chompass_accent">#FF8F4B78</color>
+
+    <!-- Ongoing notification (Codeberg #169). These follow the system notification
+         shade, not the in-app Appearance setting; values-night carries the dark
+         shade variants. Macro accents keep their hue and stay above 4.5:1. -->
+    <color name="notification_ongoing_title">#FF1B1B1F</color>
+    <color name="notification_ongoing_secondary">#FF49454F</color>
+    <color name="notification_ongoing_protein">#FF1D4ED8</color>
+    <color name="notification_ongoing_carbs">#FF8A5300</color>
+    <color name="notification_ongoing_fat">#FF9D174D</color>
 </resources>

@@ -27,6 +27,7 @@ import androidx.compose.material.icons.outlined.NotificationsActive
 import androidx.compose.material.icons.outlined.Restaurant
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.ui.platform.LocalContext
@@ -49,7 +50,12 @@ import app.chompass.R
 private const val TAG = "OnboardingHealthConnect"
 
 @Composable
-internal fun NotificationsStep(enabled: Boolean, onToggle: (Boolean) -> Unit) {
+internal fun NotificationsStep(
+    enabled: Boolean,
+    ongoingSummaryEnabled: Boolean,
+    onToggle: (Boolean) -> Unit,
+    onOngoingToggle: (Boolean) -> Unit,
+) {
     // iOS notificationsStep: centered bell.badge.fill in pink + big headline
     // "Be reminded to\nlog meals" + subtitle + pink CTA.
     val notifLauncher = rememberLauncherForActivityResult(
@@ -111,6 +117,32 @@ internal fun NotificationsStep(enabled: Boolean, onToggle: (Boolean) -> Unit) {
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
+        if (enabled) {
+            Spacer(Modifier.height(20.dp))
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .clip(MaterialTheme.shapes.medium)
+                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f))
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(Modifier.weight(1f)) {
+                    Text(
+                        stringResource(R.string.settings_notif_ongoing),
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Medium
+                    )
+                    Text(
+                        stringResource(R.string.notif_channel_ongoing_desc),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                Spacer(Modifier.width(12.dp))
+                Switch(checked = ongoingSummaryEnabled, onCheckedChange = onOngoingToggle)
+            }
+        }
     }
 }
 

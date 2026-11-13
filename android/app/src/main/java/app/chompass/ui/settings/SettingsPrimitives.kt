@@ -413,6 +413,7 @@ internal fun ToggleRow(
     checked: Boolean,
     icon: ImageVector? = null,
     enabled: Boolean = true,
+    description: String? = null,
     onChange: (Boolean) -> Unit
 ) {
     Row(
@@ -423,17 +424,29 @@ internal fun ToggleRow(
             ChompassIconBubble(icon = icon, size = 22.dp, iconSize = 14.dp)
             Spacer(Modifier.width(14.dp))
         }
-        Text(
-            label,
-            modifier = Modifier.weight(1f),
-            style = MaterialTheme.typography.bodyLarge,
-            fontWeight = FontWeight.Medium,
-            color = if (enabled) {
-                MaterialTheme.colorScheme.onSurface
-            } else {
-                MaterialTheme.colorScheme.outline
-            },
-        )
+        Column(Modifier.weight(1f)) {
+            Text(
+                label,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Medium,
+                color = if (enabled) {
+                    MaterialTheme.colorScheme.onSurface
+                } else {
+                    MaterialTheme.colorScheme.outline
+                },
+            )
+            if (description != null) {
+                Text(
+                    description,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = if (enabled) {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    } else {
+                        MaterialTheme.colorScheme.outline
+                    },
+                )
+            }
+        }
         Switch(checked = checked, onCheckedChange = onChange, enabled = enabled)
     }
 }

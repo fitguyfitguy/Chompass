@@ -181,7 +181,9 @@ fun OnboardingScreen(container: AppContainer, onComplete: () -> Unit) {
                 }
                 OnboardingStep.NOTIFICATIONS -> NotificationsStep(
                     enabled = ui.notificationsEnabled,
-                    onToggle = vm::setNotificationsEnabled
+                    ongoingSummaryEnabled = ui.ongoingSummaryEnabled,
+                    onToggle = vm::setNotificationsEnabled,
+                    onOngoingToggle = vm::setOngoingSummaryEnabled
                 )
                 OnboardingStep.HEALTH_CONNECT -> HealthConnectStep(
                     container = container,

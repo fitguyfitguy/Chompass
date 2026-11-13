@@ -2522,7 +2522,6 @@ für dich ein</string>
     <string name="notif_ongoing_remaining">Noch %1$s %2$s</string>
     <string name="notif_ongoing_over">%1$s %2$s drüber</string>
     <string name="notif_ongoing_goal_reached">Tagesziel erreicht</string>
-    <string name="notif_ongoing_macros">P %1$s/%2$d · C %3$s/%4$d · F %5$s/%6$d g</string>
 
     <string name="notif_channel_weight_goal">Gewichtsziel</string>
 

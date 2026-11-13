@@ -1821,6 +1821,10 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 }
 
                 if (container.prefs.ongoingSummaryEnabled.first()) {
+                    val cached = container.prefs.widgetSnapshot.first()
+                    if (cached == null || cached.isStale) {
+                        container.widgetSnapshotWriter.refresh()
+                    }
                     val snapshot = container.prefs.widgetSnapshot.first()
                     if (snapshot != null) {
                         container.notifications.showOngoingSummary(snapshot)
