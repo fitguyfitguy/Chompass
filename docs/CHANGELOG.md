@@ -6,38 +6,14 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## [Unreleased]
 
-### Added
-
-- **More scales sync straight into Chompass** (Android): Bluetooth scale sync now also understands generic SIG-standard scales (A&D UC-352BLE, Samsung GP-BELAD001BP0 and other PlainSIG models), Xiaomi Mi Scale v1/v2, and Renpho scales, alongside the Beurer/Sanitas/Medisana families. These three are verified against the upstream driver test suite, not on physical hardware — tell the tracker how yours behaves.
-- **A running scale sync survives the screen turning off** (Android): the sync runs as a foreground service with a progress notification while it talks to the scale, so a weigh-in keeps going with the screen off, and a brief connection drop now gets one automatic retry instead of ending the run.
-- **Goal phases arrive in the web app** (web app): Settings → Goals gains Goal phases, matching the Android app — plan a cut, maintain or bulk window with its own calorie and macro targets over an inclusive date range. Day goals and the goal journal follow the window as it rolls, Progress shows how each phase went (average change per day, net, days logged), and removing a phase leaves manual day switches alone. It rides the profile, so backups and sync carry it with no format change.
-
-### Changed
-
-- **The scale sync sheet explains what the scale wants** (Android): when the scale has no saved profiles, the sheet says to create one on the scale itself (SET button, pick a slot) or register a new profile from the phone; a refused 4-digit code explains the mismatch and offers registering a new profile instead; and a scale that keeps failing to connect because of a stale pairing gets an unpair instruction with a button that opens Android's Bluetooth settings.
-- **Scale discovery scans smarter** (Android): the sync first scans for the Bluetooth services the supported families advertise, then falls back to a full scan — supported scales are found sooner, and scales that stay quiet are still found.
-- **The photo note check asks once** (Android): when you analyze a photo without a note, the "Analyze now?" confirmation now appears only the first time. After you confirm once, later noteless single-photo logs run straight through; photos with a note and multi-photo logs still get their checks. Turning "Ask for a photo note" off and back on in Settings → Food & Entry brings the check back.
-- **Dates can be typed** (Android): date wheels gain the time picker's tap-to-type — tap the wheel to type the digits in your region's order (month/day/year or day/month/year), so jumping back a few weeks no longer means flicking through every month.
-- **Saved meals log on tap** (Android): tapping a saved meal or recipe in the list logs it right away; a long-press still opens the full review sheet.
-- **The calorie ring opens on the day type** (Android): with Health Connect, a training morning shows that day type's usual burn from the start. The number stays there unless you switch. If this hour looks much more like another day type, Home asks. A day with no type still starts at your usual burn and moves toward a lighter or harder day only when the same hour of past days supports it.
-
-### Fixed
-
-- **Unit switches keep the true amount** (Android): converting an entry to another unit (cups, oz, pieces) could silently round the stored amount — a 200 g ingredient shown as 7.14 oz came back as 7.1 oz with recalculated macros after saving. The stored amount now matches the value the picker shows, and the macros follow that same value.
-
-- **No more duplicate launcher icon** (Android): if the launcher icon was mid-switch when the app got interrupted (for example stopped by Android right after being backgrounded), two Chompass entries could remain in the app drawer; the next start now removes the leftover one. Closes Codeberg [#173](https://codeberg.org/fitguy/Chompass/issues/173)
-
-- **The paste sheet starts on today** (Android): copying diary rows while viewing another day no longer targets that day — the sheet opens on today, and the week strip still switches the target. Closes Codeberg [#171](https://codeberg.org/fitguy/Chompass/issues/171)
-
-- **Barcode items open with the package weight** (Android, web app): when a barcode product has no labeled serving size, the review sheet showed "1 package" with the fallback 100 g totals, and only changing the quantity or saving set the real weight. The package size is now the portion basis, so a 250 ml drink opens as 1 package = 250 g with the macros to match. Closes Codeberg [#168](https://codeberg.org/fitguy/Chompass/issues/168)
-- **Home display toggles stay put** (Android): on Settings → Home display, a toggle like "Full nutrient names" could flip back on its own while the screen was still loading in the background. The setting you pick now stays picked.
-- **The store description names the GPL** (F-Droid): the listing text no longer says the app is MIT licensed. It is GPL-3.0-or-later, the same license as the app.
-
 ## [6.3.0] - 2026-11-06
 
 ### Added
 
 - **Choose where copied entries go** (Android): copying diary rows now opens a paste sheet instead of a floating paste chip. Pick the day on the week strip, then paste at the rows' original times or at the current time. Scrolling the strip names the month of the week in view. Pasting onto another day switches the diary to it, and an undo snackbar removes the pasted rows. Design and translations by Philip Whiteside. Closes Codeberg [#140](https://codeberg.org/fitguy/Chompass/pulls/140)
+- **More scales sync straight into Chompass** (Android): Bluetooth scale sync now also understands generic SIG-standard scales (A&D UC-352BLE, Samsung GP-BELAD001BP0 and other PlainSIG models), Xiaomi Mi Scale v1/v2, and Renpho scales, alongside the Beurer/Sanitas/Medisana families. These three are verified against the upstream driver test suite, not on physical hardware — tell the tracker how yours behaves.
+- **A running scale sync survives the screen turning off** (Android): the sync runs as a foreground service with a progress notification while it talks to the scale, so a weigh-in keeps going with the screen off, and a brief connection drop now gets one automatic retry instead of ending the run.
+- **Goal phases arrive in the web app** (web app): Settings → Goals gains Goal phases, matching the Android app — plan a cut, maintain or bulk window with its own calorie and macro targets over an inclusive date range. Day goals and the goal journal follow the window as it rolls, Progress shows how each phase went (average change per day, net, days logged), and removing a phase leaves manual day switches alone. It rides the profile, so backups and sync carry it with no format change.
 
 ### Changed
 
@@ -53,6 +29,12 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 - **An empty food log offers Add food** (Android): a day with nothing logged or planned shows an Add food button right on the empty card, instead of text only.
 - **Every calorie layout glides** (Android): switching days, logging food, and a change in workout burn now spring the ring or the bar, including the planned stretch and the burn shades, and the calorie figures slide instead of snapping.
 - **Ingredient rows take less room** (Android): each ingredient in the meal editor now shows its name on one line, without a tall outlined field, so three ingredients fit in the list where two used to.
+- **The scale sync sheet explains what the scale wants** (Android): when the scale has no saved profiles, the sheet says to create one on the scale itself (SET button, pick a slot) or register a new profile from the phone; a refused 4-digit code explains the mismatch and offers registering a new profile instead; and a scale that keeps failing to connect because of a stale pairing gets an unpair instruction with a button that opens Android's Bluetooth settings.
+- **Scale discovery scans smarter** (Android): the sync first scans for the Bluetooth services the supported families advertise, then falls back to a full scan — supported scales are found sooner, and scales that stay quiet are still found.
+- **The photo note check asks once** (Android): when you analyze a photo without a note, the "Analyze now?" confirmation now appears only the first time. After you confirm once, later noteless single-photo logs run straight through; photos with a note and multi-photo logs still get their checks. Turning "Ask for a photo note" off and back on in Settings → Food & Entry brings the check back.
+- **Dates can be typed** (Android): date wheels gain the time picker's tap-to-type — tap the wheel to type the digits in your region's order (month/day/year or day/month/year), so jumping back a few weeks no longer means flicking through every month.
+- **Saved meals log on tap** (Android): tapping a saved meal or recipe in the list logs it right away; a long-press still opens the full review sheet.
+- **The calorie ring opens on the day type** (Android): with Health Connect, a training morning shows that day type's usual burn from the start. The number stays there unless you switch. If this hour looks much more like another day type, Home asks. A day with no type still starts at your usual burn and moves toward a lighter or harder day only when the same hour of past days supports it.
 
 ### Fixed
 
@@ -66,6 +48,12 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 - **Delete-undo no longer fights the Add button** (Android): the "Food removed" snackbar now appears above the floating Add button instead of underneath it, so tapping Undo always undoes instead of opening Add Food, and the undo window stays open for 10 seconds instead of 4.
 - **The camera shutter reads to TalkBack** (Android): the in-app camera's round shutter button now announces "Take photo" to screen readers and automation instead of being an unlabeled circle.
 - **The ambient background stands still when your phone does** (Android): with animations removed in developer options or battery saver on, the wax field's tilt parallax now stops together with the wax drift, instead of redrawing the screen forever while the app sits idle.
+- **Unit switches keep the true amount** (Android): converting an entry to another unit (cups, oz, pieces) could silently round the stored amount — a 200 g ingredient shown as 7.14 oz came back as 7.1 oz with recalculated macros after saving. The stored amount now matches the value the picker shows, and the macros follow that same value.
+- **No more duplicate launcher icon** (Android): if the launcher icon was mid-switch when the app got interrupted (for example stopped by Android right after being backgrounded), two Chompass entries could remain in the app drawer; the next start now removes the leftover one. Closes Codeberg [#173](https://codeberg.org/fitguy/Chompass/issues/173)
+- **The paste sheet starts on today** (Android): copying diary rows while viewing another day no longer targets that day — the sheet opens on today, and the week strip still switches the target. Closes Codeberg [#171](https://codeberg.org/fitguy/Chompass/issues/171)
+- **Barcode items open with the package weight** (Android, web app): when a barcode product has no labeled serving size, the review sheet showed "1 package" with the fallback 100 g totals, and only changing the quantity or saving set the real weight. The package size is now the portion basis, so a 250 ml drink opens as 1 package = 250 g with the macros to match. Closes Codeberg [#168](https://codeberg.org/fitguy/Chompass/issues/168)
+- **Home display toggles stay put** (Android): on Settings → Home display, a toggle like "Full nutrient names" could flip back on its own while the screen was still loading in the background. The setting you pick now stays picked.
+- **The store description names the GPL** (F-Droid): the listing text no longer says the app is MIT licensed. It is GPL-3.0-or-later, the same license as the app.
 
 ## [6.2.0] - 2026-11-04
 
