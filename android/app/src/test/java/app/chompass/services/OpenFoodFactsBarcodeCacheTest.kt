@@ -2,14 +2,11 @@ package app.chompass.services
 
 import androidx.datastore.preferences.core.edit
 import app.chompass.data.BARCODE_CACHE_SCHEMA
-import app.chompass.data.CachedBarcodeProduct
 import app.chompass.data.Keys
 import app.chompass.data.PreferencesStore
 import app.chompass.data.setBarcodeCacheImpl
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.builtins.MapSerializer
-import kotlinx.serialization.builtins.serializer
 import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer

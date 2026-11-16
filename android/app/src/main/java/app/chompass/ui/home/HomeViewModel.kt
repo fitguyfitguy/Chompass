@@ -2108,7 +2108,6 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         _ui.update { it.copy(dayTypePromptDismissedDay = LocalDate.now().toString()) }
     }
 
-
     /**
      * Same-hour history for the ring. The first successful refresh of a day
      * backfills past days; later refreshes only rewrite today, so a snapshot
