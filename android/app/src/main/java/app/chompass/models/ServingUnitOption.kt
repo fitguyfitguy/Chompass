@@ -3,6 +3,7 @@ package app.chompass.models
 import kotlinx.serialization.Serializable
 import java.text.DecimalFormatSymbols
 import java.util.Locale
+import kotlin.math.roundToInt
 
 /**
  * Result of a per-entry serving edit (the serving-card pencil): the renamed /
@@ -197,6 +198,21 @@ data class ServingUnitOption(
          * option would corrupt the grams unit. Returns null when [grams] is not
          * positive or the edit would be a gram-named gram-unit no-op.
          */
+        /**
+         * Quantity shown for [totalGrams] under [option], rounded to the tenth
+         * grid the quantity wheels display (same round-to-nearest as
+         * splitDecimalParts, Codeberg #63). Unit switches and serving edits
+         * must write this quantized value so the stored amount, the summary
+         * text, and the wheel rows agree — an unquantized conversion (7.1428
+         * oz) is re-emitted by the wheels as their grid value (7.1) on the
+         * next interaction, silently drifting stored grams (device pass
+         * 2026-11-16: a 200 g row became 198.8 g). Gram units stay exact.
+         */
+        fun quantityForGrams(totalGrams: Double, option: ServingUnitOption): Double {
+            if (option.isGramUnit || option.gramsPerUnit <= 0) return totalGrams
+            return (totalGrams / option.gramsPerUnit * 10.0).roundToInt() / 10.0
+        }
+
         fun servingEdit(
             selectedUnitId: String,
             selectedOption: ServingUnitOption,

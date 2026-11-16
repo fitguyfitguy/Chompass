@@ -23,6 +23,8 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ### Fixed
 
+- **Unit switches keep the true amount** (Android): converting an entry to another unit (cups, oz, pieces) could silently round the stored amount — a 200 g ingredient shown as 7.14 oz came back as 7.1 oz with recalculated macros after saving. The stored amount now matches the value the picker shows, and the macros follow that same value.
+
 - **No more duplicate launcher icon** (Android): if the launcher icon was mid-switch when the app got interrupted (for example stopped by Android right after being backgrounded), two Chompass entries could remain in the app drawer; the next start now removes the leftover one. Closes Codeberg [#173](https://codeberg.org/fitguy/Chompass/issues/173)
 
 - **The paste sheet starts on today** (Android): copying diary rows while viewing another day no longer targets that day — the sheet opens on today, and the week strip still switches the target. Closes Codeberg [#171](https://codeberg.org/fitguy/Chompass/issues/171)
