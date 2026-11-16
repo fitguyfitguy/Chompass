@@ -1,25 +1,33 @@
 {
   "synthetic": true,
-  "note": "Hand-built Beurer BF700/800 handshake frames derived from BeurerSanitasHandler's documented protocol (third_party/openscale/SNAPSHOT.md). Replace with real logcat captures after the first live weigh-in (Step 5 device pass).",
-  "deviceName": "BEURER BF700",
-  "characteristic": "0000ffe1-0000-1000-8000-00805f9b34fb",
+  "note": "Beurer BF105 replay through StandardBeurerSanitasHandler (standard 0xFFFF profile + UDS/Weight/BodyComposition services). The three measurement frames are real bytes captured from the maintainer's live BF105 session (same session as StandardWeightProfileHoldTest); the handshake scaffolding frames (user list, UCP responses) are hand-built pending a full `adb logcat -s ChompassScaleSync` capture — see docs/local/SCALE_SURVEY.md hardware-session runbook. Flip synthetic to false only when every frame comes from that capture.",
+  "provenance": {
+    "scaleModel": "Beurer BF105",
+    "appVersion": "debug build post-9cb367e2 (vendored openScale pin 35a67c7)",
+    "captureDate": "2026-11-04",
+    "measurementFramesSource": "live BF105 weigh-in, bytes preserved in StandardWeightProfileHoldTest",
+    "handshakeFramesSource": "hand-built from StandardWeightProfileHandler/StandardBeurerSanitasHandler protocol outline"
+  },
+  "deviceName": "BEURER BF105",
+  "characteristics": {
+    "chrUserList": "00000001-0000-1000-8000-00805f9b34fb",
+    "userControlPoint": "00002a9f-0000-1000-8000-00805f9b34fb",
+    "weightMeasurement": "00002a9d-0000-1000-8000-00805f9b34fb",
+    "bodyCompositionMeasurement": "00002a9c-0000-1000-8000-00805f9b34fb"
+  },
   "expected": {
-    "weightKg": 78.5,
-    "bodyFatPercent": 24.0,
-    "waterPercent": 55.0,
-    "musclePercent": 42.0,
-    "boneKg": 3.2,
-    "impedanceOhm": 500,
-    "dateTimeEpochMs": 1800000000000
+    "weightKg": 89.03,
+    "bodyFatPercent": 27.5,
+    "waterPercent": 46.9,
+    "musclePercent": 35.7,
+    "boneKg": 3.42
   },
   "frames": [
-    { "role": "init-ack (alt start byte, nibble 6)", "hex": "F6" },
-    { "role": "scale-ack: CMD_SCALE_STATUS, unit=KG, battery=80", "hex": "F7F04F005001010100000005" },
-    { "role": "scale-ack: CMD_USER_LIST, 1 user of max 8", "hex": "F7F0330108" },
-    { "role": "CMD_USER_INFO: uid=100, name ALE, born 1990", "hex": "F73401010000000000000064414C455A" },
-    { "role": "scale-ack: CMD_GET_SAVED_MEASUREMENTS, 0 saved", "hex": "F7F04100" },
-    { "role": "CMD_MEASUREMENT part 1/3: uid=100 (decodeUserId reads offsets 5..12)", "hex": "F7590301000000000000000064" },
-    { "role": "CMD_MEASUREMENT part 2/3: ts=1800000000, weight 78.5kg (0x0622 x 50g), impedance 500", "hex": "F75903026B49D200062201F4" },
-    { "role": "CMD_MEASUREMENT part 3/3: fat 24.0, water 55.0, muscle 42.0, bone 3.2kg", "hex": "F759030300F0022601A40040" }
+    { "role": "chrUserList status=2: no stored profiles on the scale (creates the empty-list CHOOSE_USER prompt)", "chr": "chrUserList", "hex": "02", "source": "synthetic" },
+    { "role": "UCP response: REGISTER_NEW_USER success, slot 3 (app registered a new user; generated consent persisted)", "chr": "userControlPoint", "hex": "200101 03", "source": "synthetic" },
+    { "role": "UCP response: CONSENT success (scale accepts the registered slot)", "chr": "userControlPoint", "hex": "200201", "source": "synthetic" },
+    { "role": "Weight Scale 2A9D indication: 89.03 kg, ts 2026-11-09 23:17:38, slot 4", "chr": "weightMeasurement", "hex": "0E8E45EA070B091711260418 01F406", "source": "captured" },
+    { "role": "Weight repeat indication (BF105 repeats the weight before composition; must stay held)", "chr": "weightMeasurement", "hex": "0E8E45EA070B091711260418 01F406", "source": "captured" },
+    { "role": "Body Composition 2A9C indication: fat 27.5%, muscle 35.7%, water 46.9% (completes the held measurement)", "chr": "bodyCompositionMeasurement", "hex": "98031301C81E6501C22F9E20C616", "source": "captured" }
   ]
 }

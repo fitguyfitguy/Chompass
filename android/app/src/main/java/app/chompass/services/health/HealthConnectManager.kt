@@ -340,6 +340,13 @@ class HealthConnectManager(private val context: Context) {
     suspend fun readRecentEnergySummary(days: Int = 14): HealthEnergySummary? =
         reader.readRecentEnergySummary(days)
 
+    suspend fun readHourlyActive(date: LocalDate): List<Int>? = reader.readHourlyActive(date)
+
+    suspend fun readHourlyActiveBackfill(
+        existing: Map<String, List<Int>>,
+        days: Int = 28,
+    ): Map<String, List<Int>> = reader.readHourlyActiveBackfill(existing, days)
+
     suspend fun readDailyActivity(days: Int = 7): List<DailyActivity> = reader.readDailyActivity(days)
 
     suspend fun readDailyWellness(days: Int = 7): List<DailyWellness> = reader.readDailyWellness(days)

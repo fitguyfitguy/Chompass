@@ -4,6 +4,8 @@
 
 Opening this pull request licenses your contribution under the project's [GPL-3.0-or-later license](LICENSE).
 
+If forking this repo would exceed your account's storage quota, you can use the [AGit workflow](https://forgejo.org/docs/latest/user/git-cli/agit-support/) instead: `git push origin HEAD:refs/for/main` opens the PR here without a fork.
+
 ## Checklist
 
 - [ ] `cd android && ./gradlew test` passes

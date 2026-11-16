@@ -47,6 +47,10 @@ class AdaptiveGoalsService(
         // into a sedentary base (goal − measured active) instead of a PAL estimate.
         prefs.setHealthEnergyMeasuredActive(summary.activeAverageCalories)
         persistDailyActiveHistory(summary.dailyActiveKcal)
+        runCatching {
+            val hourly = health.readHourlyActiveBackfill(prefs.healthEnergyActiveByHour.first())
+            prefs.setHealthEnergyActiveByHour(hourly)
+        }
         return summary.totalAverageCalories ?: (profile.bmr.roundToInt() + summary.activeAverageCalories)
     }
 

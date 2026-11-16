@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.minimumInteractiveComponentSize
@@ -70,6 +71,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
 import app.chompass.models.ActiveBurnShade
+import app.chompass.models.ActiveDayClassifier
+import app.chompass.models.BudgetClassCopy
 import app.chompass.models.ActiveCalorieSource
 import app.chompass.models.EnergyFormat
 import app.chompass.models.GoalDerivation
@@ -111,6 +114,8 @@ private data class CalorieHeroInput(
     val showActiveCalories: Boolean,
     val liveActiveBurn: Int,
     val burnShade: ActiveBurnShade?,
+    val displayTarget: Int,
+    val budgetClass: ActiveDayClassifier.ActiveDayClassification? = null,
     val restingBurn: Int?,
     val freezeProgress: Boolean,
     val dayTypeLabel: String?,
@@ -161,6 +166,8 @@ internal fun CalorieHero(
     onShowRecalcDetails: (() -> Unit)? = null,
     /** Standing goal derivation for the ⓘ dialog's formula-baseline block. */
     goalDerivation: GoalDerivation? = null,
+    displayTarget: Int,
+    budgetClass: ActiveDayClassifier.ActiveDayClassification? = null,
     layout: HomeCalorieHeroLayout? = null,
     /** Sample render inside pickers/previews: frozen progress, no budget sheet. */
     preview: Boolean = false,
@@ -186,6 +193,8 @@ internal fun CalorieHero(
         recalcDetailsAvailable = recalcDetailsAvailable,
         onShowRecalcDetails = onShowRecalcDetails,
         goalDerivation = goalDerivation,
+        displayTarget = displayTarget,
+        budgetClass = budgetClass,
         preview = preview,
     )
     when (layout) {
@@ -213,34 +222,20 @@ private data class CalorieHeroDerived(
 private fun calorieHeroDerived(input: CalorieHeroInput): CalorieHeroDerived = with(input) {
     val effectiveGoal = HomeCalorieDisplay.effectiveGoal(displayMode, baseGoal, activeCalories)
     val shade = burnShade
-    val shadesActive = shade != null && shade.typical > 0 &&
+    val shadesActive = shade != null && shade.projectedActive > 0 &&
         displayMode == HomeCalorieDisplayMode.ADD_ACTIVE
-    // Expected-day target (display-only): sedentary base + the larger of the
-    // active norm and live burn. The arc end, goal line, and remaining read
-    // against it; the budget (base + live) is unchanged.
-    val target = if (shadesActive) {
-        HomeCalorieDisplay.expectedTarget(baseGoal, shade!!.typical, shade.live)
+    // The budget already decided the arc end. Do not recompute it from the
+    // full-day typical.
+    val target = displayTarget.coerceAtLeast(0)
+    val fillRatio = if (target > 0) {
+        (current.coerceAtLeast(0).toFloat() / target).coerceIn(0f, 1f)
     } else {
-        effectiveGoal
-    }
-    // On the shade arc the eaten fill shares the burn scale (arc end = target),
-    // so eaten and burn read against the same denominator.
-    val fillRatio = if (shadesActive) {
-        HomeCalorieDisplay.burnShadeEatenFraction(current, baseGoal, shade!!.typical, shade.live)
-    } else {
-        HomeCalorieDisplay.progressRatio(displayMode, current, baseGoal, activeCalories)
-    }
-    val plannedFillRatio = if (planned <= 0) {
         0f
-    } else if (shadesActive) {
-        HomeCalorieDisplay.burnShadeEatenFraction(
-            current + planned,
-            baseGoal,
-            shade!!.typical,
-            shade.live,
-        )
+    }
+    val plannedFillRatio = if (planned <= 0 || target <= 0) {
+        0f
     } else {
-        HomeCalorieDisplay.progressRatio(displayMode, current + planned, baseGoal, activeCalories)
+        ((current + planned).coerceAtLeast(0).toFloat() / target).coerceIn(0f, 1f)
     }.coerceAtLeast(fillRatio)
     CalorieHeroDerived(
         effectiveGoal = effectiveGoal,
@@ -297,20 +292,22 @@ private fun heroBandTargets(
     target: Int,
     displayMode: HomeCalorieDisplayMode,
 ): HeroBandTargets {
+    val end = target
     val base = when {
-        shadesActive && shade != null ->
-            HomeCalorieDisplay.burnShadeBaseFraction(baseGoal, shade.typical, shade.live)
-        displayMode == HomeCalorieDisplayMode.ADD_ACTIVE && target > baseGoal ->
+        shadesActive && shade != null && end > 0 ->
+            (baseGoal.toFloat() / end).coerceIn(0f, 1f)
+        displayMode == HomeCalorieDisplayMode.ADD_ACTIVE && target > baseGoal && target > 0 ->
             (baseGoal.toFloat() / target).coerceIn(0f, 1f)
         else -> 0f
     }
-    val typical = if (shadesActive && shade != null) {
-        HomeCalorieDisplay.burnShadeTypicalFraction(baseGoal, shade.typical, shade.live)
+    // Dim band is the classified projection, not the full-day typical.
+    val typical = if (shadesActive && shade != null && end > 0) {
+        (shade.projectedActive.coerceAtLeast(0).toFloat() / end).coerceIn(0f, 1f)
     } else {
         0f
     }
-    val live = if (shadesActive && shade != null) {
-        HomeCalorieDisplay.burnShadeLiveFraction(baseGoal, shade.live, shade.typical)
+    val live = if (shadesActive && shade != null && end > 0) {
+        (shade.live.coerceAtLeast(0).toFloat() / end).coerceIn(0f, 1f)
     } else {
         0f
     }
@@ -665,6 +662,7 @@ private fun BudgetGoalLine(
     modifier: Modifier = Modifier,
     maxTextWidth: Dp = Dp.Unspecified,
     animateNumbers: Boolean = false,
+    classLabel: String? = null,
 ) {
     val onClickLabel = stringResource(R.string.home_calorie_budget_info)
     val src = remember { MutableInteractionSource() }
@@ -678,9 +676,8 @@ private fun BudgetGoalLine(
         maxFontSize = 12.sp,
         stepSize = 0.5.sp,
     )
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(3.dp),
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
             .pressScale(src)
             .clickable(
@@ -692,47 +689,73 @@ private fun BudgetGoalLine(
             )
             .semantics(mergeDescendants = true) { description?.let { contentDescription = it } },
     ) {
-        if (animateNumbers) {
-            HeroFigureText(
-                text = goalText,
-                animate = true,
-                modifier = textModifier,
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Medium,
-                color = color,
-                maxLines = 1,
-                autoSize = goalAutoSize,
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(3.dp),
+        ) {
+            if (animateNumbers) {
+                HeroFigureText(
+                    text = goalText,
+                    animate = true,
+                    modifier = textModifier,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = color,
+                    maxLines = 1,
+                    autoSize = goalAutoSize,
+                )
+            } else {
+                Text(
+                    goalText,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = color,
+                    maxLines = 1,
+                    autoSize = goalAutoSize,
+                    modifier = textModifier,
+                )
+            }
+            Icon(
+                Icons.Filled.Info,
+                contentDescription = null,
+                tint = tint,
+                modifier = Modifier.size(16.dp),
             )
-        } else {
+        }
+        if (!classLabel.isNullOrBlank()) {
             Text(
-                goalText,
-                fontSize = 12.sp,
+                classLabel,
+                fontSize = 11.sp,
                 fontWeight = FontWeight.Medium,
                 color = color,
                 maxLines = 1,
-                autoSize = goalAutoSize,
+                overflow = TextOverflow.Ellipsis,
                 modifier = textModifier,
             )
         }
-        Icon(
-            Icons.Filled.Info,
-            contentDescription = null,
-            tint = tint,
-            modifier = Modifier.size(16.dp),
-        )
     }
 }
 
-/** The budget-a11y truth for the goal line, exactly as the tall arc stated it. */
+/** Spoken goal line. Speaks the number on screen when the arc is not sedentary + live. */
 @Composable
 private fun calorieBudgetDescription(input: CalorieHeroInput): String? = with(input) {
     if (displayMode != HomeCalorieDisplayMode.ADD_ACTIVE) return@with null
     val unit = LocalEnergyUnit.current
-    val effectiveGoal = HomeCalorieDisplay.effectiveGoal(displayMode, baseGoal, activeCalories)
+    val label = budgetClassLabel(budgetClass)
+    val decomposed = HomeCalorieDisplay.effectiveGoal(displayMode, baseGoal, activeCalories)
+    val shownTarget = displayTarget.coerceAtLeast(0)
+    if (budgetClass != null || shownTarget != decomposed) {
+        val shown = stringResource(
+            R.string.home_calorie_of_goal,
+            LocaleFormat.integer(EnergyFormat.quantity(shownTarget, unit)),
+            energyUnitLabel(),
+        )
+        return if (label != null) "$shown. $label" else shown
+    }
     val integratesBurn = activeCalories > 0 && displayMode != HomeCalorieDisplayMode.STATIC
     val base = stringResource(
         R.string.home_calorie_budget_a11y,
-        EnergyFormat.quantity(effectiveGoal, unit),
+        EnergyFormat.quantity(decomposed, unit),
         EnergyFormat.quantity(baseGoal, unit),
         EnergyFormat.quantity(activeCalories, unit),
         energyUnitLabel(),
@@ -742,6 +765,14 @@ private fun calorieBudgetDescription(input: CalorieHeroInput): String? = with(in
     } else {
         base
     }
+}
+
+@Composable
+private fun budgetClassLabel(cue: ActiveDayClassifier.ActiveDayClassification?): String? {
+    if (cue == null) return null
+    val res = BudgetClassCopy.labelRes(cue.step, cue.kind)
+    val arg = BudgetClassCopy.labelArg(cue.step, cue.kind, cue.dayTypeName)
+    return if (arg != null) stringResource(res, arg) else stringResource(res)
 }
 
 /** "+X planned" using the same formatted quantity as the eaten number. */
@@ -794,6 +825,22 @@ private fun PlannedCaptionText(
     }
 }
 
+/**
+ * Caption and ring speech compare live burn to the projection the arc draws,
+ * not to a day-type full-day typical the ring has not stepped toward.
+ */
+private fun shadeSpokenAsProjection(
+    burn: ActiveBurnShade,
+    cue: ActiveDayClassifier.ActiveDayClassification?,
+): ActiveBurnShade {
+    if (cue == null || burn.projectedActive <= 0) return burn
+    return burn.copy(
+        typical = burn.projectedActive,
+        typicalIsDayType = false,
+        typicalDayTypeName = null,
+    )
+}
+
 @Composable
 private fun burnShadeA11y(burn: ActiveBurnShade): String {
     val unit = LocalEnergyUnit.current
@@ -817,12 +864,14 @@ private fun calorieArcContextDescription(input: CalorieHeroInput, d: CalorieHero
     val parts = ArrayList<String>(2)
     plannedCaptionText(d.planned)?.let { parts += it }
     if (d.shadesActive) {
-        input.burnShade?.let { parts += burnShadeA11y(it) }
+        input.burnShade?.let {
+            parts += burnShadeA11y(shadeSpokenAsProjection(it, input.budgetClass))
+        }
     }
     return parts.joinToString(". ").ifEmpty { null }
 }
 
-/** Burn caption line: shades when active, else the live burn the user asked to see. */
+/** Burn caption: live against the projection when classifying, else the shade or the bare count. */
 @Composable
 private fun CalorieBurnCaption(
     input: CalorieHeroInput,
@@ -833,9 +882,18 @@ private fun CalorieBurnCaption(
 ) {
     val capped = if (maxWidth == Dp.Unspecified) modifier else modifier.widthIn(max = maxWidth)
     with(input) {
-        if (shadesActive) {
+        val shade = burnShade
+        val cue = budgetClass
+        if (shade != null && cue != null && shade.projectedActive > 0) {
             BurnShadeCaption(
-                burn = burnShade!!,
+                burn = shadeSpokenAsProjection(shade, cue),
+                modifier = capped,
+                center = maxWidth != Dp.Unspecified,
+                animateNumbers = animateNumbers,
+            )
+        } else if (shadesActive && shade != null) {
+            BurnShadeCaption(
+                burn = shade,
                 modifier = capped,
                 center = maxWidth != Dp.Unspecified,
                 animateNumbers = animateNumbers,
@@ -989,7 +1047,7 @@ private fun DefaultCalorieHero(input: CalorieHeroInput, modifier: Modifier = Mod
                 // Goal caption directly under the eaten number; the burn caption
                 // follows it (see CalorieBurnCaption below).
                 Box(
-                    modifier = Modifier.height(24.dp),
+                    modifier = Modifier.heightIn(min = 24.dp),
                     contentAlignment = Alignment.Center,
                 ) {
                     if (budgetDescription != null) {
@@ -1005,6 +1063,7 @@ private fun DefaultCalorieHero(input: CalorieHeroInput, modifier: Modifier = Mod
                             description = budgetDescription,
                             maxTextWidth = 180.dp,
                             animateNumbers = !freezeProgress,
+                            classLabel = budgetClassLabel(budgetClass),
                         )
                     } else {
                         HeroFigureText(
@@ -1088,6 +1147,7 @@ private fun DefaultCalorieHero(input: CalorieHeroInput, modifier: Modifier = Mod
                 recalcDetailsAvailable = recalcDetailsAvailable && onShowRecalcDetails != null,
                 onShowRecalcDetails = onShowRecalcDetails,
                 goalDerivation = goalDerivation,
+                budgetClass = budgetClass,
                 planned = planned,
             )
         }
@@ -1181,6 +1241,7 @@ private fun SideGaugeCalorieHero(input: CalorieHeroInput, modifier: Modifier = M
                         description = budgetDescription,
                         maxTextWidth = 180.dp,
                         animateNumbers = !freezeProgress,
+                        classLabel = budgetClassLabel(budgetClass),
                     )
                 } else {
                     HeroFigureText(
@@ -1269,6 +1330,7 @@ private fun SideGaugeCalorieHero(input: CalorieHeroInput, modifier: Modifier = M
                 recalcDetailsAvailable = recalcDetailsAvailable && onShowRecalcDetails != null,
                 onShowRecalcDetails = onShowRecalcDetails,
                 goalDerivation = goalDerivation,
+                budgetClass = budgetClass,
                 planned = planned,
             )
         }
@@ -1387,7 +1449,7 @@ private fun CompactArcCalorieHero(input: CalorieHeroInput, modifier: Modifier = 
                     ),
                 )
                 Box(
-                    modifier = Modifier.height(24.dp),
+                    modifier = Modifier.heightIn(min = 24.dp),
                     contentAlignment = Alignment.Center,
                 ) {
                     if (budgetDescription != null) {
@@ -1403,6 +1465,7 @@ private fun CompactArcCalorieHero(input: CalorieHeroInput, modifier: Modifier = 
                             description = budgetDescription,
                             maxTextWidth = 130.dp,
                             animateNumbers = !freezeProgress,
+                            classLabel = budgetClassLabel(budgetClass),
                         )
                     } else {
                         HeroFigureText(
@@ -1496,6 +1559,7 @@ private fun CompactArcCalorieHero(input: CalorieHeroInput, modifier: Modifier = 
                 recalcDetailsAvailable = recalcDetailsAvailable && onShowRecalcDetails != null,
                 onShowRecalcDetails = onShowRecalcDetails,
                 goalDerivation = goalDerivation,
+                budgetClass = budgetClass,
                 planned = planned,
             )
         }
@@ -1783,6 +1847,7 @@ private fun CompactHorizontalCalorieHero(input: CalorieHeroInput, modifier: Modi
                         description = budgetDescription,
                         maxTextWidth = 140.dp,
                         animateNumbers = !freezeProgress,
+                        classLabel = budgetClassLabel(budgetClass),
                     )
                 } else {
                     HeroFigureText(
@@ -1872,6 +1937,7 @@ private fun CompactHorizontalCalorieHero(input: CalorieHeroInput, modifier: Modi
                 recalcDetailsAvailable = recalcDetailsAvailable && onShowRecalcDetails != null,
                 onShowRecalcDetails = onShowRecalcDetails,
                 goalDerivation = goalDerivation,
+                budgetClass = budgetClass,
                 planned = planned,
             )
         }
@@ -2151,6 +2217,7 @@ private fun BudgetExplanationDialog(
     onShowRecalcDetails: (() -> Unit)? = null,
     goalDerivation: GoalDerivation? = null,
     planned: Int = 0,
+    budgetClass: ActiveDayClassifier.ActiveDayClassification? = null,
 ) {
     val muted = MaterialTheme.colorScheme.onSurfaceVariant
     val unit = LocalEnergyUnit.current
@@ -2162,19 +2229,31 @@ private fun BudgetExplanationDialog(
             fontWeight = FontWeight.Bold,
         )
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            // Expected day: sedentary base + the usual active burn (typical). On
-            // estimate-only days typical is null and the row falls back to the
-            // effective budget, which equals the target there.
-            Text(
-                stringResource(
-                    R.string.home_calories_goal_plus_active,
-                    LocaleFormat.integer(EnergyFormat.quantity(goal, unit)),
-                    LocaleFormat.integer(EnergyFormat.quantity(typical ?: active, unit)),
-                ),
-                fontSize = 16.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.tertiary,
-            )
+            val classLabel = budgetClassLabel(budgetClass)
+            if (budgetClass != null && classLabel != null) {
+                Text(
+                    classLabel,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.tertiary,
+                )
+                Text(
+                    stringResource(BudgetClassCopy.sheetRes(budgetClass.step, budgetClass.hourlyReady)),
+                    fontSize = 13.sp,
+                    color = muted,
+                )
+            } else {
+                Text(
+                    stringResource(
+                        R.string.home_calories_goal_plus_active,
+                        LocaleFormat.integer(EnergyFormat.quantity(goal, unit)),
+                        LocaleFormat.integer(EnergyFormat.quantity(typical ?: active, unit)),
+                    ),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.tertiary,
+                )
+            }
             when (source) {
                 ActiveCalorieSource.MEASURED -> Text(
                     stringResource(R.string.home_calorie_budget_source_measured),

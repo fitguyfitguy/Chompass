@@ -1,7 +1,9 @@
 package app.chompass.services
 
 import app.chompass.BuildConfig
+import app.chompass.data.BARCODE_CACHE_SCHEMA
 import app.chompass.data.PreferencesStore
+import app.chompass.debug.DebugTrace
 import app.chompass.models.FoodGroundingProvenance
 import app.chompass.models.FoodProductMetadata
 import app.chompass.models.NutrientBasis
@@ -239,7 +241,14 @@ object OpenFoodFactsService {
         photoStore: BarcodePhotoStore? = null,
         packs: PackResolver? = null,
     ): FoodAnalysis = withContext(Dispatchers.IO) {
-        prefs.barcodeCache.first()[code]?.let { return@withContext it.analysis }
+        // Schema-gated fast path: entries below BARCODE_CACHE_SCHEMA carry
+        // portion bases an older mapping wrote (pre-#168: the 100 g guess).
+        val cached = prefs.barcodeCache.first()[code]
+        DebugTrace.event("op=barcode phase=cache code=$code schema=${cached?.schemaVersion ?: -1}")
+        if (cached != null && cached.schemaVersion >= BARCODE_CACHE_SCHEMA) {
+            DebugTrace.event("op=barcode phase=cache-hit code=$code")
+            return@withContext cached.analysis
+        }
 
         var result: FoodAnalysis? = null
         var failure: Exception? = null
@@ -251,11 +260,19 @@ object OpenFoodFactsService {
             failure = e
         }
         if (result != null) {
+            DebugTrace.event("op=barcode phase=network-ok code=$code")
             prefs.cacheBarcodeLookup(code, result)
             // Photo files never outlive their cache entries: LRU eviction (500)
             // drops keys, retain deletes the photos whose keys are gone.
             photoStore?.retain(prefs.barcodeCache.first().keys)
             return@withContext result
+        }
+        DebugTrace.event("op=barcode phase=network-fail code=$code err=${failure?.javaClass?.simpleName}")
+        // Offline with a stale entry: serve it rather than failing the scan;
+        // the next online scan of this code rewrites it at the current schema.
+        if (cached != null) {
+            DebugTrace.event("op=barcode phase=stale-serve code=$code schema=${cached.schemaVersion}")
+            return@withContext cached.analysis
         }
         // Pack fallback. OFF-NotFound implies the OFF-derived regional pack
         // misses too (same source), so the regional pack only answers the
@@ -754,7 +771,13 @@ object OpenFoodFactsService {
             ?: throw LookupException("This barcode was found, but nutrition data is incomplete. Scan the nutrition label instead.")
 
         val labeledGrams = labeledServingGrams(product)
-        val servingGrams = maxOf(labeledGrams ?: 100.0, 1.0)
+        val packageGramsValue = packageGrams(product)
+        // Portion basis: the labeled serving when OFF publishes one, else the
+        // whole package — the only portion a barcode proves. The old bare
+        // 100 g guess desynced the review sheet (Codeberg #168): the unit card
+        // opened "1 package ~100 g" while the package option carried the real
+        // weight, and only a quantity edit or save-reopen corrected it.
+        val servingGrams = maxOf(labeledGrams ?: packageGramsValue ?: 100.0, 1.0)
         val scale = servingGrams / 100.0
 
         fun servingValue(key: String): Double? {
@@ -775,10 +798,9 @@ object OpenFoodFactsService {
         val servingOption = labeledGrams?.let {
             ServingUnitOption(unit = "serving", gramsPerUnit = it, quantity = 1.0)
         }
-        val packageGramsValue = packageGrams(product)
         val servingOptions = buildList {
             if (servingOption != null) add(servingOption)
-            if (packageGramsValue != null && abs(packageGramsValue - servingGrams) > 0.01) {
+            if (packageGramsValue != null && (servingOption == null || abs(packageGramsValue - servingGrams) > 0.01)) {
                 add(ServingUnitOption(unit = "package", gramsPerUnit = packageGramsValue, quantity = 1.0))
             }
         }
@@ -962,10 +984,14 @@ object OpenFoodFactsService {
             if (grams != null) return grams
         }
         val display = product.string("quantity") ?: return null
-        if (!Regex("""^[0-9]+(?:[.,][0-9]+)?\s*(?:kg|mg|g|oz|ml|l)$""", RegexOption.IGNORE_CASE).matches(display)) {
+        // OFF display strings carry the estimated sign ("400 g e" / "400 g ℮")
+        // and occasional NBSPs; normalize before the strict full-string match
+        // (device pass 2026-11-12: Nutella "400 g e" fell back to 100 g).
+        val normalized = display.replace('\u00A0', ' ').replace('\u202F', ' ')
+        if (!Regex("""^[0-9]+(?:[.,][0-9]+)?\s*(?:kg|mg|g|oz|ml|l)\s*[e℮]?$""", RegexOption.IGNORE_CASE).matches(normalized)) {
             return null
         }
-        return gramsFrom(display)
+        return gramsFrom(normalized)
     }
 
     private fun JSONObject.string(key: String): String? =

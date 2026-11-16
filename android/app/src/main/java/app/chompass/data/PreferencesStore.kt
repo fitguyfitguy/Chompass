@@ -391,6 +391,8 @@ class PreferencesStore(private val appContext: Context) : NutritionSyncStore {
     suspend fun clearHealthEnergyMeasuredActive() = clearHealthEnergyMeasuredActiveImpl()
     val healthEnergyActiveByDay: Flow<Map<String, Int>> get() = healthEnergyActiveByDayImpl
     suspend fun setHealthEnergyActiveByDay(map: Map<String, Int>) = setHealthEnergyActiveByDayImpl(map)
+    val healthEnergyActiveByHour: Flow<Map<String, List<Int>>> get() = healthEnergyActiveByHourImpl
+    suspend fun setHealthEnergyActiveByHour(map: Map<String, List<Int>>) = setHealthEnergyActiveByHourImpl(map)
     val healthBackgroundSyncEnabled: Flow<Boolean> get() = healthBackgroundSyncEnabledImpl
     suspend fun setHealthBackgroundSyncEnabled(v: Boolean) = setHealthBackgroundSyncEnabledImpl(v)
     val healthEnergyGoalsLastAutoRefreshDay: Flow<String?> get() = healthEnergyGoalsLastAutoRefreshDayImpl
@@ -582,6 +584,8 @@ class PreferencesStore(private val appContext: Context) : NutritionSyncStore {
     suspend fun setSkipPhotoNotePrompt(v: Boolean) = setSkipPhotoNotePromptImpl(v)
     val photoNoteSkipCount: Flow<Int> get() = photoNoteSkipCountImpl
     suspend fun setPhotoNoteSkipCount(v: Int) = setPhotoNoteSkipCountImpl(v)
+    val photoAnalyzeConfirmAcknowledged: Flow<Boolean> get() = photoAnalyzeConfirmAcknowledgedImpl
+    suspend fun setPhotoAnalyzeConfirmAcknowledged(v: Boolean) = setPhotoAnalyzeConfirmAcknowledgedImpl(v)
     val photoAccuracyGuideCount: Flow<Int> get() = photoAccuracyGuideCountImpl
     suspend fun setPhotoAccuracyGuideCount(v: Int) = setPhotoAccuracyGuideCountImpl(v)
     val mealConstituentsEnabled: Flow<Boolean> get() = mealConstituentsEnabledImpl

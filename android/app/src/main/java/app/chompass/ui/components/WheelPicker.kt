@@ -295,7 +295,8 @@ internal fun dateWheelColumnOrderFromPattern(pattern: String): List<DateWheelCol
 /**
  * Three date wheels. Column order follows the locale's best date pattern
  * (en: month, day, year; de: day, month, year). Any wheel change updates
- * the caller. The selection band spans all three columns.
+ * the caller. The selection band spans all three columns. Center-tap flips
+ * to typed digit entry ([DateTypeField]), mirroring [ClockTimeWheelPicker].
  */
 @Composable
 fun DateWheelPicker(
@@ -303,7 +304,8 @@ fun DateWheelPicker(
     onSelect: (LocalDate) -> Unit,
     minYear: Int = 1920,
     maxYear: Int = LocalDate.now().year,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onTypedDraftChange: (digits: String?) -> Unit = {},
 ) {
     val locale = Locale.getDefault()
     val months = remember { (1..12).toList() }
@@ -319,55 +321,193 @@ fun DateWheelPicker(
         }
     }
     val columnOrder = remember(locale) { dateWheelColumnOrder(locale) }
-
-    Box(
-        modifier = modifier.fillMaxWidth().height(ROW_HEIGHT),
-        contentAlignment = Alignment.Center
-    ) {
-        WheelSelectionHighlight(Modifier.align(Alignment.Center))
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
+    val (typed, setTyped) = rememberMagnitudePickerMode()
+    val typeCd = stringResource(R.string.picker_type_value)
+    if (typed) {
+        DateTypeField(
+            date = selected,
+            order = columnOrder,
+            minYear = minYear,
+            maxYear = maxYear,
+            onChange = onSelect,
+            onFlipToWheel = {
+                onTypedDraftChange(null)
+                setTyped(false)
+            },
+            onTypedDraftChange = onTypedDraftChange,
+            contentDescription = typeCd,
+            modifier = modifier,
+        )
+        return
+    }
+    MagnitudeWheelChrome(showHint = false, onType = { setTyped(true) }, modifier = modifier) {
+        Box(
+            modifier = Modifier.fillMaxWidth().height(ROW_HEIGHT),
+            contentAlignment = Alignment.Center
         ) {
-            columnOrder.forEach { column ->
-                when (column) {
-                    DateWheelColumn.DAY -> WheelPicker(
-                        items = days,
-                        selected = selected.dayOfMonth.coerceAtMost(daysInMonth),
-                        onSelect = { d -> onSelect(LocalDate.of(selected.year, selected.monthValue, d)) },
-                        modifier = Modifier.weight(0.5f),
-                        showSelectionHighlight = false
-                    )
-                    DateWheelColumn.MONTH -> WheelPicker(
-                        items = months,
-                        selected = selected.monthValue,
-                        onSelect = { m ->
-                            val clampedDay = selected.dayOfMonth.coerceAtMost(
-                                YearMonth.of(selected.year, m).lengthOfMonth()
-                            )
-                            onSelect(LocalDate.of(selected.year, m, clampedDay))
-                        },
-                        label = { monthNames[it - 1] },
-                        modifier = Modifier.weight(1.2f),
-                        showSelectionHighlight = false
-                    )
-                    DateWheelColumn.YEAR -> WheelPicker(
-                        items = years,
-                        selected = selected.year,
-                        onSelect = { y ->
-                            val clampedDay = selected.dayOfMonth.coerceAtMost(
-                                YearMonth.of(y, selected.monthValue).lengthOfMonth()
-                            )
-                            onSelect(LocalDate.of(y, selected.monthValue, clampedDay))
-                        },
-                        modifier = Modifier.weight(0.7f),
-                        showSelectionHighlight = false
-                    )
+            WheelSelectionHighlight(Modifier.align(Alignment.Center))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                columnOrder.forEach { column ->
+                    when (column) {
+                        DateWheelColumn.DAY -> WheelPicker(
+                            items = days,
+                            selected = selected.dayOfMonth.coerceAtMost(daysInMonth),
+                            onSelect = { d -> onSelect(LocalDate.of(selected.year, selected.monthValue, d)) },
+                            modifier = Modifier.weight(0.5f),
+                            showSelectionHighlight = false,
+                            onCenterTap = { setTyped(true) },
+                        )
+                        DateWheelColumn.MONTH -> WheelPicker(
+                            items = months,
+                            selected = selected.monthValue,
+                            onSelect = { m ->
+                                val clampedDay = selected.dayOfMonth.coerceAtMost(
+                                    YearMonth.of(selected.year, m).lengthOfMonth()
+                                )
+                                onSelect(LocalDate.of(selected.year, m, clampedDay))
+                            },
+                            label = { monthNames[it - 1] },
+                            modifier = Modifier.weight(1.2f),
+                            showSelectionHighlight = false,
+                            onCenterTap = { setTyped(true) },
+                        )
+                        DateWheelColumn.YEAR -> WheelPicker(
+                            items = years,
+                            selected = selected.year,
+                            onSelect = { y ->
+                                val clampedDay = selected.dayOfMonth.coerceAtMost(
+                                    YearMonth.of(y, selected.monthValue).lengthOfMonth()
+                                )
+                                onSelect(LocalDate.of(y, selected.monthValue, clampedDay))
+                            },
+                            modifier = Modifier.weight(0.7f),
+                            showSelectionHighlight = false,
+                            onCenterTap = { setTyped(true) },
+                        )
+                    }
                 }
             }
         }
     }
 }
+
+/**
+ * Typed-mode date field: digits fill the locale's wheel column order
+ * (en: MM/DD/YYYY, de: DD.MM.YYYY order as DD/MM/YYYY, ja: YYYY/MM/DD) and
+ * the separators are drawn automatically, mirroring the clock field's
+ * positional HHMM entry. A complete, valid date commits live; Done commits
+ * whatever parses and keeps the previous value otherwise.
+ */
+@Composable
+private fun DateTypeField(
+    date: LocalDate,
+    order: List<DateWheelColumn>,
+    minYear: Int,
+    maxYear: Int,
+    onChange: (LocalDate) -> Unit,
+    onFlipToWheel: () -> Unit,
+    onTypedDraftChange: (digits: String?) -> Unit = {},
+    contentDescription: String,
+    modifier: Modifier = Modifier,
+) {
+    // Unkeyed: a live commit must NOT re-pad these digits (that froze re-entry
+    // on the clock field). Fresh instance per dialog open / wheel flip gives
+    // the correct initial value from [date].
+    val initial = formatDateDigits(date, order)
+    var draft by remember { mutableStateOf(TextFieldValue(initial, TextRange(initial.length))) }
+    val focus = remember { FocusRequester() }
+    val keyboard = LocalSoftwareKeyboardController.current
+    LaunchedEffect(Unit) {
+        onTypedDraftChange(initial.filter { it.isDigit() })
+        focus.requestFocus()
+        keyboard?.show()
+    }
+    Row(
+        modifier
+            .fillMaxWidth()
+            .height(ROW_HEIGHT),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
+            WheelSelectionHighlight(Modifier.align(Alignment.Center))
+            BasicTextField(
+                value = draft,
+                onValueChange = { value ->
+                    val digits = value.text.filter { it.isDigit() }.take(8)
+                    val shown = formatDateDigits(digits, order)
+                    draft = TextFieldValue(shown, TextRange(shown.length))
+                    onTypedDraftChange(digits)
+                    // Live-commit only a complete, valid date so partial digits
+                    // never bounce back into the field.
+                    if (digits.length == 8) parseDateDigits(digits, order, minYear, maxYear)?.let(onChange)
+                },
+                singleLine = true,
+                textStyle = MaterialTheme.typography.titleLarge.copy(
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                    textAlign = TextAlign.Center,
+                ),
+                cursorBrush = SolidColor(MaterialTheme.colorScheme.onSecondaryContainer),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(onDone = {
+                    parseDateDigits(draft.text, order, minYear, maxYear)?.let(onChange)
+                    keyboard?.hide()
+                }),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp)
+                    .semantics { this.contentDescription = contentDescription }
+                    .focusRequester(focus),
+            )
+        }
+        Box(
+            Modifier
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = ripple(bounded = false, radius = 18.dp),
+                    onClick = onFlipToWheel,
+                )
+                .padding(4.dp),
+        ) {
+            MagnitudeHintIcon(typedMode = true)
+        }
+    }
+}
+
+/** Locale-order digit string for a date: 2026-11-05 typed as MDY → "11052026". */
+private fun dateWheelDigits(date: LocalDate, order: List<DateWheelColumn>): String =
+    order.joinToString("") { column ->
+        when (column) {
+            DateWheelColumn.DAY -> String.format(java.util.Locale.US, "%02d", date.dayOfMonth)
+            DateWheelColumn.MONTH -> String.format(java.util.Locale.US, "%02d", date.monthValue)
+            DateWheelColumn.YEAR -> String.format(java.util.Locale.US, "%04d", date.year)
+        }
+    }
+
+/** Positional locale-order mask, "/" between columns: "1105" → "11/05", "20261" → "2026/1". */
+private fun formatDateDigits(digits: String, order: List<DateWheelColumn>): String {
+    val d = digits.filter { it.isDigit() }.take(8)
+    var i = 0
+    val segments = order.map { column ->
+        if (i >= d.length) {
+            ""
+        } else {
+            val width = if (column == DateWheelColumn.YEAR) 4 else 2
+            val end = minOf(i + width, d.length)
+            val segment = d.substring(i, end)
+            i = end
+            segment
+        }
+    }
+    return segments.filter { it.isNotEmpty() }.joinToString("/")
+}
+
+private fun formatDateDigits(date: LocalDate, order: List<DateWheelColumn>): String =
+    formatDateDigits(dateWheelDigits(date, order), order)
 
 @Composable
 internal fun WheelSelectionHighlight(modifier: Modifier = Modifier) {
@@ -835,6 +975,54 @@ internal fun parseClockDigits(digits: String): java.time.LocalTime? {
     }
     if (hour !in 0..23 || minute !in 0..59) return null
     return java.time.LocalTime.of(hour, minute)
+}
+
+/**
+ * Complete 8-digit date typed in the given column order. Month/day are
+ * validated (month 1–12, day within the month length) and the year is clamped
+ * into [minYear, maxYear] before the day is checked, mirroring how the wheels
+ * coerce an impossible day when a sibling column moves. Partial or invalid
+ * input → null.
+ */
+internal fun parseDateDigits(
+    digits: String,
+    order: List<DateWheelColumn>,
+    minYear: Int,
+    maxYear: Int,
+): LocalDate? {
+    val d = digits.filter { it.isDigit() }
+    if (d.length != 8) return null
+    val parts = mutableMapOf<DateWheelColumn, Int>()
+    var i = 0
+    for (column in order) {
+        val width = if (column == DateWheelColumn.YEAR) 4 else 2
+        parts[column] = d.substring(i, i + width).toInt()
+        i += width
+    }
+    val year = parts.getValue(DateWheelColumn.YEAR).coerceIn(minYear, maxYear)
+    val month = parts.getValue(DateWheelColumn.MONTH)
+    val day = parts.getValue(DateWheelColumn.DAY)
+    if (month !in 1..12) return null
+    if (day !in 1..YearMonth.of(year, month).lengthOfMonth()) return null
+    return LocalDate.of(year, month, day)
+}
+
+/**
+ * OK-time application of a live typed-date draft in the device's column order.
+ * Partial, non-digit-only, or invalid input → null (caller keeps the picked
+ * date), mirroring the clock dialog's length-4 re-parse at Done. [order]
+ * defaults to the device lookup; tests inject it because
+ * [DateFormat.getBestDateTimePattern] is unimplemented on the plain JVM.
+ */
+internal fun parseTypedDate(
+    digits: String?,
+    minYear: Int,
+    maxYear: Int,
+    order: List<DateWheelColumn> = dateWheelColumnOrder(Locale.getDefault()),
+): LocalDate? {
+    val d = digits?.filter { it.isDigit() } ?: return null
+    if (d.length != 8) return null
+    return parseDateDigits(d, order, minYear, maxYear)
 }
 
 /**

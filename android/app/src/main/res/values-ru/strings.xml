@@ -914,6 +914,7 @@
     <string name="cd_open_camera">Открыть камеру</string>
     <string name="cd_close_camera">Закрыть камеру</string>
     <string name="cd_open_gallery">Открыть галерею</string>
+    <string name="cd_camera_shutter">Сделать фото</string>
     
     <string name="unit_mcg">мкг</string>
     <string name="home_food_log">Журнал питания</string>
@@ -1637,6 +1638,16 @@
     <string name="home_active_burn_a11y">Активный расход %1$d</string>
     <string name="home_active_burn_caption">%1$d активных</string>
     <string name="home_active_burn_caption_progress">%1$d/%2$d активных</string>
+    <string name="home_budget_class_usual">Обычный день</string>
+    <string name="home_budget_class_lean_lighter">Ближе к лёгкому</string>
+    <string name="home_budget_class_lean_harder">Ближе к тяжёлому</string>
+    <string name="home_budget_class_lighter">Лёгкий день</string>
+    <string name="home_budget_class_harder">Тяжёлый день</string>
+    <string name="home_budget_class_lean_type">Ближе к %1$s</string>
+    <string name="home_budget_class_type">День %1$s</string>
+    <string name="home_budget_class_sheet_hourly">Мало истории за этот час. Цель остаётся обычным днём.</string>
+    <string name="home_budget_class_sheet_usual">Ещё не классифицировано. Цель — обычный день, не угаданный тренировочный.</string>
+    <string name="home_budget_class_sheet_moved">Классификация по последним 28 дням. Сохранённая цель не меняется.</string>
     <string name="home_active_burn_caption_progress_day_type">%1$d/%2$d активных · %3$s</string>
     <string name="home_active_burn_over">+%1$d сверх</string>
     <string name="home_active_burn_over_a11y">Активный расход %1$d, на %2$d больше обычного дня</string>
@@ -2212,6 +2223,9 @@
     <string name="home_day_type_chip_a11y">Тип дня сегодня: %1$s. Нажмите, чтобы сменить.</string>
     <string name="day_type_sheet_title">Тип дня</string>
     <string name="day_type_sheet_subtitle">Переключить цели сегодняшнего дня на другой тип дня.</string>
+    <string name="home_day_type_diverge_named">Этот час больше похож на %1$s, а не на %2$s.</string>
+    <string name="home_day_type_diverge_unnamed">Этот час не похож на день «%1$s».</string>
+    <string name="cd_dismiss_day_type_prompt">Закрыть подсказку о типе дня</string>
     <string name="day_type_base_goals">Базовые цели</string>
     <string name="day_type_clear_override">Убрать исключение на сегодня</string>
     <string name="day_type_edit_settings">Изменить типы дней</string>

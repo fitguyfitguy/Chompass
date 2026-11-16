@@ -453,6 +453,10 @@ wait_home() {
     device shell input keyevent 4 >/dev/null 2>&1 || true
     sleep 0.8
   done
+  # Diagnostics for the intermittent "FAB never found" failure: keep the last
+  # hierarchy and a screenshot next to the run's PNGs before giving up.
+  dump_ui "${STAGE}/wait_home_failed.xml" || true
+  device exec-out screencap -p > "${STAGE}/wait_home_failed.png" 2>/dev/null || true
   wait_desc "Add food" 20
 }
 

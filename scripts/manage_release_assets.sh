@@ -7,8 +7,8 @@
 #
 # Usage:
 #   ./scripts/manage_release_assets.sh list
-#   ./scripts/manage_release_assets.sh keep-n 5 -y
-#   ./scripts/manage_release_assets.sh keep-latest -y
+#   ./scripts/manage_release_assets.sh keep-n 5 -y --delete-pages   # deletes whole pages!
+#   ./scripts/manage_release_assets.sh keep-latest -y --delete-pages
 #   ./scripts/manage_release_assets.sh keep-latest --keep v1.14.10 --dry-run
 #   ./scripts/manage_release_assets.sh prune-abi-splits v1.14.10 -y
 #   ./scripts/manage_release_assets.sh prune-play-assets -y
@@ -141,10 +141,10 @@ Quota notes:
   - Request more: https://codeberg.org/Codeberg-e.V./requests
   - Prune old ABI splits (keep universal APKs + SHA256SUMS):
       ./scripts/manage_release_assets.sh prune-abi-splits --before v1.6.0 -y
-  - Keep the last 3 to 5 releases (delete older release pages + assets):
-      ./scripts/manage_release_assets.sh keep-n 5 -y
-  - Keep only the latest release (emergency quota squeeze):
-      ./scripts/manage_release_assets.sh keep-latest -y
+  - Bulk release-page deletion is gated: keep-n / keep-latest now require
+    --delete-pages (bulk deletion destroyed 32 pages on 2026-11-10). Do not
+    use them for quota reasons; see docs/RELEASE.md § Codeberg storage quotas
+    (git quota needs server gc; assets quota has headroom).
   - Remove disabled play-flavor APKs (keep fdroid/universal + SHA256SUMS):
       ./scripts/manage_release_assets.sh prune-play-assets --dry-run
 EOF
@@ -293,19 +293,27 @@ cmd_keep_latest() {
         delete_tags=1
         shift
         ;;
+      --delete-pages)
+        delete_pages=1
+        shift
+        ;;
       -h|--help)
         cat <<'EOF'
 Usage:
   manage_release_assets.sh keep-latest [options]
 
 Options:
-  --keep <tag>     Release tag to keep (default: highest semver tag with a release)
-  --delete-tags    Also delete git tags for removed releases
-  --dry-run        Print deletions without applying them
-  -y, --yes        Skip confirmation prompt
+  --keep <tag>       Release tag to keep (default: highest semver tag with a release)
+  --delete-pages     REQUIRED for a real run: the deletions remove whole release
+                     pages (notes + attachments), not just files
+  --delete-tags      Also delete git tags for removed releases
+  --dry-run          Print deletions without applying them
+  -y, --yes          Skip confirmation prompt
 
-Deletes every Codeberg release except the kept one (attachments + release page).
-Quota policy: only the latest full release is retained.
+Deletes every Codeberg release except the kept one. A real run needs
+--delete-pages: bulk page deletion destroyed 32 release pages on 2026-11-10
+and had to be rebuilt from per-tag changelogs. Per-release asset cleanup
+belongs to prune-abi-splits / prune-play-assets.
 EOF
         exit 0
         ;;
@@ -315,6 +323,13 @@ EOF
         ;;
     esac
   done
+
+  if [[ "${delete_pages:-0}" -ne 1 && "${dry_run:-0}" -ne 1 ]]; then
+    echo "Refusing: keep-latest deletes whole release PAGES (notes + attachments), not just files." >&2
+    echo "On 2026-11-10 this destroyed 32 release pages (rebuilt from per-tag changelogs afterwards)." >&2
+    echo "Pass --delete-pages only if bulk page deletion is really intended." >&2
+    exit 2
+  fi
 
   local -a all_tags=()
   load_release_tags all_tags || exit 1
@@ -406,19 +421,25 @@ cmd_keep_n() {
         delete_tags=1
         shift
         ;;
+      --delete-pages)
+        delete_pages=1
+        shift
+        ;;
       -h|--help)
         cat <<'EOF'
 Usage:
   manage_release_assets.sh keep-n [N] [options]
 
 Options:
-  N              Number of most recent releases to keep (default: 5)
-  --delete-tags  Also delete git tags for removed releases
-  --dry-run      Print deletions without applying them
-  -y, --yes      Skip confirmation prompt
+  N               Number of most recent releases to keep (default: 5)
+  --delete-pages  REQUIRED for a real run: the deletions remove whole release
+                  pages (notes + attachments), not just files
+  --delete-tags   Also delete git tags for removed releases
+  --dry-run       Print deletions without applying them
+  -y, --yes       Skip confirmation prompt
 
-Deletes every Codeberg release older than the N most recent (attachments +
-release page). Quota policy: keep the last 3 to 5 releases.
+Deletes every Codeberg release older than the N most recent. A real run needs
+--delete-pages: bulk page deletion destroyed 32 release pages on 2026-11-10.
 EOF
         exit 0
         ;;
@@ -437,6 +458,13 @@ EOF
   if [[ "$n" -lt 1 ]]; then
     echo "keep-n requires a positive number of releases to keep." >&2
     exit 1
+  fi
+
+  if [[ "${delete_pages:-0}" -ne 1 && "${dry_run:-0}" -ne 1 ]]; then
+    echo "Refusing: keep-n deletes whole release PAGES (notes + attachments), not just files." >&2
+    echo "On 2026-11-10 this destroyed 32 release pages (rebuilt from per-tag changelogs afterwards)." >&2
+    echo "Pass --delete-pages only if bulk page deletion is really intended." >&2
+    exit 2
   fi
 
   local -a all_tags=()
@@ -612,8 +640,8 @@ Usage: manage_release_assets.sh <command> [options]
 
 Commands:
   list                         List release attachments and estimated total size
-  keep-latest [options]        Delete all releases except the latest (or --keep)
-  keep-n [N] [options]         Delete all releases except the N most recent (default 5)
+  keep-latest [options]        Delete all releases except the latest (or --keep); needs --delete-pages
+  keep-n [N] [options]         Delete all releases except the N most recent (default 5); needs --delete-pages
   prune-abi-splits [options]   Delete per-ABI APK splits; keep universal APKs + SHA256SUMS
   prune-play-assets [options]  Delete Chompass-play-*.apk attachments (disabled flavor)
 

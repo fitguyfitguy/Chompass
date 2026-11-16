@@ -949,6 +949,7 @@
     <string name="cd_new_recipe">وصفة جديدة</string>
     <string name="cd_open_camera">فتح الكاميرا</string>
     <string name="cd_open_gallery">فتح المعرض</string>
+    <string name="cd_camera_shutter">التقاط صورة</string>
     <string name="cd_quantity_operator">إدراج %1$s في الكمية</string>
     <string name="cd_remove_image">إزالة الصورة</string>
     <string name="cd_selected">محدد</string>
@@ -1101,6 +1102,16 @@
     <string name="home_active_burn_a11y">الحرق النشط %1$d</string>
     <string name="home_active_burn_caption">%1$d نشط</string>
     <string name="home_active_burn_caption_progress">%1$d/%2$d نشط</string>
+    <string name="home_budget_class_usual">يوم عادي</string>
+    <string name="home_budget_class_lean_lighter">أخف</string>
+    <string name="home_budget_class_lean_harder">أشد</string>
+    <string name="home_budget_class_lighter">يوم أخف</string>
+    <string name="home_budget_class_harder">يوم أشد</string>
+    <string name="home_budget_class_lean_type">نحو %1$s</string>
+    <string name="home_budget_class_type">يوم %1$s</string>
+    <string name="home_budget_class_sheet_hourly">لا يكفي سجل الساعة نفسها بعد. الهدف يبقى يومك العادي.</string>
+    <string name="home_budget_class_sheet_usual">لم يُصنَّف بعد. الهدف يومك العادي، لا يوم تدريب مخمَّن.</string>
+    <string name="home_budget_class_sheet_moved">صُنّف من آخر 28 يومًا. هدفك المحفوظ لم يتغير.</string>
     <string name="home_active_burn_caption_progress_day_type">%1$d/%2$d نشط · %3$s</string>
     <string name="home_active_burn_over">+%1$d فوق</string>
     <string name="home_active_burn_over_a11y">الحرق النشط %1$d، %2$d فوق اليوم المعتاد</string>
@@ -2155,6 +2166,9 @@
     <string name="home_day_type_chip_a11y">نوع اليوم الحالي: %1$s. انقر للتبديل.</string>
     <string name="day_type_sheet_title">نوع اليوم</string>
     <string name="day_type_sheet_subtitle">بدّل أهداف اليوم إلى نوع يوم آخر.</string>
+    <string name="home_day_type_diverge_named">هذه الساعة أقرب إلى %1$s، لا إلى %2$s.</string>
+    <string name="home_day_type_diverge_unnamed">هذه الساعة لا تبدو كيوم %1$s.</string>
+    <string name="cd_dismiss_day_type_prompt">إغلاق اقتراح نوع اليوم</string>
     <string name="day_type_base_goals">الأهداف الأساسية</string>
     <string name="day_type_clear_override">إزالة تجاوز اليوم</string>
     <string name="day_type_edit_settings">تعديل أنواع الأيام</string>

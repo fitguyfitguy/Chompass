@@ -27,18 +27,23 @@ object AndroidAppIconManager {
      *   Call only when the activity is not in the foreground: disabling the alias a
      *   running task was launched through makes some launchers tear the task down or
      *   force-stop the app (#13). [MainActivity] defers calls to [android.app.Activity.onStop].
+     *   Every apply also sweeps a stale second enabled alias left behind by an
+     *   interrupted swap (#173).
      */
     fun apply(context: Context, themeColor: AppThemeColor, fixedIcon: Boolean = false) {
         val resolved = themeColor.resolveLauncherIconTheme(context, fixedIcon)
         val pm = context.packageManager
         val night = isNightLauncher(context)
         val dark = resolved.isBrandTile && night
-        val currentlyEnabled = AppThemeColor.iconSelectableColors().firstOrNull { color ->
+        // The full enabled set, not just "is the target on": a swap killed
+        // mid-sweep can leave a second alias enabled (#173), and a target-only
+        // check would no-op forever instead of sweeping the extra away.
+        val enabledColors = AppThemeColor.iconSelectableColors().filter { color ->
             isAliasEnabled(pm, context, color)
         }
         val darkEnabled = isBrandDarkAliasEnabled(pm, context)
         if (dark) {
-            if (currentlyEnabled != null || !darkEnabled) {
+            if (enabledColors.isNotEmpty() || !darkEnabled) {
                 AppThemeColor.iconSelectableColors().forEach { color ->
                     pm.setComponentEnabledSetting(
                         component(context, color.launcherAliasSimpleName),
@@ -52,7 +57,7 @@ object AndroidAppIconManager {
                     PackageManager.DONT_KILL_APP,
                 )
             }
-        } else if (currentlyEnabled != resolved || darkEnabled) {
+        } else if (enabledColors.singleOrNull() != resolved || darkEnabled) {
             AppThemeColor.iconSelectableColors().forEach { color ->
                 val component = component(context, color.launcherAliasSimpleName)
                 val state = if (color == resolved) {

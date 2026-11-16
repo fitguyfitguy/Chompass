@@ -92,6 +92,7 @@ import app.chompass.models.OptionalNutrientGoals
 import app.chompass.ui.components.ClockTimeWheelPicker
 import app.chompass.ui.components.parseClockDigits
 import app.chompass.ui.components.DateWheelPicker
+import app.chompass.ui.components.parseTypedDate
 
 import app.chompass.ui.components.ChompassDialog
 import app.chompass.ui.components.ChompassDialogActions
@@ -790,7 +791,7 @@ fun EditFoodEntrySheet(
                         resolveServingDraft()
                         selectedServingUnitId = optionId
                         val option = ServingUnitOption.optionMatching(optionId, servingUnitOptions)
-                        val quantity = if (option.gramsPerUnit > 0) servingGrams / option.gramsPerUnit else servingGrams
+                        val quantity = ServingUnitOption.quantityForGrams(servingGrams, option)
                         servingQuantityText = ServingUnitOption.formatQuantity(quantity)
                     },
                     servingSizeGrams = servingGrams,
@@ -804,11 +805,7 @@ fun EditFoodEntrySheet(
                         servingUnitOptions = options
                         selectedServingUnitId = newId
                         val option = ServingUnitOption.optionMatching(newId, options)
-                        val quantity = if (option.gramsPerUnit > 0) {
-                            gramsBefore / option.gramsPerUnit
-                        } else {
-                            gramsBefore
-                        }
+                        val quantity = ServingUnitOption.quantityForGrams(gramsBefore, option)
                         servingQuantityText = ServingUnitOption.formatQuantity(quantity)
                     },
                     onQuantityEditingDone = resolveServingDraft,
@@ -1314,6 +1311,7 @@ fun EditFoodEntrySheet(
         } else {
 
             var pickedDate by remember(loggedDate) { mutableStateOf(loggedDate) }
+            var typedDateDigits by remember { mutableStateOf<String?>(null) }
             ChompassDialog(onDismissRequest = { showDatePicker = false }) {
                 Text(stringResource(R.string.label_date), fontSize = 20.sp, fontWeight = FontWeight.Bold)
                 DateWheelPicker(
@@ -1321,12 +1319,14 @@ fun EditFoodEntrySheet(
                     onSelect = { pickedDate = it },
                     minYear = LocalDate.now().year - 10,
                     maxYear = LocalDate.now().year,
+                    onTypedDraftChange = { typedDateDigits = it },
                     modifier = Modifier.fillMaxWidth()
                 )
                 ChompassDialogActions(
                     primaryText = stringResource(R.string.action_done),
                     onPrimary = {
-                        loggedDate = pickedDate
+                        loggedDate = parseTypedDate(typedDateDigits, LocalDate.now().year - 10, LocalDate.now().year)
+                            ?: pickedDate
                         showDatePicker = false
                     },
                     dismissText = stringResource(R.string.action_cancel),

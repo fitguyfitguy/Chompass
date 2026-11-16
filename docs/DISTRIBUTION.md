@@ -55,15 +55,14 @@ The single build intentionally omits proprietary **Google Play Core** libraries.
 
 On-device LLM (`litertlm-android`) is bundled in this build and ships in the F-Droid listing; the Gemma model itself is an opt-in runtime download. See [`docs/ON_DEVICE_LLM.md`](ON_DEVICE_LLM.md).
 
-## Reclaim Codeberg quota
+## Codeberg storage
 
-**Policy:** one latest release; universal APK + `SHA256SUMS` only.
+Two separate quotas: git repository (750 MiB) and assets — releases, packages, LFS, attachments (1.5 GiB). Attachments stay small by policy: one universal APK + `SHA256SUMS` per release.
 
 ```bash
 ./scripts/manage_release_assets.sh list
-./scripts/manage_release_assets.sh keep-latest -y
-./scripts/manage_release_assets.sh prune-abi-splits v1.14.10 -y   # if splits linger on the kept release
+./scripts/manage_release_assets.sh prune-abi-splits v1.14.10 -y   # if splits linger
 ./scripts/manage_release_assets.sh prune-play-assets -y           # leftover Chompass-play-* if any
 ```
 
-See [`RELEASE.md`](RELEASE.md#codeberg-storage-quota).
+`keep-latest` / `keep-n` delete whole release pages and are gated behind `--delete-pages`; do not use them for quota reasons. See [`RELEASE.md`](RELEASE.md#codeberg-storage-quotas).

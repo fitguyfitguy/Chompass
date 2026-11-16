@@ -152,4 +152,11 @@
     <string name="tuning_conservative">Conservative</string>
     <string name="tuning_balanced">Balanced</string>
     <string name="tuning_aggressive">Aggressive</string>
+    <string name="bt_error_mi_scale_service_missing">This device does not expose a supported Mi Scale service.</string>
+    <string name="bt_info_waiting_for_measurement">Waiting for measurement via notifications.</string>
+    <string name="bt_warn_mi_scale_variant_downgraded">This scale is advertised as a v2 model, but it only reports weight. Body composition is not available on this device.</string>
+    <string name="mi_algorithm_bodymiscale_science">Scientific</string>
+    <string name="mi_algorithm_description">Choose how body composition is derived from impedance. \"Xiaomi\" reproduces the original Mi Fit / Zepp Life app. \"Scientific\" uses peer-reviewed formulas (Siri, Pace, Wang, Schofield) and also reports protein and BMR. Applies to new measurements from this scale.</string>
+    <string name="mi_algorithm_xiaomi">Xiaomi (original app)</string>
+    <string name="mi_body_comp_algorithm_label">Body composition algorithm</string>
 </resources>

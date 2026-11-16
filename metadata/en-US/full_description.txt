@@ -16,4 +16,4 @@ Chompass is an ad-free, privacy-focused calorie tracker forked from Fud AI. Log 
 • Local-first storage; encrypted API keys on device
 • Diary and body-metrics export (JSON, Markdown, CSV)
 
-MIT licensed. Source: https://codeberg.org/fitguy/chompass
+Licensed under GPL-3.0-or-later. Source: https://codeberg.org/fitguy/chompass

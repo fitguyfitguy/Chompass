@@ -932,6 +932,7 @@
     <string name="cd_new_recipe">Nuova ricetta</string>
     <string name="cd_open_camera">Apri fotocamera</string>
     <string name="cd_open_gallery">Apri galleria</string>
+    <string name="cd_camera_shutter">Scatta foto</string>
     <string name="cd_quantity_operator">Inserisci %1$s nella quantità</string>
     <string name="cd_remove_image">Rimuovi immagine</string>
     <string name="cd_selected">Selezionato</string>
@@ -1060,6 +1061,16 @@
     <string name="home_active_burn_a11y">Dispendio attivo %1$d</string>
     <string name="home_active_burn_caption">%1$d attivi</string>
     <string name="home_active_burn_caption_progress">%1$d/%2$d attivi</string>
+    <string name="home_budget_class_usual">Giorno solito</string>
+    <string name="home_budget_class_lean_lighter">Più leggero</string>
+    <string name="home_budget_class_lean_harder">Più intenso</string>
+    <string name="home_budget_class_lighter">Giorno leggero</string>
+    <string name="home_budget_class_harder">Giorno intenso</string>
+    <string name="home_budget_class_lean_type">Verso %1$s</string>
+    <string name="home_budget_class_type">Giorno %1$s</string>
+    <string name="home_budget_class_sheet_hourly">Poca cronologia alla stessa ora. L\'obiettivo resta il giorno solito.</string>
+    <string name="home_budget_class_sheet_usual">Non ancora classificato. L\'obiettivo è il giorno solito, non un giorno di allenamento indovinato.</string>
+    <string name="home_budget_class_sheet_moved">Classificato sugli ultimi 28 giorni. L\'obiettivo salvato non cambia.</string>
     <string name="home_active_burn_caption_progress_day_type">%1$d/%2$d attivi · %3$s</string>
     <string name="home_active_burn_over">+%1$d in più</string>
     <string name="home_active_burn_over_a11y">Dispendio attivo %1$d, %2$d oltre un giorno tipico</string>
@@ -2124,6 +2135,9 @@
     <string name="home_day_type_chip_a11y">Tipo di giornata di oggi: %1$s. Tocca per cambiare.</string>
     <string name="day_type_sheet_title">Tipo di giornata</string>
     <string name="day_type_sheet_subtitle">Passa gli obiettivi di oggi a un altro tipo di giornata.</string>
+    <string name="home_day_type_diverge_named">Quest\'ora somiglia di più a %1$s, non a %2$s.</string>
+    <string name="home_day_type_diverge_unnamed">Quest\'ora non sembra una giornata %1$s.</string>
+    <string name="cd_dismiss_day_type_prompt">Chiudi il suggerimento sul tipo di giornata</string>
     <string name="day_type_base_goals">Obiettivi base</string>
     <string name="day_type_clear_override">Rimuovi l\'eccezione di oggi</string>
     <string name="day_type_edit_settings">Modifica tipi di giornata</string>

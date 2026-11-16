@@ -12,6 +12,7 @@ import com.health.openscale.core.utils.LogManager
 import com.welie.blessed.BluetoothCentralManager
 import com.welie.blessed.BluetoothCentralManagerCallback
 import com.welie.blessed.BluetoothPeripheral
+import com.welie.blessed.BondState
 import com.welie.blessed.BluetoothPeripheralCallback
 import com.welie.blessed.GattStatus
 import com.welie.blessed.HciStatus
@@ -50,10 +51,13 @@ class ScaleBleTransport(
     private val onScanned: (ScannedDeviceInfo) -> Unit,
     /** Services discovered and link ready for I/O. */
     private val onReady: () -> Unit,
-    /** Link lost (disconnect or connection failure); [reason] is a technical string. */
-    private val onLinkLost: (reason: String) -> Unit,
+    /** Link lost (disconnect or connection failure); [reason] is a technical string,
+     *  [bondIssue] true when the failure looks like a stale/poisoned Bluetooth bond. */
+    private val onLinkLost: (reason: String, bondIssue: Boolean) -> Unit,
     /** Notification payload forwarded to handler.handleNotification. */
     private val onNotification: (characteristic: UUID, data: ByteArray) -> Unit,
+    /** Service-UUID scan filters for the first pass (ScaleDriverRegistry.scanFilters). */
+    private val scanFilters: List<android.bluetooth.le.ScanFilter> = emptyList(),
 ) : ScaleDeviceHandler.Transport {
     private companion object {
         const val TAG = "ChompassScaleSync"
@@ -68,6 +72,14 @@ class ScaleBleTransport(
         const val POST_READ_DELAY_MS = 20L
         const val OPERATION_TIMEOUT_MS = 1000L
         const val REQUEST_MTU_BYTES = 185
+
+        /** Filtered scan pass duration before the unfiltered fallback. */
+        const val FILTERED_SCAN_MS = 15_000L
+
+        /** HCI/blessed status codes that, with a non-NONE bond state, point at a
+         *  stale or poisoned Android bond (see docs/local/SCALE_SURVEY.md,
+         *  ble-scale-sync ops checklist). */
+        val BOND_FAILURE_STATUSES = setOf(5, 8, 133)
     }
 
     private val mainHandler = Handler(Looper.getMainLooper())
@@ -95,11 +107,25 @@ class ScaleBleTransport(
         delay(ms.milliseconds)
     }
 
+    private var scanAbandoned = false
+
     fun startScan() {
         scope.launch {
             runCatching {
                 central.enableLogging()
-                central.scanForPeripherals()
+                scanAbandoned = false
+                if (scanFilters.isNotEmpty()) {
+                    LogManager.i(TAG, "scan: filtered pass with ${scanFilters.size} service filters")
+                    central.scanForPeripheralsUsingFilters(scanFilters)
+                    delay(FILTERED_SCAN_MS.milliseconds)
+                    if (!scanAbandoned && central.isScanning) {
+                        central.stopScan()
+                        LogManager.i(TAG, "scan: filtered pass found nothing, falling back to unfiltered")
+                        central.scanForPeripherals()
+                    }
+                } else {
+                    central.scanForPeripherals()
+                }
             }.onFailure {
                 LogManager.e(TAG, "scan start failed: ${it.message}", it)
             }
@@ -107,6 +133,7 @@ class ScaleBleTransport(
     }
 
     fun stopScan() {
+        scanAbandoned = true
         scope.launch { runCatching { if (central.isScanning) central.stopScan() } }
     }
 
@@ -114,17 +141,18 @@ class ScaleBleTransport(
         scope.launch {
             delay(CONNECT_AFTER_SCAN_DELAY_MS.milliseconds)
             runCatching { central.stopScan() }
+            scanAbandoned = true
             val peripheral = discovered[address]
             if (peripheral == null) {
                 LogManager.e(TAG, "connect: peripheral not retained $address", null)
-                onLinkLost("connect: peripheral not retained")
+                onLinkLost("connect: peripheral not retained", false)
                 return@launch
             }
             LogManager.i(TAG, "-> connect $address")
             runCatching { central.connect(peripheral, peripheralCallback) }
                 .onFailure {
                     LogManager.e(TAG, "connect call failed: ${it.message}", it)
-                    onLinkLost("connect call failed: ${it.message}")
+                    onLinkLost("connect call failed: ${it.message}", false)
                 }
         }
     }
@@ -183,16 +211,21 @@ class ScaleBleTransport(
         }
 
         override fun onConnectionFailed(peripheral: BluetoothPeripheral, status: HciStatus) {
-            LogManager.e(TAG, "connection failed ${peripheral.address}: $status", null)
+            val bond = peripheral.bondState
+            LogManager.e(TAG, "connection failed ${peripheral.address}: $status bondState=$bond", null)
             if (currentPeripheral?.address == peripheral.address) currentPeripheral = null
-            onLinkLost("connection failed: $status")
+            val bondIssue = status.value in BOND_FAILURE_STATUSES && bond != BondState.NONE
+            if (bondIssue) {
+                LogManager.w(TAG, "bond-related failure (status=${status.value}, bondState=$bond); user should unpair the scale")
+            }
+            onLinkLost("connection failed: $status", bondIssue)
         }
 
         override fun onDisconnected(peripheral: BluetoothPeripheral, status: HciStatus) {
             LogManager.i(TAG, "disconnected ${peripheral.address}: $status")
             if (currentPeripheral?.address == peripheral.address) {
                 currentPeripheral = null
-                onLinkLost("disconnected: $status")
+                onLinkLost("disconnected: $status", false)
             }
         }
     }

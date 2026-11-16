@@ -488,9 +488,9 @@ fun HomeScreen(
         }
     }
     var selectedEntryIds by remember(ui.date) { mutableStateOf<Set<UUID>>(emptySet()) }
-    var pasteTargetDate by remember(ui.date) { mutableStateOf(selectedDate) }
+    var pasteTargetDate by remember { mutableStateOf(today) }
     fun resetPasteTargets() {
-        pasteTargetDate = selectedDate
+        pasteTargetDate = today
     }
     val selectedEntries = remember(ui.todayEntries, selectedEntryIds) {
         ui.todayEntries.filter { it.id in selectedEntryIds }
@@ -596,10 +596,14 @@ fun HomeScreen(
         containerColor = Color.Transparent,
         snackbarHost = {
             // Custom docked bottom nav overlays the Scaffold; lift the host so
-            // snackbars (delete-undo, paste confirmation) are not hidden behind it.
+            // snackbars (delete-undo, paste confirmation) are not hidden behind
+            // the pill — and the docked Add FAB (audit R2, device 2026-11-10:
+            // the delete-undo action's tap zone sat under the FAB, so an Undo
+            // tap opened the hub). BottomFabScrollClearance is the same FAB
+            // footprint the food-log list already scrolls past (#156).
             ChompassSnackbarHost(
                 hostState = snackbarHostState,
-                modifier = Modifier.padding(bottom = BottomOverlayPadding),
+                modifier = Modifier.padding(bottom = BottomOverlayPadding + BottomFabScrollClearance),
             )
         },
     ) { padding ->
@@ -810,6 +814,8 @@ fun HomeScreen(
                         onShowRecalcDetails = { vm.openRecalcDetails() },
                             goalDerivation = ui.goalDerivation,
                             layout = ui.homeDisplay.calorieHeroLayout,
+                            displayTarget = ui.heroCalorieGoal,
+                            budgetClass = ui.budgetClassCue,
                         )
                     }
                     if (ui.homeDisplay.showSteps) {
@@ -1096,7 +1102,9 @@ fun HomeScreen(
                                             val result = snackbarHostState.showSnackbar(
                                                 message = foodRemovedMessage,
                                                 actionLabel = undoLabel,
-                                                duration = SnackbarDuration.Short,
+                                                // Audit R2: Short expired before a
+                                                // user could react on-device.
+                                                duration = SnackbarDuration.Long,
                                             )
                                             if (result == SnackbarResult.ActionPerformed) {
                                                 haptics.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
@@ -1166,6 +1174,7 @@ fun HomeScreen(
                     onClick = {
                         completingPasteAction = null
                         vm.setCopiedEntries(selectedEntries)
+                        pasteTargetDate = today
                         showPasteActions = true
                     },
                 ) {
@@ -1388,10 +1397,20 @@ fun HomeScreen(
             !showCameraCapture &&
             !showMultiPhotoCapture &&
             !inSelectionMode
+        val dayTypePrompt = ui.dayTypePrompt
+        val showDayTypePrompt = dayTypePrompt != null &&
+            !showDayTypeSheet &&
+            !ui.showFoodResultSheet &&
+            !ui.showProgressiveMealSheet &&
+            !ui.showAnalysisQueue &&
+            !showAddFoodSheet &&
+            !showCameraCapture &&
+            !showMultiPhotoCapture &&
+            !inSelectionMode
         LaunchedEffect(fillGapsBanner != null) {
             if (FillGapsFeature.ENABLED && fillGapsBanner != null) vm.onFillGapsBannerShown()
         }
-        if (showRecoveredChip || showFillGapsChip) {
+        if (showRecoveredChip || showFillGapsChip || showDayTypePrompt) {
             Column(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
@@ -1401,6 +1420,52 @@ fun HomeScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
+                if (showDayTypePrompt && dayTypePrompt != null) {
+                    val promptText = if (dayTypePrompt.suggestedName != null) {
+                        stringResource(
+                            R.string.home_day_type_diverge_named,
+                            dayTypePrompt.suggestedName,
+                            dayTypePrompt.currentName,
+                        )
+                    } else {
+                        stringResource(R.string.home_day_type_diverge_unnamed, dayTypePrompt.currentName)
+                    }
+                    ChompassSurface(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { showDayTypeSheet = true },
+                        cornerRadius = 16.dp,
+                        padding = 0.dp,
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 16.dp, end = 4.dp, top = 2.dp, bottom = 2.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Text(
+                                promptText,
+                                modifier = Modifier.weight(1f),
+                                color = MaterialTheme.colorScheme.onSurface,
+                                fontWeight = FontWeight.Medium,
+                                fontSize = 14.sp,
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                            IconButton(
+                                onClick = vm::dismissDayTypePrompt,
+                                modifier = Modifier.size(44.dp),
+                            ) {
+                                Icon(
+                                    Icons.Filled.Close,
+                                    contentDescription = stringResource(R.string.cd_dismiss_day_type_prompt),
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.size(18.dp),
+                                )
+                            }
+                        }
+                    }
+                }
                 if (showFillGapsChip && fillGapsBanner != null) {
                     ChompassSurface(
                         modifier = Modifier
@@ -1868,10 +1933,10 @@ fun HomeScreen(
                 savedMealsTab = null
                 returnToAddFoodGrid()
             },
-            // Tapping a Saved Meals row opens the FoodResultSheet for review
-            // instead of logging immediately — same UX as the photo flow.
-            // The sheet dismisses itself after every action, so each one ends
-            // the flow: only a plain back (no action) returns to the grid.
+            // Row tap quick-logs (same path as the + icon); long-press opens
+            // the FoodResultSheet for review. The sheet dismisses itself after
+            // every action, so each one ends the flow: only a plain back
+            // (no action) returns to the grid.
             onRelogEntry = { entry ->
                 addFoodFlowActive = false
                 vm.reviewSavedMeal(entry)
@@ -2097,6 +2162,7 @@ fun HomeScreen(
             showDontAskAgain = !ui.skipPhotoNotePrompt &&
                 ui.photoNoteSkipCount >= HomeViewModel.PHOTO_NOTE_SKIP_OFFER_THRESHOLD,
             showAccuracyGuide = ui.photoAccuracyGuideCount < HomeViewModel.PHOTO_ACCURACY_GUIDE_COUNT,
+            analyzeConfirmAcknowledged = ui.photoAnalyzeConfirmAcknowledged,
             recentPrompts = recentPrompts,
             onAddPhoto = { note ->
                 if (stagedPhotoBytes.size < FoodPhotoSession.MAX_IMAGES) {
@@ -2111,13 +2177,13 @@ fun HomeScreen(
             onRemove = { index ->
                 photoSession.removeAt(index)
             },
-            onAnalyze = { note, grams, dontAskAgain ->
+            onAnalyze = { note, grams, dontAskAgain, acknowledgeConfirm ->
                 val images = photoSession.stagedImages.value
                 photoSession.clear()
                 initialPhotoNote = ""
                 if (!ui.isEntryAnalysisBusy) {
                     addFoodFlowActive = false
-                    vm.analyzePhotosFromStaging(images, note, grams, dontAskAgain)
+                    vm.analyzePhotosFromStaging(images, note, grams, dontAskAgain, acknowledgeConfirm)
                 }
             },
             onQueueForLater = { note, grams ->
@@ -2674,6 +2740,8 @@ internal fun HomeScreenPreviewContent(
                             freezeProgress = freezeAnimations,
                                 goalDerivation = ui.goalDerivation,
                                 layout = ui.homeDisplay.calorieHeroLayout,
+                                displayTarget = ui.heroCalorieGoal,
+                                budgetClass = ui.budgetClassCue,
                             )
                         }
                         val previewResolvedTargets = remember(ui.profile, ui.date, ui.goalJournal) { ui.resolvedDayTargets }

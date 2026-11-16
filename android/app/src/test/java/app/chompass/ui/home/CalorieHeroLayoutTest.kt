@@ -65,6 +65,7 @@ class CalorieHeroLayoutTest {
                         CalorieHero(
                             current = 1234,
                             baseGoal = 2000,
+                            displayTarget = 2000,
                             activeCalories = 0,
                             displayMode = HomeCalorieDisplayMode.STATIC,
                             dayTypeLabel = if (withDayTypeChip) "Training day" else null,

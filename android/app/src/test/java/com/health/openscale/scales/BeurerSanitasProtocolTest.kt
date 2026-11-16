@@ -21,11 +21,12 @@ import java.util.Calendar
 import java.util.UUID
 
 /**
- * Replays the Beurer BF700/800 handshake from the shared fixture
- * (android/app/src/test/resources/openscale_beurer_frames.json) through the
- * vendored [BeurerSanitasHandler] and asserts the published ScaleMeasurement.
- * The fixture is synthetic (hand-built from the handler's protocol outline)
- * until the first live logcat capture replaces it — see SNAPSHOT.md.
+ * Replays the Beurer BF700/800 handshake from the synthetic custom-protocol
+ * fixture (android/app/src/test/resources/openscale_beurer_bf700_synthetic.json)
+ * through the vendored [BeurerSanitasHandler] and asserts the published
+ * ScaleMeasurement. No BF700 hardware exists in this project; the BF105
+ * standard-profile replay lives in StandardBeurerBf105ReplayTest — see
+ * SNAPSHOT.md and docs/local/SCALE_SURVEY.md.
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [33], application = android.app.Application::class)
@@ -113,7 +114,7 @@ class BeurerSanitasProtocolTest {
     }
 
     private fun fixture(): Fixture {
-        val text = javaClass.getResourceAsStream("/openscale_beurer_frames.json")!!
+        val text = javaClass.getResourceAsStream("/openscale_beurer_bf700_synthetic.json")!!
             .bufferedReader(Charsets.UTF_8).readText()
         return Json { ignoreUnknownKeys = true }.decodeFromString(Fixture.serializer(), text)
     }

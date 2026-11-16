@@ -176,12 +176,16 @@ function writeLookupCache(cache) {
  */
 export function mapProduct(product, barcode) {
   const n = product.nutriments || {};
-  const servingGrams = Math.max(
-    flexibleNumber(product.serving_quantity) ??
-      gramsFromServingSize(product.serving_size) ??
-      100,
-    1
-  );
+  // Portion basis: the labeled serving when OFF publishes one, else the whole
+  // package — the only portion a barcode proves. The old bare 100 g guess
+  // desynced the review form (Codeberg #168): "1 package" opened with 100 g
+  // totals until a quantity edit corrected the weight. (Mirrors Android
+  // OpenFoodFactsService.analysis.)
+  const labeledGrams =
+    positiveNumber(flexibleNumber(product.serving_quantity)) ??
+    positiveNumber(gramsFromServingSize(product.serving_size));
+  const pkgGrams = packageGrams(product);
+  const servingGrams = Math.max(labeledGrams ?? pkgGrams ?? 100, 1);
   const scale = servingGrams / 100;
 
   /** @param {string} key */
@@ -212,31 +216,31 @@ export function mapProduct(product, barcode) {
 
   const name = productName(product, barcode);
   const quantityG = round1(servingGrams) ?? 100;
-  /** Prefer a "serving" unit when OFF gave a real serving size; merge heuristics. */
+  /** "serving" unit only when OFF gave a real serving size; merge heuristics. */
   const servingOpt =
-    servingGrams > 1
+    labeledGrams != null && servingGrams > 1
       ? [{ unit: "serving", gramsPerUnit: servingGrams, quantity: 1 }]
       : [];
-  // OFF package size (structured quantity beats the display string): offered
-  // as a second unit only when it differs from the serving (mirrors Android).
-  const pkgGrams = packageGrams(product);
+  // OFF package size (structured quantity beats the display string): the
+  // selected unit when there is no labeled serving, else a second unit only
+  // when it differs from the serving (mirrors Android).
   const packageOpt =
-    pkgGrams != null && Math.abs(pkgGrams - servingGrams) > 0.01
+    pkgGrams != null && (labeledGrams == null || Math.abs(pkgGrams - servingGrams) > 0.01)
       ? [{ unit: "package", gramsPerUnit: pkgGrams, quantity: 1 }]
       : [];
   const units = ensureServingUnits({
     name,
     quantityG,
-    servingUnitOptions: servingOpt,
-    selectedServingUnit: servingGrams > 1 ? "serving" : null,
-    selectedServingQuantity: servingGrams > 1 ? 1 : null,
+    servingUnitOptions: [...servingOpt, ...packageOpt],
+    selectedServingUnit: servingOpt.length > 0 ? "serving" : packageOpt[0]?.unit ?? null,
+    selectedServingQuantity: servingOpt.length > 0 || packageOpt.length > 0 ? 1 : null,
   });
   // Merge OFF serving + package with name heuristics (slice/ml/etc.)
   units.servingUnitOptions = normalizedOptions(
     [...servingOpt, ...packageOpt, ...heuristicOptions(name, quantityG), ...units.servingUnitOptions],
     quantityG
   );
-  if (servingGrams > 1) {
+  if (servingOpt.length > 0) {
     units.selectedServingUnit = "serving";
     units.selectedServingQuantity = 1;
   }
@@ -285,6 +289,11 @@ function flexibleNumber(v) {
   if (v == null || v === "") return null;
   const n = typeof v === "number" ? v : Number(String(v).replace(",", "."));
   return Number.isFinite(n) ? n : null;
+}
+
+/** @param {number|null|undefined} v */
+function positiveNumber(v) {
+  return v != null && v > 0 ? v : null;
 }
 
 /** @param {string|undefined|null} size */

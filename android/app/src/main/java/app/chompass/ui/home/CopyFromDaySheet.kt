@@ -39,6 +39,7 @@ import app.chompass.R
 import app.chompass.models.LocaleFormat
 import app.chompass.models.FoodEntry
 import app.chompass.ui.components.DateWheelPicker
+import app.chompass.ui.components.parseTypedDate
 import app.chompass.ui.components.ChompassDialog
 import app.chompass.ui.components.ChompassDialogActions
 import app.chompass.ui.components.ChompassPrimaryButton
@@ -254,6 +255,7 @@ internal fun CopyFromDaySheet(
 
     if (showDatePicker) {
         var pickedDate by remember(sourceDate) { mutableStateOf(sourceDate) }
+        var typedDateDigits by remember { mutableStateOf<String?>(null) }
         ChompassDialog(onDismissRequest = { showDatePicker = false }) {
             Text(stringResource(R.string.copy_from), fontSize = 20.sp, fontWeight = FontWeight.Bold)
             DateWheelPicker(
@@ -261,12 +263,14 @@ internal fun CopyFromDaySheet(
                 onSelect = { pickedDate = it },
                 minYear = LocalDate.now().year - 10,
                 maxYear = LocalDate.now().year,
+                onTypedDraftChange = { typedDateDigits = it },
                 modifier = Modifier.fillMaxWidth()
             )
             ChompassDialogActions(
                 primaryText = stringResource(R.string.action_done),
                 onPrimary = {
-                    sourceDate = pickedDate
+                    sourceDate = parseTypedDate(typedDateDigits, LocalDate.now().year - 10, LocalDate.now().year)
+                        ?: pickedDate
                     showDatePicker = false
                 },
                 dismissText = stringResource(R.string.action_cancel),
@@ -277,6 +281,7 @@ internal fun CopyFromDaySheet(
 
     if (showTargetPicker) {
         var pickedTarget by remember(targetDate) { mutableStateOf(targetDate) }
+        var typedTargetDigits by remember { mutableStateOf<String?>(null) }
         ChompassDialog(onDismissRequest = { showTargetPicker = false }) {
             Text(stringResource(R.string.copy_to), fontSize = 20.sp, fontWeight = FontWeight.Bold)
             DateWheelPicker(
@@ -284,12 +289,14 @@ internal fun CopyFromDaySheet(
                 onSelect = { pickedTarget = it },
                 minYear = LocalDate.now().year - 10,
                 maxYear = LocalDate.now().year,
+                onTypedDraftChange = { typedTargetDigits = it },
                 modifier = Modifier.fillMaxWidth()
             )
             ChompassDialogActions(
                 primaryText = stringResource(R.string.action_done),
                 onPrimary = {
-                    targetDate = pickedTarget
+                    targetDate = parseTypedDate(typedTargetDigits, LocalDate.now().year - 10, LocalDate.now().year)
+                        ?: pickedTarget
                     showTargetPicker = false
                 },
                 dismissText = stringResource(R.string.action_cancel),

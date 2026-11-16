@@ -103,6 +103,8 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.time.Instant
 import java.time.LocalDate
@@ -183,6 +185,10 @@ data class HomeUiState(
     val measuredActiveAverageCalories: Int = 0,
     /** Internal 60-day HC active-by-day map (never synced). */
     val healthEnergyActiveByDay: Map<String, Int> = emptyMap(),
+    /** Internal same-hour HC active map (never synced). */
+    val healthEnergyActiveByHour: Map<String, List<Int>> = emptyMap(),
+    /** ISO date the day-type switch prompt was dismissed. Hides it for that day. */
+    val dayTypePromptDismissedDay: String? = null,
     /** Manual active totals keyed by ISO date. */
     val manualActiveByDay: Map<String, Int> = emptyMap(),
     val activitySnapshot: HomeActivitySnapshot = HomeActivitySnapshot(date = LocalDate.now()),
@@ -197,6 +203,8 @@ data class HomeUiState(
     val skipPhotoNotePrompt: Boolean = false,
     /** Consecutive empty-note photo analyzes; at ≥3 offer “don’t ask again”. */
     val photoNoteSkipCount: Int = 0,
+    /** User confirmed the sparse “Analyze now?” dialog once; skip it on later noteless single-photo analyzes. */
+    val photoAnalyzeConfirmAcknowledged: Boolean = false,
     /** Completed photo staging Analyzes; tip card while below [HomeViewModel.PHOTO_ACCURACY_GUIDE_COUNT]. */
     val photoAccuracyGuideCount: Int = 0,
     val hasSeenCameraScaleTip: Boolean = true,
@@ -480,6 +488,7 @@ data class HomeUiState(
         val sedentary = measuredActiveAverageCalories.takeIf { it > 0 }
             ?.let { (baseCalorieGoal - it).coerceAtLeast(0) }
             ?: p.sedentaryCalorieBudget(baseCalorieGoal)
+        val classification = budgetClassification
         return HomeCalorieDisplay.resolveGaugeBudget(
             mode = homeDisplay.calorieDisplayMode,
             fullCredit = homeDisplay.fullCreditActiveBurn,
@@ -491,6 +500,8 @@ data class HomeUiState(
                 ?: p.estimatedDailyActiveCalories,
             manual = manualActiveKcal,
             typical = activeBurnTypical,
+            projectedActive = classification.projectedActive,
+            classifying = date == LocalDate.now() && classification.projectedActive > 0,
         )
     }
     val gaugeBaseCalorieGoal: Int get() = gaugeBudget.base
@@ -535,6 +546,96 @@ data class HomeUiState(
     val activeBurnTypical: Int get() = typicalResolution.kcal
 
     /**
+     * Day-type average from the start of today. With no day type, the blend
+     * slides toward a same-hour guess.
+     */
+    val budgetClassification: app.chompass.models.ActiveDayClassifier.ActiveDayClassification get() {
+        val today = LocalDate.now()
+        val viewingToday = date == today
+        val blended = measuredActiveAverageCalories.takeIf { it > 0 }
+            ?: profile?.estimatedDailyActiveCalories
+            ?: 0
+        val profileId = if (viewingToday) resolvedDayTargets.profileId else null
+        val dayTypeAverage = if (viewingToday) dayTypeActiveStats.typicalFor(profileId) else null
+        val tagged = if (dayTypeAverage != null && profileId != null) {
+            dayTypeActiveStats.daily.filter { it.profileId == profileId }.map { it.date }.toSet()
+        } else {
+            emptySet()
+        }
+        val minute = if (viewingToday) {
+            val now = java.time.LocalTime.now()
+            now.hour * 60 + now.minute
+        } else {
+            0
+        }
+        return app.chompass.models.ActiveDayClassifier.classify(
+            today = today,
+            minuteOfDay = minute,
+            isToday = viewingToday,
+            blendedActive = blended,
+            dayTypeAverage = dayTypeAverage,
+            dayTypeName = if (dayTypeAverage != null) resolvedDayTargets.profileName else null,
+            mergedActiveByDay = app.chompass.models.DayTypeActiveStats.mergeDayTotals(
+                healthEnergyActiveByDay,
+                manualActiveByDay,
+            ),
+            hourlyByDay = healthEnergyActiveByHour,
+            liveActive = activitySnapshot.activeCalories.coerceAtLeast(0),
+            dayTypeDates = tagged,
+        )
+    }
+
+    /**
+     * Non-null when this hour looks significantly unlike today's day type.
+     * The ring stays on the day-type average; this only asks for a switch.
+     */
+    val dayTypePrompt: app.chompass.models.ActiveDayClassifier.DayTypeDivergence? get() {
+        if (date != LocalDate.now()) return null
+        if (dayTypePromptDismissedDay == date.toString()) return null
+        if (!activitySnapshot.energyLive) return null
+        val profileId = resolvedDayTargets.profileId ?: return null
+        val name = resolvedDayTargets.profileName ?: return null
+        if (dayTypeActiveStats.typicalFor(profileId) == null) return null
+        val daily = dayTypeActiveStats.daily
+        val currentDates = daily.filter { it.profileId == profileId }.map { it.date }.toSet()
+        val others = daily.groupBy { it.profileId }
+            .filterKeys { it != profileId }
+            .mapNotNull { (id, rows) ->
+                val label = rows.firstNotNullOfOrNull { it.profileName } ?: return@mapNotNull null
+                app.chompass.models.ActiveDayClassifier.DayTypeGroup(
+                    profileId = id,
+                    name = label,
+                    dates = rows.map { it.date }.toSet(),
+                )
+            }
+        val now = java.time.LocalTime.now()
+        return app.chompass.models.ActiveDayClassifier.divergence(
+            today = LocalDate.now(),
+            minuteOfDay = now.hour * 60 + now.minute,
+            liveActive = activitySnapshot.activeCalories.coerceAtLeast(0),
+            currentName = name,
+            currentDates = currentDates,
+            others = others,
+            hourlyByDay = healthEnergyActiveByHour,
+            mergedActiveByDay = app.chompass.models.DayTypeActiveStats.mergeDayTotals(
+                healthEnergyActiveByDay,
+                manualActiveByDay,
+            ),
+        )
+    }
+
+    /** Class line for an untyped-day guess. A named day type uses the chip and the switch prompt. */
+    val budgetClassCue: app.chompass.models.ActiveDayClassifier.ActiveDayClassification?
+        get() = if (
+            gaugeBudget.useExpectedArc &&
+            budgetClassification.kind != app.chompass.models.ActiveDayClassifier.Kind.DAY_TYPE
+        ) {
+            budgetClassification
+        } else {
+            null
+        }
+
+    /**
      * The hero ring's displayed calorie goal — the budget's display target:
      * ADD_ACTIVE hold-back grows to the expected-day target when live burn
      * exceeds the norm, full credit stacks measured burn on the full goal,
@@ -556,7 +657,8 @@ data class HomeUiState(
         // cards scale against the ring exactly as before the day plan existed.
         val base = resolvedDayTargets.targets.calories
         if (base <= 0) return 1f
-        return (heroCalorieGoal.toFloat() / base).coerceAtLeast(1f)
+        val scale = heroCalorieGoal.toFloat() / base
+        return if (gaugeBudget.useExpectedArc) scale.coerceIn(0.5f, 2.0f) else scale.coerceAtLeast(1f)
     }
 
     /**
@@ -584,6 +686,7 @@ data class HomeUiState(
             typicalIsDayType = typicalResolution.typicalIsDayType,
             typicalDayTypeName = resolvedDayTargets.profileName,
             blendedTypical = measuredActiveAverageCalories,
+            projectedActive = budgetClassification.projectedActive,
         )
     }
 
@@ -621,6 +724,8 @@ data class HomeUiState(
             foodLogMacroChips == other.foodLogMacroChips &&
             measuredActiveAverageCalories == other.measuredActiveAverageCalories &&
             healthEnergyActiveByDay == other.healthEnergyActiveByDay &&
+            dayTypePromptDismissedDay == other.dayTypePromptDismissedDay &&
+            healthEnergyActiveByHour == other.healthEnergyActiveByHour &&
             manualActiveByDay == other.manualActiveByDay &&
             activitySnapshot == other.activitySnapshot &&
             optionalNutrientGoals == other.optionalNutrientGoals &&
@@ -630,6 +735,7 @@ data class HomeUiState(
             recalcSheet == other.recalcSheet &&
             skipPhotoNotePrompt == other.skipPhotoNotePrompt &&
             photoNoteSkipCount == other.photoNoteSkipCount &&
+            photoAnalyzeConfirmAcknowledged == other.photoAnalyzeConfirmAcknowledged &&
             photoAccuracyGuideCount == other.photoAccuracyGuideCount &&
             hasSeenCameraScaleTip == other.hasSeenCameraScaleTip &&
             weightMetric == other.weightMetric &&
@@ -730,6 +836,8 @@ data class HomeUiState(
         result = 31 * result + foodLogMacroChips.hashCode()
         result = 31 * result + measuredActiveAverageCalories
         result = 31 * result + healthEnergyActiveByDay.hashCode()
+        result = 31 * result + (dayTypePromptDismissedDay?.hashCode() ?: 0)
+        result = 31 * result + healthEnergyActiveByHour.hashCode()
         result = 31 * result + manualActiveByDay.hashCode()
         result = 31 * result + activitySnapshot.hashCode()
         result = 31 * result + optionalNutrientGoals.hashCode()
@@ -739,6 +847,7 @@ data class HomeUiState(
         result = 31 * result + (recalcSheet?.hashCode() ?: 0)
         result = 31 * result + skipPhotoNotePrompt.hashCode()
         result = 31 * result + photoNoteSkipCount
+        result = 31 * result + photoAnalyzeConfirmAcknowledged.hashCode()
         result = 31 * result + photoAccuracyGuideCount
         result = 31 * result + hasSeenCameraScaleTip.hashCode()
         result = 31 * result + weightMetric.hashCode()
@@ -924,6 +1033,9 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     private val analysisRunGate = AnalysisRunGate()
     /** Last-requested-wins guard for [refreshActivitySnapshot] (Codeberg #22). */
     private val activitySnapshotGuard = ActivitySnapshotRefreshGuard()
+    /** One full hourly backfill per calendar day. Later refreshes only rewrite today. */
+    private var hourlyBackfillDay: LocalDate? = null
+    private val hourlyHistoryMutex = Mutex()
 
     /**
      * Bumped on any diary/favorites change (see the init combine) so the Add
@@ -1441,6 +1553,12 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             }
             .launchIn(viewModelScope)
 
+        container.prefs.healthEnergyActiveByHour
+            .onEach { map ->
+                _ui.update { it.copy(healthEnergyActiveByHour = map) }
+            }
+            .launchIn(viewModelScope)
+
         _selectedDate
             .onEach { refreshActivitySnapshot() }
             .launchIn(viewModelScope)
@@ -1466,6 +1584,12 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         container.prefs.photoNoteSkipCount
             .onEach { count ->
                 _ui.update { it.copy(photoNoteSkipCount = count) }
+            }
+            .launchIn(viewModelScope)
+
+        container.prefs.photoAnalyzeConfirmAcknowledged
+            .onEach { acknowledged ->
+                _ui.update { it.copy(photoAnalyzeConfirmAcknowledged = acknowledged) }
             }
             .launchIn(viewModelScope)
 
@@ -1970,6 +2094,37 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             if (activitySnapshotGuard.isCurrent(gen)) {
                 _ui.update { it.copy(activitySnapshot = snapshot) }
             }
+            if (
+                day == LocalDate.now() &&
+                snapshot.energyLive &&
+                snapshot.source != ActivityDataSource.DEBUG
+            ) {
+                runCatching { refreshHourlyActiveHistory(day) }
+                    .onFailure { if (it is CancellationException) throw it }
+            }
+        }
+    }
+    fun dismissDayTypePrompt() {
+        _ui.update { it.copy(dayTypePromptDismissedDay = LocalDate.now().toString()) }
+    }
+
+    /**
+     * Same-hour history for the ring. The first successful refresh of a day
+     * backfills past days; later refreshes only rewrite today, so a snapshot
+     * tick does not issue another 28 Health Connect reads.
+     */
+    private suspend fun refreshHourlyActiveHistory(day: LocalDate) {
+        hourlyHistoryMutex.withLock {
+            val existing = container.prefs.healthEnergyActiveByHour.first()
+            val backfill = hourlyBackfillDay != day
+            val next = if (backfill) {
+                container.health.readHourlyActiveBackfill(existing)
+            } else {
+                val slots = container.health.readHourlyActive(day) ?: return@withLock
+                app.chompass.models.HourlyActiveHistory.mergeDay(existing, day, slots, day)
+            }
+            if (next != existing) container.prefs.setHealthEnergyActiveByHour(next)
+            if (backfill) hourlyBackfillDay = day
         }
     }
 
@@ -2091,12 +2246,15 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     /**
      * Photo staging Analyze: update skip / don’t-ask prefs, then run [analyzePhotos].
      * [dontAskAgain] persists opt-out when the user checked the offer after ≥3 skips.
+     * [acknowledgeAnalyzeConfirm] persists the sparse “Analyze now?” confirmation so
+     * later noteless single-photo analyzes run without the dialog.
      */
     fun analyzePhotosFromStaging(
         imageBytesList: List<ByteArray>,
         note: String?,
         confirmedPortionGrams: Double?,
         dontAskAgain: Boolean = false,
+        acknowledgeAnalyzeConfirm: Boolean = false,
     ) {
         viewModelScope.launch {
             val trimmed = note?.trim().orEmpty()
@@ -2109,6 +2267,9 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 } else {
                     container.prefs.setPhotoNoteSkipCount(0)
                 }
+            }
+            if (acknowledgeAnalyzeConfirm) {
+                container.prefs.setPhotoAnalyzeConfirmAcknowledged(true)
             }
             val guideCount = _ui.value.photoAccuracyGuideCount
             if (guideCount < PHOTO_ACCURACY_GUIDE_COUNT) {

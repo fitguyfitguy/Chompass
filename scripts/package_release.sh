@@ -173,7 +173,6 @@ Next steps:
   4. Publish to Codeberg (also redeploys Codeberg Pages):
        export CODEBERG_TOKEN='...'
        ./scripts/manage_release_assets.sh list
-       ./scripts/manage_release_assets.sh keep-latest -y   # delete older releases
        ./scripts/publish_release.sh ${VERSION}
        # skip site redeploy: ./scripts/publish_release.sh ${VERSION} --skip-pages
 

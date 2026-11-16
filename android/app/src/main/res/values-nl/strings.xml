@@ -915,6 +915,7 @@
     <string name="cd_new_recipe">Nieuw recept</string>
     <string name="cd_open_camera">Camera openen</string>
     <string name="cd_open_gallery">Galerij openen</string>
+    <string name="cd_camera_shutter">Foto maken</string>
     <string name="cd_quantity_operator">%1$s invoegen in hoeveelheid</string>
     <string name="cd_remove_image">Afbeelding verwijderen</string>
     <string name="cd_selected">Geselecteerd</string>
@@ -1064,6 +1065,16 @@
     <string name="home_active_burn_a11y">Actief verbruik %1$d</string>
     <string name="home_active_burn_caption">%1$d actief</string>
     <string name="home_active_burn_caption_progress">%1$d/%2$d actief</string>
+    <string name="home_budget_class_usual">Gewone dag</string>
+    <string name="home_budget_class_lean_lighter">Lichter</string>
+    <string name="home_budget_class_lean_harder">Zwaarder</string>
+    <string name="home_budget_class_lighter">Lichtere dag</string>
+    <string name="home_budget_class_harder">Zwaardere dag</string>
+    <string name="home_budget_class_lean_type">Richting %1$s</string>
+    <string name="home_budget_class_type">%1$s-dag</string>
+    <string name="home_budget_class_sheet_hourly">Nog te weinig geschiedenis op dit uur. Doel blijft je gewone dag.</string>
+    <string name="home_budget_class_sheet_usual">Nog niet ingedeeld. Doel is je gewone dag, geen geraden trainingsdag.</string>
+    <string name="home_budget_class_sheet_moved">Ingedeeld op je laatste 28 dagen. Je opgeslagen doel blijft.</string>
     <string name="home_active_burn_caption_progress_day_type">%1$d/%2$d actief · %3$s</string>
     <string name="home_active_burn_over">+%1$d meer</string>
     <string name="home_active_burn_over_a11y">Actief verbruik %1$d, %2$d boven een normale dag</string>
@@ -2122,6 +2133,9 @@
     <string name="home_day_type_chip_a11y">Dagtype van vandaag: %1$s. Tik om te wisselen.</string>
     <string name="day_type_sheet_title">Dagtype</string>
     <string name="day_type_sheet_subtitle">Zet de doelen van vandaag op een ander dagtype.</string>
+    <string name="home_day_type_diverge_named">Dit uur lijkt meer op %1$s, niet op %2$s.</string>
+    <string name="home_day_type_diverge_unnamed">Dit uur lijkt niet op een %1$s-dag.</string>
+    <string name="cd_dismiss_day_type_prompt">Dagtypesuggestie sluiten</string>
     <string name="day_type_base_goals">Basisdoelen</string>
     <string name="day_type_clear_override">Uitzondering van vandaag wissen</string>
     <string name="day_type_edit_settings">Dagtypes bewerken</string>

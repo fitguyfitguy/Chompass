@@ -148,6 +148,75 @@ class OpenFoodFactsMappingTest {
         org.junit.Assert.assertNull(food.selectedServingUnit)
     }
     @Test
+    fun analysis_packageOnly_servingBasisIsThePackage() {
+        val product = JSONObject(
+            """
+            {
+              "product_name": "Matcha Oat Drink",
+              "brands": "Oatly",
+              "quantity": "250 ml",
+              "product_quantity": 250,
+              "product_quantity_unit": "ml",
+              "nutriments": {
+                "energy-kcal_100g": 59,
+                "proteins_100g": 1.0,
+                "carbohydrates_100g": 6.6,
+                "fat_100g": 3.0
+              }
+            }
+            """.trimIndent(),
+        )
+        val food = OpenFoodFactsService.analysis(product, "4250710502227")
+        // No labeled serving: the package is the portion basis, not a 100 g
+        // guess (Codeberg #168). Macros scale to the package weight.
+        assertEquals(250.0, food.servingSizeGrams!!, 0.001)
+        // 59 kcal/100g × 2.5, no kJ or Atwater correction.
+        assertEquals(148, food.calories)
+        assertEquals(2.5, food.protein, 0.001)
+        assertEquals(16.5, food.carbs, 0.001)
+        assertEquals(7.5, food.fat, 0.001)
+        val packageOption = food.servingUnitOptions.single()
+        assertEquals("package", packageOption.unit)
+        assertEquals(250.0, packageOption.gramsPerUnit, 0.001)
+        assertEquals(1.0, packageOption.quantity!!, 0.001)
+        assertEquals("package", food.selectedServingUnit)
+        assertEquals(1.0, food.selectedServingQuantity!!, 0.001)
+    }
+
+    @Test
+    fun analysis_estimatedSignQuantity_packageBasisFromDisplayString() {
+        // Nutella 400 g jar (device pass 2026-11-12): no structured quantity,
+        // display string "400 g e" — the estimated sign must not fall back to
+        // the 100 g guess (Codeberg #168).
+        val product = JSONObject(
+            """
+            {
+              "product_name": "Nutella",
+              "brands": "Ferrero",
+              "quantity": "400 g e",
+              "nutriments": {
+                "energy-kcal_100g": 539,
+                "proteins_100g": 6.3,
+                "carbohydrates_100g": 57.5,
+                "fat_100g": 30.9
+              }
+            }
+            """.trimIndent(),
+        )
+        val food = OpenFoodFactsService.analysis(product, "3017620422003")
+        assertEquals(400.0, food.servingSizeGrams!!, 0.001)
+        assertEquals(2156, food.calories)
+        assertEquals(25.2, food.protein, 0.001)
+        assertEquals(230.0, food.carbs, 0.001)
+        assertEquals(123.6, food.fat, 0.001)
+        val packageOption = food.servingUnitOptions.single()
+        assertEquals("package", packageOption.unit)
+        assertEquals(400.0, packageOption.gramsPerUnit, 0.001)
+        assertEquals(1.0, packageOption.quantity!!, 0.001)
+        assertEquals("package", food.selectedServingUnit)
+    }
+
+    @Test
     fun analysis_rejectsMissingNutriments() {
         try {
             OpenFoodFactsService.analysis(

@@ -937,6 +937,7 @@ bilirsən?</string>
     <string name="cd_new_recipe">Yeni resept</string>
     <string name="cd_open_camera">Kameranı aç</string>
     <string name="cd_open_gallery">Qalereyanı aç</string>
+    <string name="cd_camera_shutter">Şəkil çək</string>
     <string name="cd_quantity_operator">%1$s kəmiyyətə daxil et</string>
     <string name="cd_remove_image">Şəkli sil</string>
     <string name="cd_selected">Seçilib</string>
@@ -1085,6 +1086,16 @@ bilirsən?</string>
     <string name="home_active_burn_a11y">Aktiv yanma %1$d</string>
     <string name="home_active_burn_caption">%1$d aktiv</string>
     <string name="home_active_burn_caption_progress">%1$d/%2$d aktiv</string>
+    <string name="home_budget_class_usual">Adi gün</string>
+    <string name="home_budget_class_lean_lighter">Yüngülə</string>
+    <string name="home_budget_class_lean_harder">Ağırına</string>
+    <string name="home_budget_class_lighter">Yüngül gün</string>
+    <string name="home_budget_class_harder">Ağır gün</string>
+    <string name="home_budget_class_lean_type">%1$s tərəfə</string>
+    <string name="home_budget_class_type">%1$s günü</string>
+    <string name="home_budget_class_sheet_hourly">Eyni saat tarixçəsi azdır. Hədəf adi gün olaraq qalır.</string>
+    <string name="home_budget_class_sheet_usual">Hələ təsnif olunmayıb. Hədəf adi gündür, təxmin edilən məşq günü deyil.</string>
+    <string name="home_budget_class_sheet_moved">Son 28 gündən təsnif olundu. Saxlanan hədəf dəyişməyib.</string>
     <string name="home_active_burn_caption_progress_day_type">%1$d/%2$d aktiv · %3$s</string>
     <string name="home_active_burn_over">+%1$d artıq</string>
     <string name="home_active_burn_over_a11y">Aktiv yanma %1$d, normal gündən %2$d çox</string>
@@ -2124,6 +2135,9 @@ bilirsən?</string>
     <string name="home_day_type_chip_a11y">Bugünkü gün tipi: %1$s. Dəyişmək üçün toxunun.</string>
     <string name="day_type_sheet_title">Gün tipi</string>
     <string name="day_type_sheet_subtitle">Bugünkü hədəfləri başqa gün tipinə keçirin.</string>
+    <string name="home_day_type_diverge_named">Bu saat daha çox %1$s kimi görünür, %2$s yox.</string>
+    <string name="home_day_type_diverge_unnamed">Bu saat %1$s günü kimi görünmür.</string>
+    <string name="cd_dismiss_day_type_prompt">Gün tipi təklifini bağla</string>
     <string name="day_type_base_goals">Əsas hədəflər</string>
     <string name="day_type_clear_override">Bugünkü istisnanı sil</string>
     <string name="day_type_edit_settings">Gün tiplərini redaktə et</string>

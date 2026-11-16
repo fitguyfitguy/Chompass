@@ -157,11 +157,14 @@ class ProgressViewModel(private val container: AppContainer) : ViewModel() {
     val wellness: StateFlow<List<DailyWellness>> = _wellness.asStateFlow()
 
     /** Native BLE scale sync (vendored openScale drivers). One run at a time;
-     *  entries land through the normal repository Flows, so no extra refresh. */
+     *  entries land through the normal repository Flows, so no extra refresh.
+     *  The run itself is hosted by [app.chompass.scale.ScaleSyncService] (a
+     *  connectedDevice foreground service), so it survives the sheet and the
+     *  screen turning off; this method only starts that host. */
     val scaleSyncState: StateFlow<ScaleSyncState> = container.scaleSyncController.state
 
-    fun startScaleSync() {
-        viewModelScope.launch { container.scaleSyncController.startAndAwait() }
+    fun startScaleSync(context: android.content.Context) {
+        app.chompass.scale.ScaleSyncService.start(context)
     }
 
     fun cancelScaleSync() {

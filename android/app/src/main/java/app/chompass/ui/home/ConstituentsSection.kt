@@ -198,11 +198,7 @@ private fun ConstituentRowCard(
                 onSelectedUnitChange = { id ->
                     unitId = id
                     val option = ServingUnitOption.optionMatching(id, row.servingUnitOptions)
-                    val qty = if (option.gramsPerUnit > 0) {
-                        row.servingSizeGrams / option.gramsPerUnit
-                    } else {
-                        row.servingSizeGrams
-                    }
+                    val qty = ServingUnitOption.quantityForGrams(row.servingSizeGrams, option)
                     quantityText = ServingUnitOption.formatQuantity(qty)
                     onChange(
                         row.copy(
@@ -219,11 +215,7 @@ private fun ConstituentRowCard(
                 onUnitOptionsChange = { options, newId ->
                     val gramsBefore = row.servingSizeGrams
                     val option = ServingUnitOption.optionMatching(newId, options)
-                    val qty = if (option.gramsPerUnit > 0) {
-                        gramsBefore / option.gramsPerUnit
-                    } else {
-                        gramsBefore
-                    }
+                    val qty = ServingUnitOption.quantityForGrams(gramsBefore, option)
                     unitId = newId
                     quantityText = ServingUnitOption.formatQuantity(qty)
                     onChange(

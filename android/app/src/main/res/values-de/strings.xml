@@ -2839,6 +2839,9 @@ für dich ein</string>
     <string name="untracked_sheet_kcal_optional">Grobe Kalorien (optional)</string>
     <string name="day_type_sheet_title">Tagestyp</string>
     <string name="day_type_sheet_subtitle">Wechsle die heutigen Ziele zu einem anderen Tagestyp.</string>
+    <string name="home_day_type_diverge_named">Diese Stunde wirkt eher wie %1$s, nicht wie %2$s.</string>
+    <string name="home_day_type_diverge_unnamed">Diese Stunde wirkt nicht wie ein %1$s-Tag.</string>
+    <string name="cd_dismiss_day_type_prompt">Tagestyp-Hinweis schließen</string>
     <string name="day_type_targets_summary">%1$s %5$s · %2$dP %3$dC %4$dF</string>
     <string name="day_type_active_typical">≈ %1$d %2$s aktiv typisch</string>
     <string name="day_type_base_goals">Basisziele</string>
@@ -2914,6 +2917,16 @@ für dich ein</string>
     <string name="home_active_burn_a11y">Aktiver Kalorienverbrauch %1$d</string>
 
     <string name="home_active_burn_caption_progress">%1$d/%2$d aktiv</string>
+    <string name="home_budget_class_usual">Üblicher Tag</string>
+    <string name="home_budget_class_lean_lighter">Eher leichter</string>
+    <string name="home_budget_class_lean_harder">Eher härter</string>
+    <string name="home_budget_class_lighter">Leichter Tag</string>
+    <string name="home_budget_class_harder">Härterer Tag</string>
+    <string name="home_budget_class_lean_type">Eher %1$s</string>
+    <string name="home_budget_class_type">%1$s-Tag</string>
+    <string name="home_budget_class_sheet_hourly">Noch zu wenig Stundenverlauf. Ziel bleibt dein üblicher Tag.</string>
+    <string name="home_budget_class_sheet_usual">Noch nicht eingeordnet. Ziel ist dein üblicher Tag, kein geratener Trainingstag.</string>
+    <string name="home_budget_class_sheet_moved">Eingeordnet aus den letzten 28 Tagen. Dein gespeichertes Ziel bleibt.</string>
     <string name="home_active_burn_caption_progress_day_type">%1$d/%2$d aktiv · %3$s</string>
 
     <string name="home_active_burn_progress_a11y">Aktiver Kalorienverbrauch %1$d, typischer Wert %2$d</string>
@@ -3059,6 +3072,7 @@ für dich ein</string>
     <string name="cd_close_camera">Kamera schließen</string>
 
     <string name="cd_open_gallery">Galerie öffnen</string>
+    <string name="cd_camera_shutter">Foto aufnehmen</string>
 
     <string name="unit_mcg">mcg</string>
 
@@ -4442,4 +4456,15 @@ für dich ein</string>
     <string name="progress_sync_scale_user_new">Als neuen Benutzer registrieren</string>
     <string name="progress_sync_scale_consent_slot">Platz %1$d an %2$s braucht die 4-stellige PIN von der Waage.</string>
     <string name="progress_sync_scale_consent_hint">PIN (4 Ziffern)</string>
-    </resources>
+    <string name="progress_sync_scale_empty_slots">Auf der Waage sind noch keine Profile gespeichert. Leg eins direkt an der Waage an (SET-Taste, Platz wählen, 4-stelligen Code notieren) und versuch es erneut — oder registriere hier ein neues Profil.</string>
+    <string name="progress_sync_scale_consent_rejected">Die Waage hat diesen Code abgelehnt. Prüfe den 4-stelligen Code, den die Waage für diesen Platz zeigt. Falls der Platz über die Hersteller-App der Waage eingerichtet wurde, registriere stattdessen einen neuen Benutzer.</string>
+    <string name="progress_sync_scale_bt_unpair">Die Bluetooth-Kopplung der Waage ist in einem fehlerhaften Zustand. Entferne (vergiss) die Waage in den Android-Bluetooth-Einstellungen und versuch es erneut.</string>
+    <string name="progress_sync_scale_bt_settings">Bluetooth-Einstellungen</string>
+    <string name="notif_channel_scale_sync">Waage-Sync</string>
+    <string name="notif_channel_scale_sync_desc">Wird angezeigt, während ein Bluetooth-Waage-Sync läuft</string>
+    <string name="notif_scale_sync_title">Waage-Sync</string>
+    <string name="notif_scale_sync_scanning">Suche nach deiner Waage …</string>
+    <string name="notif_scale_sync_reading">Synchronisiere mit %1$s …</string>
+    <string name="notif_scale_sync_awaiting_user">Wähle den Profil-Platz auf deinem Telefon</string>
+    <string name="notif_scale_sync_awaiting_consent">Gib den 4-stelligen Code der Waage auf deinem Telefon ein</string>
+</resources>

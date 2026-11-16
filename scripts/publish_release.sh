@@ -61,10 +61,9 @@ Options:
 After uploading assets, redeploys the Hugo site (scripts/deploy_pages.sh) unless
 --skip-pages is set. Keep website/hugo.toml params.version in sync with the release.
 
-Uploads the universal APK + SHA256SUMS. Resume with --assets-only after freeing
-space:
-  ./scripts/manage_release_assets.sh list
-  ./scripts/manage_release_assets.sh keep-n 5 -y
+Uploads the universal APK + SHA256SUMS. Resume with --assets-only after the
+release page exists:
+  ./scripts/publish_release.sh VERSION --assets-only
 EOF
       exit 0
       ;;
@@ -150,18 +149,23 @@ quota_help() {
 
 Codeberg release attachment quota exceeded.
 
-1. Inspect current attachments:
-     ./scripts/manage_release_assets.sh list
+Note: Forgejo rejects all writes while ANY quota category is over and reports
+it as attachment quota. Check the quota page first:
+  https://codeberg.org/user/settings (quota section)
 
-2. Free space (keep the last 3 to 5 releases, or prune ABI/play leftovers):
-     ./scripts/manage_release_assets.sh keep-n 5 -y
+1. Git repo over limit (e.g. after a history rewrite, before server gc):
+   asset pruning cannot help. Post a [STORAGE] request on
+   https://codeberg.org/Codeberg-e.V./requests asking for gc + recalc
+   (request 2709 is the precedent).
+
+2. Assets genuinely full: prune one release at a time (never bulk —
+   keep-n / keep-latest delete whole release pages):
+     ./scripts/manage_release_assets.sh list
      ./scripts/manage_release_assets.sh prune-abi-splits --before vX.Y.Z -y
+     ./scripts/manage_release_assets.sh prune-play-assets -y
 
 3. Resume this publish (uploads only missing assets):
      ./scripts/publish_release.sh VERSION --assets-only
-
-Request a quota increase (free for libre projects):
-  https://codeberg.org/Codeberg-e.V./requests
 EOF
 }
 
@@ -288,14 +292,25 @@ if [[ "$ASSETS_ONLY" -eq 0 ]]; then
   if release_exists; then
     echo "Release $TAG already exists — uploading any missing assets."
   else
-    echo "==> Creating release $TAG"
+    # tea 0.16's default target is wrong, so pass one. Use the tag's
+    # commit when it already exists: HEAD may have moved past the cut,
+    # and HEAD is not on the remote until main is pushed.
+    if git rev-parse -q --verify "refs/tags/${TAG}^{}" >/dev/null; then
+      TARGET="$(git rev-parse "refs/tags/${TAG}^{}")"
+    else
+      TARGET="$(git rev-parse HEAD)"
+    fi
+    if [[ "$TARGET" != "$(git rev-parse HEAD)" ]]; then
+      echo "Release target is ${TAG} (${TARGET:0:12}), not HEAD ($(git rev-parse --short HEAD))."
+    fi
+    echo "==> Creating release $TAG (target ${TARGET:0:12})"
     err=""
     if ! err="$(run_tea releases create \
       --login "$LOGIN" \
       --repo "$CODEBERG_REPO" \
       "${RELEASE_FLAGS[@]}" \
       --tag "$TAG" \
-      --target "$(git rev-parse HEAD)" \
+      --target "$TARGET" \
       --title "$TITLE" \
       --note "$NOTES" 2>&1)"; then
       if echo "$err" | rg -qi 'already a release'; then

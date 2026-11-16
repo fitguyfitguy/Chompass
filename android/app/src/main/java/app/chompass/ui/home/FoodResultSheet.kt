@@ -949,7 +949,7 @@ fun FoodResultSheet(
                         resolveServingDraft()
                         selectedServingUnitId = optionId
                         val option = ServingUnitOption.optionMatching(optionId, servingUnitOptions)
-                        val quantity = if (option.gramsPerUnit > 0) servingGrams / option.gramsPerUnit else servingGrams
+                        val quantity = ServingUnitOption.quantityForGrams(servingGrams, option)
                         servingQuantityText = ServingUnitOption.formatQuantity(quantity)
                     },
                     servingSizeGrams = servingGrams,
@@ -966,11 +966,7 @@ fun FoodResultSheet(
                         servingUnitOptions = options
                         selectedServingUnitId = newId
                         val option = ServingUnitOption.optionMatching(newId, options)
-                        val quantity = if (option.gramsPerUnit > 0) {
-                            gramsBefore / option.gramsPerUnit
-                        } else {
-                            gramsBefore
-                        }
+                        val quantity = ServingUnitOption.quantityForGrams(gramsBefore, option)
                         servingQuantityText = ServingUnitOption.formatQuantity(quantity)
                     },
                     onQuantityEditingDone = resolveServingDraft,

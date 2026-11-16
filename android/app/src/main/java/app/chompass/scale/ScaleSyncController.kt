@@ -1,6 +1,7 @@
 package app.chompass.scale
 
 import android.content.Context
+import android.content.Intent
 import app.chompass.data.BodyCompositionRepository
 import app.chompass.data.BodyFatRepository
 import app.chompass.data.ProfileRepository
@@ -39,12 +40,22 @@ sealed interface ScaleSyncState {
     data object Scanning : ScaleSyncState
     data class Connecting(val deviceName: String) : ScaleSyncState
     data class Reading(val deviceName: String) : ScaleSyncState
-    /** Scale asked which of its saved user slots to bind; labels align with ids. */
+    /** Scale asked which of its saved user slots to bind; labels align with ids.
+     *  An ids list of just [-1] means the scale has no stored profiles. */
     data class AwaitingUser(val labels: List<String>, val ids: List<Int>) : ScaleSyncState
-    /** Scale asked for a slot's PIN/consent code (0..9999). */
-    data class AwaitingConsent(val deviceName: String, val scaleIndex: Int) : ScaleSyncState
+    /** Scale asked for a slot's PIN/consent code (0..9999). [rejected] is true
+     *  when a previously entered code was refused (wrong code or a slot owned
+     *  by the scale's own app). */
+    data class AwaitingConsent(
+        val deviceName: String,
+        val scaleIndex: Int,
+        val rejected: Boolean = false,
+    ) : ScaleSyncState
     data class Done(val importedCount: Int) : ScaleSyncState
     data class Failed(val message: String) : ScaleSyncState
+    /** Connection failed in a way that points at a stale Android bond; the user
+     *  must unpair the scale in system Bluetooth settings and retry. */
+    data class BondIssue(val detail: String) : ScaleSyncState
 }
 
 /**
@@ -74,6 +85,8 @@ class ScaleSyncController(
         const val RUN_HARD_TIMEOUT_MS = 120_000L
         /** After the last saved row, end the run so the sheet does not sit until the hard timeout. */
         const val FINISH_QUIET_MS = 2_000L
+        /** Single link-loss reconnect attempt, delayed to let the stack settle. */
+        const val RECONNECT_DELAY_MS = 1_000L
     }
 
     private val _state = MutableStateFlow<ScaleSyncState>(ScaleSyncState.Idle)
@@ -98,10 +111,22 @@ class ScaleSyncController(
     @Volatile
     private var lastDeviceName: String? = null
 
+    /** Address of the device the current run matched, for the link-loss retry. */
+    @Volatile
+    private var lastAddress: String? = null
+
+    /** Set when the handler reports a refused consent code; consumed by the
+     *  ENTER_CONSENT prompt that immediately follows it. */
+    @Volatile
+    private var consentRejected = false
+
+    /** Link-loss retry fires at most once per run. */
+    @Volatile
+    private var retriedLinkLoss = false
+
     /** Profile snapshot built once per run (handlers call DataProvider synchronously). */
     @Volatile
     private var cachedUser: ScaleUser? = null
-
     /** Starts a sync run and suspends until it reaches Done or Failed. */
     suspend fun startAndAwait(): ScaleSyncState {
         if (_state.value !is ScaleSyncState.Idle && _state.value !is ScaleSyncState.Done &&
@@ -121,11 +146,13 @@ class ScaleSyncController(
         val ble = ScaleBleTransport(
             context = context,
             scope = scope,
+            scanFilters = ScaleDriverRegistry.scanFilters,
             onScanned = { device ->
                 if (handler != null) return@ScaleBleTransport
                 val (h, support) = ScaleDriverRegistry.supportFor(device) ?: return@ScaleBleTransport
                 LogManager.i(TAG, "matched ${support.displayName} at ${device.address}")
                 handler = h
+                lastAddress = device.address
                 _state.value = ScaleSyncState.Connecting(support.displayName)
                 transport?.stopScan()
                 transport?.connect(device.address)
@@ -144,7 +171,7 @@ class ScaleSyncController(
                     h.handleConnected(user)
                 }
             },
-            onLinkLost = { reason ->
+            onLinkLost = { reason, bondIssue ->
                 handler?.handleDisconnected()
                 val current = _state.value
                 if (current is ScaleSyncState.Reading ||
@@ -154,6 +181,25 @@ class ScaleSyncController(
                 ) {
                     if (sawPublish || publishedCount.get() > 0) {
                         // The import quiet-finish owns the Done count.
+                    } else if (bondIssue) {
+                        LogManager.w(TAG, "bond-related failure: $reason")
+                        finished.complete(ScaleSyncState.BondIssue(reason))
+                    } else if (!retriedLinkLoss) {
+                        // One reconnect attempt before failing the run
+                        // (screen-off/brief drops should not kill a weigh-in).
+                        retriedLinkLoss = true
+                        LogManager.w(TAG, "link lost ($reason) — retrying once")
+                        scope.launch {
+                            delay(RECONNECT_DELAY_MS)
+                            if (finished.isCompleted) return@launch
+                            val address = lastAddress
+                            if (address != null && handler != null && transport != null) {
+                                LogManager.i(TAG, "reconnect attempt -> $address")
+                                transport?.connect(address)
+                            } else {
+                                finished.complete(ScaleSyncState.Failed(reason))
+                            }
+                        }
                     } else {
                         finished.complete(ScaleSyncState.Failed(reason))
                     }
@@ -217,8 +263,13 @@ class ScaleSyncController(
         runScope = null
         cachedUser = null
         lastDeviceName = null
+        lastAddress = null
+        consentRejected = false
+        retriedLinkLoss = false
         publishedCount.set(0)
         sawPublish = false
+        runScope?.let { } // (scope cancelled by caller)
+        context.stopService(Intent(context, ScaleSyncService::class.java))
     }
 
     // --- ScaleDeviceHandler.Callbacks ------------------------------------------
@@ -268,6 +319,12 @@ class ScaleSyncController(
 
     override fun onError(resId: Int, t: Throwable?, vararg args: Any) {
         LogManager.e(TAG, "handler error res=$resId: ${t?.message ?: "—"}", t)
+        if (resId == app.chompass.R.string.bt_error_ucp_not_authorized) {
+            // The handler clears the bad consent and re-prompts ENTER_CONSENT;
+            // surface that prompt as rejected instead of failing the run.
+            consentRejected = true
+            return
+        }
         _state.value = ScaleSyncState.Failed(t?.message ?: context.getString(resId))
     }
 
@@ -294,8 +351,14 @@ class ScaleSyncController(
                     LogManager.w(TAG, "ENTER_CONSENT with unreadable payload — ignored")
                     return
                 }
-                LogManager.i(TAG, "ENTER_CONSENT for slot $scaleIndex")
-                _state.value = ScaleSyncState.AwaitingConsent(lastDeviceName ?: "scale", scaleIndex)
+                val rejected = consentRejected
+                consentRejected = false
+                LogManager.i(TAG, "ENTER_CONSENT for slot $scaleIndex (rejected=$rejected)")
+                _state.value = ScaleSyncState.AwaitingConsent(
+                    lastDeviceName ?: "scale",
+                    scaleIndex,
+                    rejected,
+                )
             }
         }
     }
@@ -303,11 +366,15 @@ class ScaleSyncController(
     /**
      * Answers the AwaitingUser prompt: [scaleIndex] is the scale slot id from the
      * sheet, −1 registers a new user on the scale (consent is auto-generated
-     * inside the handler). Restores Reading unless the handler already moved the
-     * state forward (it may raise ENTER_CONSENT inside the feedback call).
+     * inside the handler). Also accepts −1 from the rejected-consent state, whose
+     * sheet offers "register as new user" as the escape from a vendor-owned slot.
+     * Restores Reading unless the handler already moved the state forward (it may
+     * raise ENTER_CONSENT inside the feedback call).
      */
     fun onUserSelected(scaleIndex: Int) {
-        if (_state.value !is ScaleSyncState.AwaitingUser) return
+        val current = _state.value
+        val fromRejectedConsent = current is ScaleSyncState.AwaitingConsent && current.rejected
+        if (current !is ScaleSyncState.AwaitingUser && !fromRejectedConsent) return
         LogManager.i(TAG, "user picked slot $scaleIndex")
         runScope?.launch {
             try {
@@ -319,7 +386,9 @@ class ScaleSyncController(
             } catch (e: Exception) {
                 LogManager.e(TAG, "CHOOSE_USER feedback failed: ${e.message}", e)
             }
-            if (_state.value is ScaleSyncState.AwaitingUser) {
+            if (_state.value is ScaleSyncState.AwaitingUser ||
+                _state.value is ScaleSyncState.AwaitingConsent
+            ) {
                 _state.value = ScaleSyncState.Reading(lastDeviceName ?: "scale")
             }
         }

@@ -402,9 +402,10 @@ fun ProgressScreen(container: AppContainer, onOpenCustomize: (() -> Unit)? = nul
     }
     if (showScaleSyncSheet) {
         val syncState by vm.scaleSyncState.collectAsState()
+        val syncContext = androidx.compose.ui.platform.LocalContext.current
         ScaleSyncSheet(
             syncState = syncState,
-            onStart = { vm.startScaleSync() },
+            onStart = { vm.startScaleSync(syncContext) },
             onCancel = { vm.cancelScaleSync() },
             onUserSelected = { vm.onScaleUserSelected(it) },
             onConsentEntered = { vm.onScaleConsentEntered(it) },

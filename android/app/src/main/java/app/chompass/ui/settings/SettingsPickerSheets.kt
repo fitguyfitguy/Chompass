@@ -61,6 +61,7 @@ import app.chompass.models.WaterQuickPresets
 import app.chompass.models.WaterAmountFormat
 import app.chompass.models.WeightGoal
 import app.chompass.ui.components.DateWheelPicker
+import app.chompass.ui.components.parseTypedDate
 import app.chompass.ui.components.DecimalWheelPicker
 import app.chompass.ui.components.FeetInchesWheelPicker
 import app.chompass.ui.components.ChompassTextButton
@@ -1008,9 +1009,13 @@ internal fun BirthdaySheet(current: Instant, onSave: (Instant) -> Unit, onDismis
     // user's local date to avoid an off-by-one when the user is east of UTC.
     val localDate = current.atZone(ZoneId.systemDefault()).toLocalDate()
     var pickedDate by remember(current) { mutableStateOf(localDate) }
+    var typedDateDigits by remember { mutableStateOf<String?>(null) }
     var confirmMinor by remember { mutableStateOf(false) }
+    fun commitDate(): LocalDate =
+        // 1920 = DateWheelPicker's default minYear (no explicit min here).
+        parseTypedDate(typedDateDigits, 1920, LocalDate.now().year) ?: pickedDate
     fun commit() {
-        val newInstant = pickedDate.atStartOfDay(ZoneId.systemDefault()).toInstant()
+        val newInstant = commitDate().atStartOfDay(ZoneId.systemDefault()).toInstant()
         onSave(newInstant)
     }
     Text(stringResource(R.string.sheet_birthday), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
@@ -1019,11 +1024,12 @@ internal fun BirthdaySheet(current: Instant, onSave: (Instant) -> Unit, onDismis
         selected = pickedDate,
         onSelect = { pickedDate = it },
         maxYear = LocalDate.now().year,
+        onTypedDraftChange = { typedDateDigits = it },
         modifier = Modifier.fillMaxWidth()
     )
     Spacer(Modifier.height(12.dp))
     CancelSaveRow(onDismiss) {
-        val age = java.time.Period.between(pickedDate, LocalDate.now()).years
+        val age = java.time.Period.between(commitDate(), LocalDate.now()).years
         if (age < CalorieSafety.ADULT_MIN_AGE) confirmMinor = true else commit()
     }
     Spacer(Modifier.height(8.dp))

@@ -75,4 +75,43 @@ class SettingsHydrateCommitTest {
         assertEquals(custom, merged.activeProfile)
         assertEquals("sk-f...flow", merged.apiKeyMasked)
     }
+
+    /**
+     * Codeberg #92: Settings → Home display "Full Nutrient Names" flipped and
+     * then visually reverted. The toggle writes through [launchPref] without
+     * bumping the write gen, and the store collector repaints it within a
+     * frame — but the slow hydrate tail (weather, Health Connect, KeyStore)
+     * commits afterwards from its pre-toggle snapshot and used to repaint the
+     * stale home-display slice wholesale. Once the store collector has
+     * painted, its value must win, exactly like the AI profile slice above.
+     */
+    @Test
+    fun wholesaleHydration_keepsStorePaintedHomeDisplayOverStaleSnapshot() {
+        val painted = SettingsUiState().homeDisplay.copy(fullNutrientNames = true)
+        val current = SettingsUiState(homeDisplay = painted, waterCupSizeMl = 300)
+        // Snapshot read before the toggle: the persisted write is not in it.
+        val incoming = SettingsUiState(homeDisplay = SettingsUiState().homeDisplay, waterCupSizeMl = 400)
+
+        val result = commitSettingsHydrate(
+            current,
+            incoming,
+            writeGenAtStart = 0,
+            writeGenNow = 0,
+            storePaintedHomeDisplay = painted,
+        )
+        assertEquals(painted, result.homeDisplay)
+        assertTrue(result.homeDisplay.fullNutrientNames)
+        assertEquals(400, result.waterCupSizeMl) // hydration still wins for snapshot-driven fields
+    }
+
+    /** Cold start: before the collector's first paint the snapshot still paints (no default flash). */
+    @Test
+    fun wholesaleHydration_beforeFirstStorePaint_paintsSnapshotHomeDisplay() {
+        val stored = SettingsUiState().homeDisplay.copy(stepGoal = 9_000)
+        val current = SettingsUiState() // unpainted defaults
+        val incoming = SettingsUiState(homeDisplay = stored)
+
+        val result = commitSettingsHydrate(current, incoming, writeGenAtStart = 0, writeGenNow = 0)
+        assertEquals(stored, result.homeDisplay)
+    }
 }

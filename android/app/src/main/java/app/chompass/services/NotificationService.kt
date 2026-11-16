@@ -10,9 +10,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.text.SpannableStringBuilder
-import android.text.Spanned
-import android.text.style.ForegroundColorSpan
 import android.widget.RemoteViews
 import android.view.View
 import app.chompass.services.update.AndroidUpdateChecker

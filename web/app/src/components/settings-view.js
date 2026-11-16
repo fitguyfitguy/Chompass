@@ -91,6 +91,7 @@ import {
   MAX_PROFILES,
 } from "../lib/chompass-core/macro-plan-edit.js";
 import { resolveDay, resolveDayJournaled } from "../lib/chompass-core/macro-plan.js";
+import { applyPhase, removePhase, validatePhase, phaseAdherence, MAX_SPAN_DAYS } from "../lib/chompass-core/goal-phase-edit.js";
 import { applyingAiGoalsToPlan } from "../lib/chompass-core/macro-plan-edit.js";
 import { refreshGoalJournal } from "../lib/goal-journal-store.js";
 import { escapeHtml, escapeAttr } from "../lib/ui/html.js";
@@ -192,6 +193,7 @@ const SETTINGS_PARENT = {
   goals: "#/settings",
   nutrients: "#/settings?section=goals",
   daytypes: "#/settings?section=goals",
+  phases: "#/settings?section=goals",
   app: "#/settings",
   units: "#/settings?section=app",
   home: "#/settings?section=app",
@@ -271,6 +273,10 @@ export class SettingsView extends HTMLElement {
     }
     if (this.section === "daytypes") {
       await this.renderDayTypes();
+      return;
+    }
+    if (this.section === "phases") {
+      await this.renderGoalPhases();
       return;
     }
     if (this.section === "app") {
@@ -582,6 +588,7 @@ export class SettingsView extends HTMLElement {
       <nav class="settings-nav" aria-label="${t("settings.nav_related")}">
         <a href="#/settings?section=nutrients">${t("settings.nutrients.title")} <span>${t("settings.goals.nutrients_hint")}</span></a>
         ${!p.ketoMode ? `<a href="#/settings?section=daytypes">${escapeHtml(t("day_types.title"))} <span>${escapeHtml(dayTypesSummary(p.macroPlan))}</span></a>` : ""}
+        ${!p.ketoMode ? `<a href="#/settings?section=phases">${escapeHtml(t("goal_phases.title"))} <span>${escapeHtml(t("goal_phases.hint"))}</span></a>` : ""}
       </nav>`;
     this.querySelector("#goals-form")?.addEventListener("submit", async (ev) => {
       ev.preventDefault();
@@ -952,6 +959,10 @@ export class SettingsView extends HTMLElement {
           )
           .join("")}
       </div>` : ""}
+
+      <nav class="settings-nav" aria-label="${t("settings.nav_related")}">
+        <a href="#/settings?section=phases">${escapeHtml(t("goal_phases.title"))} <span>${escapeHtml(t("goal_phases.hint"))}</span></a>
+      </nav>
     `;
 
     // -- bindings --------------------------------------------------------------
@@ -1076,6 +1087,184 @@ export class SettingsView extends HTMLElement {
       });
     });
     bindSubpageBack(this, SETTINGS_PARENT.daytypes);
+    rr.restore();
+  }
+
+  /**
+   * Goal phases editor (Progress v2, PWA mirror of Android GoalPhasesScreen):
+   * dated cut/maintain/bulk windows applied through the day-type mechanics.
+   * Every write funnels through the pure goal-phase-edit path and is followed
+   * by a journal refresh, exactly like the day types editor. Hidden in keto
+   * (the plan is paused there, same gate as day types).
+   */
+  async renderGoalPhases() {
+    const rr = captureRerender(this);
+    const p = await this.loadProfile();
+    const phases = p.goalPhases ?? [];
+    const today = todayIso();
+    const base = dailyTargets(p);
+    const floor = safetyFloorKcal(p);
+    const appPrefs = await prefs.load();
+    const energyUnit = energyUnitFromPrefs(appPrefs);
+    const editingId = this._editingPhaseId ?? null; // "new" | phase id | null
+    const editing = editingId === "new" ? null : phases.find((x) => x.id === editingId) ?? null;
+    const INTENT_KEYS = { CUT: "goal_phases.intent_cut", MAINTAIN: "goal_phases.intent_maintain", BULK: "goal_phases.intent_bulk" };
+    const ERROR_KEYS = {
+      BLANK_NAME: "goal_phases.error_blank_name",
+      BAD_RANGE: "goal_phases.error_bad_range",
+      NO_PROFILE_SLOT: "goal_phases.error_no_slot",
+    };
+
+    /** Persist a mutated profile + refresh the goal journal (write trigger 1). */
+    const saveProfile = async (next) => {
+      this._editingPhaseId = null;
+      await profileStore.save(next);
+      await refreshGoalJournal().catch(() => null);
+      this.render();
+    };
+
+    // Per-phase adherence lines (avg Δ kcal/day · net over the window), the
+    // same rollup Android's phases screen shows.
+    const [entries, journal, untrackedRows] = await Promise.all([
+      foodEntries.all(),
+      goalJournal.all(),
+      untrackedDays.all(),
+    ]);
+    const untracked = new Set(untrackedRows.map((r) => r.date));
+    const intakeByDay = /** @type {Record<string, number>} */ ({});
+    for (const e of entries) intakeByDay[e.date] = (intakeByDay[e.date] ?? 0) + e.calories;
+    const plan = p.macroPlan ?? null;
+    const signedEnergy = (v) =>
+      `${v > 0 ? "+" : ""}${formatNumber(energyQuantity(v, energyUnit), { maximumFractionDigits: 0 })} ${energyUnitLabel(energyUnit)}`;
+    const adherenceLine = (x) => {
+      const r = phaseAdherence(x, intakeByDay, journal, plan, base, untracked, today);
+      if (r.avgDelta == null) return t("goal_phases.overlap_days", { count: String(r.overlapDays) });
+      return `${t("goal_phases.adherence_format", { delta: signedEnergy(r.avgDelta), net: signedEnergy(r.netKcal ?? 0) })} · ${t("goal_phases.overlap_days", { count: String(r.overlapDays) })}`;
+    };
+
+    this.innerHTML = `
+      ${subpageBar(t("goal_phases.title"), { backHref: SETTINGS_PARENT.phases })}
+      ${p.ketoMode ? `
+      <div class="card">
+        <p style="margin:0;color:var(--muted);font-size:0.88rem;">${escapeHtml(t("day_types.keto_paused"))}</p>
+      </div>` : `
+      <div class="card">
+        <p style="margin:0 0 0.6rem;color:var(--muted);font-size:0.88rem;">${escapeHtml(t("goal_phases.intro"))}</p>
+        ${phases.length === 0 ? `<p style="color:var(--muted);font-size:0.85rem;margin:0;">${escapeHtml(t("goal_phases.none"))}</p>` : ""}
+        ${phases
+          .map(
+            (x) => `
+          <div class="day-type-row">
+            <div class="day-type-row__text">
+              <strong>${escapeHtml(x.name)}</strong>
+              <span class="day-type-row__sub">${escapeHtml(t(INTENT_KEYS[x.intent] ?? x.intent))} · ${escapeHtml(x.startDate)} – ${escapeHtml(x.endDate)} · ${formatEnergy(x.calories, energyUnit)}</span>
+              <span class="day-type-row__sub">${escapeHtml(adherenceLine(x))}</span>
+            </div>
+            <div class="day-type-row__actions">
+              <button type="button" class="chip" data-gp-edit="${escapeAttr(x.id)}">${escapeHtml(t("goal_phases.edit"))}</button>
+              <button type="button" class="chip" data-gp-del="${escapeAttr(x.id)}">${escapeHtml(t("goal_phases.delete"))}</button>
+            </div>
+          </div>`,
+          )
+          .join("")}
+        <button type="button" class="btn btn--ghost" data-gp-add>${escapeHtml(t("goal_phases.add"))}</button>
+      </div>
+
+      ${editingId ? `
+      <form class="entry-form card" id="gp-phase-form">
+        <h2 class="chart-title">${escapeHtml(editingId === "new" ? t("goal_phases.add") : t("goal_phases.edit"))}</h2>
+        <div class="field">
+          <label for="gp-name">${escapeHtml(t("day_types.name"))}</label>
+          <input id="gp-name" name="name" type="text" maxlength="32" value="${escapeAttr(editing?.name ?? "")}" placeholder="${escapeAttr(t("goal_phases.name_placeholder"))}" required />
+        </div>
+        <div class="field-row field-row--2">
+          <div class="field">
+            <label for="gp-intent">${escapeHtml(t("goal_phases.intent"))}</label>
+            <select id="gp-intent" name="intent">
+              ${["CUT", "MAINTAIN", "BULK"].map((id) => `<option value="${id}" ${(editing?.intent ?? "CUT") === id ? "selected" : ""}>${escapeHtml(t(INTENT_KEYS[id]))}</option>`).join("")}
+            </select>
+          </div>
+          <div class="field"><label for="gp-start">${escapeHtml(t("goal_phases.start"))}</label><input id="gp-start" name="startDate" type="date" value="${editing?.startDate ?? today}" required /></div>
+          <div class="field"><label for="gp-end">${escapeHtml(t("goal_phases.end"))}</label><input id="gp-end" name="endDate" type="date" value="${editing?.endDate ?? shiftDate(today, 13)}" required /></div>
+        </div>
+        <p class="field-hint">${escapeHtml(t("goal_phases.range_clip_hint", { days: String(MAX_SPAN_DAYS) }))}</p>
+        <div class="field-row field-row--2">
+          <div class="field"><label for="gp-kcal">${escapeHtml(t("day_types.calories", { unit: energyUnitLabel(energyUnit) }))}</label><input id="gp-kcal" name="calories" type="number" min="${energyQuantity(1200, energyUnit)}" max="${energyQuantity(6000, energyUnit)}" step="${energyUnit === "kj" ? "any" : "10"}" value="${energyQuantity(editing?.calories ?? base.calories, energyUnit)}" required /></div>
+          <div class="field"><label for="gp-protein">${escapeHtml(t("day_types.protein_g"))}</label><input id="gp-protein" name="proteinG" type="number" min="0" max="500" value="${editing?.proteinG ?? base.proteinG}" required /></div>
+          <div class="field"><label for="gp-carbs">${escapeHtml(t("day_types.carbs_g"))}</label><input id="gp-carbs" name="carbsG" type="number" min="0" max="1200" value="${editing?.carbsG ?? base.carbsG}" required /></div>
+          <div class="field"><label for="gp-fat">${escapeHtml(t("day_types.fat_g"))}</label><input id="gp-fat" name="fatG" type="number" min="0" max="400" value="${editing?.fatG ?? base.fatG}" required /></div>
+        </div>
+        <p class="field-hint">${escapeHtml(t("day_types.floor_hint", { floor: formatNumber(energyQuantity(floor, energyUnit)), unit: energyUnitLabel(energyUnit) }))}</p>
+        <p id="gp-error" role="alert" style="color:var(--danger,#b3261e);font-size:0.85rem;margin:0;" hidden></p>
+        <div class="btn-row">
+          <button type="submit" class="btn btn--primary">${escapeHtml(t("action.save"))}</button>
+          <button type="button" class="btn btn--ghost" id="gp-cancel">${escapeHtml(t("action.cancel"))}</button>
+        </div>
+      </form>` : ""}
+    `}`;
+
+    // -- bindings --------------------------------------------------------------
+    this.querySelector("[data-gp-add]")?.addEventListener("click", () => {
+      this._editingPhaseId = "new";
+      this.render();
+    });
+    this.querySelectorAll("[data-gp-edit]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        this._editingPhaseId = btn.getAttribute("data-gp-edit");
+        this.render();
+      });
+    });
+    this.querySelector("#gp-cancel")?.addEventListener("click", () => {
+      this._editingPhaseId = null;
+      this.render();
+    });
+    this.querySelector("#gp-phase-form")?.addEventListener("submit", async (ev) => {
+      ev.preventDefault();
+      const fd = new FormData(/** @type {HTMLFormElement} */ (ev.target));
+      const name = String(fd.get("name") ?? "").trim();
+      if (!name) return;
+      const draft = {
+        id: editing?.id ?? crypto.randomUUID(),
+        name,
+        intent: /** @type {"CUT"|"MAINTAIN"|"BULK"} */ (String(fd.get("intent") ?? "CUT")),
+        startDate: String(fd.get("startDate") ?? ""),
+        endDate: String(fd.get("endDate") ?? ""),
+        calories: energyToKcal(Number(fd.get("calories")), energyUnit),
+        proteinG: Number(fd.get("proteinG")),
+        carbsG: Number(fd.get("carbsG")),
+        fatG: Number(fd.get("fatG")),
+        profileId: editing?.profileId ?? null,
+        createdAtMillis: editing?.createdAtMillis ?? 0,
+      };
+      const error = validatePhase(p, draft);
+      if (error) {
+        const el = /** @type {HTMLElement|null} */ (this.querySelector("#gp-error"));
+        if (el) {
+          el.textContent =
+            error === "TOO_LONG"
+              ? t("goal_phases.error_too_long", { days: String(MAX_SPAN_DAYS) })
+              : t(ERROR_KEYS[error] ?? error);
+          el.hidden = false;
+        }
+        return;
+      }
+      await saveProfile(applyPhase(p, draft, today));
+    });
+    this.querySelectorAll("[data-gp-del]").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const id = btn.getAttribute("data-gp-del");
+        const x = phases.find((y) => y.id === id);
+        const ok = await openConfirm({
+          title: t("goal_phases.delete_title", { name: x?.name ?? "" }),
+          message: t("goal_phases.delete_message"),
+          confirmLabel: t("goal_phases.delete"),
+          danger: true,
+        });
+        if (!ok) return;
+        await saveProfile(removePhase(p, id, today));
+      });
+    });
+    bindSubpageBack(this, SETTINGS_PARENT.phases);
     rr.restore();
   }
 

@@ -17,6 +17,9 @@ import androidx.health.connect.client.records.StepsRecord
 import androidx.health.connect.client.records.TotalCaloriesBurnedRecord
 import androidx.health.connect.client.records.WeightRecord
 import androidx.health.connect.client.request.AggregateRequest
+import androidx.health.connect.client.request.AggregateGroupByDurationRequest
+import app.chompass.models.HourlyActiveHistory
+import java.time.Duration
 import androidx.health.connect.client.request.ReadRecordsRequest
 import androidx.health.connect.client.time.TimeRangeFilter
 import java.time.Instant
@@ -240,6 +243,121 @@ internal class HealthConnectReader(
         val total = result[TotalCaloriesBurnedRecord.ENERGY_TOTAL]?.inKilocalories?.takeIf { it > 0.0 }
         if (active + (total ?: 0.0) <= 0.0) return null
         return DailyEnergyBurn(date = date, active = active, total = total)
+    }
+
+    /**
+     * Active kcal for each clock hour of [date]. Index is the hour in
+     * [ZoneId.systemDefault]. -1 means that hour was not in the response.
+     * Null means the read failed; the caller leaves that date unchanged.
+     * Today ends at now. A missing grouped-duration API falls back to at most
+     * 24 hourly aggregates for this one day.
+     */
+    suspend fun readHourlyActive(date: LocalDate, now: Instant = Instant.now()): List<Int>? {
+        val c = client() ?: return null
+        if (!hasEnergyRead()) return null
+        val zone = ZoneId.systemDefault()
+        val start = date.atStartOfDay(zone).toInstant()
+        val dayEnd = date.plusDays(1).atStartOfDay(zone).toInstant()
+        val end = if (date == LocalDate.now(zone)) minOf(now, dayEnd) else dayEnd
+        if (!end.isAfter(start)) return null
+        return try {
+            placeHourlyBuckets(
+                c.aggregateGroupByDuration(
+                    AggregateGroupByDurationRequest(
+                        metrics = setOf(ActiveCaloriesBurnedRecord.ACTIVE_CALORIES_TOTAL),
+                        timeRangeFilter = TimeRangeFilter.between(start, end),
+                        timeRangeSlicer = Duration.ofHours(1),
+                    ),
+                ),
+                date,
+                zone,
+            )
+        } catch (e: NoClassDefFoundError) {
+            readHourlyActiveFallback(c, date, zone, start, end)
+        } catch (e: NoSuchMethodError) {
+            readHourlyActiveFallback(c, date, zone, start, end)
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    /**
+     * Today, plus [days] days before it (default 28). Today is always read.
+     * The last [HourlyActiveHistory.RECENT_REREAD_DAYS] are always read again,
+     * so a zero written before the watch synced does not freeze. Older days
+     * are skipped once every hour has a sample. A failed day is left unchanged.
+     * A bucket with no energy metric stays missing (-1), not zero.
+     */
+    suspend fun readHourlyActiveBackfill(
+        existing: Map<String, List<Int>>,
+        days: Int = 28,
+        today: LocalDate = LocalDate.now(),
+    ): Map<String, List<Int>> {
+        val merged = existing.toMutableMap()
+        readHourlyActive(today)?.let { slots -> applyHourlyDay(merged, today, slots) }
+        for (offset in 1..days) {
+            val date = today.minusDays(offset.toLong())
+            val key = date.toString()
+            if (!HourlyActiveHistory.needsRefresh(merged[key], offset)) continue
+            val slots = readHourlyActive(date) ?: continue
+            applyHourlyDay(merged, date, slots)
+        }
+        return HourlyActiveHistory.sanitize(merged, today)
+    }
+
+    private fun applyHourlyDay(merged: MutableMap<String, List<Int>>, date: LocalDate, slots: List<Int>) {
+        if (slots.size == HourlyActiveHistory.HOURS && slots.any { it >= 0 }) {
+            merged[date.toString()] = slots
+        } else {
+            merged.remove(date.toString())
+        }
+    }
+
+    private fun placeHourlyBuckets(
+        buckets: List<androidx.health.connect.client.aggregate.AggregationResultGroupedByDuration>,
+        date: LocalDate,
+        zone: ZoneId,
+    ): List<Int> {
+        val slots = IntArray(HourlyActiveHistory.HOURS) { HourlyActiveHistory.MISSING }
+        for (bucket in buckets) {
+            val start = bucket.startTime.atZone(zone)
+            if (start.toLocalDate() != date) continue
+            val hour = start.hour
+            if (hour !in 0..23) continue
+            val energy = bucket.result[ActiveCaloriesBurnedRecord.ACTIVE_CALORIES_TOTAL] ?: continue
+            slots[hour] = energy.inKilocalories.roundToInt().coerceAtLeast(0)
+        }
+        return slots.toList()
+    }
+
+    private suspend fun readHourlyActiveFallback(
+        c: androidx.health.connect.client.HealthConnectClient,
+        date: LocalDate,
+        zone: ZoneId,
+        start: Instant,
+        end: Instant,
+    ): List<Int> {
+        val slots = IntArray(HourlyActiveHistory.HOURS) { HourlyActiveHistory.MISSING }
+        for (hour in 0..23) {
+            val hourStart = date.atStartOfDay(zone).plusHours(hour.toLong()).toInstant()
+            val hourEnd = hourStart.plus(Duration.ofHours(1))
+            if (!hourEnd.isAfter(start) || !hourStart.isBefore(end)) continue
+            val from = maxOf(hourStart, start)
+            val to = minOf(hourEnd, end)
+            if (!to.isAfter(from)) continue
+            val result = runCatching {
+                c.aggregate(
+                    AggregateRequest(
+                        metrics = setOf(ActiveCaloriesBurnedRecord.ACTIVE_CALORIES_TOTAL),
+                        timeRangeFilter = TimeRangeFilter.between(from, to),
+                    ),
+                )
+            }.getOrNull()
+            if (result == null) continue
+            val energy = result[ActiveCaloriesBurnedRecord.ACTIVE_CALORIES_TOTAL] ?: continue
+            slots[hour] = energy.inKilocalories.roundToInt().coerceAtLeast(0)
+        }
+        return slots.toList()
     }
 
     suspend fun readRecentEnergySummary(days: Int = 14): HealthEnergySummary? {

@@ -918,6 +918,7 @@
     <string name="cd_new_recipe">Nova receita</string>
     <string name="cd_open_camera">Abrir câmera</string>
     <string name="cd_open_gallery">Abrir galeria</string>
+    <string name="cd_camera_shutter">Tirar foto</string>
     <string name="cd_quantity_operator">Inserir %1$s na quantidade</string>
     <string name="cd_remove_image">Remover imagem</string>
     <string name="cd_selected">Selecionado</string>
@@ -1067,6 +1068,16 @@
     <string name="home_active_burn_a11y">Gasto ativo %1$d</string>
     <string name="home_active_burn_caption">%1$d ativos</string>
     <string name="home_active_burn_caption_progress">%1$d/%2$d ativos</string>
+    <string name="home_budget_class_usual">Dia usual</string>
+    <string name="home_budget_class_lean_lighter">Mais leve</string>
+    <string name="home_budget_class_lean_harder">Mais intenso</string>
+    <string name="home_budget_class_lighter">Dia leve</string>
+    <string name="home_budget_class_harder">Dia intenso</string>
+    <string name="home_budget_class_lean_type">Rumo a %1$s</string>
+    <string name="home_budget_class_type">Dia %1$s</string>
+    <string name="home_budget_class_sheet_hourly">Ainda falta histórico no mesmo horário. A meta continua seu dia usual.</string>
+    <string name="home_budget_class_sheet_usual">Ainda sem classe. A meta é seu dia usual, não um dia de treino adivinhado.</string>
+    <string name="home_budget_class_sheet_moved">Classificado pelos últimos 28 dias. Sua meta salva não muda.</string>
     <string name="home_active_burn_caption_progress_day_type">%1$d/%2$d ativos · %3$s</string>
     <string name="home_active_burn_over">+%1$d a mais</string>
     <string name="home_active_burn_over_a11y">Gasto ativo %1$d, %2$d acima de um dia normal</string>
@@ -2126,6 +2137,9 @@
     <string name="home_day_type_chip_a11y">Tipo de dia de hoje: %1$s. Toque para trocar.</string>
     <string name="day_type_sheet_title">Tipo de dia</string>
     <string name="day_type_sheet_subtitle">Troque os objetivos de hoje para outro tipo de dia.</string>
+    <string name="home_day_type_diverge_named">Esta hora parece mais com %1$s, não com %2$s.</string>
+    <string name="home_day_type_diverge_unnamed">Esta hora não parece um dia de %1$s.</string>
+    <string name="cd_dismiss_day_type_prompt">Fechar a sugestão de tipo de dia</string>
     <string name="day_type_base_goals">Objetivos base</string>
     <string name="day_type_clear_override">Remover a exceção de hoje</string>
     <string name="day_type_edit_settings">Editar tipos de dia</string>

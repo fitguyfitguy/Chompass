@@ -44,6 +44,15 @@ class WidgetSnapshotTest {
     }
 
     @Test
+    fun classifyingSnapshot_remainingUsesClassifiedTarget() {
+        val classified = snapshot(calories = 1000, effectiveGoal = 2600, displayTarget = 2150)
+            .copy(budgetClassStep = 1, budgetClassKind = "LIGHTER")
+        assertEquals(2150, classified.resolvedDisplayGoalTarget)
+        assertEquals(1150, classified.caloriesRemaining)
+        assertEquals(1000.0 / 2150.0, classified.calorieProgress, 0.001)
+    }
+
+    @Test
     fun legacySnapshot_fallsBackToEffectiveGoal() {
         // Old snapshots without the target fields keep the budget-based readout.
         val legacy = snapshot(active = 320, effectiveGoal = 2120)

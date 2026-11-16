@@ -145,20 +145,21 @@ private fun CalorieMedium(context: Context, snapshot: WidgetSnapshot) {
                     fontSize = 12.sp
                 )
             )
-            val typical = snapshot.activeBurnTypical
-            if (typical != null && typical > 0 && snapshot.displayGoalTarget != null) {
+            val classStep = snapshot.budgetClassStep
+            if (classStep != null) {
+                val kind = app.chompass.models.BudgetClassCopy.kindFromStorage(snapshot.budgetClassKind)
+                val res = app.chompass.models.BudgetClassCopy.labelRes(classStep, kind)
+                val arg = app.chompass.models.BudgetClassCopy.labelArg(classStep, kind, snapshot.budgetClassTypeName)
+                val label = if (arg != null) context.getString(res, arg) else context.getString(res)
                 Spacer(modifier = GlanceModifier.height(1.dp))
                 Text(
-                    text = context.getString(
-                        R.string.home_active_burn_caption_progress,
-                        snapshot.energyQuantity(snapshot.activeCaloriesToday ?: 0),
-                        snapshot.energyQuantity(typical),
-                    ),
+                    text = label,
                     style = TextStyle(
                         color = WidgetTheme.secondaryTextProvider,
                         fontWeight = FontWeight.Medium,
-                        fontSize = 11.sp
-                    )
+                        fontSize = 11.sp,
+                    ),
+                    maxLines = 1,
                 )
             }
         }

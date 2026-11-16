@@ -8,6 +8,9 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.MapSerializer
+import kotlinx.serialization.builtins.ListSerializer
+import app.chompass.models.HourlyActiveHistory
+import java.time.LocalDate
 import kotlinx.serialization.builtins.serializer
 import java.util.UUID
 
@@ -135,6 +138,27 @@ internal suspend fun PreferencesStore.setHealthEnergyActiveByDayImpl(map: Map<St
             MapSerializer(String.serializer(), Int.serializer()),
             map,
         )
+    }
+}
+
+private val hourlyActiveSerializer = MapSerializer(
+    String.serializer(),
+    ListSerializer(Int.serializer()),
+)
+
+internal val PreferencesStore.healthEnergyActiveByHourImpl: Flow<Map<String, List<Int>>>
+    get() = dataStore.data.map { prefs ->
+        prefs[Keys.HEALTH_ENERGY_ACTIVE_BY_HOUR]?.let { raw ->
+            runCatching {
+                json.decodeFromString(hourlyActiveSerializer, raw)
+            }.getOrNull()
+        } ?: emptyMap()
+    }
+
+internal suspend fun PreferencesStore.setHealthEnergyActiveByHourImpl(map: Map<String, List<Int>>) {
+    val clean = HourlyActiveHistory.sanitize(map, LocalDate.now())
+    dataStore.edit {
+        it[Keys.HEALTH_ENERGY_ACTIVE_BY_HOUR] = json.encodeToString(hourlyActiveSerializer, clean)
     }
 }
 

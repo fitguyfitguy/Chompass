@@ -945,6 +945,7 @@
     <string name="cd_new_recipe">नई रेसिपी</string>
     <string name="cd_open_camera">कैमरा खोलें</string>
     <string name="cd_open_gallery">गैलरी खोलें</string>
+    <string name="cd_camera_shutter">फ़ोटो लें</string>
     <string name="cd_quantity_operator">%1$s को मात्रा में डालें</string>
     <string name="cd_remove_image">छवि हटाएं</string>
     <string name="cd_selected">चयनित</string>
@@ -1093,6 +1094,16 @@
     <string name="home_active_burn_a11y">सक्रिय खर्च %1$d</string>
     <string name="home_active_burn_caption">%1$d सक्रिय</string>
     <string name="home_active_burn_caption_progress">%1$d/%2$d सक्रिय</string>
+    <string name="home_budget_class_usual">सामान्य दिन</string>
+    <string name="home_budget_class_lean_lighter">हल्का झुकाव</string>
+    <string name="home_budget_class_lean_harder">भारी झुकाव</string>
+    <string name="home_budget_class_lighter">हल्का दिन</string>
+    <string name="home_budget_class_harder">भारी दिन</string>
+    <string name="home_budget_class_lean_type">%1$s की ओर</string>
+    <string name="home_budget_class_type">%1$s दिन</string>
+    <string name="home_budget_class_sheet_hourly">एक ही घंटे का इतिहास अभी कम है. लक्ष्य सामान्य दिन रहता है.</string>
+    <string name="home_budget_class_sheet_usual">अभी वर्गीकृत नहीं. लक्ष्य सामान्य दिन है, अनुमानित ट्रेनिंग दिन नहीं.</string>
+    <string name="home_budget_class_sheet_moved">पिछले 28 दिनों से वर्गीकृत. सहेजा लक्ष्य नहीं बदला.</string>
     <string name="home_active_burn_caption_progress_day_type">%1$d/%2$d सक्रिय · %3$s</string>
     <string name="home_active_burn_over">+%1$d अधिक</string>
     <string name="home_active_burn_over_a11y">सक्रिय खर्च %1$d, सामान्य दिन से %2$d अधिक</string>
@@ -2123,6 +2134,9 @@
     <string name="home_day_type_chip_a11y">आज का दिन-प्रकार: %1$s। बदलने के लिए टैप करें।</string>
     <string name="day_type_sheet_title">दिन-प्रकार</string>
     <string name="day_type_sheet_subtitle">आज के लक्ष्यों को दूसरे दिन-प्रकार में बदलें।</string>
+    <string name="home_day_type_diverge_named">यह घंटा %2$s से ज़्यादा %1$s जैसा है।</string>
+    <string name="home_day_type_diverge_unnamed">यह घंटा %1$s दिन जैसा नहीं लगता।</string>
+    <string name="cd_dismiss_day_type_prompt">दिन-प्रकार सुझाव बंद करें</string>
     <string name="day_type_base_goals">मूल लक्ष्य</string>
     <string name="day_type_clear_override">आज का ओवरराइड हटाएँ</string>
     <string name="day_type_edit_settings">दिन-प्रकार संपादित करें</string>

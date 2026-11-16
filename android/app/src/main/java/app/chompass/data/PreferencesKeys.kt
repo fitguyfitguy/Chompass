@@ -162,6 +162,8 @@ internal object Keys {
         val HEALTH_ENERGY_MEASURED_ACTIVE = intPreferencesKey("healthEnergyMeasuredActiveCalories")
         /** Compact ISO-date → active kcal map (internal, never synced). Pruned to 60 days. */
         val HEALTH_ENERGY_ACTIVE_BY_DAY = stringPreferencesKey("healthEnergyActiveByDayJson")
+        /** ISO date → 24 hourly active kcal slots (internal, never synced). -1 = no sample. Pruned to 60 days. */
+        val HEALTH_ENERGY_ACTIVE_BY_HOUR = stringPreferencesKey("healthEnergyActiveByHourJson")
         val HEALTH_BACKGROUND_SYNC_ENABLED = booleanPreferencesKey("healthBackgroundSyncEnabled")
         val HEALTH_ENERGY_GOALS_PREVIOUS_TARGETS = stringPreferencesKey("healthEnergyGoalsPreviousTargets")
         val HEALTH_ENERGY_GOALS_LAST_AUTO_REFRESH_DAY = stringPreferencesKey("healthEnergyGoalsLastAutoRefreshDay")
@@ -277,6 +279,11 @@ internal object Keys {
         val SKIP_PHOTO_NOTE_PROMPT = booleanPreferencesKey("skipPhotoNotePrompt")
         /** Consecutive photo analyzes submitted with an empty note while the prompt was on. */
         val PHOTO_NOTE_SKIP_COUNT = intPreferencesKey("photoNoteSkipCount")
+        /**
+         * User confirmed the sparse “Analyze now?” staging dialog (blank note +
+         * single photo) once; later noteless single-photo analyzes skip it.
+         */
+        val PHOTO_ANALYZE_CONFIRM_ACKNOWLEDGED = booleanPreferencesKey("photoAnalyzeConfirmAcknowledged")
         /**
          * How many photo staging Analyzes the user has completed. Used to show
          * the accuracy tip card for the first few entries, then collapse to Info.
