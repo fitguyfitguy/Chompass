@@ -90,7 +90,33 @@ if [[ "${SKIP_DEVICE}" -eq 0 ]]; then
 # preview references are NOT compressed — they are the pixel gate.
 echo "==> Compressing published PNGs"
 uv run --with pillow python "${ROOT}/scripts/compress_pngs.py" \
-  "${ROOT}/docs/screenshots" "${ROOT}/release-screenshots"
+  "${ROOT}/docs/screenshots" "${ROOT}/release-screenshots" \
+  "${ROOT}/metadata/en-US/images/phoneScreenshots"
+
+# ── size budget ────────────────────────────────────────────────────────────
+# A bad capture (mid-animation parallax frame, wrong screen state) once
+# tripled the per-shot sizes; the excess entered git history and later
+# needed a full history rewrite to purge (Codeberg git quota: issue #166,
+# request 2709). Runs after compression so the gate measures the bytes that
+# would actually be committed, not the pre-quantize RGBA crops.
+budget_bytes=$((16 * 1024 * 1024))
+total_bytes=0
+for dir in "${ROOT}/docs/screenshots" "${ROOT}/metadata/en-US/images/phoneScreenshots"; do
+  [ -d "${dir}" ] || continue
+  bytes="$(du -bc "${dir}"/*.png 2>/dev/null | awk 'END{print $1 + 0}')"
+  total_bytes=$((total_bytes + bytes))
+done
+if [ "${total_bytes}" -gt "${budget_bytes}" ]; then
+  echo "Size budget exceeded: committed PNGs total $((total_bytes / 1024)) KiB," \
+    "budget $((budget_bytes / 1024)) KiB. Largest files:" >&2
+  for dir in "${ROOT}/docs/screenshots" "${ROOT}/metadata/en-US/images/phoneScreenshots"; do
+    [ -d "${dir}" ] || continue
+    du -ab "${dir}"/*.png 2>/dev/null
+  done | sort -rn | sed -n '1,5p' >&2
+  echo "A capture usually balloons when a frame catches an animation or the wrong" >&2
+  echo "screen state. Inspect the shots above and re-capture; do not commit them." >&2
+  exit 1
+fi
 fi
 
 # After a capture docs/screenshots/ is dirty until committed — that counts as fresh.
