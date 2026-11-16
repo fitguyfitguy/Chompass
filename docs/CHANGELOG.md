@@ -23,6 +23,8 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ### Fixed
 
+- **No more duplicate launcher icon** (Android): if the launcher icon was mid-switch when the app got interrupted (for example stopped by Android right after being backgrounded), two Chompass entries could remain in the app drawer; the next start now removes the leftover one. Closes Codeberg [#173](https://codeberg.org/fitguy/Chompass/issues/173)
+
 - **The paste sheet starts on today** (Android): copying diary rows while viewing another day no longer targets that day — the sheet opens on today, and the week strip still switches the target. Closes Codeberg [#171](https://codeberg.org/fitguy/Chompass/issues/171)
 
 - **Barcode items open with the package weight** (Android, web app): when a barcode product has no labeled serving size, the review sheet showed "1 package" with the fallback 100 g totals, and only changing the quantity or saving set the real weight. The package size is now the portion basis, so a 250 ml drink opens as 1 package = 250 g with the macros to match. Closes Codeberg [#168](https://codeberg.org/fitguy/Chompass/issues/168)
