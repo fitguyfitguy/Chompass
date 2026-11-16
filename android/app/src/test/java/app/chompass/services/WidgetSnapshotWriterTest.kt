@@ -1,5 +1,6 @@
 package app.chompass.services
 
+import androidx.datastore.preferences.core.edit
 import app.chompass.data.CaffeineRepository
 import app.chompass.data.FoodRepository
 import app.chompass.data.PreferencesStore
@@ -14,6 +15,7 @@ import app.chompass.models.MacroPlan
 import app.chompass.models.MacroPlanMode
 import app.chompass.models.UserProfile
 import app.chompass.models.WidgetSnapshot
+import app.chompass.services.health.DebugActivityDay
 import app.chompass.services.health.HealthConnectManager
 import app.chompass.services.health.HomeActivityReader
 import app.chompass.services.weather.OpenMeteoClient
@@ -51,6 +53,10 @@ class WidgetSnapshotWriterTest {
     fun setUp() = runBlocking {
         val app = RuntimeEnvironment.getApplication()
         prefs = PreferencesStore(app)
+        // The DataStore behind PreferencesStore is a process-wide singleton
+        // (ChompassDataStoreHolder), so seeds written by one test method would
+        // otherwise stay visible to the next. Start each method empty.
+        prefs.dataStore.edit { it.clear() }
         profiles = ProfileRepository(prefs)
         val health = HealthConnectManager(app)
         writer = WidgetSnapshotWriter(
@@ -120,6 +126,13 @@ class WidgetSnapshotWriterTest {
                 )
             },
         )
+        // Without a live energy source the hold-back credit is the blend
+        // (measured average or PAL), never the typical — the ring slides from
+        // the blend. Debug activity makes energy live, so the typical reaches
+        // the snapshot as the expected-arc projection instead.
+        prefs.setDebugActivityDays(
+            listOf(DebugActivityDay(date = today.toString(), steps = 2_000L, activeCalories = 120)),
+        )
         val job = launch { writer.observe().collect() }
         val initial = awaitSnapshot()
 
@@ -131,10 +144,12 @@ class WidgetSnapshotWriterTest {
             ),
         )
 
-        val updated = awaitSnapshot { it.activeCaloriesToday != initial.activeCaloriesToday }
-        // Typical = mean of the 3 journaled burn days; it overrides the PAL
-        // estimate as the day's active norm.
-        assertEquals(650, updated.activeCaloriesToday)
+        val updated = awaitSnapshot { it.activeBurnTypical != initial.activeBurnTypical }
+        // The arc's projected norm is the mean of the completed journaled days
+        // of the type, (700 + 750) / 2 = 725. The credited burn stays at the
+        // live measurement; the typical moves the arc end, not the burn.
+        assertEquals(725, updated.activeBurnTypical)
+        assertEquals(initial.activeCaloriesToday, updated.activeCaloriesToday)
         job.cancel()
     }
 }
