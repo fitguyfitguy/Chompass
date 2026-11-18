@@ -45,11 +45,11 @@ internal fun PlanEditDialog(
     onDismiss: () -> Unit,
     onSave: (Int) -> Unit,
     onReset: (() -> Unit)?,
-    calorieFloor: Int = CalorieSafety.ABSOLUTE_FLOOR_KCAL,
+    calorieFloor: Int = CalorieSafety.MANUAL_TARGET_RANGE_KCAL.first,
 ) {
     val unit = LocalEnergyUnit.current
     val (min, max, step) = when (field) {
-        PlanField.CALORIES -> Triple(calorieFloor, CalorieSafety.PARSER_CEILING_KCAL, 50)
+        PlanField.CALORIES -> Triple(calorieFloor, CalorieSafety.MANUAL_TARGET_RANGE_KCAL.last, 50)
         PlanField.PROTEIN  -> Triple(10, 500, 5)
         PlanField.CARBS    -> Triple(0, 800, 5)
         PlanField.FAT      -> Triple(10, 300, 5)
