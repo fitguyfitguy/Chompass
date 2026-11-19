@@ -32,7 +32,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.chompass.R
 import app.chompass.models.AutoBalanceMacro
-import app.chompass.models.CalorieSafety
 import app.chompass.models.LocaleFormat
 import app.chompass.models.EnergyFormat
 import app.chompass.models.GoalFormulaReference
@@ -397,7 +396,6 @@ internal fun RecalcResultSheet(
     editing?.let { field ->
         PlanEditDialog(
             field = field,
-            calorieFloor = CalorieSafety.floorKcal(after.bmr),
             currentValue = when (field) {
                 PlanField.CALORIES -> after.effectiveCalories
                 PlanField.PROTEIN -> after.effectiveProtein
