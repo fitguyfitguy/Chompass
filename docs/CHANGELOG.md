@@ -6,6 +6,10 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## [Unreleased]
 
+### Fixed
+
+- **A prescribed calorie target is reachable** (Android): a target outside the automatic floor and ceiling, such as a clinician's 1,700 kcal, can now be set on the Calories wheel, in the onboarding plan editor, and from the Recalculate result sheet. A value under the safety floor still asks for confirmation first. Closes Codeberg [#162](https://codeberg.org/fitguy/Chompass/issues/162)
+
 ## [6.3.0] - 2026-11-06
 
 ### Added

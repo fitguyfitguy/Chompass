@@ -643,7 +643,6 @@ internal fun PlanReadyStep(state: OnboardingState, vm: OnboardingViewModel) {
         editing?.let { field ->
             PlanEditDialog(
                 field = field,
-                calorieFloor = CalorieSafety.floorKcal(profile.bmr),
                 currentValue = when (field) {
                     PlanField.CALORIES -> profile.effectiveCalories
                     PlanField.PROTEIN -> profile.effectiveProtein

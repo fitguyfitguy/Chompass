@@ -20,6 +20,11 @@ object CalorieSafety {
     const val ADULT_MIN_AGE = 18
     private const val AUTO_TDEE_CEILING_MULT = 1.5
 
+    /** Bounds for a hand-entered calorie target: manual pins are not CAL-SAFE clamped, so the
+     *  picker spans the parser envelope rather than the auto floor/ceiling. Saving under the
+     *  auto floor still asks for confirmation. */
+    val MANUAL_TARGET_RANGE_KCAL = ABSOLUTE_FLOOR_KCAL..PARSER_CEILING_KCAL
+
     fun floorKcal(bmr: Double): Int = max(bmr.roundToInt(), ABSOLUTE_FLOOR_KCAL)
 
     fun ceilingKcal(tdee: Double, floor: Int): Int {

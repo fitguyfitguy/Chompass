@@ -48,6 +48,13 @@ class CalorieSafetyTest {
     }
 
     @Test
+    fun manualTargetRangeKeepsAClinicianTargetOutsideTheAutoEnvelope() {
+        // BMR 1800 → auto floor 1800; a prescribed 1700 must still be reachable.
+        assertEquals(1800, CalorieSafety.floorKcal(1800.0))
+        assertTrue(1700 in CalorieSafety.MANUAL_TARGET_RANGE_KCAL)
+    }
+
+    @Test
     fun smallFemaleSedentaryLose_profileDailyCaloriesIsFloor() {
         val p = UserProfile(
             gender = Gender.FEMALE,

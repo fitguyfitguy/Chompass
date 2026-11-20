@@ -1196,13 +1196,15 @@ internal fun SettingsSheets(
                 SettingsSheet.CALORIES -> {
                     val p = ui.profile
                     val floor = p?.let { CalorieSafety.floorKcal(it.bmr) } ?: CalorieSafety.ABSOLUTE_FLOOR_KCAL
-                    val ceiling = p?.let { CalorieSafety.ceilingKcal(it.tdee, floor) }
-                        ?: CalorieSafety.PARSER_CEILING_KCAL
+                    // A manual pin is not CAL-SAFE clamped (docs/CALCULATION_METHODS.md), so the
+                    // picker spans the manual envelope instead of the auto floor..ceiling. A value
+                    // under the auto floor still asks first.
+                    val manual = CalorieSafety.MANUAL_TARGET_RANGE_KCAL
                     val unit = LocalEnergyUnit.current
                     NutritionPickerSheet(
                         label = stringResource(R.string.macro_calories), unit = energyUnitLabel(),
                         currentValue = EnergyFormat.quantity(p?.effectiveCalories ?: 2000, unit),
-                        range = EnergyFormat.quantity(floor, unit)..EnergyFormat.quantity(ceiling, unit),
+                        range = EnergyFormat.quantity(manual.first, unit)..EnergyFormat.quantity(manual.last, unit),
                         step = EnergyFormat.wheelStep(50, unit),
                         confirmBelow = EnergyFormat.quantity(floor, unit),
                         confirmBelowTitle = stringResource(R.string.settings_calorie_below_floor_title),
